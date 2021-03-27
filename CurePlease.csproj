@@ -187,6 +187,12 @@
   <ItemGroup>
     <Content Include="Cure Please Icon.ico" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CurePlease.Models\CurePlease.Models.csproj">
+      <Project>{8e8fc162-0b31-453e-a2f4-1e9a3cee2029}</Project>
+      <Name>CurePlease.Models</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
