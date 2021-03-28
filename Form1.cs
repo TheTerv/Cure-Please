@@ -1,5 +1,6 @@
 ﻿namespace CurePlease
 {
+    using CurePlease.Models.Constants;
     using CurePlease.Models.Enums;
     using CurePlease.Properties;
     using EliteMMO.API;
@@ -98,11 +99,11 @@
 
 
         //  private int song_casting = 0;
-        //  private string LastSongCast = ESpell.Unknown;
+        //  private string LastSongCast = Spells.Unknown;
 
 
         // private bool ForceSongRecast = false;
-        //  private string Last_Song_Cast = ESpell.Unknown;
+        //  private string Last_Song_Cast = Spells.Unknown;
 
 
         // GEO ENGAGED CHECK
@@ -250,7 +251,7 @@
         public List<string> TemporaryItem_Zones = new List<string> { "Escha Ru'Aun", "Escha Zi'Tah", "Reisenjima", "Abyssea - La Theine", "Abyssea - Konschtat", "Abyssea - Tahrongi",
                                                                         "Abyssea - Attohwa", "Abyssea - Misareaux", "Abyssea - Vunkerl", "Abyssea - Altepa", "Abyssea - Uleguerand", "Abyssea - Grauberg", "Walk of Echoes" };
 
-        public ESpell wakeSleepSpell = ESpell.Cure;
+        public string wakeSleepSpell = Spells.Cure;
 
         public string plSilenceitemName = "Echo Drops";
 
@@ -289,16 +290,16 @@
             return 0;
         }
 
-        public bool SpellAvailable(ESpell spell)
+        public bool SpellAvailable(string spellName)
         {
-            var apiSpell = _ELITEAPIPL.Resources.GetSpell((uint)spell);
+            var apiSpell = _ELITEAPIPL.Resources.GetSpell(spellName, 0);
 
-            return HasSpell(spell) && (_ELITEAPIPL.Recast.GetSpellRecast(apiSpell.Index) == 0);
+            return SpellAvailable(apiSpell) && (_ELITEAPIPL.Recast.GetSpellRecast(apiSpell.Index) == 0);
         }
 
-        public bool IsCure(ESpell spell)
+        public bool IsCure(string spell)
         {
-            return spell >= ESpell.Cure && spell <= ESpell.Cure_VI;
+            return spell.Contains("Cure");
         }
 
         public static bool HasAbility(string checked_abilityName)
@@ -317,7 +318,7 @@
             }
         }
 
-        public static bool HasSpell(ESpell spell)
+        public static bool SpellAvailable(EliteAPI.ISpell spell)
         {
             // IF YOU HAVE OMERTA THEN BLOCK MAGIC CASTING
             if (_ELITEAPIPL.Player.GetPlayerInfo().Buffs.Any(b => b == 262))
@@ -325,12 +326,12 @@
                 return false;
             }
 
-            return _ELITEAPIPL.Player.HasSpell((uint)spell);
+            return _ELITEAPIPL.Player.HasSpell(spell.ID);
         }
 
    
 
-        // SPELL CHECKER CODE: (SpellAvailable("") == 0) && (HasSpell(""))
+        // SPELL CHECKER CODE: (SpellAvailable("") == 0) && (SpellAvailable(""))
         // ABILITY CHECKER CODE: (GetAbilityRecast("") == 0) && (HasAbility(""))
         // PIANISSIMO TIME FORMAT
         // SONGNUMBER_SONGSET (Example: 1_2 = Song #1 in Set #2
@@ -2983,206 +2984,206 @@
             return true;
         }
 
-        private ESpell CureTiers(ESpell cureSpell, bool HP)
+        private string CureTiers(string curSpell, bool HP)
         {
-            if (cureSpell == ESpell.Cure_VI)
+            if (curSpell == Spells.Cure_VI)
             {
-                if (SpellAvailable(ESpell.Cure_VI))
+                if (SpellAvailable(Spells.Cure_VI))
                 {
-                    return ESpell.Cure_VI;
+                    return Spells.Cure_VI;
                 }
-                else if (SpellAvailable(ESpell.Cure_V) && Form2.config.Undercure)
+                else if (SpellAvailable(Spells.Cure_V) && Form2.config.Undercure)
                 {
-                    return ESpell.Cure_V;
+                    return Spells.Cure_V;
                 }
-                else if (SpellAvailable(ESpell.Cure_IV) && Form2.config.Undercure)
+                else if (SpellAvailable(Spells.Cure_IV) && Form2.config.Undercure)
                 {
-                    return ESpell.Cure_IV;
+                    return Spells.Cure_IV;
                 }
                 else
                 {
-                    return ESpell.Unknown;
+                    return Spells.Unknown;
                 }
             }
-            else if (cureSpell == ESpell.Cure_V)
+            else if (curSpell == Spells.Cure_V)
             {
-                if (SpellAvailable(ESpell.Cure_V))
+                if (SpellAvailable(Spells.Cure_V))
                 {
-                    return ESpell.Cure_V;
+                    return Spells.Cure_V;
                 }
-                else if (SpellAvailable(ESpell.Cure_IV)  && Form2.config.Undercure)
+                else if (SpellAvailable(Spells.Cure_IV)  && Form2.config.Undercure)
                 {
-                    return ESpell.Cure_IV;
+                    return Spells.Cure_IV;
                 }
-                else if (SpellAvailable(ESpell.Cure_VI) && (Form2.config.Overcure && Form2.config.OvercureOnHighPriority != true || Form2.config.OvercureOnHighPriority && HP == true))
+                else if (SpellAvailable(Spells.Cure_VI) && (Form2.config.Overcure && Form2.config.OvercureOnHighPriority != true || Form2.config.OvercureOnHighPriority && HP == true))
                 {
-                    return ESpell.Cure_VI;
+                    return Spells.Cure_VI;
                 }
                 else
                 {
-                    return ESpell.Unknown;
+                    return Spells.Unknown;
                 }
             }
-            else if (cureSpell == ESpell.Cure_IV)
+            else if (curSpell == Spells.Cure_IV)
             {
-                if (SpellAvailable(ESpell.Cure_IV))
+                if (SpellAvailable(Spells.Cure_IV))
                 {
-                    return ESpell.Cure_IV;
+                    return Spells.Cure_IV;
                 }
-                else if (SpellAvailable(ESpell.Cure_III) && Form2.config.Undercure)
+                else if (SpellAvailable(Spells.Cure_III) && Form2.config.Undercure)
                 {
-                    return ESpell.Cure_III;
+                    return Spells.Cure_III;
                 }
-                else if (SpellAvailable(ESpell.Cure_V) && (Form2.config.Overcure && Form2.config.OvercureOnHighPriority != true || Form2.config.OvercureOnHighPriority && HP == true))
+                else if (SpellAvailable(Spells.Cure_V) && (Form2.config.Overcure && Form2.config.OvercureOnHighPriority != true || Form2.config.OvercureOnHighPriority && HP == true))
                 {
-                    return ESpell.Cure_V;
+                    return Spells.Cure_V;
                 }
                 else
                 {
-                    return ESpell.Unknown;
+                    return Spells.Unknown;
                 }
             }
-            else if (cureSpell == ESpell.Cure_III)
+            else if (curSpell == Spells.Cure_III)
             {
-                if (SpellAvailable(ESpell.Cure_III))
+                if (SpellAvailable(Spells.Cure_III))
                 {
-                    return ESpell.Cure_III;
+                    return Spells.Cure_III;
                 }
-                else if (SpellAvailable(ESpell.Cure_IV) && (Form2.config.Overcure && Form2.config.OvercureOnHighPriority != true || Form2.config.OvercureOnHighPriority && HP == true))
+                else if (SpellAvailable(Spells.Cure_IV) && (Form2.config.Overcure && Form2.config.OvercureOnHighPriority != true || Form2.config.OvercureOnHighPriority && HP == true))
                 {
-                    return ESpell.Cure_IV;
+                    return Spells.Cure_IV;
                 }
-                else if (SpellAvailable(ESpell.Cure_II) && Form2.config.Undercure)
+                else if (SpellAvailable(Spells.Cure_II) && Form2.config.Undercure)
                 {
-                    return ESpell.Cure_II;
+                    return Spells.Cure_II;
                 }
                 else
                 {
-                    return ESpell.Unknown;
+                    return Spells.Unknown;
                 }
             }
-            else if (cureSpell == ESpell.Cure_II)
+            else if (curSpell == Spells.Cure_II)
             {
-                if (SpellAvailable(ESpell.Cure_II))
+                if (SpellAvailable(Spells.Cure_II))
                 {
-                    return ESpell.Cure_II;
+                    return Spells.Cure_II;
                 }
-                else if (SpellAvailable(ESpell.Cure) && Form2.config.Undercure)
+                else if (SpellAvailable(Spells.Cure) && Form2.config.Undercure)
                 {
-                    return ESpell.Cure;
+                    return Spells.Cure;
                 }
-                else if (SpellAvailable(ESpell.Cure_III) && (Form2.config.Overcure && Form2.config.OvercureOnHighPriority != true || Form2.config.OvercureOnHighPriority && HP == true))
+                else if (SpellAvailable(Spells.Cure_III) && (Form2.config.Overcure && Form2.config.OvercureOnHighPriority != true || Form2.config.OvercureOnHighPriority && HP == true))
                 {
-                    return ESpell.Cure_III;
+                    return Spells.Cure_III;
                 }
                 else
                 {
-                    return ESpell.Unknown;
+                    return Spells.Unknown;
                 }
             }
-            else if (cureSpell == ESpell.Cure)
+            else if (curSpell == Spells.Cure)
             {
-                if (SpellAvailable(ESpell.Cure))
+                if (SpellAvailable(Spells.Cure))
                 {
-                    return ESpell.Cure;
+                    return Spells.Cure;
                 }
-                else if (SpellAvailable(ESpell.Cure_II) && (Form2.config.Overcure && Form2.config.OvercureOnHighPriority != true || Form2.config.OvercureOnHighPriority && HP == true))
+                else if (SpellAvailable(Spells.Cure_II) && (Form2.config.Overcure && Form2.config.OvercureOnHighPriority != true || Form2.config.OvercureOnHighPriority && HP == true))
                 {
-                    return ESpell.Cure_II;
+                    return Spells.Cure_II;
                 }
                 else
                 {
-                    return ESpell.Unknown;
+                    return Spells.Unknown;
                 }
             }
-            else if (cureSpell == ESpell.Curaga_V)
+            else if (curSpell == Spells.Curaga_V)
             {
-                if (SpellAvailable(ESpell.Curaga_V))
+                if (SpellAvailable(Spells.Curaga_V))
                 {
-                    return ESpell.Curaga_V;
+                    return Spells.Curaga_V;
                 }
-                else if (SpellAvailable(ESpell.Curaga_IV) && Form2.config.Undercure)
+                else if (SpellAvailable(Spells.Curaga_IV) && Form2.config.Undercure)
                 {
-                    return ESpell.Curaga_IV;
+                    return Spells.Curaga_IV;
                 }
                 else
                 {
-                    return ESpell.Unknown;
+                    return Spells.Unknown;
                 }
             }
-            else if (cureSpell == ESpell.Curaga_IV)
+            else if (curSpell == Spells.Curaga_IV)
             {
-                if (SpellAvailable(ESpell.Curaga_IV))
+                if (SpellAvailable(Spells.Curaga_IV))
                 {
-                    return ESpell.Curaga_IV;
+                    return Spells.Curaga_IV;
                 }
-                else if (SpellAvailable(ESpell.Curaga_V) && Form2.config.Overcure)
+                else if (SpellAvailable(Spells.Curaga_V) && Form2.config.Overcure)
                 {
-                    return ESpell.Curaga_V;
+                    return Spells.Curaga_V;
                 }
-                else if (SpellAvailable(ESpell.Curaga_III) && Form2.config.Undercure)
+                else if (SpellAvailable(Spells.Curaga_III) && Form2.config.Undercure)
                 {
-                    return ESpell.Curaga_III;
+                    return Spells.Curaga_III;
                 }
                 else
                 {
-                    return ESpell.Unknown;
+                    return Spells.Unknown;
                 }
             }
-            else if (cureSpell == ESpell.Curaga_III)
+            else if (curSpell == Spells.Curaga_III)
             {
-                if (SpellAvailable(ESpell.Curaga_III))
+                if (SpellAvailable(Spells.Curaga_III))
                 {
-                    return ESpell.Curaga_III;
+                    return Spells.Curaga_III;
                 }
-                else if (SpellAvailable(ESpell.Curaga_IV) && Form2.config.Overcure)
+                else if (SpellAvailable(Spells.Curaga_IV) && Form2.config.Overcure)
                 {
-                    return ESpell.Curaga_IV;
+                    return Spells.Curaga_IV;
                 }
-                else if (SpellAvailable(ESpell.Curaga_II) && Form2.config.Undercure)
+                else if (SpellAvailable(Spells.Curaga_II) && Form2.config.Undercure)
                 {
-                    return ESpell.Curaga_II;
+                    return Spells.Curaga_II;
                 }
                 else
                 {
-                    return ESpell.Unknown;
+                    return Spells.Unknown;
                 }
             }
-            else if (cureSpell == ESpell.Curaga_II)
+            else if (curSpell == Spells.Curaga_II)
             {
-                if (SpellAvailable(ESpell.Curaga_II))
+                if (SpellAvailable(Spells.Curaga_II))
                 {
-                    return ESpell.Curaga_II;
+                    return Spells.Curaga_II;
                 }
-                else if (SpellAvailable(ESpell.Curaga) && Form2.config.Undercure)
+                else if (SpellAvailable(Spells.Curaga) && Form2.config.Undercure)
                 {
-                    return ESpell.Curaga;
+                    return Spells.Curaga;
                 }
-                else if (SpellAvailable(ESpell.Curaga_III) && Form2.config.Overcure)
+                else if (SpellAvailable(Spells.Curaga_III) && Form2.config.Overcure)
                 {
-                    return ESpell.Curaga_III;
+                    return Spells.Curaga_III;
                 }
                 else
                 {
-                    return ESpell.Unknown;
+                    return Spells.Unknown;
                 }
             }
-            else if (cureSpell == ESpell.Curaga)
+            else if (curSpell == Spells.Curaga)
             {
-                if (SpellAvailable(ESpell.Curaga))
+                if (SpellAvailable(Spells.Curaga))
                 {
-                    return ESpell.Curaga;
+                    return Spells.Curaga;
                 }
-                else if (SpellAvailable(ESpell.Curaga_II) && Form2.config.Overcure)
+                else if (SpellAvailable(Spells.Curaga_II) && Form2.config.Overcure)
                 {
-                    return ESpell.Curaga_II;
+                    return Spells.Curaga_II;
                 }
                 else
                 {
-                    return ESpell.Unknown;
+                    return Spells.Unknown;
                 }
             }
-            return ESpell.Unknown;
+            return Spells.Unknown;
         }
 
         private bool partyMemberUpdateMethod(byte partyMemberId)
@@ -3683,55 +3684,55 @@
             {
                 uint HP_Loss = _ELITEAPIPL.Player.HP * 100 / _ELITEAPIPL.Player.HPP - _ELITEAPIPL.Player.HP;
 
-                if (Form2.config.cure6enabled && HP_Loss >= Form2.config.cure6amount && _ELITEAPIPL.Player.MP > 227 && HasSpell(ESpell.Cure_VI))
+                if (Form2.config.cure6enabled && HP_Loss >= Form2.config.cure6amount && _ELITEAPIPL.Player.MP > 227 && SpellAvailable(Spells.Cure_VI))
                 {
-                    ESpell cureSpell = CureTiers(ESpell.Cure_VI, HP);
-                    if (cureSpell != ESpell.Unknown)
+                    string curstring = CureTiers(Spells.Cure_VI, HP);
+                    if (curstring != Spells.Unknown)
                     {
-                        CastSpell(_ELITEAPIPL.Player.Name, ESpell.Cure_VI);
+                        CastSpell(_ELITEAPIPL.Player.Name, Spells.Cure_VI);
                     }
                 }
-                else if (Form2.config.cure5enabled && HP_Loss >= Form2.config.cure5amount && _ELITEAPIPL.Player.MP > 125 && HasSpell(ESpell.Cure_V))
+                else if (Form2.config.cure5enabled && HP_Loss >= Form2.config.cure5amount && _ELITEAPIPL.Player.MP > 125 && SpellAvailable(Spells.Cure_V))
                 {
-                    ESpell cureSpell = CureTiers(ESpell.Cure_V, HP);
-                    if (cureSpell != ESpell.Unknown)
+                    string curstring = CureTiers(Spells.Cure_V, HP);
+                    if (curstring != Spells.Unknown)
                     {
-                        CastSpell(_ELITEAPIPL.Player.Name, ESpell.Cure_V);
+                        CastSpell(_ELITEAPIPL.Player.Name, Spells.Cure_V);
                     }
                 }
-                else if (Form2.config.cure4enabled && HP_Loss >= Form2.config.cure4amount && _ELITEAPIPL.Player.MP > 88 && HasSpell(ESpell.Cure_IV))
+                else if (Form2.config.cure4enabled && HP_Loss >= Form2.config.cure4amount && _ELITEAPIPL.Player.MP > 88 && SpellAvailable(Spells.Cure_IV))
                 {
-                    ESpell cureSpell = CureTiers(ESpell.Cure_IV, HP);
-                    if (cureSpell != ESpell.Unknown)
+                    string curstring = CureTiers(Spells.Cure_IV, HP);
+                    if (curstring != Spells.Unknown)
                     {
-                        CastSpell(_ELITEAPIPL.Player.Name, ESpell.Cure_IV);
+                        CastSpell(_ELITEAPIPL.Player.Name, Spells.Cure_IV);
                     }
                 }
-                else if (Form2.config.cure3enabled && HP_Loss >= Form2.config.cure3amount && _ELITEAPIPL.Player.MP > 46 && HasSpell(ESpell.Cure_III))
+                else if (Form2.config.cure3enabled && HP_Loss >= Form2.config.cure3amount && _ELITEAPIPL.Player.MP > 46 && SpellAvailable(Spells.Cure_III))
                 {
                     if (Form2.config.PrioritiseOverLowerTier == true) { RunDebuffChecker(); }
-                    ESpell cureSpell = CureTiers(ESpell.Cure_III, HP);
-                    if (cureSpell != ESpell.Unknown)
+                    string curstring = CureTiers(Spells.Cure_III, HP);
+                    if (curstring != Spells.Unknown)
                     {
-                        CastSpell(_ELITEAPIPL.Player.Name, ESpell.Cure_III);
+                        CastSpell(_ELITEAPIPL.Player.Name, Spells.Cure_III);
                     }
                 }
-                else if (Form2.config.cure2enabled && HP_Loss >= Form2.config.cure2amount && _ELITEAPIPL.Player.MP > 24 && HasSpell(ESpell.Cure_II))
+                else if (Form2.config.cure2enabled && HP_Loss >= Form2.config.cure2amount && _ELITEAPIPL.Player.MP > 24 && SpellAvailable(Spells.Cure_II))
                 {
                     if (Form2.config.PrioritiseOverLowerTier == true) { RunDebuffChecker(); }
-                    ESpell cureSpell = CureTiers(ESpell.Cure_II, HP);
-                    if (cureSpell != ESpell.Unknown)
+                    string curstring = CureTiers(Spells.Cure_II, HP);
+                    if (curstring != Spells.Unknown)
                     {
-                        CastSpell(_ELITEAPIPL.Player.Name, ESpell.Cure_II);
+                        CastSpell(_ELITEAPIPL.Player.Name, Spells.Cure_II);
                     }
                 }
-                else if (Form2.config.cure1enabled && HP_Loss >= Form2.config.cure1amount && _ELITEAPIPL.Player.MP > 8 && HasSpell(ESpell.Cure))
+                else if (Form2.config.cure1enabled && HP_Loss >= Form2.config.cure1amount && _ELITEAPIPL.Player.MP > 8 && SpellAvailable(Spells.Cure))
                 {
                     if (Form2.config.PrioritiseOverLowerTier == true) { RunDebuffChecker(); }
-                    ESpell cureSpell = CureTiers(ESpell.Cure, HP);
-                    if (cureSpell != ESpell.Unknown)
+                    string curstring = CureTiers(Spells.Cure, HP);
+                    if (curstring != Spells.Unknown)
                     {
-                        CastSpell(_ELITEAPIPL.Player.Name, ESpell.Cure);
+                        CastSpell(_ELITEAPIPL.Player.Name, Spells.Cure);
                     }
                 }
             }
@@ -3744,55 +3745,55 @@
             {
                 uint HP_Loss = _ELITEAPIMonitored.Party.GetPartyMembers()[partyMemberId].CurrentHP * 100 / _ELITEAPIMonitored.Party.GetPartyMembers()[partyMemberId].CurrentHPP - _ELITEAPIMonitored.Party.GetPartyMembers()[partyMemberId].CurrentHP;
 
-                if (Form2.config.cure6enabled && HP_Loss >= Form2.config.cure6amount && _ELITEAPIPL.Player.MP > 227 && HasSpell(ESpell.Cure_VI))
+                if (Form2.config.cure6enabled && HP_Loss >= Form2.config.cure6amount && _ELITEAPIPL.Player.MP > 227 && SpellAvailable(Spells.Cure_VI))
                 {
-                    ESpell cureSpell = CureTiers(ESpell.Cure_VI, HP);
-                    if (cureSpell != ESpell.Unknown)
+                    string curstring = CureTiers(Spells.Cure_VI, HP);
+                    if (curstring != Spells.Unknown)
                     {
-                        CastSpell(_ELITEAPIMonitored.Party.GetPartyMembers()[partyMemberId].Name, ESpell.Cure_VI);
+                        CastSpell(_ELITEAPIMonitored.Party.GetPartyMembers()[partyMemberId].Name, Spells.Cure_VI);
                     }
                 }
-                else if (Form2.config.cure5enabled && HP_Loss >= Form2.config.cure5amount && _ELITEAPIPL.Player.MP > 125 && HasSpell(ESpell.Cure_V))
+                else if (Form2.config.cure5enabled && HP_Loss >= Form2.config.cure5amount && _ELITEAPIPL.Player.MP > 125 && SpellAvailable(Spells.Cure_V))
                 {
-                    ESpell cureSpell = CureTiers(ESpell.Cure_V, HP);
-                    if (cureSpell != ESpell.Unknown)
+                    string curstring = CureTiers(Spells.Cure_V, HP);
+                    if (curstring != Spells.Unknown)
                     {
-                        CastSpell(_ELITEAPIMonitored.Party.GetPartyMembers()[partyMemberId].Name, ESpell.Cure_V);
+                        CastSpell(_ELITEAPIMonitored.Party.GetPartyMembers()[partyMemberId].Name, Spells.Cure_V);
                     }
                 }
-                else if (Form2.config.cure4enabled && HP_Loss >= Form2.config.cure4amount && _ELITEAPIPL.Player.MP > 88 && HasSpell(ESpell.Cure_IV))
+                else if (Form2.config.cure4enabled && HP_Loss >= Form2.config.cure4amount && _ELITEAPIPL.Player.MP > 88 && SpellAvailable(Spells.Cure_IV))
                 {
-                    ESpell cureSpell = CureTiers(ESpell.Cure_IV, HP);
-                    if (cureSpell != ESpell.Unknown)
+                    string curstring = CureTiers(Spells.Cure_IV, HP);
+                    if (curstring != Spells.Unknown)
                     {
-                        CastSpell(_ELITEAPIMonitored.Party.GetPartyMembers()[partyMemberId].Name, ESpell.Cure_IV);
+                        CastSpell(_ELITEAPIMonitored.Party.GetPartyMembers()[partyMemberId].Name, Spells.Cure_IV);
                     }
                 }
-                else if (Form2.config.cure3enabled && HP_Loss >= Form2.config.cure3amount && _ELITEAPIPL.Player.MP > 46 && HasSpell(ESpell.Cure_III))
+                else if (Form2.config.cure3enabled && HP_Loss >= Form2.config.cure3amount && _ELITEAPIPL.Player.MP > 46 && SpellAvailable(Spells.Cure_III))
                 {
                     if (Form2.config.PrioritiseOverLowerTier == true) { RunDebuffChecker(); }
-                    ESpell cureSpell = CureTiers(ESpell.Cure_III, HP);
-                    if (cureSpell != ESpell.Unknown)
+                    string curstring = CureTiers(Spells.Cure_III, HP);
+                    if (curstring != Spells.Unknown)
                     {
-                        CastSpell(_ELITEAPIMonitored.Party.GetPartyMembers()[partyMemberId].Name, ESpell.Cure_III);
+                        CastSpell(_ELITEAPIMonitored.Party.GetPartyMembers()[partyMemberId].Name, Spells.Cure_III);
                     }
                 }
-                else if (Form2.config.cure2enabled && HP_Loss >= Form2.config.cure2amount && _ELITEAPIPL.Player.MP > 24 && HasSpell(ESpell.Cure_II))
+                else if (Form2.config.cure2enabled && HP_Loss >= Form2.config.cure2amount && _ELITEAPIPL.Player.MP > 24 && SpellAvailable(Spells.Cure_II))
                 {
                     if (Form2.config.PrioritiseOverLowerTier == true) { RunDebuffChecker(); }
-                    ESpell cureSpell = CureTiers(ESpell.Cure_II, HP);
-                    if (cureSpell != ESpell.Unknown)
+                    string curstring = CureTiers(Spells.Cure_II, HP);
+                    if (curstring != Spells.Unknown)
                     {
-                        CastSpell(_ELITEAPIMonitored.Party.GetPartyMembers()[partyMemberId].Name, ESpell.Cure_II);
+                        CastSpell(_ELITEAPIMonitored.Party.GetPartyMembers()[partyMemberId].Name, Spells.Cure_II);
                     }
                 }
-                else if (Form2.config.cure1enabled && HP_Loss >= Form2.config.cure1amount && _ELITEAPIPL.Player.MP > 8 && HasSpell(ESpell.Cure))
+                else if (Form2.config.cure1enabled && HP_Loss >= Form2.config.cure1amount && _ELITEAPIPL.Player.MP > 8 && SpellAvailable(Spells.Cure))
                 {
                     if (Form2.config.PrioritiseOverLowerTier == true) { RunDebuffChecker(); }
-                    ESpell cureSpell = CureTiers(ESpell.Cure, HP);
-                    if (cureSpell != ESpell.Unknown)
+                    string curstring = CureTiers(Spells.Cure, HP);
+                    if (curstring != Spells.Unknown)
                     {
-                        CastSpell(_ELITEAPIMonitored.Party.GetPartyMembers()[partyMemberId].Name, ESpell.Cure);
+                        CastSpell(_ELITEAPIMonitored.Party.GetPartyMembers()[partyMemberId].Name, Spells.Cure);
                     }
                 }
             }
@@ -3835,190 +3836,190 @@
 
                 if (Form2.config.wakeSleepSpell == 0)
                 {
-                    wakeSleepSpell = ESpell.Cure;
+                    wakeSleepSpell = Spells.Cure;
                 }
                 else if (Form2.config.wakeSleepSpell == 1)
                 {
-                    wakeSleepSpell = ESpell.Cura;
+                    wakeSleepSpell = Spells.Cura;
                 }
                 else if (Form2.config.wakeSleepSpell == 2)
                 {
-                    wakeSleepSpell = ESpell.Curaga;
+                    wakeSleepSpell = Spells.Curaga;
                 }
 
                 foreach (StatusEffect plEffect in _ELITEAPIPL.Player.Buffs)
                 {
-                    if ((plEffect == StatusEffect.Doom) && Form2.config.plDoom && SpellAvailable(ESpell.Cursna) && HasSpell(ESpell.Cursna))
+                    if ((plEffect == StatusEffect.Doom) && Form2.config.plDoom && SpellAvailable(Spells.Cursna) && SpellAvailable(Spells.Cursna))
                     {
-                        CastSpell(_ELITEAPIPL.Player.Name, ESpell.Cursna);
+                        CastSpell(_ELITEAPIPL.Player.Name, Spells.Cursna);
                     }
-                    else if ((plEffect == StatusEffect.Paralysis) && Form2.config.plParalysis && SpellAvailable(ESpell.Paralyna) && HasSpell(ESpell.Paralyna))
+                    else if ((plEffect == StatusEffect.Paralysis) && Form2.config.plParalysis && SpellAvailable(Spells.Paralyna) && SpellAvailable(Spells.Paralyna))
                     {
-                        CastSpell(_ELITEAPIPL.Player.Name, ESpell.Paralyna);
+                        CastSpell(_ELITEAPIPL.Player.Name, Spells.Paralyna);
                     }
-                    else if ((plEffect == StatusEffect.Amnesia) && Form2.config.plAmnesia && SpellAvailable(ESpell.Esuna) && HasSpell(ESpell.Esuna) && BuffChecker(0, 418))
+                    else if ((plEffect == StatusEffect.Amnesia) && Form2.config.plAmnesia && SpellAvailable(Spells.Esuna) && SpellAvailable(Spells.Esuna) && BuffChecker(0, 418))
                     {
-                        CastSpell(_ELITEAPIPL.Player.Name, ESpell.Esuna);
+                        CastSpell(_ELITEAPIPL.Player.Name, Spells.Esuna);
                     }
-                    else if ((plEffect == StatusEffect.Poison) && Form2.config.plPoison && SpellAvailable(ESpell.Poisona) && HasSpell(ESpell.Poisona))
+                    else if ((plEffect == StatusEffect.Poison) && Form2.config.plPoison && SpellAvailable(Spells.Poisona) && SpellAvailable(Spells.Poisona))
                     {
-                        CastSpell(_ELITEAPIPL.Player.Name, ESpell.Poisona);
+                        CastSpell(_ELITEAPIPL.Player.Name, Spells.Poisona);
                     }
-                    else if ((plEffect == StatusEffect.Attack_Down) && Form2.config.plAttackDown && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase))
+                    else if ((plEffect == StatusEffect.Attack_Down) && Form2.config.plAttackDown && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase))
                     {
-                        CastSpell(_ELITEAPIPL.Player.Name, ESpell.Erase);
+                        CastSpell(_ELITEAPIPL.Player.Name, Spells.Erase);
                     }
-                    else if ((plEffect == StatusEffect.Blindness) && Form2.config.plBlindness && SpellAvailable(ESpell.Blindna) && HasSpell(ESpell.Blindna) )
+                    else if ((plEffect == StatusEffect.Blindness) && Form2.config.plBlindness && SpellAvailable(Spells.Blindna) && SpellAvailable(Spells.Blindna) )
                     {
-                        CastSpell(_ELITEAPIPL.Player.Name, ESpell.Blindna);
+                        CastSpell(_ELITEAPIPL.Player.Name, Spells.Blindna);
                     }
-                    else if ((plEffect == StatusEffect.Bind) && Form2.config.plBind && Form2.config.plAttackDown && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase))
+                    else if ((plEffect == StatusEffect.Bind) && Form2.config.plBind && Form2.config.plAttackDown && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase))
                     {
-                        CastSpell(_ELITEAPIPL.Player.Name, ESpell.Erase);
+                        CastSpell(_ELITEAPIPL.Player.Name, Spells.Erase);
                     }
-                    else if ((plEffect == StatusEffect.Weight) && Form2.config.plWeight && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase))
+                    else if ((plEffect == StatusEffect.Weight) && Form2.config.plWeight && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase))
                     {
-                        CastSpell(_ELITEAPIPL.Player.Name, ESpell.Erase);
+                        CastSpell(_ELITEAPIPL.Player.Name, Spells.Erase);
                     }
-                    else if ((plEffect == StatusEffect.Slow) && Form2.config.plSlow && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase))
+                    else if ((plEffect == StatusEffect.Slow) && Form2.config.plSlow && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase))
                     {
-                        CastSpell(_ELITEAPIPL.Player.Name, ESpell.Erase);
+                        CastSpell(_ELITEAPIPL.Player.Name, Spells.Erase);
                     }
-                    else if ((plEffect == StatusEffect.Curse) && Form2.config.plCurse && SpellAvailable(ESpell.Cursna) && HasSpell(ESpell.Cursna))
+                    else if ((plEffect == StatusEffect.Curse) && Form2.config.plCurse && SpellAvailable(Spells.Cursna) && SpellAvailable(Spells.Cursna))
                     {
-                        CastSpell(_ELITEAPIPL.Player.Name, ESpell.Cursna);
+                        CastSpell(_ELITEAPIPL.Player.Name, Spells.Cursna);
                     }
-                    else if ((plEffect == StatusEffect.Curse2) && Form2.config.plCurse2 && SpellAvailable(ESpell.Cursna) && HasSpell(ESpell.Cursna))
+                    else if ((plEffect == StatusEffect.Curse2) && Form2.config.plCurse2 && SpellAvailable(Spells.Cursna) && SpellAvailable(Spells.Cursna))
                     {
-                        CastSpell(_ELITEAPIPL.Player.Name, ESpell.Cursna);
+                        CastSpell(_ELITEAPIPL.Player.Name, Spells.Cursna);
                     }
-                    else if ((plEffect == StatusEffect.Addle) && Form2.config.plAddle && Form2.config.plAttackDown && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase))
+                    else if ((plEffect == StatusEffect.Addle) && Form2.config.plAddle && Form2.config.plAttackDown && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase))
                     {
-                        CastSpell(_ELITEAPIPL.Player.Name, ESpell.Erase);
+                        CastSpell(_ELITEAPIPL.Player.Name, Spells.Erase);
                     }
-                    else if ((plEffect == StatusEffect.Bane) && Form2.config.plBane && SpellAvailable(ESpell.Cursna) && HasSpell(ESpell.Cursna))
+                    else if ((plEffect == StatusEffect.Bane) && Form2.config.plBane && SpellAvailable(Spells.Cursna) && SpellAvailable(Spells.Cursna))
                     {
-                        CastSpell(_ELITEAPIPL.Player.Name, ESpell.Cursna);
+                        CastSpell(_ELITEAPIPL.Player.Name, Spells.Cursna);
                     }
-                    else if ((plEffect == StatusEffect.Plague) && Form2.config.plPlague && SpellAvailable(ESpell.Viruna) && HasSpell(ESpell.Viruna))
+                    else if ((plEffect == StatusEffect.Plague) && Form2.config.plPlague && SpellAvailable(Spells.Viruna) && SpellAvailable(Spells.Viruna))
                     {
-                        CastSpell(_ELITEAPIPL.Player.Name, ESpell.Viruna);
+                        CastSpell(_ELITEAPIPL.Player.Name, Spells.Viruna);
                     }
-                    else if ((plEffect == StatusEffect.Disease) && Form2.config.plDisease && SpellAvailable(ESpell.Viruna) && HasSpell(ESpell.Viruna))
+                    else if ((plEffect == StatusEffect.Disease) && Form2.config.plDisease && SpellAvailable(Spells.Viruna) && SpellAvailable(Spells.Viruna))
                     {
-                        CastSpell(_ELITEAPIPL.Player.Name, ESpell.Viruna);
+                        CastSpell(_ELITEAPIPL.Player.Name, Spells.Viruna);
                     }
-                    else if ((plEffect == StatusEffect.Burn) && Form2.config.plBurn && Form2.config.plAttackDown && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase))
+                    else if ((plEffect == StatusEffect.Burn) && Form2.config.plBurn && Form2.config.plAttackDown && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase))
                     {
-                        CastSpell(_ELITEAPIPL.Player.Name, ESpell.Erase);
+                        CastSpell(_ELITEAPIPL.Player.Name, Spells.Erase);
                     }
-                    else if ((plEffect == StatusEffect.Frost) && Form2.config.plFrost && Form2.config.plAttackDown && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase))
+                    else if ((plEffect == StatusEffect.Frost) && Form2.config.plFrost && Form2.config.plAttackDown && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase))
                     {
-                        CastSpell(_ELITEAPIPL.Player.Name, ESpell.Erase);
+                        CastSpell(_ELITEAPIPL.Player.Name, Spells.Erase);
                     }
-                    else if ((plEffect == StatusEffect.Choke) && Form2.config.plChoke && Form2.config.plAttackDown && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase))
+                    else if ((plEffect == StatusEffect.Choke) && Form2.config.plChoke && Form2.config.plAttackDown && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase))
                     {
-                        CastSpell(_ELITEAPIPL.Player.Name, ESpell.Erase);
+                        CastSpell(_ELITEAPIPL.Player.Name, Spells.Erase);
                     }
-                    else if ((plEffect == StatusEffect.Rasp) && Form2.config.plRasp && Form2.config.plAttackDown && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase))
+                    else if ((plEffect == StatusEffect.Rasp) && Form2.config.plRasp && Form2.config.plAttackDown && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase))
                     {
-                        CastSpell(_ELITEAPIPL.Player.Name, ESpell.Erase);
+                        CastSpell(_ELITEAPIPL.Player.Name, Spells.Erase);
                     }
-                    else if ((plEffect == StatusEffect.Shock) && Form2.config.plShock && Form2.config.plAttackDown && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase))
+                    else if ((plEffect == StatusEffect.Shock) && Form2.config.plShock && Form2.config.plAttackDown && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase))
                     {
-                        CastSpell(_ELITEAPIPL.Player.Name, ESpell.Erase);
+                        CastSpell(_ELITEAPIPL.Player.Name, Spells.Erase);
                     }
-                    else if ((plEffect == StatusEffect.Drown) && Form2.config.plDrown && Form2.config.plAttackDown && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase))
+                    else if ((plEffect == StatusEffect.Drown) && Form2.config.plDrown && Form2.config.plAttackDown && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase))
                     {
-                        CastSpell(_ELITEAPIPL.Player.Name, ESpell.Erase);
+                        CastSpell(_ELITEAPIPL.Player.Name, Spells.Erase);
                     }
-                    else if ((plEffect == StatusEffect.Dia) && Form2.config.plDia && Form2.config.plAttackDown && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase))
+                    else if ((plEffect == StatusEffect.Dia) && Form2.config.plDia && Form2.config.plAttackDown && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase))
                     {
-                        CastSpell(_ELITEAPIPL.Player.Name, ESpell.Erase);
+                        CastSpell(_ELITEAPIPL.Player.Name, Spells.Erase);
                     }
-                    else if ((plEffect == StatusEffect.Bio) && Form2.config.plBio && Form2.config.plAttackDown && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase))
+                    else if ((plEffect == StatusEffect.Bio) && Form2.config.plBio && Form2.config.plAttackDown && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase))
                     {
-                        CastSpell(_ELITEAPIPL.Player.Name, ESpell.Erase);
+                        CastSpell(_ELITEAPIPL.Player.Name, Spells.Erase);
                     }
-                    else if ((plEffect == StatusEffect.STR_Down) && Form2.config.plStrDown && Form2.config.plAttackDown && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase))
+                    else if ((plEffect == StatusEffect.STR_Down) && Form2.config.plStrDown && Form2.config.plAttackDown && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase))
                     {
-                        CastSpell(_ELITEAPIPL.Player.Name, ESpell.Erase);
+                        CastSpell(_ELITEAPIPL.Player.Name, Spells.Erase);
                     }
-                    else if ((plEffect == StatusEffect.DEX_Down) && Form2.config.plDexDown && Form2.config.plAttackDown && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase))
+                    else if ((plEffect == StatusEffect.DEX_Down) && Form2.config.plDexDown && Form2.config.plAttackDown && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase))
                     {
-                        CastSpell(_ELITEAPIPL.Player.Name, ESpell.Erase);
+                        CastSpell(_ELITEAPIPL.Player.Name, Spells.Erase);
                     }
-                    else if ((plEffect == StatusEffect.VIT_Down) && Form2.config.plVitDown && Form2.config.plAttackDown && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase))
+                    else if ((plEffect == StatusEffect.VIT_Down) && Form2.config.plVitDown && Form2.config.plAttackDown && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase))
                     {
-                        CastSpell(_ELITEAPIPL.Player.Name, ESpell.Erase);
+                        CastSpell(_ELITEAPIPL.Player.Name, Spells.Erase);
                     }
-                    else if ((plEffect == StatusEffect.AGI_Down) && Form2.config.plAgiDown && Form2.config.plAttackDown && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase))
+                    else if ((plEffect == StatusEffect.AGI_Down) && Form2.config.plAgiDown && Form2.config.plAttackDown && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase))
                     {
-                        CastSpell(_ELITEAPIPL.Player.Name, ESpell.Erase);
+                        CastSpell(_ELITEAPIPL.Player.Name, Spells.Erase);
                     }
-                    else if ((plEffect == StatusEffect.INT_Down) && Form2.config.plIntDown && Form2.config.plAttackDown && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase))
+                    else if ((plEffect == StatusEffect.INT_Down) && Form2.config.plIntDown && Form2.config.plAttackDown && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase))
                     {
-                        CastSpell(_ELITEAPIPL.Player.Name, ESpell.Erase);
+                        CastSpell(_ELITEAPIPL.Player.Name, Spells.Erase);
                     }
-                    else if ((plEffect == StatusEffect.MND_Down) && Form2.config.plMndDown && Form2.config.plAttackDown && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase))
+                    else if ((plEffect == StatusEffect.MND_Down) && Form2.config.plMndDown && Form2.config.plAttackDown && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase))
                     {
-                        CastSpell(_ELITEAPIPL.Player.Name, ESpell.Erase);
+                        CastSpell(_ELITEAPIPL.Player.Name, Spells.Erase);
                     }
-                    else if ((plEffect == StatusEffect.CHR_Down) && Form2.config.plChrDown && Form2.config.plAttackDown && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase))
+                    else if ((plEffect == StatusEffect.CHR_Down) && Form2.config.plChrDown && Form2.config.plAttackDown && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase))
                     {
-                        CastSpell(_ELITEAPIPL.Player.Name, ESpell.Erase);
+                        CastSpell(_ELITEAPIPL.Player.Name, Spells.Erase);
                     }
-                    else if ((plEffect == StatusEffect.Max_HP_Down) && Form2.config.plMaxHpDown && Form2.config.plAttackDown && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase))
+                    else if ((plEffect == StatusEffect.Max_HP_Down) && Form2.config.plMaxHpDown && Form2.config.plAttackDown && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase))
                     {
-                        CastSpell(_ELITEAPIPL.Player.Name, ESpell.Erase);
+                        CastSpell(_ELITEAPIPL.Player.Name, Spells.Erase);
                     }
-                    else if ((plEffect == StatusEffect.Max_MP_Down) && Form2.config.plMaxMpDown && Form2.config.plAttackDown && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase))
+                    else if ((plEffect == StatusEffect.Max_MP_Down) && Form2.config.plMaxMpDown && Form2.config.plAttackDown && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase))
                     {
-                        CastSpell(_ELITEAPIPL.Player.Name, ESpell.Erase);
+                        CastSpell(_ELITEAPIPL.Player.Name, Spells.Erase);
                     }
-                    else if ((plEffect == StatusEffect.Accuracy_Down) && Form2.config.plAccuracyDown && Form2.config.plAttackDown && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase))
+                    else if ((plEffect == StatusEffect.Accuracy_Down) && Form2.config.plAccuracyDown && Form2.config.plAttackDown && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase))
                     {
-                        CastSpell(_ELITEAPIPL.Player.Name, ESpell.Erase);
+                        CastSpell(_ELITEAPIPL.Player.Name, Spells.Erase);
                     }
-                    else if ((plEffect == StatusEffect.Evasion_Down) && Form2.config.plEvasionDown && Form2.config.plAttackDown && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase))
+                    else if ((plEffect == StatusEffect.Evasion_Down) && Form2.config.plEvasionDown && Form2.config.plAttackDown && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase))
                     {
-                        CastSpell(_ELITEAPIPL.Player.Name, ESpell.Erase);
+                        CastSpell(_ELITEAPIPL.Player.Name, Spells.Erase);
                     }
-                    else if ((plEffect == StatusEffect.Defense_Down) && Form2.config.plDefenseDown && Form2.config.plAttackDown && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase))
+                    else if ((plEffect == StatusEffect.Defense_Down) && Form2.config.plDefenseDown && Form2.config.plAttackDown && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase))
                     {
-                        CastSpell(_ELITEAPIPL.Player.Name, ESpell.Erase);
+                        CastSpell(_ELITEAPIPL.Player.Name, Spells.Erase);
                     }
-                    else if ((plEffect == StatusEffect.Flash) && Form2.config.plFlash && Form2.config.plAttackDown && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase))
+                    else if ((plEffect == StatusEffect.Flash) && Form2.config.plFlash && Form2.config.plAttackDown && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase))
                     {
-                        CastSpell(_ELITEAPIPL.Player.Name, ESpell.Erase);
+                        CastSpell(_ELITEAPIPL.Player.Name, Spells.Erase);
                     }
-                    else if ((plEffect == StatusEffect.Magic_Acc_Down) && Form2.config.plMagicAccDown && Form2.config.plAttackDown && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase))
+                    else if ((plEffect == StatusEffect.Magic_Acc_Down) && Form2.config.plMagicAccDown && Form2.config.plAttackDown && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase))
                     {
-                        CastSpell(_ELITEAPIPL.Player.Name, ESpell.Erase);
+                        CastSpell(_ELITEAPIPL.Player.Name, Spells.Erase);
                     }
-                    else if ((plEffect == StatusEffect.Magic_Atk_Down) && Form2.config.plMagicAtkDown && Form2.config.plAttackDown && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase))
+                    else if ((plEffect == StatusEffect.Magic_Atk_Down) && Form2.config.plMagicAtkDown && Form2.config.plAttackDown && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase))
                     {
-                        CastSpell(_ELITEAPIPL.Player.Name, ESpell.Erase);
+                        CastSpell(_ELITEAPIPL.Player.Name, Spells.Erase);
                     }
-                    else if ((plEffect == StatusEffect.Helix) && Form2.config.plHelix && Form2.config.plAttackDown && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase))
+                    else if ((plEffect == StatusEffect.Helix) && Form2.config.plHelix && Form2.config.plAttackDown && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase))
                     {
-                        CastSpell(_ELITEAPIPL.Player.Name, ESpell.Erase);
+                        CastSpell(_ELITEAPIPL.Player.Name, Spells.Erase);
                     }
-                    else if ((plEffect == StatusEffect.Max_TP_Down) && Form2.config.plMaxTpDown && Form2.config.plAttackDown && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase))
+                    else if ((plEffect == StatusEffect.Max_TP_Down) && Form2.config.plMaxTpDown && Form2.config.plAttackDown && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase))
                     {
-                        CastSpell(_ELITEAPIPL.Player.Name, ESpell.Erase);
+                        CastSpell(_ELITEAPIPL.Player.Name, Spells.Erase);
                     }
-                    else if ((plEffect == StatusEffect.Requiem) && Form2.config.plRequiem && Form2.config.plAttackDown && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase))
+                    else if ((plEffect == StatusEffect.Requiem) && Form2.config.plRequiem && Form2.config.plAttackDown && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase))
                     {
-                        CastSpell(_ELITEAPIPL.Player.Name, ESpell.Erase);
+                        CastSpell(_ELITEAPIPL.Player.Name, Spells.Erase);
                     }
-                    else if ((plEffect == StatusEffect.Elegy) && Form2.config.plElegy && Form2.config.plAttackDown && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase))
+                    else if ((plEffect == StatusEffect.Elegy) && Form2.config.plElegy && Form2.config.plAttackDown && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase))
                     {
-                        CastSpell(_ELITEAPIPL.Player.Name, ESpell.Erase);
+                        CastSpell(_ELITEAPIPL.Player.Name, Spells.Erase);
                     }
-                    else if ((plEffect == StatusEffect.Threnody) && Form2.config.plThrenody && Form2.config.plAttackDown && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase))
+                    else if ((plEffect == StatusEffect.Threnody) && Form2.config.plThrenody && Form2.config.plAttackDown && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase))
                     {
-                        CastSpell(_ELITEAPIPL.Player.Name, ESpell.Erase);
+                        CastSpell(_ELITEAPIPL.Player.Name, Spells.Erase);
                     }
                 }
             }
@@ -4028,9 +4029,9 @@
             {
                 foreach (StatusEffect monitoredEffect in _ELITEAPIMonitored.Player.Buffs)
                 {
-                    if ((monitoredEffect == StatusEffect.Doom) && Form2.config.monitoredDoom && SpellAvailable(ESpell.Cursna) && HasSpell(ESpell.Cursna))
+                    if ((monitoredEffect == StatusEffect.Doom) && Form2.config.monitoredDoom && SpellAvailable(Spells.Cursna) && SpellAvailable(Spells.Cursna))
                     {
-                        CastSpell(_ELITEAPIMonitored.Player.Name, ESpell.Cursna);
+                        CastSpell(_ELITEAPIMonitored.Player.Name, Spells.Cursna);
                     }
                     else if ((monitoredEffect == StatusEffect.Sleep) && Form2.config.monitoredSleep && Form2.config.wakeSleepEnabled)
                     {
@@ -4040,181 +4041,181 @@
                     {
                         CastSpell(_ELITEAPIMonitored.Player.Name, wakeSleepSpell);
                     }
-                    else if ((monitoredEffect == StatusEffect.Silence) && Form2.config.monitoredSilence && SpellAvailable(ESpell.Silena) && HasSpell(ESpell.Silena))
+                    else if ((monitoredEffect == StatusEffect.Silence) && Form2.config.monitoredSilence && SpellAvailable(Spells.Silena) && SpellAvailable(Spells.Silena))
                     {
-                        CastSpell(_ELITEAPIMonitored.Player.Name, ESpell.Silena);
+                        CastSpell(_ELITEAPIMonitored.Player.Name, Spells.Silena);
                     }
-                    else if ((monitoredEffect == StatusEffect.Petrification) && Form2.config.monitoredPetrification && SpellAvailable(ESpell.Stona) && HasSpell(ESpell.Stona))
+                    else if ((monitoredEffect == StatusEffect.Petrification) && Form2.config.monitoredPetrification && SpellAvailable(Spells.Stona) && SpellAvailable(Spells.Stona))
                     {
-                        CastSpell(_ELITEAPIMonitored.Player.Name, ESpell.Stona);
+                        CastSpell(_ELITEAPIMonitored.Player.Name, Spells.Stona);
                     }
-                    else if ((monitoredEffect == StatusEffect.Paralysis) && Form2.config.monitoredParalysis && SpellAvailable(ESpell.Paralyna) && HasSpell(ESpell.Paralyna))
+                    else if ((monitoredEffect == StatusEffect.Paralysis) && Form2.config.monitoredParalysis && SpellAvailable(Spells.Paralyna) && SpellAvailable(Spells.Paralyna))
                     {
-                        CastSpell(_ELITEAPIMonitored.Player.Name, ESpell.Paralyna);
+                        CastSpell(_ELITEAPIMonitored.Player.Name, Spells.Paralyna);
                     }
-                    else if ((monitoredEffect == StatusEffect.Amnesia) && Form2.config.monitoredAmnesia && SpellAvailable(ESpell.Esuna) && HasSpell(ESpell.Esuna) && BuffChecker(0, 418))
+                    else if ((monitoredEffect == StatusEffect.Amnesia) && Form2.config.monitoredAmnesia && SpellAvailable(Spells.Esuna) && SpellAvailable(Spells.Esuna) && BuffChecker(0, 418))
                     {
-                        CastSpell(_ELITEAPIMonitored.Player.Name, ESpell.Esuna);
+                        CastSpell(_ELITEAPIMonitored.Player.Name, Spells.Esuna);
                     }
-                    else if ((monitoredEffect == StatusEffect.Poison) && Form2.config.monitoredPoison && SpellAvailable(ESpell.Poisona) && HasSpell(ESpell.Poisona))
+                    else if ((monitoredEffect == StatusEffect.Poison) && Form2.config.monitoredPoison && SpellAvailable(Spells.Poisona) && SpellAvailable(Spells.Poisona))
                     {
-                        CastSpell(_ELITEAPIMonitored.Player.Name, ESpell.Poisona);
+                        CastSpell(_ELITEAPIMonitored.Player.Name, Spells.Poisona);
                     }
-                    else if ((monitoredEffect == StatusEffect.Attack_Down) && Form2.config.monitoredAttackDown && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase) && plMonitoredSameParty())
+                    else if ((monitoredEffect == StatusEffect.Attack_Down) && Form2.config.monitoredAttackDown && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase) && plMonitoredSameParty())
                     {
-                        CastSpell(_ELITEAPIMonitored.Player.Name, ESpell.Erase);
+                        CastSpell(_ELITEAPIMonitored.Player.Name, Spells.Erase);
                     }
-                    else if ((monitoredEffect == StatusEffect.Blindness) && Form2.config.monitoredBlindness && SpellAvailable(ESpell.Blindna) && HasSpell(ESpell.Blindna))
+                    else if ((monitoredEffect == StatusEffect.Blindness) && Form2.config.monitoredBlindness && SpellAvailable(Spells.Blindna) && SpellAvailable(Spells.Blindna))
                     {
-                        CastSpell(_ELITEAPIMonitored.Player.Name, ESpell.Blindna);
+                        CastSpell(_ELITEAPIMonitored.Player.Name, Spells.Blindna);
                     }
-                    else if ((monitoredEffect == StatusEffect.Bind) && Form2.config.monitoredBind && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase) && plMonitoredSameParty())
+                    else if ((monitoredEffect == StatusEffect.Bind) && Form2.config.monitoredBind && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase) && plMonitoredSameParty())
                     {
-                        CastSpell(_ELITEAPIMonitored.Player.Name, ESpell.Erase);
+                        CastSpell(_ELITEAPIMonitored.Player.Name, Spells.Erase);
                     }
-                    else if ((monitoredEffect == StatusEffect.Weight) && Form2.config.monitoredWeight && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase) && plMonitoredSameParty())
+                    else if ((monitoredEffect == StatusEffect.Weight) && Form2.config.monitoredWeight && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase) && plMonitoredSameParty())
                     {
-                        CastSpell(_ELITEAPIMonitored.Player.Name, ESpell.Erase);
+                        CastSpell(_ELITEAPIMonitored.Player.Name, Spells.Erase);
                     }
-                    else if ((monitoredEffect == StatusEffect.Slow) && Form2.config.monitoredSlow && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase) && plMonitoredSameParty())
+                    else if ((monitoredEffect == StatusEffect.Slow) && Form2.config.monitoredSlow && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase) && plMonitoredSameParty())
                     {
-                        CastSpell(_ELITEAPIMonitored.Player.Name, ESpell.Erase);
+                        CastSpell(_ELITEAPIMonitored.Player.Name, Spells.Erase);
                     }
-                    else if ((monitoredEffect == StatusEffect.Curse) && Form2.config.monitoredCurse && SpellAvailable(ESpell.Cursna) && HasSpell(ESpell.Cursna))
+                    else if ((monitoredEffect == StatusEffect.Curse) && Form2.config.monitoredCurse && SpellAvailable(Spells.Cursna) && SpellAvailable(Spells.Cursna))
                     {
-                        CastSpell(_ELITEAPIMonitored.Player.Name, ESpell.Cursna);
+                        CastSpell(_ELITEAPIMonitored.Player.Name, Spells.Cursna);
                     }
-                    else if ((monitoredEffect == StatusEffect.Curse2) && Form2.config.monitoredCurse2 && SpellAvailable(ESpell.Cursna) && HasSpell(ESpell.Cursna))
+                    else if ((monitoredEffect == StatusEffect.Curse2) && Form2.config.monitoredCurse2 && SpellAvailable(Spells.Cursna) && SpellAvailable(Spells.Cursna))
                     {
-                        CastSpell(_ELITEAPIMonitored.Player.Name, ESpell.Cursna);
+                        CastSpell(_ELITEAPIMonitored.Player.Name, Spells.Cursna);
                     }
-                    else if ((monitoredEffect == StatusEffect.Addle) && Form2.config.monitoredAddle && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase) && plMonitoredSameParty())
+                    else if ((monitoredEffect == StatusEffect.Addle) && Form2.config.monitoredAddle && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase) && plMonitoredSameParty())
                     {
-                        CastSpell(_ELITEAPIMonitored.Player.Name, ESpell.Erase);
+                        CastSpell(_ELITEAPIMonitored.Player.Name, Spells.Erase);
                     }
-                    else if ((monitoredEffect == StatusEffect.Bane) && Form2.config.monitoredBane && SpellAvailable(ESpell.Cursna) && HasSpell(ESpell.Cursna))
+                    else if ((monitoredEffect == StatusEffect.Bane) && Form2.config.monitoredBane && SpellAvailable(Spells.Cursna) && SpellAvailable(Spells.Cursna))
                     {
-                        CastSpell(_ELITEAPIMonitored.Player.Name, ESpell.Cursna);
+                        CastSpell(_ELITEAPIMonitored.Player.Name, Spells.Cursna);
                     }
-                    else if ((monitoredEffect == StatusEffect.Plague) && Form2.config.monitoredPlague && SpellAvailable(ESpell.Viruna) && HasSpell(ESpell.Viruna))
+                    else if ((monitoredEffect == StatusEffect.Plague) && Form2.config.monitoredPlague && SpellAvailable(Spells.Viruna) && SpellAvailable(Spells.Viruna))
                     {
-                        CastSpell(_ELITEAPIMonitored.Player.Name, ESpell.Viruna);
+                        CastSpell(_ELITEAPIMonitored.Player.Name, Spells.Viruna);
                     }
-                    else if ((monitoredEffect == StatusEffect.Disease) && Form2.config.monitoredDisease && SpellAvailable(ESpell.Viruna) && HasSpell(ESpell.Viruna))
+                    else if ((monitoredEffect == StatusEffect.Disease) && Form2.config.monitoredDisease && SpellAvailable(Spells.Viruna) && SpellAvailable(Spells.Viruna))
                     {
-                        CastSpell(_ELITEAPIMonitored.Player.Name, ESpell.Viruna);
+                        CastSpell(_ELITEAPIMonitored.Player.Name, Spells.Viruna);
                     }
-                    else if ((monitoredEffect == StatusEffect.Burn) && Form2.config.monitoredBurn && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase) && plMonitoredSameParty())
+                    else if ((monitoredEffect == StatusEffect.Burn) && Form2.config.monitoredBurn && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase) && plMonitoredSameParty())
                     {
-                        CastSpell(_ELITEAPIMonitored.Player.Name, ESpell.Erase);
+                        CastSpell(_ELITEAPIMonitored.Player.Name, Spells.Erase);
                     }
-                    else if ((monitoredEffect == StatusEffect.Frost) && Form2.config.monitoredFrost && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase) && plMonitoredSameParty())
+                    else if ((monitoredEffect == StatusEffect.Frost) && Form2.config.monitoredFrost && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase) && plMonitoredSameParty())
                     {
-                        CastSpell(_ELITEAPIMonitored.Player.Name, ESpell.Erase);
+                        CastSpell(_ELITEAPIMonitored.Player.Name, Spells.Erase);
                     }
-                    else if ((monitoredEffect == StatusEffect.Choke) && Form2.config.monitoredChoke && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase) && plMonitoredSameParty())
+                    else if ((monitoredEffect == StatusEffect.Choke) && Form2.config.monitoredChoke && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase) && plMonitoredSameParty())
                     {
-                        CastSpell(_ELITEAPIMonitored.Player.Name, ESpell.Erase);
+                        CastSpell(_ELITEAPIMonitored.Player.Name, Spells.Erase);
                     }
-                    else if ((monitoredEffect == StatusEffect.Rasp) && Form2.config.monitoredRasp && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase) && plMonitoredSameParty())
+                    else if ((monitoredEffect == StatusEffect.Rasp) && Form2.config.monitoredRasp && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase) && plMonitoredSameParty())
                     {
-                        CastSpell(_ELITEAPIMonitored.Player.Name, ESpell.Erase);
+                        CastSpell(_ELITEAPIMonitored.Player.Name, Spells.Erase);
                     }
-                    else if ((monitoredEffect == StatusEffect.Shock) && Form2.config.monitoredShock && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase) && plMonitoredSameParty())
+                    else if ((monitoredEffect == StatusEffect.Shock) && Form2.config.monitoredShock && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase) && plMonitoredSameParty())
                     {
-                        CastSpell(_ELITEAPIMonitored.Player.Name, ESpell.Erase);
+                        CastSpell(_ELITEAPIMonitored.Player.Name, Spells.Erase);
                     }
-                    else if ((monitoredEffect == StatusEffect.Drown) && Form2.config.monitoredDrown && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase) && plMonitoredSameParty())
+                    else if ((monitoredEffect == StatusEffect.Drown) && Form2.config.monitoredDrown && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase) && plMonitoredSameParty())
                     {
-                        CastSpell(_ELITEAPIMonitored.Player.Name, ESpell.Erase);
+                        CastSpell(_ELITEAPIMonitored.Player.Name, Spells.Erase);
                     }
-                    else if ((monitoredEffect == StatusEffect.Dia) && Form2.config.monitoredDia && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase) && plMonitoredSameParty())
+                    else if ((monitoredEffect == StatusEffect.Dia) && Form2.config.monitoredDia && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase) && plMonitoredSameParty())
                     {
-                        CastSpell(_ELITEAPIMonitored.Player.Name, ESpell.Erase);
+                        CastSpell(_ELITEAPIMonitored.Player.Name, Spells.Erase);
                     }
-                    else if ((monitoredEffect == StatusEffect.Bio) && Form2.config.monitoredBio && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase) && plMonitoredSameParty())
+                    else if ((monitoredEffect == StatusEffect.Bio) && Form2.config.monitoredBio && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase) && plMonitoredSameParty())
                     {
-                        CastSpell(_ELITEAPIMonitored.Player.Name, ESpell.Erase);
+                        CastSpell(_ELITEAPIMonitored.Player.Name, Spells.Erase);
                     }
-                    else if ((monitoredEffect == StatusEffect.STR_Down) && Form2.config.monitoredStrDown && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase) && plMonitoredSameParty())
+                    else if ((monitoredEffect == StatusEffect.STR_Down) && Form2.config.monitoredStrDown && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase) && plMonitoredSameParty())
                     {
-                        CastSpell(_ELITEAPIMonitored.Player.Name, ESpell.Erase);
+                        CastSpell(_ELITEAPIMonitored.Player.Name, Spells.Erase);
                     }
-                    else if ((monitoredEffect == StatusEffect.DEX_Down) && Form2.config.monitoredDexDown && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase) && plMonitoredSameParty())
+                    else if ((monitoredEffect == StatusEffect.DEX_Down) && Form2.config.monitoredDexDown && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase) && plMonitoredSameParty())
                     {
-                        CastSpell(_ELITEAPIMonitored.Player.Name, ESpell.Erase);
+                        CastSpell(_ELITEAPIMonitored.Player.Name, Spells.Erase);
                     }
-                    else if ((monitoredEffect == StatusEffect.VIT_Down) && Form2.config.monitoredVitDown && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase) && plMonitoredSameParty())
+                    else if ((monitoredEffect == StatusEffect.VIT_Down) && Form2.config.monitoredVitDown && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase) && plMonitoredSameParty())
                     {
-                        CastSpell(_ELITEAPIMonitored.Player.Name, ESpell.Erase);
+                        CastSpell(_ELITEAPIMonitored.Player.Name, Spells.Erase);
                     }
-                    else if ((monitoredEffect == StatusEffect.AGI_Down) && Form2.config.monitoredAgiDown && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase) && plMonitoredSameParty())
+                    else if ((monitoredEffect == StatusEffect.AGI_Down) && Form2.config.monitoredAgiDown && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase) && plMonitoredSameParty())
                     {
-                        CastSpell(_ELITEAPIMonitored.Player.Name, ESpell.Erase);
+                        CastSpell(_ELITEAPIMonitored.Player.Name, Spells.Erase);
                     }
-                    else if ((monitoredEffect == StatusEffect.INT_Down) && Form2.config.monitoredIntDown && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase) && plMonitoredSameParty())
+                    else if ((monitoredEffect == StatusEffect.INT_Down) && Form2.config.monitoredIntDown && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase) && plMonitoredSameParty())
                     {
-                        CastSpell(_ELITEAPIMonitored.Player.Name, ESpell.Erase);
+                        CastSpell(_ELITEAPIMonitored.Player.Name, Spells.Erase);
                     }
-                    else if ((monitoredEffect == StatusEffect.MND_Down) && Form2.config.monitoredMndDown && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase) && plMonitoredSameParty())
+                    else if ((monitoredEffect == StatusEffect.MND_Down) && Form2.config.monitoredMndDown && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase) && plMonitoredSameParty())
                     {
-                        CastSpell(_ELITEAPIMonitored.Player.Name, ESpell.Erase);
+                        CastSpell(_ELITEAPIMonitored.Player.Name, Spells.Erase);
                     }
-                    else if ((monitoredEffect == StatusEffect.CHR_Down) && Form2.config.monitoredChrDown && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase) && plMonitoredSameParty())
+                    else if ((monitoredEffect == StatusEffect.CHR_Down) && Form2.config.monitoredChrDown && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase) && plMonitoredSameParty())
                     {
-                        CastSpell(_ELITEAPIMonitored.Player.Name, ESpell.Erase);
+                        CastSpell(_ELITEAPIMonitored.Player.Name, Spells.Erase);
                     }
-                    else if ((monitoredEffect == StatusEffect.Max_HP_Down) && Form2.config.monitoredMaxHpDown && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase) && plMonitoredSameParty())
+                    else if ((monitoredEffect == StatusEffect.Max_HP_Down) && Form2.config.monitoredMaxHpDown && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase) && plMonitoredSameParty())
                     {
-                        CastSpell(_ELITEAPIMonitored.Player.Name, ESpell.Erase);
+                        CastSpell(_ELITEAPIMonitored.Player.Name, Spells.Erase);
                     }
-                    else if ((monitoredEffect == StatusEffect.Max_MP_Down) && Form2.config.monitoredMaxMpDown && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase) && plMonitoredSameParty())
+                    else if ((monitoredEffect == StatusEffect.Max_MP_Down) && Form2.config.monitoredMaxMpDown && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase) && plMonitoredSameParty())
                     {
-                        CastSpell(_ELITEAPIMonitored.Player.Name, ESpell.Erase);
+                        CastSpell(_ELITEAPIMonitored.Player.Name, Spells.Erase);
                     }
-                    else if ((monitoredEffect == StatusEffect.Accuracy_Down) && Form2.config.monitoredAccuracyDown && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase) && plMonitoredSameParty())
+                    else if ((monitoredEffect == StatusEffect.Accuracy_Down) && Form2.config.monitoredAccuracyDown && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase) && plMonitoredSameParty())
                     {
-                        CastSpell(_ELITEAPIMonitored.Player.Name, ESpell.Erase);
+                        CastSpell(_ELITEAPIMonitored.Player.Name, Spells.Erase);
                     }
-                    else if ((monitoredEffect == StatusEffect.Evasion_Down) && Form2.config.monitoredEvasionDown && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase) && plMonitoredSameParty())
+                    else if ((monitoredEffect == StatusEffect.Evasion_Down) && Form2.config.monitoredEvasionDown && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase) && plMonitoredSameParty())
                     {
-                        CastSpell(_ELITEAPIMonitored.Player.Name, ESpell.Erase);
+                        CastSpell(_ELITEAPIMonitored.Player.Name, Spells.Erase);
                     }
-                    else if ((monitoredEffect == StatusEffect.Defense_Down) && Form2.config.monitoredDefenseDown && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase) && plMonitoredSameParty())
+                    else if ((monitoredEffect == StatusEffect.Defense_Down) && Form2.config.monitoredDefenseDown && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase) && plMonitoredSameParty())
                     {
-                        CastSpell(_ELITEAPIMonitored.Player.Name, ESpell.Erase);
+                        CastSpell(_ELITEAPIMonitored.Player.Name, Spells.Erase);
                     }
-                    else if ((monitoredEffect == StatusEffect.Flash) && Form2.config.monitoredFlash && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase) && plMonitoredSameParty())
+                    else if ((monitoredEffect == StatusEffect.Flash) && Form2.config.monitoredFlash && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase) && plMonitoredSameParty())
                     {
-                        CastSpell(_ELITEAPIMonitored.Player.Name, ESpell.Erase);
+                        CastSpell(_ELITEAPIMonitored.Player.Name, Spells.Erase);
                     }
-                    else if ((monitoredEffect == StatusEffect.Magic_Acc_Down) && Form2.config.monitoredMagicAccDown && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase) && plMonitoredSameParty())
+                    else if ((monitoredEffect == StatusEffect.Magic_Acc_Down) && Form2.config.monitoredMagicAccDown && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase) && plMonitoredSameParty())
                     {
-                        CastSpell(_ELITEAPIMonitored.Player.Name, ESpell.Erase);
+                        CastSpell(_ELITEAPIMonitored.Player.Name, Spells.Erase);
                     }
-                    else if ((monitoredEffect == StatusEffect.Magic_Atk_Down) && Form2.config.monitoredMagicAtkDown && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase) && plMonitoredSameParty())
+                    else if ((monitoredEffect == StatusEffect.Magic_Atk_Down) && Form2.config.monitoredMagicAtkDown && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase) && plMonitoredSameParty())
                     {
-                        CastSpell(_ELITEAPIMonitored.Player.Name, ESpell.Erase);
+                        CastSpell(_ELITEAPIMonitored.Player.Name, Spells.Erase);
                     }
-                    else if ((monitoredEffect == StatusEffect.Helix) && Form2.config.monitoredHelix && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase) && plMonitoredSameParty())
+                    else if ((monitoredEffect == StatusEffect.Helix) && Form2.config.monitoredHelix && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase) && plMonitoredSameParty())
                     {
-                        CastSpell(_ELITEAPIMonitored.Player.Name, ESpell.Erase);
+                        CastSpell(_ELITEAPIMonitored.Player.Name, Spells.Erase);
                     }
-                    else if ((monitoredEffect == StatusEffect.Max_TP_Down) && Form2.config.monitoredMaxTpDown && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase) && plMonitoredSameParty())
+                    else if ((monitoredEffect == StatusEffect.Max_TP_Down) && Form2.config.monitoredMaxTpDown && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase) && plMonitoredSameParty())
                     {
-                        CastSpell(_ELITEAPIMonitored.Player.Name, ESpell.Erase);
+                        CastSpell(_ELITEAPIMonitored.Player.Name, Spells.Erase);
                     }
-                    else if ((monitoredEffect == StatusEffect.Requiem) && Form2.config.monitoredRequiem && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase) && plMonitoredSameParty())
+                    else if ((monitoredEffect == StatusEffect.Requiem) && Form2.config.monitoredRequiem && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase) && plMonitoredSameParty())
                     {
-                        CastSpell(_ELITEAPIMonitored.Player.Name, ESpell.Erase);
+                        CastSpell(_ELITEAPIMonitored.Player.Name, Spells.Erase);
                     }
-                    else if ((monitoredEffect == StatusEffect.Elegy) && Form2.config.monitoredElegy && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase) && plMonitoredSameParty())
+                    else if ((monitoredEffect == StatusEffect.Elegy) && Form2.config.monitoredElegy && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase) && plMonitoredSameParty())
                     {
-                        CastSpell(_ELITEAPIMonitored.Player.Name, ESpell.Erase);
+                        CastSpell(_ELITEAPIMonitored.Player.Name, Spells.Erase);
                     }
-                    else if ((monitoredEffect == StatusEffect.Threnody) && Form2.config.monitoredThrenody && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase) && plMonitoredSameParty())
+                    else if ((monitoredEffect == StatusEffect.Threnody) && Form2.config.monitoredThrenody && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase) && plMonitoredSameParty())
                     {
-                        CastSpell(_ELITEAPIMonitored.Player.Name, ESpell.Erase);
+                        CastSpell(_ELITEAPIMonitored.Player.Name, Spells.Erase);
                     }
                 }
             }
@@ -4332,316 +4333,316 @@
                                             if (Form2.config.enablePartyDebuffRemoval && !string.IsNullOrEmpty(character_name) && (characterNames_naRemoval.Contains(character_name) || Form2.config.SpecifiednaSpellsenable == false))
                                             {
                                                 //DOOM
-                                                if (Form2.config.naCurse && DebuffContains(named_Debuffs, "15") && SpellAvailable(ESpell.Cursna) && HasSpell(ESpell.Cursna))
+                                                if (Form2.config.naCurse && DebuffContains(named_Debuffs, "15") && SpellAvailable(Spells.Cursna) && SpellAvailable(Spells.Cursna))
                                                 {
-                                                    CastSpell(ptMember.Name, ESpell.Cursna);
+                                                    CastSpell(ptMember.Name, Spells.Cursna);
                                                     BreakOut = 1;
                                                 }
                                                 //SLEEP
-                                                else if (DebuffContains(named_Debuffs, "2") && SpellAvailable(wakeSleepSpell) && HasSpell(ESpell.Curaga))
+                                                else if (DebuffContains(named_Debuffs, "2") && SpellAvailable(wakeSleepSpell) && SpellAvailable(Spells.Curaga))
                                                 {
                                                     CastSpell(ptMember.Name, wakeSleepSpell);
                                                     removeDebuff(ptMember.Name, 2);
                                                     BreakOut = 1;
                                                 }
                                                 //SLEEP 2
-                                                else if (DebuffContains(named_Debuffs, "19") && SpellAvailable(wakeSleepSpell) && HasSpell(ESpell.Curaga))
+                                                else if (DebuffContains(named_Debuffs, "19") && SpellAvailable(wakeSleepSpell) && SpellAvailable(Spells.Curaga))
                                                 {
                                                     CastSpell(ptMember.Name, wakeSleepSpell);
                                                     removeDebuff(ptMember.Name, 19);
                                                     BreakOut = 1;
                                                 }
                                                 //PETRIFICATION
-                                                else if (Form2.config.naPetrification && DebuffContains(named_Debuffs, "7") && SpellAvailable(ESpell.Stona) && HasSpell(ESpell.Stona))
+                                                else if (Form2.config.naPetrification && DebuffContains(named_Debuffs, "7") && SpellAvailable(Spells.Stona) && SpellAvailable(Spells.Stona))
                                                 {
-                                                    CastSpell(ptMember.Name, ESpell.Stona);
+                                                    CastSpell(ptMember.Name, Spells.Stona);
                                                     removeDebuff(ptMember.Name, 7);
                                                     BreakOut = 1;
                                                 }
                                                 //SILENCE
-                                                else if (Form2.config.naSilence && DebuffContains(named_Debuffs, "6") && SpellAvailable(ESpell.Silena) && HasSpell(ESpell.Silena))
+                                                else if (Form2.config.naSilence && DebuffContains(named_Debuffs, "6") && SpellAvailable(Spells.Silena) && SpellAvailable(Spells.Silena))
                                                 {
-                                                    CastSpell(ptMember.Name, ESpell.Silena);
+                                                    CastSpell(ptMember.Name, Spells.Silena);
                                                     removeDebuff(ptMember.Name, 6);
                                                     BreakOut = 1;
                                                 }
                                                 //PARALYSIS
-                                                else if (Form2.config.naParalysis && DebuffContains(named_Debuffs, "4") && SpellAvailable(ESpell.Paralyna) && HasSpell(ESpell.Paralyna))
+                                                else if (Form2.config.naParalysis && DebuffContains(named_Debuffs, "4") && SpellAvailable(Spells.Paralyna) && SpellAvailable(Spells.Paralyna))
                                                 {
-                                                    CastSpell(ptMember.Name, ESpell.Paralyna);
+                                                    CastSpell(ptMember.Name, Spells.Paralyna);
                                                     removeDebuff(ptMember.Name, 4);
                                                     BreakOut = 1;
                                                 }
                                                 // PLAGUE
-                                                else if (Form2.config.naDisease && DebuffContains(named_Debuffs, "31") && SpellAvailable(ESpell.Viruna) && HasSpell(ESpell.Viruna))
+                                                else if (Form2.config.naDisease && DebuffContains(named_Debuffs, "31") && SpellAvailable(Spells.Viruna) && SpellAvailable(Spells.Viruna))
                                                 {
-                                                    CastSpell(ptMember.Name, ESpell.Viruna);
+                                                    CastSpell(ptMember.Name, Spells.Viruna);
                                                     removeDebuff(ptMember.Name, 31);
                                                     BreakOut = 1;
                                                 }
                                                 //DISEASE
-                                                else if (Form2.config.naDisease && DebuffContains(named_Debuffs, "8") && SpellAvailable(ESpell.Viruna) && HasSpell(ESpell.Viruna))
+                                                else if (Form2.config.naDisease && DebuffContains(named_Debuffs, "8") && SpellAvailable(Spells.Viruna) && SpellAvailable(Spells.Viruna))
                                                 {
-                                                    CastSpell(ptMember.Name, ESpell.Viruna);
+                                                    CastSpell(ptMember.Name, Spells.Viruna);
                                                     removeDebuff(ptMember.Name, 8);
                                                     BreakOut = 1;
                                                 }
                                                 // AMNESIA
-                                                else if (Form2.config.Esuna && DebuffContains(named_Debuffs, "16") && SpellAvailable(ESpell.Esuna) && HasSpell(ESpell.Esuna) && BuffChecker(1, 418))
+                                                else if (Form2.config.Esuna && DebuffContains(named_Debuffs, "16") && SpellAvailable(Spells.Esuna) && SpellAvailable(Spells.Esuna) && BuffChecker(1, 418))
                                                 {
-                                                    CastSpell(ptMember.Name, ESpell.Esuna);
+                                                    CastSpell(ptMember.Name, Spells.Esuna);
                                                     removeDebuff(ptMember.Name, 16);
                                                     BreakOut = 1;
                                                 }
                                                 //CURSE
-                                                else if (Form2.config.naCurse && DebuffContains(named_Debuffs, "9") && SpellAvailable(ESpell.Cursna) && HasSpell(ESpell.Cursna))
+                                                else if (Form2.config.naCurse && DebuffContains(named_Debuffs, "9") && SpellAvailable(Spells.Cursna) && SpellAvailable(Spells.Cursna))
                                                 {
-                                                    CastSpell(ptMember.Name, ESpell.Cursna);
+                                                    CastSpell(ptMember.Name, Spells.Cursna);
                                                     removeDebuff(ptMember.Name, 9);
                                                     BreakOut = 1;
                                                 }
                                                 //BLINDNESS
-                                                else if (Form2.config.naBlindness && DebuffContains(named_Debuffs, "5") && SpellAvailable(ESpell.Blindna) && HasSpell(ESpell.Blindna))
+                                                else if (Form2.config.naBlindness && DebuffContains(named_Debuffs, "5") && SpellAvailable(Spells.Blindna) && SpellAvailable(Spells.Blindna))
                                                 {
-                                                    CastSpell(ptMember.Name, ESpell.Blindna);
+                                                    CastSpell(ptMember.Name, Spells.Blindna);
                                                     removeDebuff(ptMember.Name, 5);
                                                     BreakOut = 1;
                                                 }
                                                 //POISON
-                                                else if (Form2.config.naPoison && DebuffContains(named_Debuffs, "3") && SpellAvailable(ESpell.Poisona) && HasSpell(ESpell.Poisona))
+                                                else if (Form2.config.naPoison && DebuffContains(named_Debuffs, "3") && SpellAvailable(Spells.Poisona) && SpellAvailable(Spells.Poisona))
                                                 {
-                                                    CastSpell(ptMember.Name, ESpell.Poisona);
+                                                    CastSpell(ptMember.Name, Spells.Poisona);
                                                     removeDebuff(ptMember.Name, 3);
                                                     BreakOut = 1;
                                                 }
                                                 // SLOW
-                                                else if (Form2.config.naErase == true && Form2.config.na_Slow && DebuffContains(named_Debuffs, "13") && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase))
+                                                else if (Form2.config.naErase == true && Form2.config.na_Slow && DebuffContains(named_Debuffs, "13") && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase))
                                                 {
-                                                    CastSpell(ptMember.Name, ESpell.Erase, "Slow → " + ptMember.Name);
+                                                    CastSpell(ptMember.Name, Spells.Erase, "Slow → " + ptMember.Name);
                                                     removeDebuff(ptMember.Name, 13);
                                                     BreakOut = 1;
                                                 }
                                                 // BIO
-                                                else if (Form2.config.naErase == true && Form2.config.na_Bio && DebuffContains(named_Debuffs, "135") && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase))
+                                                else if (Form2.config.naErase == true && Form2.config.na_Bio && DebuffContains(named_Debuffs, "135") && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase))
                                                 {
-                                                    CastSpell(ptMember.Name, ESpell.Erase, "Bio → " + ptMember.Name);
+                                                    CastSpell(ptMember.Name, Spells.Erase, "Bio → " + ptMember.Name);
                                                     removeDebuff(ptMember.Name, 135);
                                                     BreakOut = 1;
                                                 }
                                                 // BIND
-                                                else if (Form2.config.naErase == true && Form2.config.na_Bind && DebuffContains(named_Debuffs, "11") && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase))
+                                                else if (Form2.config.naErase == true && Form2.config.na_Bind && DebuffContains(named_Debuffs, "11") && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase))
                                                 {
-                                                    CastSpell(ptMember.Name, ESpell.Erase, "Bind → " + ptMember.Name);
+                                                    CastSpell(ptMember.Name, Spells.Erase, "Bind → " + ptMember.Name);
                                                     removeDebuff(ptMember.Name, 11);
                                                     BreakOut = 1;
                                                 }
                                                 // GRAVITY
-                                                else if (Form2.config.naErase == true && Form2.config.na_Weight && DebuffContains(named_Debuffs, "12") && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase))
+                                                else if (Form2.config.naErase == true && Form2.config.na_Weight && DebuffContains(named_Debuffs, "12") && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase))
                                                 {
-                                                    CastSpell(ptMember.Name, ESpell.Erase, "Gravity → " + ptMember.Name);
+                                                    CastSpell(ptMember.Name, Spells.Erase, "Gravity → " + ptMember.Name);
                                                     removeDebuff(ptMember.Name, 12);
                                                     BreakOut = 1;
                                                 }
                                                 // ACCURACY DOWN
-                                                else if (Form2.config.naErase == true && Form2.config.na_AccuracyDown && DebuffContains(named_Debuffs, "146") && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase))
+                                                else if (Form2.config.naErase == true && Form2.config.na_AccuracyDown && DebuffContains(named_Debuffs, "146") && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase))
                                                 {
-                                                    CastSpell(ptMember.Name, ESpell.Erase, "Acc. Down → " + ptMember.Name);
+                                                    CastSpell(ptMember.Name, Spells.Erase, "Acc. Down → " + ptMember.Name);
                                                     removeDebuff(ptMember.Name, 146);
                                                     BreakOut = 1;
                                                 }
                                                 // DEFENSE DOWN
-                                                else if (Form2.config.naErase == true && Form2.config.na_DefenseDown && DebuffContains(named_Debuffs, "149") && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase))
+                                                else if (Form2.config.naErase == true && Form2.config.na_DefenseDown && DebuffContains(named_Debuffs, "149") && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase))
                                                 {
-                                                    CastSpell(ptMember.Name, ESpell.Erase, "Def. Down → " + ptMember.Name);
+                                                    CastSpell(ptMember.Name, Spells.Erase, "Def. Down → " + ptMember.Name);
                                                     removeDebuff(ptMember.Name, 149);
                                                     BreakOut = 1;
                                                 }
                                                 // MAGIC DEF DOWN
-                                                else if (Form2.config.naErase == true && Form2.config.na_MagicDefenseDown && DebuffContains(named_Debuffs, "167") && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase))
+                                                else if (Form2.config.naErase == true && Form2.config.na_MagicDefenseDown && DebuffContains(named_Debuffs, "167") && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase))
                                                 {
-                                                    CastSpell(ptMember.Name, ESpell.Erase, "Mag. Def. Down → " + ptMember.Name);
+                                                    CastSpell(ptMember.Name, Spells.Erase, "Mag. Def. Down → " + ptMember.Name);
                                                     removeDebuff(ptMember.Name, 167);
                                                     BreakOut = 1;
                                                 }
                                                 // ATTACK DOWN
-                                                else if (Form2.config.naErase == true && Form2.config.na_AttackDown && DebuffContains(named_Debuffs, "147") && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase))
+                                                else if (Form2.config.naErase == true && Form2.config.na_AttackDown && DebuffContains(named_Debuffs, "147") && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase))
                                                 {
-                                                    CastSpell(ptMember.Name, ESpell.Erase, "Attk. Down → " + ptMember.Name);
+                                                    CastSpell(ptMember.Name, Spells.Erase, "Attk. Down → " + ptMember.Name);
                                                     removeDebuff(ptMember.Name, 147);
                                                     BreakOut = 1;
                                                 }
                                                 // HP DOWN
-                                                else if (Form2.config.naErase == true && Form2.config.na_MaxHpDown && DebuffContains(named_Debuffs, "144") && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase))
+                                                else if (Form2.config.naErase == true && Form2.config.na_MaxHpDown && DebuffContains(named_Debuffs, "144") && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase))
                                                 {
-                                                    CastSpell(ptMember.Name, ESpell.Erase, "HP Down → " + ptMember.Name);
+                                                    CastSpell(ptMember.Name, Spells.Erase, "HP Down → " + ptMember.Name);
                                                     removeDebuff(ptMember.Name, 144);
                                                     BreakOut = 1;
                                                 }
                                                 // VIT Down
-                                                else if (Form2.config.naErase == true && Form2.config.na_VitDown && DebuffContains(named_Debuffs, "138") && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase))
+                                                else if (Form2.config.naErase == true && Form2.config.na_VitDown && DebuffContains(named_Debuffs, "138") && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase))
                                                 {
-                                                    CastSpell(ptMember.Name, ESpell.Erase, "VIT Down → " + ptMember.Name);
+                                                    CastSpell(ptMember.Name, Spells.Erase, "VIT Down → " + ptMember.Name);
                                                     removeDebuff(ptMember.Name, 138);
                                                     BreakOut = 1;
                                                 }
                                                 // Threnody
-                                                else if (Form2.config.naErase == true && Form2.config.na_Threnody && DebuffContains(named_Debuffs, "217") && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase))
+                                                else if (Form2.config.naErase == true && Form2.config.na_Threnody && DebuffContains(named_Debuffs, "217") && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase))
                                                 {
-                                                    CastSpell(ptMember.Name, ESpell.Erase, "Threnody → " + ptMember.Name);
+                                                    CastSpell(ptMember.Name, Spells.Erase, "Threnody → " + ptMember.Name);
                                                     removeDebuff(ptMember.Name, 217);
                                                     BreakOut = 1;
                                                 }
                                                 // Shock
-                                                else if (Form2.config.naErase == true && Form2.config.na_Shock && DebuffContains(named_Debuffs, "132") && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase))
+                                                else if (Form2.config.naErase == true && Form2.config.na_Shock && DebuffContains(named_Debuffs, "132") && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase))
                                                 {
-                                                    CastSpell(ptMember.Name, ESpell.Erase, "Shock → " + ptMember.Name);
+                                                    CastSpell(ptMember.Name, Spells.Erase, "Shock → " + ptMember.Name);
                                                     removeDebuff(ptMember.Name, 132);
                                                     BreakOut = 1;
                                                 }
                                                 // StrDown
-                                                else if (Form2.config.naErase == true && Form2.config.na_StrDown && DebuffContains(named_Debuffs, "136") && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase))
+                                                else if (Form2.config.naErase == true && Form2.config.na_StrDown && DebuffContains(named_Debuffs, "136") && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase))
                                                 {
-                                                    CastSpell(ptMember.Name, ESpell.Erase, "STR Down → " + ptMember.Name);
+                                                    CastSpell(ptMember.Name, Spells.Erase, "STR Down → " + ptMember.Name);
                                                     removeDebuff(ptMember.Name, 136);
                                                     BreakOut = 1;
                                                 }
                                                 // Requiem
-                                                else if (Form2.config.naErase == true && Form2.config.na_Requiem && DebuffContains(named_Debuffs, "192") && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase))
+                                                else if (Form2.config.naErase == true && Form2.config.na_Requiem && DebuffContains(named_Debuffs, "192") && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase))
                                                 {
-                                                    CastSpell(ptMember.Name, ESpell.Erase, "Requiem → " + ptMember.Name);
+                                                    CastSpell(ptMember.Name, Spells.Erase, "Requiem → " + ptMember.Name);
                                                     removeDebuff(ptMember.Name, 192);
                                                     BreakOut = 1;
                                                 }
                                                 // Rasp
-                                                else if (Form2.config.naErase == true && Form2.config.na_Rasp && DebuffContains(named_Debuffs, "131") && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase))
+                                                else if (Form2.config.naErase == true && Form2.config.na_Rasp && DebuffContains(named_Debuffs, "131") && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase))
                                                 {
-                                                    CastSpell(ptMember.Name, ESpell.Erase, "Rasp → " + ptMember.Name);
+                                                    CastSpell(ptMember.Name, Spells.Erase, "Rasp → " + ptMember.Name);
                                                     removeDebuff(ptMember.Name, 131);
                                                     BreakOut = 1;
                                                 }
                                                 // Max TP Down
-                                                else if (Form2.config.naErase == true && Form2.config.na_MaxTpDown && DebuffContains(named_Debuffs, "189") && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase))
+                                                else if (Form2.config.naErase == true && Form2.config.na_MaxTpDown && DebuffContains(named_Debuffs, "189") && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase))
                                                 {
-                                                    CastSpell(ptMember.Name, ESpell.Erase, "Max TP Down → " + ptMember.Name);
+                                                    CastSpell(ptMember.Name, Spells.Erase, "Max TP Down → " + ptMember.Name);
                                                     removeDebuff(ptMember.Name, 189);
                                                     BreakOut = 1;
                                                 }
                                                 // Max MP Down
-                                                else if (Form2.config.naErase == true && Form2.config.na_MaxMpDown && DebuffContains(named_Debuffs, "145") && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase))
+                                                else if (Form2.config.naErase == true && Form2.config.na_MaxMpDown && DebuffContains(named_Debuffs, "145") && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase))
                                                 {
-                                                    CastSpell(ptMember.Name, ESpell.Erase, "Max MP Down → " + ptMember.Name);
+                                                    CastSpell(ptMember.Name, Spells.Erase, "Max MP Down → " + ptMember.Name);
                                                     removeDebuff(ptMember.Name, 145);
                                                     BreakOut = 1;
                                                 }
                                                 // Magic Attack Down
-                                                else if (Form2.config.naErase == true && Form2.config.na_MagicAttackDown && DebuffContains(named_Debuffs, "175") && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase))
+                                                else if (Form2.config.naErase == true && Form2.config.na_MagicAttackDown && DebuffContains(named_Debuffs, "175") && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase))
                                                 {
-                                                    CastSpell(ptMember.Name, ESpell.Erase, "Mag. Atk. Down → " + ptMember.Name);
+                                                    CastSpell(ptMember.Name, Spells.Erase, "Mag. Atk. Down → " + ptMember.Name);
                                                     removeDebuff(ptMember.Name, 175);
                                                     BreakOut = 1;
                                                 }
                                                 // Magic Acc Down
-                                                else if (Form2.config.naErase == true && Form2.config.na_MagicAccDown && DebuffContains(named_Debuffs, "174") && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase))
+                                                else if (Form2.config.naErase == true && Form2.config.na_MagicAccDown && DebuffContains(named_Debuffs, "174") && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase))
                                                 {
-                                                    CastSpell(ptMember.Name, ESpell.Erase, "Mag. Acc. Down → " + ptMember.Name);
+                                                    CastSpell(ptMember.Name, Spells.Erase, "Mag. Acc. Down → " + ptMember.Name);
                                                     removeDebuff(ptMember.Name, 174);
                                                     BreakOut = 1;
                                                 }
                                                 // Mind Down
-                                                else if (Form2.config.naErase == true && Form2.config.na_MndDown && DebuffContains(named_Debuffs, "141") && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase))
+                                                else if (Form2.config.naErase == true && Form2.config.na_MndDown && DebuffContains(named_Debuffs, "141") && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase))
                                                 {
-                                                    CastSpell(ptMember.Name, ESpell.Erase, "MND Down → " + ptMember.Name);
+                                                    CastSpell(ptMember.Name, Spells.Erase, "MND Down → " + ptMember.Name);
                                                     removeDebuff(ptMember.Name, 141);
                                                     BreakOut = 1;
                                                 }
                                                 // Int Down
-                                                else if (Form2.config.naErase == true && Form2.config.na_IntDown && DebuffContains(named_Debuffs, "140") && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase))
+                                                else if (Form2.config.naErase == true && Form2.config.na_IntDown && DebuffContains(named_Debuffs, "140") && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase))
                                                 {
-                                                    CastSpell(ptMember.Name, ESpell.Erase, "INT Down → " + ptMember.Name);
+                                                    CastSpell(ptMember.Name, Spells.Erase, "INT Down → " + ptMember.Name);
                                                     removeDebuff(ptMember.Name, 140);
                                                     BreakOut = 1;
                                                 }
                                                 // Helix
-                                                else if (Form2.config.naErase == true && Form2.config.na_Helix && DebuffContains(named_Debuffs, "186") && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase))
+                                                else if (Form2.config.naErase == true && Form2.config.na_Helix && DebuffContains(named_Debuffs, "186") && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase))
                                                 {
-                                                    CastSpell(ptMember.Name, ESpell.Erase, "Helix → " + ptMember.Name);
+                                                    CastSpell(ptMember.Name, Spells.Erase, "Helix → " + ptMember.Name);
                                                     removeDebuff(ptMember.Name, 186);
                                                     BreakOut = 1;
                                                 }
                                                 // Frost
-                                                else if (Form2.config.naErase == true && Form2.config.na_Frost && DebuffContains(named_Debuffs, "129") && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase))
+                                                else if (Form2.config.naErase == true && Form2.config.na_Frost && DebuffContains(named_Debuffs, "129") && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase))
                                                 {
-                                                    CastSpell(ptMember.Name, ESpell.Erase, "Frost → " + ptMember.Name);
+                                                    CastSpell(ptMember.Name, Spells.Erase, "Frost → " + ptMember.Name);
                                                     removeDebuff(ptMember.Name, 129);
                                                     BreakOut = 1;
                                                 }
                                                 // EvasionDown
-                                                else if (Form2.config.naErase == true && Form2.config.na_EvasionDown && DebuffContains(named_Debuffs, "148") && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase))
+                                                else if (Form2.config.naErase == true && Form2.config.na_EvasionDown && DebuffContains(named_Debuffs, "148") && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase))
                                                 {
-                                                    CastSpell(ptMember.Name, ESpell.Erase, "Evasion Down → " + ptMember.Name);
+                                                    CastSpell(ptMember.Name, Spells.Erase, "Evasion Down → " + ptMember.Name);
                                                     removeDebuff(ptMember.Name, 148);
                                                     BreakOut = 1;
                                                 }
                                                 // ELEGY
-                                                else if (Form2.config.naErase == true && Form2.config.na_Elegy && DebuffContains(named_Debuffs, "194") && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase))
+                                                else if (Form2.config.naErase == true && Form2.config.na_Elegy && DebuffContains(named_Debuffs, "194") && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase))
                                                 {
-                                                    CastSpell(ptMember.Name, ESpell.Erase, "Elegy → " + ptMember.Name);
+                                                    CastSpell(ptMember.Name, Spells.Erase, "Elegy → " + ptMember.Name);
                                                     removeDebuff(ptMember.Name, 194);
                                                     BreakOut = 1;
                                                 }
                                                 // Drown
-                                                else if (Form2.config.naErase == true && Form2.config.na_Drown && DebuffContains(named_Debuffs, "133") && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase))
+                                                else if (Form2.config.naErase == true && Form2.config.na_Drown && DebuffContains(named_Debuffs, "133") && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase))
                                                 {
-                                                    CastSpell(ptMember.Name, ESpell.Erase, "Drown → " + ptMember.Name);
+                                                    CastSpell(ptMember.Name, Spells.Erase, "Drown → " + ptMember.Name);
                                                     removeDebuff(ptMember.Name, 133);
                                                     BreakOut = 1;
                                                 }
                                                 // Dia
-                                                else if (Form2.config.naErase == true && Form2.config.na_Dia && DebuffContains(named_Debuffs, "134") && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase))
+                                                else if (Form2.config.naErase == true && Form2.config.na_Dia && DebuffContains(named_Debuffs, "134") && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase))
                                                 {
-                                                    CastSpell(ptMember.Name, ESpell.Erase, "Dia → " + ptMember.Name);
+                                                    CastSpell(ptMember.Name, Spells.Erase, "Dia → " + ptMember.Name);
                                                     removeDebuff(ptMember.Name, 134);
                                                     BreakOut = 1;
                                                 }
                                                 // DexDown
-                                                else if (Form2.config.naErase == true && Form2.config.na_DexDown && DebuffContains(named_Debuffs, "137") && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase))
+                                                else if (Form2.config.naErase == true && Form2.config.na_DexDown && DebuffContains(named_Debuffs, "137") && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase))
                                                 {
-                                                    CastSpell(ptMember.Name, ESpell.Erase, "DEX Down → " + ptMember.Name);
+                                                    CastSpell(ptMember.Name, Spells.Erase, "DEX Down → " + ptMember.Name);
                                                     removeDebuff(ptMember.Name, 137);
                                                     BreakOut = 1;
                                                 }
                                                 // Choke
-                                                else if (Form2.config.naErase == true && Form2.config.na_Choke && DebuffContains(named_Debuffs, "130") && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase))
+                                                else if (Form2.config.naErase == true && Form2.config.na_Choke && DebuffContains(named_Debuffs, "130") && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase))
                                                 {
-                                                    CastSpell(ptMember.Name, ESpell.Erase, "Choke → " + ptMember.Name);
+                                                    CastSpell(ptMember.Name, Spells.Erase, "Choke → " + ptMember.Name);
                                                     removeDebuff(ptMember.Name, 130);
                                                     BreakOut = 1;
                                                 }
                                                 // ChrDown
-                                                else if (Form2.config.naErase == true && Form2.config.na_ChrDown && DebuffContains(named_Debuffs, "142") && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase))
+                                                else if (Form2.config.naErase == true && Form2.config.na_ChrDown && DebuffContains(named_Debuffs, "142") && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase))
                                                 {
-                                                    CastSpell(ptMember.Name, ESpell.Erase, "CHR Down → " + ptMember.Name);
+                                                    CastSpell(ptMember.Name, Spells.Erase, "CHR Down → " + ptMember.Name);
                                                     removeDebuff(ptMember.Name, 142);
                                                     BreakOut = 1;
                                                 }
                                                 // Burn
-                                                else if (Form2.config.naErase == true && Form2.config.na_Burn && DebuffContains(named_Debuffs, "128") && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase))
+                                                else if (Form2.config.naErase == true && Form2.config.na_Burn && DebuffContains(named_Debuffs, "128") && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase))
                                                 {
-                                                    CastSpell(ptMember.Name, ESpell.Erase, "Burn → " + ptMember.Name);
+                                                    CastSpell(ptMember.Name, Spells.Erase, "Burn → " + ptMember.Name);
                                                     removeDebuff(ptMember.Name, 128);
                                                     BreakOut = 1;
                                                 }
                                                 // Addle
-                                                else if (Form2.config.naErase == true && Form2.config.na_Addle && DebuffContains(named_Debuffs, "21") && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase))
+                                                else if (Form2.config.naErase == true && Form2.config.na_Addle && DebuffContains(named_Debuffs, "21") && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase))
                                                 {
-                                                    CastSpell(ptMember.Name, ESpell.Erase, "Addle → " + ptMember.Name);
+                                                    CastSpell(ptMember.Name, Spells.Erase, "Addle → " + ptMember.Name);
                                                     removeDebuff(ptMember.Name, 21);
                                                     BreakOut = 1;
                                                 }
                                                 // AGI Down
-                                                else if (Form2.config.naErase == true && Form2.config.na_AgiDown && DebuffContains(named_Debuffs, "139") && SpellAvailable(ESpell.Erase) && HasSpell(ESpell.Erase))
+                                                else if (Form2.config.naErase == true && Form2.config.na_AgiDown && DebuffContains(named_Debuffs, "139") && SpellAvailable(Spells.Erase) && SpellAvailable(Spells.Erase))
                                                 {
-                                                    CastSpell(ptMember.Name, ESpell.Erase, "AGI Down → " + ptMember.Name);
+                                                    CastSpell(ptMember.Name, Spells.Erase, "AGI Down → " + ptMember.Name);
                                                     removeDebuff(ptMember.Name, 139);
                                                     BreakOut = 1;
                                                 }
@@ -4711,36 +4712,36 @@
 
             if (_ELITEAPIMonitored.Party.GetPartyMembers()[partyMemberId].CurrentHP > 0)
             {
-                if (Form2.config.curaga5enabled && (((_ELITEAPIMonitored.Party.GetPartyMembers()[partyMemberId].CurrentHP * 100 / _ELITEAPIMonitored.Party.GetPartyMembers()[partyMemberId].CurrentHPP) - _ELITEAPIMonitored.Party.GetPartyMembers()[partyMemberId].CurrentHP) >= Form2.config.curaga5Amount) && (_ELITEAPIPL.Player.MP > 380) && HasSpell(ESpell.Curaga_V))
+                if (Form2.config.curaga5enabled && (((_ELITEAPIMonitored.Party.GetPartyMembers()[partyMemberId].CurrentHP * 100 / _ELITEAPIMonitored.Party.GetPartyMembers()[partyMemberId].CurrentHPP) - _ELITEAPIMonitored.Party.GetPartyMembers()[partyMemberId].CurrentHP) >= Form2.config.curaga5Amount) && (_ELITEAPIPL.Player.MP > 380) && SpellAvailable(Spells.Curaga_V))
                 {
-                    ESpell cureSpell = CureTiers(ESpell.Curaga_V, false);
-                    if (cureSpell != ESpell.Unknown)
+                    string curstring = CureTiers(Spells.Curaga_V, false);
+                    if (curstring != Spells.Unknown)
                     {
                         if (Form2.config.curagaTargetType == 0)
                         {
-                            CastSpell(lowestHP_Name, ESpell.Curaga_V);
+                            CastSpell(lowestHP_Name, Spells.Curaga_V);
                         }
                         else
                         {
-                            CastSpell(Form2.config.curagaTargetName, ESpell.Curaga_V);
+                            CastSpell(Form2.config.curagaTargetName, Spells.Curaga_V);
                         }
                     }
                 }
-                else if (((Form2.config.curaga4enabled && HasSpell(ESpell.Curaga_IV)) || (Form2.config.Accession && Form2.config.accessionCure && HasSpell(ESpell.Cure_IV))) && (((_ELITEAPIMonitored.Party.GetPartyMembers()[partyMemberId].CurrentHP * 100 / _ELITEAPIMonitored.Party.GetPartyMembers()[partyMemberId].CurrentHPP) - _ELITEAPIMonitored.Party.GetPartyMembers()[partyMemberId].CurrentHP) >= Form2.config.curaga4Amount) && (_ELITEAPIPL.Player.MP > 260))
+                else if (((Form2.config.curaga4enabled && SpellAvailable(Spells.Curaga_IV)) || (Form2.config.Accession && Form2.config.accessionCure && SpellAvailable(Spells.Cure_IV))) && (((_ELITEAPIMonitored.Party.GetPartyMembers()[partyMemberId].CurrentHP * 100 / _ELITEAPIMonitored.Party.GetPartyMembers()[partyMemberId].CurrentHPP) - _ELITEAPIMonitored.Party.GetPartyMembers()[partyMemberId].CurrentHP) >= Form2.config.curaga4Amount) && (_ELITEAPIPL.Player.MP > 260))
                 {
-                    ESpell cureSpell = ESpell.Unknown;
-                    if (HasSpell(ESpell.Curaga_IV))
+                    string curSpell = Spells.Unknown;
+                    if (SpellAvailable(Spells.Curaga_IV))
                     {
-                        cureSpell = CureTiers(ESpell.Curaga_IV, false);
+                        curSpell = CureTiers(Spells.Curaga_IV, false);
                     }
                     else if (Form2.config.Accession && Form2.config.accessionCure && HasAbility("Accession") && currentSCHCharges >= 1 && (_ELITEAPIPL.Player.MainJob == 20 || _ELITEAPIPL.Player.SubJob == 20))
                     {
-                        cureSpell = CureTiers(ESpell.Cure_IV, false);
+                        curSpell = CureTiers(Spells.Cure_IV, false);
                     }
 
-                    if (cureSpell != ESpell.Unknown && cureSpell != ESpell.Unknown)
+                    if (curSpell != Spells.Unknown)
                     {
-                        if (IsCure(cureSpell) && (plStatusCheck(StatusEffect.Light_Arts) || plStatusCheck(StatusEffect.Addendum_White)))
+                        if (IsCure(curSpell) && (plStatusCheck(StatusEffect.Light_Arts) || plStatusCheck(StatusEffect.Addendum_White)))
                         {
                             if (!plStatusCheck(StatusEffect.Accession))
                             {
@@ -4752,29 +4753,29 @@
 
                         if (Form2.config.curagaTargetType == 0)
                         {
-                            CastSpell(lowestHP_Name, ESpell.Curaga_IV);
+                            CastSpell(lowestHP_Name, Spells.Curaga_IV);
                         }
                         else
                         {
-                            CastSpell(Form2.config.curagaTargetName, ESpell.Curaga_IV);
+                            CastSpell(Form2.config.curagaTargetName, Spells.Curaga_IV);
                         }
                     }
                 }
-                else if (((Form2.config.curaga3enabled && HasSpell(ESpell.Curaga_III)) || (Form2.config.Accession && Form2.config.accessionCure && HasSpell(ESpell.Cure_III))) && (((_ELITEAPIMonitored.Party.GetPartyMembers()[partyMemberId].CurrentHP * 100 / _ELITEAPIMonitored.Party.GetPartyMembers()[partyMemberId].CurrentHPP) - _ELITEAPIMonitored.Party.GetPartyMembers()[partyMemberId].CurrentHP) >= Form2.config.curaga3Amount) && (_ELITEAPIPL.Player.MP > 180))
+                else if (((Form2.config.curaga3enabled && SpellAvailable(Spells.Curaga_III)) || (Form2.config.Accession && Form2.config.accessionCure && SpellAvailable(Spells.Cure_III))) && (((_ELITEAPIMonitored.Party.GetPartyMembers()[partyMemberId].CurrentHP * 100 / _ELITEAPIMonitored.Party.GetPartyMembers()[partyMemberId].CurrentHPP) - _ELITEAPIMonitored.Party.GetPartyMembers()[partyMemberId].CurrentHP) >= Form2.config.curaga3Amount) && (_ELITEAPIPL.Player.MP > 180))
                 {
-                    ESpell cureSpell = ESpell.Unknown;
-                    if (HasSpell(ESpell.Curaga_III))
+                    string curSpell = Spells.Unknown;
+                    if (SpellAvailable(Spells.Curaga_III))
                     {
-                        cureSpell = CureTiers(ESpell.Curaga_III, false);
+                        curSpell = CureTiers(Spells.Curaga_III, false);
                     }
                     else if (Form2.config.Accession && Form2.config.accessionCure && HasAbility("Accession") && currentSCHCharges >= 1 && (_ELITEAPIPL.Player.MainJob == 20 || _ELITEAPIPL.Player.SubJob == 20))
                     {
-                        cureSpell = CureTiers(ESpell.Cure_III, false);
+                        curSpell = CureTiers(Spells.Cure_III, false);
                     }
 
-                    if (cureSpell != ESpell.Unknown && cureSpell != ESpell.Unknown)
+                    if (curSpell != Spells.Unknown)
                     {
-                        if (IsCure(cureSpell) && (plStatusCheck(StatusEffect.Light_Arts) || plStatusCheck(StatusEffect.Addendum_White)))
+                        if (IsCure(curSpell) && (plStatusCheck(StatusEffect.Light_Arts) || plStatusCheck(StatusEffect.Addendum_White)))
                         {
                             if (!plStatusCheck(StatusEffect.Accession))
                             {
@@ -4785,28 +4786,28 @@
 
                         if (Form2.config.curagaTargetType == 0)
                         {
-                            CastSpell(lowestHP_Name, ESpell.Curaga_III);
+                            CastSpell(lowestHP_Name, Spells.Curaga_III);
                         }
                         else
                         {
-                            CastSpell(Form2.config.curagaTargetName, ESpell.Curaga_III);
+                            CastSpell(Form2.config.curagaTargetName, Spells.Curaga_III);
                         }
                     }
                 }
-                else if (((Form2.config.curaga2enabled && HasSpell(ESpell.Curaga_II)) || (Form2.config.Accession && Form2.config.accessionCure && HasSpell(ESpell.Cure_II))) && (((_ELITEAPIMonitored.Party.GetPartyMembers()[partyMemberId].CurrentHP * 100 / _ELITEAPIMonitored.Party.GetPartyMembers()[partyMemberId].CurrentHPP) - _ELITEAPIMonitored.Party.GetPartyMembers()[partyMemberId].CurrentHP) >= Form2.config.curaga2Amount) && (_ELITEAPIPL.Player.MP > 120))
+                else if (((Form2.config.curaga2enabled && SpellAvailable(Spells.Curaga_II)) || (Form2.config.Accession && Form2.config.accessionCure && SpellAvailable(Spells.Cure_II))) && (((_ELITEAPIMonitored.Party.GetPartyMembers()[partyMemberId].CurrentHP * 100 / _ELITEAPIMonitored.Party.GetPartyMembers()[partyMemberId].CurrentHPP) - _ELITEAPIMonitored.Party.GetPartyMembers()[partyMemberId].CurrentHP) >= Form2.config.curaga2Amount) && (_ELITEAPIPL.Player.MP > 120))
                 {
-                    ESpell cureSpell = ESpell.Unknown;
-                    if (HasSpell(ESpell.Curaga_II))
+                    string curSpell = Spells.Unknown;
+                    if (SpellAvailable(Spells.Curaga_II))
                     {
-                        cureSpell = CureTiers(ESpell.Curaga_II, false);
+                        curSpell = CureTiers(Spells.Curaga_II, false);
                     }
                     else if (Form2.config.Accession && Form2.config.accessionCure && HasAbility("Accession") && currentSCHCharges >= 1 && (_ELITEAPIPL.Player.MainJob == 20 || _ELITEAPIPL.Player.SubJob == 20))
                     {
-                        cureSpell = CureTiers(ESpell.Cure_II, false);
+                        curSpell = CureTiers(Spells.Cure_II, false);
                     }
-                    if (cureSpell != ESpell.Unknown && cureSpell != ESpell.Unknown)
+                    if (curSpell != Spells.Unknown)
                     {
-                        if (IsCure(cureSpell) && (plStatusCheck(StatusEffect.Light_Arts) || plStatusCheck(StatusEffect.Addendum_White)))
+                        if (IsCure(curSpell) && (plStatusCheck(StatusEffect.Light_Arts) || plStatusCheck(StatusEffect.Addendum_White)))
                         {
                             if (!plStatusCheck(StatusEffect.Accession))
                             {
@@ -4817,29 +4818,29 @@
 
                         if (Form2.config.curagaTargetType == 0)
                         {
-                            CastSpell(lowestHP_Name, cureSpell);
+                            CastSpell(lowestHP_Name, curSpell);
                         }
                         else
                         {
-                            CastSpell(Form2.config.curagaTargetName, cureSpell);
+                            CastSpell(Form2.config.curagaTargetName, curSpell);
                         }
                     }
                 }
-                else if (((Form2.config.curagaEnabled && HasSpell(ESpell.Curaga)) || (Form2.config.Accession && Form2.config.accessionCure && HasSpell(ESpell.Cure))) && (((_ELITEAPIMonitored.Party.GetPartyMembers()[partyMemberId].CurrentHP * 100 / _ELITEAPIMonitored.Party.GetPartyMembers()[partyMemberId].CurrentHPP) - _ELITEAPIMonitored.Party.GetPartyMembers()[partyMemberId].CurrentHP) >= Form2.config.curagaAmount) && (_ELITEAPIPL.Player.MP > 60))
+                else if (((Form2.config.curagaEnabled && SpellAvailable(Spells.Curaga)) || (Form2.config.Accession && Form2.config.accessionCure && SpellAvailable(Spells.Cure))) && (((_ELITEAPIMonitored.Party.GetPartyMembers()[partyMemberId].CurrentHP * 100 / _ELITEAPIMonitored.Party.GetPartyMembers()[partyMemberId].CurrentHPP) - _ELITEAPIMonitored.Party.GetPartyMembers()[partyMemberId].CurrentHP) >= Form2.config.curagaAmount) && (_ELITEAPIPL.Player.MP > 60))
                 {
-                    ESpell cureSpell = ESpell.Unknown;
-                    if (HasSpell(ESpell.Curaga))
+                    string curSpell = Spells.Unknown;
+                    if (SpellAvailable(Spells.Curaga))
                     {
-                        cureSpell = CureTiers(ESpell.Curaga, false);
+                        curSpell = CureTiers(Spells.Curaga, false);
                     }
                     else if (Form2.config.Accession && Form2.config.accessionCure && HasAbility("Accession") && currentSCHCharges >= 1 && (_ELITEAPIPL.Player.MainJob == 20 || _ELITEAPIPL.Player.SubJob == 20))
                     {
-                        cureSpell = CureTiers(ESpell.Cure, false);
+                        curSpell = CureTiers(Spells.Cure, false);
                     }
 
-                    if (cureSpell != ESpell.Unknown && cureSpell != ESpell.Unknown)
+                    if (curSpell != Spells.Unknown)
                     {
-                        if (IsCure(cureSpell) && (plStatusCheck(StatusEffect.Light_Arts) || plStatusCheck(StatusEffect.Addendum_White)))
+                        if (IsCure(curSpell) && (plStatusCheck(StatusEffect.Light_Arts) || plStatusCheck(StatusEffect.Addendum_White)))
                         {
                             if (!plStatusCheck(StatusEffect.Accession))
                             {
@@ -4850,24 +4851,25 @@
 
                         if (Form2.config.curagaTargetType == 0)
                         {
-                            CastSpell(lowestHP_Name, cureSpell);
+                            CastSpell(lowestHP_Name, curSpell);
                         }
                         else
                         {
-                            CastSpell(Form2.config.curagaTargetName, cureSpell);
+                            CastSpell(Form2.config.curagaTargetName, curSpell);
                         }
                     }
                 }
             }
         }
 
+        // If they're in range, and alive, should be able to cast.
+        // Since we include distance = 0, should work when target is the PL itself.
         private bool castingPossible(byte partyMemberId)
         {
-            if ((_ELITEAPIPL.Entity.GetEntity((int)_ELITEAPIMonitored.Party.GetPartyMembers()[partyMemberId].TargetIndex).Distance < 21) && (_ELITEAPIPL.Entity.GetEntity((int)_ELITEAPIMonitored.Party.GetPartyMembers()[partyMemberId].TargetIndex).Distance > 0) && (_ELITEAPIMonitored.Party.GetPartyMembers()[partyMemberId].CurrentHP > 0) || (_ELITEAPIPL.Party.GetPartyMember(0).ID == _ELITEAPIMonitored.Party.GetPartyMembers()[partyMemberId].ID) && (_ELITEAPIMonitored.Party.GetPartyMembers()[partyMemberId].CurrentHP > 0))
-            {
-                return true;
-            }
-            return false;
+            var partyMember = _ELITEAPIMonitored.Party.GetPartyMembers()[partyMemberId];
+            var entity = _ELITEAPIPL.Entity.GetEntity((int)partyMember.TargetIndex);
+
+            return (entity.Distance < 21 && entity.Distance >= 0 && partyMember.CurrentHP > 0);
         }
 
         private bool plStatusCheck(StatusEffect requestedStatus)
@@ -4916,18 +4918,6 @@
             }
         }
 
-        private void CastSpell(string partyMemberName, ESpell spell, [Optional] string OptionalExtras)
-        {
-            if (CastingBackground_Check)
-            {
-                return;
-            }
-
-            var apiSpell = _ELITEAPIPL.Resources.GetSpell((uint)spell);
-
-            CastSpell(partyMemberName, apiSpell, OptionalExtras);
-        }
-
         private void CastSpell(string partyMemberName, string spellName, [Optional] string OptionalExtras)
         {
             if(CastingBackground_Check)
@@ -4971,41 +4961,41 @@
 
         private void hastePlayer(byte partyMemberId)
         {
-            CastSpell(_ELITEAPIMonitored.Party.GetPartyMembers()[partyMemberId].Name, ESpell.Haste);
+            CastSpell(_ELITEAPIMonitored.Party.GetPartyMembers()[partyMemberId].Name, Spells.Haste);
             playerHaste[partyMemberId] = DateTime.Now;
         }
 
         private void haste_IIPlayer(byte partyMemberId)
         {
-            CastSpell(_ELITEAPIMonitored.Party.GetPartyMembers()[partyMemberId].Name, ESpell.Haste_II);
+            CastSpell(_ELITEAPIMonitored.Party.GetPartyMembers()[partyMemberId].Name, Spells.Haste_II);
             playerHaste_II[partyMemberId] = DateTime.Now;
         }
 
         private void AdloquiumPlayer(byte partyMemberId)
         {
-            CastSpell(_ELITEAPIMonitored.Party.GetPartyMembers()[partyMemberId].Name, ESpell.Adloquium);
+            CastSpell(_ELITEAPIMonitored.Party.GetPartyMembers()[partyMemberId].Name, Spells.Adloquium);
             playerAdloquium[partyMemberId] = DateTime.Now;
         }
 
         private void FlurryPlayer(byte partyMemberId)
         {
-            CastSpell(_ELITEAPIMonitored.Party.GetPartyMembers()[partyMemberId].Name, ESpell.Flurry);
+            CastSpell(_ELITEAPIMonitored.Party.GetPartyMembers()[partyMemberId].Name, Spells.Flurry);
             playerFlurry[partyMemberId] = DateTime.Now;
         }
 
         private void Flurry_IIPlayer(byte partyMemberId)
         {
-            CastSpell(_ELITEAPIMonitored.Party.GetPartyMembers()[partyMemberId].Name, ESpell.Flurry_II);
+            CastSpell(_ELITEAPIMonitored.Party.GetPartyMembers()[partyMemberId].Name, Spells.Flurry_II);
             playerFlurry_II[partyMemberId] = DateTime.Now;
         }
 
         private void Phalanx_IIPlayer(byte partyMemberId)
         {
-            CastSpell(_ELITEAPIMonitored.Party.GetPartyMembers()[partyMemberId].Name, ESpell.Phalanx_II);
+            CastSpell(_ELITEAPIMonitored.Party.GetPartyMembers()[partyMemberId].Name, Spells.Phalanx_II);
             playerPhalanx_II[partyMemberId] = DateTime.Now;
         }
 
-        private void StormSpellPlayer(byte partyMemberId, ESpell spell)
+        private void StormSpellPlayer(byte partyMemberId, string spell)
         {
             CastSpell(_ELITEAPIMonitored.Party.GetPartyMembers()[partyMemberId].Name, spell);
             playerStormspell[partyMemberId] = DateTime.Now;
@@ -5013,28 +5003,28 @@
 
         private void Regen_Player(byte partyMemberId)
         {
-            ESpell[] regen_spells = { ESpell.Regen, ESpell.Regen_II, ESpell.Regen_III, ESpell.Regen_IV, ESpell.Regen_V };
+            string[] regen_spells = { Spells.Regen, Spells.Regen_II, Spells.Regen_III, Spells.Regen_IV, Spells.Regen_V };
             CastSpell(_ELITEAPIMonitored.Party.GetPartyMembers()[partyMemberId].Name, regen_spells[Form2.config.autoRegen_Spell]);
             playerRegen[partyMemberId] = DateTime.Now;
         }
 
         private void Refresh_Player(byte partyMemberId)
         {
-            ESpell[] refresh_spells = { ESpell.Refresh, ESpell.Refresh_II, ESpell.Refresh_III };
+            string[] refresh_spells = { Spells.Refresh, Spells.Refresh_II, Spells.Refresh_III };
             CastSpell(_ELITEAPIMonitored.Party.GetPartyMembers()[partyMemberId].Name, refresh_spells[Form2.config.autoRefresh_Spell]);
             playerRefresh[partyMemberId] = DateTime.Now;
         }
 
         private void protectPlayer(byte partyMemberId)
         {
-            ESpell[] protect_spells = { ESpell.Protect, ESpell.Protect_II, ESpell.Protect_III, ESpell.Protect_IV, ESpell.Protect_V };
+            string[] protect_spells = { Spells.Protect, Spells.Protect_II, Spells.Protect_III, Spells.Protect_IV, Spells.Protect_V };
             CastSpell(_ELITEAPIMonitored.Party.GetPartyMembers()[partyMemberId].Name, protect_spells[Form2.config.autoProtect_Spell]);
             playerProtect[partyMemberId] = DateTime.Now;
         }
 
         private void shellPlayer(byte partyMemberId)
         {
-            ESpell[] shell_spells = { ESpell.Shell, ESpell.Shell_II, ESpell.Shell_III, ESpell.Shell_IV, ESpell.Shell_V };
+            string[] shell_spells = { Spells.Shell, Spells.Shell_II, Spells.Shell_III, Spells.Shell_IV, Spells.Shell_V };
 
             CastSpell(_ELITEAPIMonitored.Party.GetPartyMembers()[partyMemberId].Name, shell_spells[Form2.config.autoShell_Spell]);
             playerShell[partyMemberId] = DateTime.Now;
@@ -5783,19 +5773,19 @@
                             }
 
 
-                            if ((Form2.config.plReraise_Level == 1) && _ELITEAPIPL.Player.HasSpell(_ELITEAPIPL.Resources.GetSpell("Reraise", 0).Index) && _ELITEAPIPL.Player.MP > 150)
+                            if ((Form2.config.plReraise_Level == 1) && SpellAvailable(Spells.Reraise) && _ELITEAPIPL.Player.MP > 150)
                             {
                                 CastSpell("<me>", "Reraise");
                             }
-                            else if ((Form2.config.plReraise_Level == 2) && _ELITEAPIPL.Player.HasSpell(_ELITEAPIPL.Resources.GetSpell("Reraise II", 0).Index) && _ELITEAPIPL.Player.MP > 150)
+                            else if ((Form2.config.plReraise_Level == 2) && SpellAvailable(Spells.Reraise_II) && _ELITEAPIPL.Player.MP > 150)
                             {
                                 CastSpell("<me>", "Reraise II");
                             }
-                            else if ((Form2.config.plReraise_Level == 3) && _ELITEAPIPL.Player.HasSpell(_ELITEAPIPL.Resources.GetSpell("Reraise III", 0).Index) && _ELITEAPIPL.Player.MP > 150)
+                            else if ((Form2.config.plReraise_Level == 3) && SpellAvailable(Spells.Reraise_III) && _ELITEAPIPL.Player.MP > 150)
                             {
                                 CastSpell("<me>", "Reraise III");
                             }
-                            else if ((Form2.config.plReraise_Level == 4) && _ELITEAPIPL.Player.HasSpell(_ELITEAPIPL.Resources.GetSpell("Reraise III", 0).Index) && _ELITEAPIPL.Player.MP > 150)
+                            else if ((Form2.config.plReraise_Level == 4) && SpellAvailable(Spells.Reraise_IV) && _ELITEAPIPL.Player.MP > 150)
                             {
                                 CastSpell("<me>", "Reraise III");
                             }
@@ -5822,40 +5812,40 @@
                         }
                         else if (Form2.config.plUtsusemi && BuffChecker(444, 0) != true && BuffChecker(445, 0) != true && BuffChecker(446, 0) != true)
                         {
-                            if (SpellAvailable(ESpell.Utsusemi_Ni) && GetInventoryItemCount(_ELITEAPIPL, GetItemId("Shihei")) > 0)
+                            if (SpellAvailable(Spells.Utsusemi_Ni) && GetInventoryItemCount(_ELITEAPIPL, GetItemId("Shihei")) > 0)
                             {
                                 CastSpell("<me>", "Utsusemi: Ni");
                             }
-                            else if (SpellAvailable(ESpell.Utsusemi_Ni) && BuffChecker(62, 0) != true && BuffChecker(444, 0) != true && BuffChecker(445, 0) != true && BuffChecker(446, 0) != true && GetInventoryItemCount(_ELITEAPIPL, GetItemId("Shihei")) > 0)
+                            else if (SpellAvailable(Spells.Utsusemi_Ni) && BuffChecker(62, 0) != true && BuffChecker(444, 0) != true && BuffChecker(445, 0) != true && BuffChecker(446, 0) != true && GetInventoryItemCount(_ELITEAPIPL, GetItemId("Shihei")) > 0)
                             {
                                 CastSpell("<me>", "Utsusemi: Ichi");
                             }
                         }
                         else if (Form2.config.plProtect && (!plStatusCheck(StatusEffect.Protect)))
                         {
-                            ESpell protectSpell = ESpell.Unknown;
+                            string protectSpell = Spells.Unknown;
                             if (Form2.config.autoProtect_Spell == 0)
                             {
-                                protectSpell = ESpell.Protect;
+                                protectSpell = Spells.Protect;
                             }
                             else if (Form2.config.autoProtect_Spell == 1)
                             {
-                                protectSpell = ESpell.Protect_II;
+                                protectSpell = Spells.Protect_II;
                             }
                             else if (Form2.config.autoProtect_Spell == 2)
                             {
-                                protectSpell = ESpell.Protect_III;
+                                protectSpell = Spells.Protect_III;
                             }
                             else if (Form2.config.autoProtect_Spell == 3)
                             {
-                                protectSpell = ESpell.Protect_IV;
+                                protectSpell = Spells.Protect_IV;
                             }
                             else if (Form2.config.autoProtect_Spell == 4)
                             {
-                                protectSpell = ESpell.Protect_V;
+                                protectSpell = Spells.Protect_V;
                             }
 
-                            if (protectSpell != ESpell.Unknown && SpellAvailable(protectSpell) && HasSpell(protectSpell))
+                            if (protectSpell != Spells.Unknown && SpellAvailable(protectSpell) && SpellAvailable(protectSpell))
                             {
                                 if (Form2.config.Accession && Form2.config.accessionProShell && _ELITEAPIPL.Party.GetPartyMembers().Count() > 2 && ((_ELITEAPIPL.Player.MainJob == 5 && _ELITEAPIPL.Player.SubJob == 20) || _ELITEAPIPL.Player.MainJob == 20) && currentSCHCharges >= 1 && HasAbility("Accession"))
                                 {
@@ -5871,29 +5861,29 @@
                         }
                         else if (Form2.config.plShell && (!plStatusCheck(StatusEffect.Shell)))
                         {
-                            ESpell shellSpell = ESpell.Unknown;
+                            string shellSpell = Spells.Unknown;
                             if (Form2.config.autoShell_Spell == 0)
                             {
-                                shellSpell = ESpell.Shell;
+                                shellSpell = Spells.Shell;
                             }
                             else if (Form2.config.autoShell_Spell == 1)
                             {
-                                shellSpell = ESpell.Shell_II;
+                                shellSpell = Spells.Shell_II;
                             }
                             else if (Form2.config.autoShell_Spell == 2)
                             {
-                                shellSpell = ESpell.Shell_III;
+                                shellSpell = Spells.Shell_III;
                             }
                             else if (Form2.config.autoShell_Spell == 3)
                             {
-                                shellSpell = ESpell.Shell_IV;
+                                shellSpell = Spells.Shell_IV;
                             }
                             else if (Form2.config.autoShell_Spell == 4)
                             {
-                                shellSpell = ESpell.Shell_V;
+                                shellSpell = Spells.Shell_V;
                             }
 
-                            if (shellSpell != ESpell.Unknown && SpellAvailable(shellSpell))
+                            if (shellSpell != Spells.Unknown && SpellAvailable(shellSpell))
                             {
                                 if (Form2.config.Accession && Form2.config.accessionProShell && _ELITEAPIPL.Party.GetPartyMembers().Count() > 2 && ((_ELITEAPIPL.Player.MainJob == 5 && _ELITEAPIPL.Player.SubJob == 20) || _ELITEAPIPL.Player.MainJob == 20) && currentSCHCharges >= 1 && HasAbility("Accession"))
                                 {
@@ -5907,7 +5897,7 @@
                                 CastSpell("<me>", shellSpell);
                             }
                         }
-                        else if (Form2.config.plBlink && (!plStatusCheck(StatusEffect.Blink)) && SpellAvailable(ESpell.Blink))
+                        else if (Form2.config.plBlink && (!plStatusCheck(StatusEffect.Blink)) && SpellAvailable(Spells.Blink))
                         {
 
                             if (Form2.config.Accession && Form2.config.blinkAccession && currentSCHCharges > 0 && HasAbility("Accession") && !plStatusCheck(StatusEffect.Accession))
@@ -5924,7 +5914,7 @@
 
                             CastSpell("<me>", "Blink");
                         }
-                        else if (Form2.config.plPhalanx && (!plStatusCheck(StatusEffect.Phalanx)) && SpellAvailable(ESpell.Phalanx)
+                        else if (Form2.config.plPhalanx && (!plStatusCheck(StatusEffect.Phalanx)) && SpellAvailable(Spells.Phalanx))
                         {
                             if (Form2.config.Accession && Form2.config.phalanxAccession && currentSCHCharges > 0 && HasAbility("Accession") && !plStatusCheck(StatusEffect.Accession))
                             {
@@ -5942,7 +5932,7 @@
                         }
                         else if (Form2.config.plRefresh && (!plStatusCheck(StatusEffect.Refresh)) && CheckRefreshLevelPossession())
                         {
-                            if ((Form2.config.plRefresh_Level == 1) && SpellAvailable(ESpell.Refresh))
+                            if ((Form2.config.plRefresh_Level == 1) && SpellAvailable(Spells.Refresh))
                             {
                                 if (Form2.config.Accession && Form2.config.refreshAccession && currentSCHCharges > 0 && HasAbility("Accession") && !plStatusCheck(StatusEffect.Accession))
                                 {
@@ -5958,11 +5948,11 @@
 
                                 CastSpell("<me>", "Refresh");
                             }
-                            else if ((Form2.config.plRefresh_Level == 2) && (SpellAvailable("Refresh II") == 0) && HasSpell("Refresh II") && JobChecker("Refresh II") == true)
+                            else if ((Form2.config.plRefresh_Level == 2) && SpellAvailable(Spells.Refresh_II))
                             {
                                 CastSpell("<me>", "Refresh II");
                             }
-                            else if ((Form2.config.plRefresh_Level == 3) && (SpellAvailable("Refresh III") == 0) && HasSpell("Refresh III") && JobChecker("Refresh III") == true)
+                            else if ((Form2.config.plRefresh_Level == 3) && SpellAvailable("Refresh III"))
                             {
                                 CastSpell("<me>", "Refresh III");
                             }
@@ -6002,7 +5992,7 @@
                                 CastSpell("<me>", "Regen V");
                             }
                         }
-                        else if (Form2.config.plAdloquium && (!plStatusCheck(StatusEffect.Regain)) && (SpellAvailable("Adloquium") == 0) && HasSpell("Adloquium") && JobChecker("Adloquium") == true)
+                        else if (Form2.config.plAdloquium && (!plStatusCheck(StatusEffect.Regain)) && SpellAvailable(Spells.Adloquium))
                         {
                             if (Form2.config.Accession && Form2.config.adloquiumAccession && currentSCHCharges > 0 && HasAbility("Accession") && !plStatusCheck(StatusEffect.Accession))
                             {
@@ -6018,7 +6008,7 @@
 
                             CastSpell("<me>", "Adloquium");
                         }
-                        else if (Form2.config.plStoneskin && (!plStatusCheck(StatusEffect.Stoneskin)) && (SpellAvailable("Stoneskin") == 0) && HasSpell("Stoneskin"))
+                        else if (Form2.config.plStoneskin && (!plStatusCheck(StatusEffect.Stoneskin)) && SpellAvailable(Spells.Stoneskin))
                         {
                             if (Form2.config.Accession && Form2.config.stoneskinAccession && currentSCHCharges > 0 && HasAbility("Accession") && !plStatusCheck(StatusEffect.Accession))
                             {
@@ -6034,7 +6024,7 @@
 
                             CastSpell("<me>", "Stoneskin");
                         }
-                        else if (Form2.config.plAquaveil && (!plStatusCheck(StatusEffect.Aquaveil)) && (SpellAvailable("Aquaveil") == 0) && HasSpell("Aquaveil"))
+                        else if (Form2.config.plAquaveil && (!plStatusCheck(StatusEffect.Aquaveil)) && SpellAvailable(Spells.Aquaveil))
                         {
                             if (Form2.config.Accession && Form2.config.aquaveilAccession && currentSCHCharges > 0 && HasAbility("Accession") && !plStatusCheck(StatusEffect.Accession))
                             {
@@ -6058,7 +6048,7 @@
                         {
                             CastSpell("<me>", GetProtectraLevel(Form2.config.plProtectra_Level));
                         }
-                        else if (Form2.config.plBarElement && !BuffChecker(BarspellBuffID, 0) && (SpellAvailable(BarspellName) == 0) && HasSpell(BarspellName))
+                        else if (Form2.config.plBarElement && !BuffChecker(BarspellBuffID, 0) && SpellAvailable(BarspellName))
                         {
                             if (Form2.config.Accession && Form2.config.barspellAccession && currentSCHCharges > 0 && HasAbility("Accession") && BarSpell_AOE == false && !plStatusCheck(StatusEffect.Accession))
                             {
@@ -6074,7 +6064,7 @@
 
                             CastSpell("<me>", BarspellName);
                         }
-                        else if (Form2.config.plBarStatus && !BuffChecker(BarstatusBuffID, 0) && (SpellAvailable(BarstatusName) == 0) && HasSpell(BarstatusName) && JobChecker(BarstatusName) == true)
+                        else if (Form2.config.plBarStatus && !BuffChecker(BarstatusBuffID, 0) && SpellAvailable(BarstatusName))
                         {
                             if (Form2.config.Accession && Form2.config.barstatusAccession && currentSCHCharges > 0 && HasAbility("Accession") && BarStatus_AOE == false && !plStatusCheck(StatusEffect.Accession))
                             {
@@ -6090,63 +6080,63 @@
 
                             CastSpell("<me>", BarstatusName);
                         }
-                        else if (Form2.config.plGainBoost && (Form2.config.plGainBoost_Spell == 0) && !plStatusCheck(StatusEffect.STR_Boost2) && (SpellAvailable("Gain-STR") == 0) && HasSpell("Gain-STR"))
+                        else if (Form2.config.plGainBoost && (Form2.config.plGainBoost_Spell == 0) && !plStatusCheck(StatusEffect.STR_Boost2) && SpellAvailable(Spells.Gain_STR))
                         {
                             CastSpell("<me>", "Gain-STR");
                         }
-                        else if (Form2.config.plGainBoost && (Form2.config.plGainBoost_Spell == 1) && !plStatusCheck(StatusEffect.DEX_Boost2) && (SpellAvailable("Gain-DEX") == 0) && HasSpell("Gain-DEX"))
+                        else if (Form2.config.plGainBoost && (Form2.config.plGainBoost_Spell == 1) && !plStatusCheck(StatusEffect.DEX_Boost2) && SpellAvailable(Spells.Gain_DEX))
                         {
                             CastSpell("<me>", "Gain-DEX");
                         }
-                        else if (Form2.config.plGainBoost && (Form2.config.plGainBoost_Spell == 2) && !plStatusCheck(StatusEffect.VIT_Boost2) && (SpellAvailable("Gain-VIT") == 0) && HasSpell("Gain-VIT"))
+                        else if (Form2.config.plGainBoost && (Form2.config.plGainBoost_Spell == 2) && !plStatusCheck(StatusEffect.VIT_Boost2) && SpellAvailable(Spells.Gain_VIT))
                         {
                             CastSpell("<me>", "Gain-VIT");
                         }
-                        else if (Form2.config.plGainBoost && (Form2.config.plGainBoost_Spell == 3) && !plStatusCheck(StatusEffect.AGI_Boost2) && (SpellAvailable("Gain-AGI") == 0) && HasSpell("Gain-AGI"))
+                        else if (Form2.config.plGainBoost && (Form2.config.plGainBoost_Spell == 3) && !plStatusCheck(StatusEffect.AGI_Boost2) && SpellAvailable(Spells.Gain_AGI))
                         {
                             CastSpell("<me>", "Gain-AGI");
                         }
-                        else if (Form2.config.plGainBoost && (Form2.config.plGainBoost_Spell == 4) && !plStatusCheck(StatusEffect.INT_Boost2) && (SpellAvailable("Gain-INT") == 0) && HasSpell("Gain-INT"))
+                        else if (Form2.config.plGainBoost && (Form2.config.plGainBoost_Spell == 4) && !plStatusCheck(StatusEffect.INT_Boost2) && SpellAvailable(Spells.Gain_INT))
                         {
                             CastSpell("<me>", "Gain-INT");
                         }
-                        else if (Form2.config.plGainBoost && (Form2.config.plGainBoost_Spell == 5) && !plStatusCheck(StatusEffect.MND_Boost2) && (SpellAvailable("Gain-MND") == 0) && HasSpell("Gain-MND"))
+                        else if (Form2.config.plGainBoost && (Form2.config.plGainBoost_Spell == 5) && !plStatusCheck(StatusEffect.MND_Boost2) && SpellAvailable(Spells.Gain_MND))
                         {
                             CastSpell("<me>", "Gain-MND");
                         }
-                        else if (Form2.config.plGainBoost && (Form2.config.plGainBoost_Spell == 6) && !plStatusCheck(StatusEffect.CHR_Boost2) && (SpellAvailable("Gain-CHR") == 0) && HasSpell("Gain-CHR"))
+                        else if (Form2.config.plGainBoost && (Form2.config.plGainBoost_Spell == 6) && !plStatusCheck(StatusEffect.CHR_Boost2) && SpellAvailable(Spells.Gain_CHR))
                         {
                             CastSpell("<me>", "Gain-CHR");
                         }
-                        else if (Form2.config.plGainBoost && (Form2.config.plGainBoost_Spell == 7) && !plStatusCheck(StatusEffect.STR_Boost2) && (SpellAvailable("Boost-STR") == 0) && HasSpell("Boost-STR"))
+                        else if (Form2.config.plGainBoost && (Form2.config.plGainBoost_Spell == 7) && !plStatusCheck(StatusEffect.STR_Boost2) && SpellAvailable(Spells.Boost_STR))
                         {
                             CastSpell("<me>", "Boost-STR");
                         }
-                        else if (Form2.config.plGainBoost && (Form2.config.plGainBoost_Spell == 8) && !plStatusCheck(StatusEffect.DEX_Boost2) && (SpellAvailable("Boost-DEX") == 0) && HasSpell("Boost-DEX"))
+                        else if (Form2.config.plGainBoost && (Form2.config.plGainBoost_Spell == 8) && !plStatusCheck(StatusEffect.DEX_Boost2) && SpellAvailable(Spells.Boost_DEX))
                         {
                             CastSpell("<me>", "Boost-DEX");
                         }
-                        else if (Form2.config.plGainBoost && (Form2.config.plGainBoost_Spell == 9) && !plStatusCheck(StatusEffect.VIT_Boost2) && (SpellAvailable("Boost-VIT") == 0) && HasSpell("Boost-VIT"))
+                        else if (Form2.config.plGainBoost && (Form2.config.plGainBoost_Spell == 9) && !plStatusCheck(StatusEffect.VIT_Boost2) && SpellAvailable(Spells.Boost_VIT))
                         {
                             CastSpell("<me>", "Boost-VIT");
                         }
-                        else if (Form2.config.plGainBoost && (Form2.config.plGainBoost_Spell == 10) && !plStatusCheck(StatusEffect.AGI_Boost2) && (SpellAvailable("Boost-AGI") == 0) && HasSpell("Boost-AGI"))
+                        else if (Form2.config.plGainBoost && (Form2.config.plGainBoost_Spell == 10) && !plStatusCheck(StatusEffect.AGI_Boost2) && SpellAvailable(Spells.Boost_AGI))
                         {
                             CastSpell("<me>", "Boost-AGI");
                         }
-                        else if (Form2.config.plGainBoost && (Form2.config.plGainBoost_Spell == 11) && !plStatusCheck(StatusEffect.INT_Boost2) && (SpellAvailable("Boost-INT") == 0) && HasSpell("Boost-INT"))
+                        else if (Form2.config.plGainBoost && (Form2.config.plGainBoost_Spell == 11) && !plStatusCheck(StatusEffect.INT_Boost2) && SpellAvailable(Spells.Boost_INT))
                         {
                             CastSpell("<me>", "Boost-INT");
                         }
-                        else if (Form2.config.plGainBoost && (Form2.config.plGainBoost_Spell == 12) && !plStatusCheck(StatusEffect.MND_Boost2) && (SpellAvailable("Boost-MND") == 0) && HasSpell("Boost-MND"))
+                        else if (Form2.config.plGainBoost && (Form2.config.plGainBoost_Spell == 12) && !plStatusCheck(StatusEffect.MND_Boost2) && SpellAvailable(Spells.Boost_MND))
                         {
                             CastSpell("<me>", "Boost-MND");
                         }
-                        else if (Form2.config.plGainBoost && (Form2.config.plGainBoost_Spell == 13) && !plStatusCheck(StatusEffect.CHR_Boost2) && (SpellAvailable("Boost-CHR") == 0) && HasSpell("Boost-CHR"))
+                        else if (Form2.config.plGainBoost && (Form2.config.plGainBoost_Spell == 13) && !plStatusCheck(StatusEffect.CHR_Boost2) && SpellAvailable(Spells.Boost_CHR))
                         {
                             CastSpell("<me>", "Boost-CHR");
                         }
-                        else if (Form2.config.plStormSpell && !BuffChecker(stormspell.buffID, 0) && (SpellAvailable(stormspell.Spell_Name) == 0) && HasSpell(stormspell.Spell_Name) && JobChecker(stormspell.Spell_Name) == true)
+                        else if (Form2.config.plStormSpell && !BuffChecker(stormspell.buffID, 0) && SpellAvailable(stormspell.Spell_Name))
                         {
                             if (Form2.config.Accession && Form2.config.stormspellAccession && currentSCHCharges > 0 && HasAbility("Accession") && !plStatusCheck(StatusEffect.Accession))
                             {
@@ -6164,49 +6154,49 @@
                         }
                         else if (Form2.config.plKlimaform && !plStatusCheck(StatusEffect.Klimaform))
                         {
-                            if ((SpellAvailable("Klimaform") == 0) && HasSpell("Klimaform"))
+                            if (SpellAvailable(Spells.Klimaform))
                             {
                                 CastSpell("<me>", "Klimaform");
                             }
                         }
                         else if (Form2.config.plTemper && (!plStatusCheck(StatusEffect.Multi_Strikes)))
                         {
-                            if ((Form2.config.plTemper_Level == 1) && (SpellAvailable("Temper") == 0) && HasSpell("Temper"))
+                            if ((Form2.config.plTemper_Level == 1) && SpellAvailable(Spells.Temper))
                             {
                                 CastSpell("<me>", "Temper");
                             }
-                            else if ((Form2.config.plTemper_Level == 2) && (SpellAvailable("Temper II") == 0) && HasSpell("Temper II"))
+                            else if ((Form2.config.plTemper_Level == 2) && SpellAvailable("Temper II"))
                             {
                                 CastSpell("<me>", "Temper II");
                             }
                         }
                         else if (Form2.config.plHaste && (!plStatusCheck(StatusEffect.Haste)))
                         {
-                            if ((Form2.config.plHaste_Level == 1) && (SpellAvailable("Haste") == 0) && HasSpell("Haste"))
+                            if ((Form2.config.plHaste_Level == 1) && SpellAvailable(Spells.Haste))
                             {
                                 CastSpell("<me>", "Haste");
                             }
-                            else if ((Form2.config.plHaste_Level == 2) && (SpellAvailable("Haste II") == 0) && HasSpell("Haste II"))
+                            else if ((Form2.config.plHaste_Level == 2) && SpellAvailable(Spells.Haste_II))
                             {
                                 CastSpell("<me>", "Haste II");
                             }
                         }
                         else if (Form2.config.plSpikes && ActiveSpikes() == false)
                         {
-                            if ((Form2.config.plSpikes_Spell == 0) && (SpellAvailable("Blaze Spikes") == 0) && HasSpell("Blaze Spikes"))
+                            if ((Form2.config.plSpikes_Spell == 0) && SpellAvailable(Spells.Blaze_Spikes))
                             {
                                 CastSpell("<me>", "Blaze Spikes");
                             }
-                            else if ((Form2.config.plSpikes_Spell == 1) && (SpellAvailable("Ice Spikes") == 0) && HasSpell("Ice Spikes"))
+                            else if ((Form2.config.plSpikes_Spell == 1) && SpellAvailable(Spells.Ice_Spikes))
                             {
                                 CastSpell("<me>", "Ice Spikes");
                             }
-                            else if ((Form2.config.plSpikes_Spell == 2) && (SpellAvailable("Shock Spikes") == 0) && HasSpell("Shock Spikes"))
+                            else if ((Form2.config.plSpikes_Spell == 2) && SpellAvailable(Spells.Shock_Spikes))
                             {
                                 CastSpell("<me>", "Shock Spikes");
                             }
                         }
-                        else if (Form2.config.plEnspell && !BuffChecker(enspell.buffID, 0) && (SpellAvailable(enspell.Spell_Name) == 0) && HasSpell(enspell.Spell_Name) && JobChecker(enspell.Spell_Name) == true)
+                        else if (Form2.config.plEnspell && !BuffChecker(enspell.buffID, 0) && SpellAvailable(enspell.Spell_Name))
                         {
                             if (Form2.config.Accession && Form2.config.enspellAccession && currentSCHCharges > 0 && HasAbility("Accession") && enspell.spell_position < 6 && !plStatusCheck(StatusEffect.Accession))
                             {
@@ -6222,7 +6212,7 @@
 
                             CastSpell("<me>", enspell.Spell_Name);
                         }
-                        else if (Form2.config.plAuspice && (!plStatusCheck(StatusEffect.Auspice)) && (SpellAvailable("Auspice") == 0) && HasSpell("Auspice"))
+                        else if (Form2.config.plAuspice && (!plStatusCheck(StatusEffect.Auspice)) && SpellAvailable(Spells.Auspice))
                         {
                             CastSpell("<me>", "Auspice");
                         }
@@ -6241,7 +6231,7 @@
                             }
                             else
                             {
-                                if (Form2.config.EntrustedSpell_Target == ESpell.Unknown)
+                                if (string.IsNullOrEmpty(Form2.config.EntrustedSpell_Target))
                                 {
                                     CastSpell(_ELITEAPIMonitored.Player.Name, SpellCheckedResult);
                                 }
@@ -6297,7 +6287,7 @@
                             {
                                 if (_ELITEAPIPL.Resources.GetSpell(SpellCheckedResult, 0).ValidTargets == 5)
                                 { // PLAYER CHARACTER TARGET
-                                    if (Form2.config.LuopanSpell_Target == ESpell.Unknown)
+                                    if (string.IsNullOrEmpty(Form2.config.LuopanSpell_Target))
                                     {
 
                                         if (BuffChecker(516, 0)) // IF ECLIPTIC IS UP THEN ACTIVATE THE BOOL
@@ -6348,7 +6338,7 @@
                             }
                         }
 
-                        else if ((Form2.config.autoTarget == true) && (SpellAvailable(Form2.config.autoTargetSpell) == 0) && HasSpell(Form2.config.autoTargetSpell))
+                        else if (Form2.config.autoTarget && SpellAvailable(Form2.config.autoTargetSpell))
                         {
                             if (Form2.config.Hate_SpellType == 1) // PARTY BASED HATE SPELL
                             {
@@ -6563,7 +6553,7 @@
                         // Auto Casting
                         foreach (var charDATA in playerBuffOrder)
                         {
-                            // Grab the Storm Spells name to perform checks.
+                            // Grab the Storm string name to perform checks.
                             string StormSpell_Enabled = CheckStormspell(charDATA.MemberNumber);
 
                             // Grab storm spell Data for Buff ID etc...
@@ -6573,47 +6563,47 @@
                             if (_ELITEAPIPL.Player.Name == charDATA.Name)
                             {
 
-                                if (autoHasteEnabled[charDATA.MemberNumber] && SpellAvailable("Haste") == 0 && HasSpell("Haste") && JobChecker("Haste") == true && _ELITEAPIPL.Player.MP > Form2.config.mpMinCastValue && castingPossible(charDATA.MemberNumber) && !plStatusCheck(StatusEffect.Haste) && !plStatusCheck(StatusEffect.Slow))
+                                if (autoHasteEnabled[charDATA.MemberNumber] && SpellAvailable(Spells.Haste) && _ELITEAPIPL.Player.MP > Form2.config.mpMinCastValue && castingPossible(charDATA.MemberNumber) && !plStatusCheck(StatusEffect.Haste) && !plStatusCheck(StatusEffect.Slow))
                                 {
                                     hastePlayer(charDATA.MemberNumber);
                                 }
-                                if (autoHaste_IIEnabled[charDATA.MemberNumber] && SpellAvailable("Haste II") == 0 && HasSpell("Haste II") && JobChecker("Haste II") == true && _ELITEAPIPL.Player.MP > Form2.config.mpMinCastValue && castingPossible(charDATA.MemberNumber) && !plStatusCheck(StatusEffect.Haste) && !plStatusCheck(StatusEffect.Slow))
+                                if (autoHaste_IIEnabled[charDATA.MemberNumber] && SpellAvailable(Spells.Haste_II) && _ELITEAPIPL.Player.MP > Form2.config.mpMinCastValue && castingPossible(charDATA.MemberNumber) && !plStatusCheck(StatusEffect.Haste) && !plStatusCheck(StatusEffect.Slow))
                                 {
                                     haste_IIPlayer(charDATA.MemberNumber);
                                 }
-                                if (autoAdloquium_Enabled[charDATA.MemberNumber] && SpellAvailable("Adloquium") == 0 && HasSpell("Adloquium") && JobChecker("Adloquium") == true && _ELITEAPIPL.Player.MP > Form2.config.mpMinCastValue && castingPossible(charDATA.MemberNumber) && !BuffChecker(170, 0))
+                                if (autoAdloquium_Enabled[charDATA.MemberNumber] && SpellAvailable(Spells.Adloquium) && _ELITEAPIPL.Player.MP > Form2.config.mpMinCastValue && castingPossible(charDATA.MemberNumber) && !BuffChecker(170, 0))
                                 {
                                     AdloquiumPlayer(charDATA.MemberNumber);
                                 }
-                                if (autoFlurryEnabled[charDATA.MemberNumber] && SpellAvailable("Flurry") == 0 && HasSpell("Flurry") && JobChecker("Flurry") == true && _ELITEAPIPL.Player.MP > Form2.config.mpMinCastValue && castingPossible(charDATA.MemberNumber) && !BuffChecker(581, 0) && !plStatusCheck(StatusEffect.Slow))
+                                if (autoFlurryEnabled[charDATA.MemberNumber] && SpellAvailable(Spells.Flurry) && _ELITEAPIPL.Player.MP > Form2.config.mpMinCastValue && castingPossible(charDATA.MemberNumber) && !BuffChecker(581, 0) && !plStatusCheck(StatusEffect.Slow))
                                 {
                                     FlurryPlayer(charDATA.MemberNumber);
                                 }
-                                if (autoFlurry_IIEnabled[charDATA.MemberNumber] && SpellAvailable("Flurry II") == 0 && HasSpell("Flurry II") && JobChecker("Flurry II") == true && _ELITEAPIPL.Player.MP > Form2.config.mpMinCastValue && castingPossible(charDATA.MemberNumber) && !BuffChecker(581, 0) && !plStatusCheck(StatusEffect.Slow))
+                                if (autoFlurry_IIEnabled[charDATA.MemberNumber] && SpellAvailable(Spells.Flurry_II) && _ELITEAPIPL.Player.MP > Form2.config.mpMinCastValue && castingPossible(charDATA.MemberNumber) && !BuffChecker(581, 0) && !plStatusCheck(StatusEffect.Slow))
                                 {
                                     Flurry_IIPlayer(charDATA.MemberNumber);
                                 }
-                                if (autoShell_Enabled[charDATA.MemberNumber] && SpellAvailable(shell_spells[Form2.config.autoShell_Spell]) == 0 && HasSpell(shell_spells[Form2.config.autoShell_Spell]) && _ELITEAPIPL.Player.MP > Form2.config.mpMinCastValue && castingPossible(charDATA.MemberNumber) && _ELITEAPIPL.Player.Status != 33 && !plStatusCheck(StatusEffect.Shell))
+                                if (autoShell_Enabled[charDATA.MemberNumber] && SpellAvailable(shell_spells[Form2.config.autoShell_Spell]) && _ELITEAPIPL.Player.MP > Form2.config.mpMinCastValue && castingPossible(charDATA.MemberNumber) && _ELITEAPIPL.Player.Status != 33 && !plStatusCheck(StatusEffect.Shell))
                                 {
                                     shellPlayer(charDATA.MemberNumber);
                                 }
-                                if (autoProtect_Enabled[charDATA.MemberNumber] && SpellAvailable(protect_spells[Form2.config.autoProtect_Spell]) == 0 && HasSpell(protect_spells[Form2.config.autoProtect_Spell]) && _ELITEAPIPL.Player.MP > Form2.config.mpMinCastValue && castingPossible(charDATA.MemberNumber) && _ELITEAPIPL.Player.Status != 33 && !plStatusCheck(StatusEffect.Protect))
+                                if (autoProtect_Enabled[charDATA.MemberNumber] && SpellAvailable(protect_spells[Form2.config.autoProtect_Spell]) && _ELITEAPIPL.Player.MP > Form2.config.mpMinCastValue && castingPossible(charDATA.MemberNumber) && _ELITEAPIPL.Player.Status != 33 && !plStatusCheck(StatusEffect.Protect))
                                 {
                                     protectPlayer(charDATA.MemberNumber);
                                 }
-                                if (autoPhalanx_IIEnabled[charDATA.MemberNumber] && (SpellAvailable("Phalanx II") == 0) && HasSpell("Phalanx II") && (_ELITEAPIPL.Player.MP > Form2.config.mpMinCastValue) && castingPossible(charDATA.MemberNumber) && _ELITEAPIPL.Player.Status != 33 && !plStatusCheck(StatusEffect.Phalanx))
+                                if (autoPhalanx_IIEnabled[charDATA.MemberNumber] && SpellAvailable(Spells.Phalanx_II) && (_ELITEAPIPL.Player.MP > Form2.config.mpMinCastValue) && castingPossible(charDATA.MemberNumber) && _ELITEAPIPL.Player.Status != 33 && !plStatusCheck(StatusEffect.Phalanx))
                                 {
                                     Phalanx_IIPlayer(charDATA.MemberNumber);
                                 }
-                                if (autoRegen_Enabled[charDATA.MemberNumber] && (SpellAvailable(regen_spells[Form2.config.autoRegen_Spell]) == 0) && HasSpell(regen_spells[Form2.config.autoRegen_Spell]) && JobChecker(regen_spells[Form2.config.autoRegen_Spell]) == true && (_ELITEAPIPL.Player.MP > Form2.config.mpMinCastValue) && castingPossible(charDATA.MemberNumber) && _ELITEAPIPL.Player.Status != 33 && !plStatusCheck(StatusEffect.Regen))
+                                if (autoRegen_Enabled[charDATA.MemberNumber] && SpellAvailable(regen_spells[Form2.config.autoRegen_Spell]) && (_ELITEAPIPL.Player.MP > Form2.config.mpMinCastValue) && castingPossible(charDATA.MemberNumber) && _ELITEAPIPL.Player.Status != 33 && !plStatusCheck(StatusEffect.Regen))
                                 {
                                     Regen_Player(charDATA.MemberNumber);
                                 }
-                                if (autoRefreshEnabled[charDATA.MemberNumber] && (SpellAvailable(refresh_spells[Form2.config.autoRefresh_Spell]) == 0) && HasSpell(refresh_spells[Form2.config.autoRefresh_Spell]) && JobChecker(refresh_spells[Form2.config.autoRefresh_Spell]) == true && (_ELITEAPIPL.Player.MP > Form2.config.mpMinCastValue) && castingPossible(charDATA.MemberNumber) && _ELITEAPIPL.Player.Status != 33 && !plStatusCheck(StatusEffect.Refresh))
+                                if (autoRefreshEnabled[charDATA.MemberNumber] && SpellAvailable(refresh_spells[Form2.config.autoRefresh_Spell]) && (_ELITEAPIPL.Player.MP > Form2.config.mpMinCastValue) && castingPossible(charDATA.MemberNumber) && _ELITEAPIPL.Player.Status != 33 && !plStatusCheck(StatusEffect.Refresh))
                                 {
                                     Refresh_Player(charDATA.MemberNumber);
                                 }
-                                if (CheckIfAutoStormspellEnabled(charDATA.MemberNumber) && (_ELITEAPIPL.Player.MP > Form2.config.mpMinCastValue) && castingPossible(charDATA.MemberNumber) && _ELITEAPIPL.Player.Status != 33 && !BuffChecker(PTstormspell.buffID, 0) && SpellAvailable(PTstormspell.Spell_Name) == 0 && HasSpell(PTstormspell.Spell_Name) && JobChecker(PTstormspell.Spell_Name) == true)
+                                if (CheckIfAutoStormspellEnabled(charDATA.MemberNumber) && (_ELITEAPIPL.Player.MP > Form2.config.mpMinCastValue) && castingPossible(charDATA.MemberNumber) && _ELITEAPIPL.Player.Status != 33 && !BuffChecker(PTstormspell.buffID, 0) && SpellAvailable(PTstormspell.Spell_Name))
                                 {
                                     StormSpellPlayer(charDATA.MemberNumber, PTstormspell.Spell_Name);
                                 }
@@ -6621,94 +6611,94 @@
                             // MONITORED PLAYER BASED BUFFS
                             else if (_ELITEAPIMonitored.Player.Name == charDATA.Name)
                             {
-                                if (autoHasteEnabled[charDATA.MemberNumber] && SpellAvailable("Haste") == 0 && HasSpell("Haste") && JobChecker("Haste") == true && _ELITEAPIPL.Player.MP > Form2.config.mpMinCastValue && castingPossible(charDATA.MemberNumber) && !monitoredStatusCheck(StatusEffect.Haste) && !monitoredStatusCheck(StatusEffect.Slow))
+                                if (autoHasteEnabled[charDATA.MemberNumber] && SpellAvailable(Spells.Haste) && _ELITEAPIPL.Player.MP > Form2.config.mpMinCastValue && castingPossible(charDATA.MemberNumber) && !monitoredStatusCheck(StatusEffect.Haste) && !monitoredStatusCheck(StatusEffect.Slow))
                                 {
                                     hastePlayer(charDATA.MemberNumber);
                                 }
-                                if (autoHaste_IIEnabled[charDATA.MemberNumber] && SpellAvailable("Haste II") == 0 && HasSpell("Haste II") && JobChecker("Haste II") == true && _ELITEAPIPL.Player.MP > Form2.config.mpMinCastValue && castingPossible(charDATA.MemberNumber) && !monitoredStatusCheck(StatusEffect.Haste) && !monitoredStatusCheck(StatusEffect.Slow))
+                                if (autoHaste_IIEnabled[charDATA.MemberNumber] && SpellAvailable(Spells.Haste_II) && _ELITEAPIPL.Player.MP > Form2.config.mpMinCastValue && castingPossible(charDATA.MemberNumber) && !monitoredStatusCheck(StatusEffect.Haste) && !monitoredStatusCheck(StatusEffect.Slow))
                                 {
                                     haste_IIPlayer(charDATA.MemberNumber);
                                 }
-                                if (autoAdloquium_Enabled[charDATA.MemberNumber] && SpellAvailable("Adloquium") == 0 && HasSpell("Adloquium") && JobChecker("Adloquium") == true && _ELITEAPIPL.Player.MP > Form2.config.mpMinCastValue && castingPossible(charDATA.MemberNumber) && !BuffChecker(170, 1))
+                                if (autoAdloquium_Enabled[charDATA.MemberNumber] && SpellAvailable(Spells.Adloquium) && _ELITEAPIPL.Player.MP > Form2.config.mpMinCastValue && castingPossible(charDATA.MemberNumber) && !BuffChecker(170, 1))
                                 {
                                     AdloquiumPlayer(charDATA.MemberNumber);
                                 }
-                                if (autoFlurryEnabled[charDATA.MemberNumber] && SpellAvailable("Flurry") == 0 && HasSpell("Flurry") && JobChecker("Flurry") == true && _ELITEAPIPL.Player.MP > Form2.config.mpMinCastValue && castingPossible(charDATA.MemberNumber) && !BuffChecker(581, 1) && !monitoredStatusCheck(StatusEffect.Slow))
+                                if (autoFlurryEnabled[charDATA.MemberNumber] && SpellAvailable(Spells.Flurry) && _ELITEAPIPL.Player.MP > Form2.config.mpMinCastValue && castingPossible(charDATA.MemberNumber) && !BuffChecker(581, 1) && !monitoredStatusCheck(StatusEffect.Slow))
                                 {
                                     FlurryPlayer(charDATA.MemberNumber);
                                 }
-                                if (autoFlurry_IIEnabled[charDATA.MemberNumber] && SpellAvailable("Flurry II") == 0 && HasSpell("Flurry II") && JobChecker("Flurry II") == true && _ELITEAPIPL.Player.MP > Form2.config.mpMinCastValue && castingPossible(charDATA.MemberNumber) && !BuffChecker(581, 1) && !monitoredStatusCheck(StatusEffect.Slow))
+                                if (autoFlurry_IIEnabled[charDATA.MemberNumber] && SpellAvailable(Spells.Flurry_II) && _ELITEAPIPL.Player.MP > Form2.config.mpMinCastValue && castingPossible(charDATA.MemberNumber) && !BuffChecker(581, 1) && !monitoredStatusCheck(StatusEffect.Slow))
                                 {
                                     Flurry_IIPlayer(charDATA.MemberNumber);
                                 }
-                                if (autoShell_Enabled[charDATA.MemberNumber] && SpellAvailable(shell_spells[Form2.config.autoShell_Spell]) == 0 && HasSpell(shell_spells[Form2.config.autoShell_Spell]) && _ELITEAPIPL.Player.MP > Form2.config.mpMinCastValue && castingPossible(charDATA.MemberNumber) && _ELITEAPIPL.Player.Status != 33 && !monitoredStatusCheck(StatusEffect.Shell))
+                                if (autoShell_Enabled[charDATA.MemberNumber] && SpellAvailable(shell_spells[Form2.config.autoShell_Spell]) && _ELITEAPIPL.Player.MP > Form2.config.mpMinCastValue && castingPossible(charDATA.MemberNumber) && _ELITEAPIPL.Player.Status != 33 && !monitoredStatusCheck(StatusEffect.Shell))
                                 {
                                     shellPlayer(charDATA.MemberNumber);
                                 }
-                                if (autoProtect_Enabled[charDATA.MemberNumber] && SpellAvailable(protect_spells[Form2.config.autoProtect_Spell]) == 0 && HasSpell(protect_spells[Form2.config.autoProtect_Spell]) && _ELITEAPIPL.Player.MP > Form2.config.mpMinCastValue && castingPossible(charDATA.MemberNumber) && _ELITEAPIPL.Player.Status != 33 && !monitoredStatusCheck(StatusEffect.Protect))
+                                if (autoProtect_Enabled[charDATA.MemberNumber] && SpellAvailable(protect_spells[Form2.config.autoProtect_Spell]) && _ELITEAPIPL.Player.MP > Form2.config.mpMinCastValue && castingPossible(charDATA.MemberNumber) && _ELITEAPIPL.Player.Status != 33 && !monitoredStatusCheck(StatusEffect.Protect))
                                 {
                                     protectPlayer(charDATA.MemberNumber);
                                 }
-                                if (autoPhalanx_IIEnabled[charDATA.MemberNumber] && (SpellAvailable("Phalanx II") == 0) && HasSpell("Phalanx II") && (_ELITEAPIPL.Player.MP > Form2.config.mpMinCastValue) && castingPossible(charDATA.MemberNumber) && _ELITEAPIPL.Player.Status != 33 && !monitoredStatusCheck(StatusEffect.Phalanx))
+                                if (autoPhalanx_IIEnabled[charDATA.MemberNumber] && SpellAvailable(Spells.Phalanx_II) && (_ELITEAPIPL.Player.MP > Form2.config.mpMinCastValue) && castingPossible(charDATA.MemberNumber) && _ELITEAPIPL.Player.Status != 33 && !monitoredStatusCheck(StatusEffect.Phalanx))
                                 {
                                     Phalanx_IIPlayer(charDATA.MemberNumber);
                                 }
-                                if (autoRegen_Enabled[charDATA.MemberNumber] && (SpellAvailable(regen_spells[Form2.config.autoRegen_Spell]) == 0) && HasSpell(regen_spells[Form2.config.autoRegen_Spell]) && JobChecker(regen_spells[Form2.config.autoRegen_Spell]) == true && (_ELITEAPIPL.Player.MP > Form2.config.mpMinCastValue) && castingPossible(charDATA.MemberNumber) && _ELITEAPIPL.Player.Status != 33 && !monitoredStatusCheck(StatusEffect.Regen))
+                                if (autoRegen_Enabled[charDATA.MemberNumber] && SpellAvailable(regen_spells[Form2.config.autoRegen_Spell]) && (_ELITEAPIPL.Player.MP > Form2.config.mpMinCastValue) && castingPossible(charDATA.MemberNumber) && _ELITEAPIPL.Player.Status != 33 && !monitoredStatusCheck(StatusEffect.Regen))
                                 {
                                     Regen_Player(charDATA.MemberNumber);
                                 }
-                                if (autoRefreshEnabled[charDATA.MemberNumber] && (SpellAvailable(refresh_spells[Form2.config.autoRefresh_Spell]) == 0) && HasSpell(refresh_spells[Form2.config.autoRefresh_Spell]) && JobChecker(refresh_spells[Form2.config.autoRefresh_Spell]) == true && (_ELITEAPIPL.Player.MP > Form2.config.mpMinCastValue) && castingPossible(charDATA.MemberNumber) && _ELITEAPIPL.Player.Status != 33 && !monitoredStatusCheck(StatusEffect.Refresh))
+                                if (autoRefreshEnabled[charDATA.MemberNumber] && SpellAvailable(refresh_spells[Form2.config.autoRefresh_Spell]) && (_ELITEAPIPL.Player.MP > Form2.config.mpMinCastValue) && castingPossible(charDATA.MemberNumber) && _ELITEAPIPL.Player.Status != 33 && !monitoredStatusCheck(StatusEffect.Refresh))
                                 {
                                     Refresh_Player(charDATA.MemberNumber);
                                 }
-                                if (CheckIfAutoStormspellEnabled(charDATA.MemberNumber) && (_ELITEAPIPL.Player.MP > Form2.config.mpMinCastValue) && castingPossible(charDATA.MemberNumber) && _ELITEAPIPL.Player.Status != 33 && !BuffChecker(PTstormspell.buffID, 1) && SpellAvailable(PTstormspell.Spell_Name) == 0 && HasSpell(PTstormspell.Spell_Name) && JobChecker(PTstormspell.Spell_Name) == true)
+                                if (CheckIfAutoStormspellEnabled(charDATA.MemberNumber) && (_ELITEAPIPL.Player.MP > Form2.config.mpMinCastValue) && castingPossible(charDATA.MemberNumber) && _ELITEAPIPL.Player.Status != 33 && !BuffChecker(PTstormspell.buffID, 1) && SpellAvailable(PTstormspell.Spell_Name))
                                 {
                                     StormSpellPlayer(charDATA.MemberNumber, PTstormspell.Spell_Name);
                                 }
                             }
                             else
                             {
-                                if (autoHasteEnabled[charDATA.MemberNumber] && SpellAvailable("Haste") == 0 && HasSpell("Haste") && JobChecker("Haste") == true && _ELITEAPIPL.Player.MP > Form2.config.mpMinCastValue && castingPossible(charDATA.MemberNumber) && playerHasteSpan[charDATA.MemberNumber].Minutes >= Form2.config.autoHasteMinutes)
+                                if (autoHasteEnabled[charDATA.MemberNumber] && SpellAvailable(Spells.Haste) && _ELITEAPIPL.Player.MP > Form2.config.mpMinCastValue && castingPossible(charDATA.MemberNumber) && playerHasteSpan[charDATA.MemberNumber].Minutes >= Form2.config.autoHasteMinutes)
                                 {
                                     hastePlayer(charDATA.MemberNumber);
                                 }
-                                if (autoHaste_IIEnabled[charDATA.MemberNumber] && SpellAvailable("Haste II") == 0 && HasSpell("Haste II") && JobChecker("Haste II") == true && _ELITEAPIPL.Player.MP > Form2.config.mpMinCastValue && castingPossible(charDATA.MemberNumber) && playerHaste_IISpan[charDATA.MemberNumber].Minutes >= Form2.config.autoHasteMinutes)
+                                if (autoHaste_IIEnabled[charDATA.MemberNumber] && SpellAvailable(Spells.Haste_II) && _ELITEAPIPL.Player.MP > Form2.config.mpMinCastValue && castingPossible(charDATA.MemberNumber) && playerHaste_IISpan[charDATA.MemberNumber].Minutes >= Form2.config.autoHasteMinutes)
                                 {
                                     haste_IIPlayer(charDATA.MemberNumber);
                                 }
-                                if (autoAdloquium_Enabled[charDATA.MemberNumber] && SpellAvailable("Adloquium") == 0 && HasSpell("Adloquium") && JobChecker("Adloquium") == true && _ELITEAPIPL.Player.MP > Form2.config.mpMinCastValue && castingPossible(charDATA.MemberNumber) && playerAdloquium_Span[charDATA.MemberNumber].Minutes >= Form2.config.autoAdloquiumMinutes)
+                                if (autoAdloquium_Enabled[charDATA.MemberNumber] && SpellAvailable(Spells.Adloquium) && _ELITEAPIPL.Player.MP > Form2.config.mpMinCastValue && castingPossible(charDATA.MemberNumber) && playerAdloquium_Span[charDATA.MemberNumber].Minutes >= Form2.config.autoAdloquiumMinutes)
                                 {
                                     AdloquiumPlayer(charDATA.MemberNumber);
                                 }
-                                if (autoFlurryEnabled[charDATA.MemberNumber] && SpellAvailable("Flurry") == 0 && HasSpell("Flurry") && JobChecker("Flurry") == true && _ELITEAPIPL.Player.MP > Form2.config.mpMinCastValue && castingPossible(charDATA.MemberNumber) && playerFlurrySpan[charDATA.MemberNumber].Minutes >= Form2.config.autoHasteMinutes)
+                                if (autoFlurryEnabled[charDATA.MemberNumber] && SpellAvailable(Spells.Flurry) && _ELITEAPIPL.Player.MP > Form2.config.mpMinCastValue && castingPossible(charDATA.MemberNumber) && playerFlurrySpan[charDATA.MemberNumber].Minutes >= Form2.config.autoHasteMinutes)
                                 {
                                     FlurryPlayer(charDATA.MemberNumber);
                                 }
-                                if (autoFlurry_IIEnabled[charDATA.MemberNumber] && SpellAvailable("Flurry II") == 0 && HasSpell("Flurry II") && JobChecker("Flurry II") == true && _ELITEAPIPL.Player.MP > Form2.config.mpMinCastValue && castingPossible(charDATA.MemberNumber) && playerHasteSpan[charDATA.MemberNumber].Minutes >= Form2.config.autoHasteMinutes)
+                                if (autoFlurry_IIEnabled[charDATA.MemberNumber] && SpellAvailable(Spells.Flurry_II) && _ELITEAPIPL.Player.MP > Form2.config.mpMinCastValue && castingPossible(charDATA.MemberNumber) && playerHasteSpan[charDATA.MemberNumber].Minutes >= Form2.config.autoHasteMinutes)
                                 {
                                     Flurry_IIPlayer(charDATA.MemberNumber);
                                 }
-                                if (autoShell_Enabled[charDATA.MemberNumber] && SpellAvailable(shell_spells[Form2.config.autoShell_Spell]) == 0 && HasSpell(shell_spells[Form2.config.autoShell_Spell]) && _ELITEAPIPL.Player.MP > Form2.config.mpMinCastValue && castingPossible(charDATA.MemberNumber) && _ELITEAPIPL.Player.Status != 33 && playerShell_Span[charDATA.MemberNumber].Minutes >= Form2.config.autoShellMinutes)
+                                if (autoShell_Enabled[charDATA.MemberNumber] && SpellAvailable(shell_spells[Form2.config.autoShell_Spell]) && _ELITEAPIPL.Player.MP > Form2.config.mpMinCastValue && castingPossible(charDATA.MemberNumber) && _ELITEAPIPL.Player.Status != 33 && playerShell_Span[charDATA.MemberNumber].Minutes >= Form2.config.autoShellMinutes)
                                 {
                                     shellPlayer(charDATA.MemberNumber);
                                 }
-                                if (autoProtect_Enabled[charDATA.MemberNumber] && SpellAvailable(protect_spells[Form2.config.autoProtect_Spell]) == 0 && HasSpell(protect_spells[Form2.config.autoProtect_Spell]) && _ELITEAPIPL.Player.MP > Form2.config.mpMinCastValue && castingPossible(charDATA.MemberNumber) && _ELITEAPIPL.Player.Status != 33 && playerProtect_Span[charDATA.MemberNumber].Minutes >= Form2.config.autoProtect_Minutes)
+                                if (autoProtect_Enabled[charDATA.MemberNumber] && SpellAvailable(protect_spells[Form2.config.autoProtect_Spell]) && _ELITEAPIPL.Player.MP > Form2.config.mpMinCastValue && castingPossible(charDATA.MemberNumber) && _ELITEAPIPL.Player.Status != 33 && playerProtect_Span[charDATA.MemberNumber].Minutes >= Form2.config.autoProtect_Minutes)
                                 {
                                     protectPlayer(charDATA.MemberNumber);
                                 }
-                                if (autoPhalanx_IIEnabled[charDATA.MemberNumber] && (SpellAvailable("Phalanx II") == 0) && HasSpell("Phalanx II") && (_ELITEAPIPL.Player.MP > Form2.config.mpMinCastValue) && castingPossible(charDATA.MemberNumber) && _ELITEAPIPL.Player.Status != 33 && playerPhalanx_IISpan[charDATA.MemberNumber].Minutes >= Form2.config.autoPhalanxIIMinutes)
+                                if (autoPhalanx_IIEnabled[charDATA.MemberNumber] && SpellAvailable(Spells.Phalanx_II) && castingPossible(charDATA.MemberNumber) && _ELITEAPIPL.Player.Status != 33 && playerPhalanx_IISpan[charDATA.MemberNumber].Minutes >= Form2.config.autoPhalanxIIMinutes)
                                 {
                                     Phalanx_IIPlayer(charDATA.MemberNumber);
                                 }
-                                if (autoRegen_Enabled[charDATA.MemberNumber] && (SpellAvailable(regen_spells[Form2.config.autoRegen_Spell]) == 0) && HasSpell(regen_spells[Form2.config.autoRegen_Spell]) && JobChecker(regen_spells[Form2.config.autoRegen_Spell]) == true && (_ELITEAPIPL.Player.MP > Form2.config.mpMinCastValue) && castingPossible(charDATA.MemberNumber) && _ELITEAPIPL.Player.Status != 33 && playerRegen_Span[charDATA.MemberNumber].Minutes >= Form2.config.autoRegen_Minutes)
+                                if (autoRegen_Enabled[charDATA.MemberNumber] && SpellAvailable(regen_spells[Form2.config.autoRegen_Spell]) && (_ELITEAPIPL.Player.MP > Form2.config.mpMinCastValue) && castingPossible(charDATA.MemberNumber) && _ELITEAPIPL.Player.Status != 33 && playerRegen_Span[charDATA.MemberNumber].Minutes >= Form2.config.autoRegen_Minutes)
                                 {
                                     Regen_Player(charDATA.MemberNumber);
                                 }
-                                if (autoRefreshEnabled[charDATA.MemberNumber] && (SpellAvailable(refresh_spells[Form2.config.autoRefresh_Spell]) == 0) && HasSpell(refresh_spells[Form2.config.autoRefresh_Spell]) && JobChecker(refresh_spells[Form2.config.autoRefresh_Spell]) == true && (_ELITEAPIPL.Player.MP > Form2.config.mpMinCastValue) && castingPossible(charDATA.MemberNumber) && _ELITEAPIPL.Player.Status != 33 && playerRefresh_Span[charDATA.MemberNumber].Minutes >= Form2.config.autoRefresh_Minutes)
+                                if (autoRefreshEnabled[charDATA.MemberNumber] && SpellAvailable(refresh_spells[Form2.config.autoRefresh_Spell]) && (_ELITEAPIPL.Player.MP > Form2.config.mpMinCastValue) && castingPossible(charDATA.MemberNumber) && _ELITEAPIPL.Player.Status != 33 && playerRefresh_Span[charDATA.MemberNumber].Minutes >= Form2.config.autoRefresh_Minutes)
                                 {
                                     Refresh_Player(charDATA.MemberNumber);
                                 }
-                                if (CheckIfAutoStormspellEnabled(charDATA.MemberNumber) && (_ELITEAPIPL.Player.MP > Form2.config.mpMinCastValue) && castingPossible(charDATA.MemberNumber) && _ELITEAPIPL.Player.Status != 33 && SpellAvailable(PTstormspell.Spell_Name) == 0 && HasSpell(PTstormspell.Spell_Name) && JobChecker(PTstormspell.Spell_Name) == true && playerStormspellSpan[charDATA.MemberNumber].Minutes >= Form2.config.autoStormspellMinutes)
+                                if (CheckIfAutoStormspellEnabled(charDATA.MemberNumber) && (_ELITEAPIPL.Player.MP > Form2.config.mpMinCastValue) && castingPossible(charDATA.MemberNumber) && _ELITEAPIPL.Player.Status != 33 && SpellAvailable(PTstormspell.Spell_Name) && playerStormspellSpan[charDATA.MemberNumber].Minutes >= Form2.config.autoStormspellMinutes)
                                 {
                                     StormSpellPlayer(charDATA.MemberNumber, PTstormspell.Spell_Name);
                                 }
@@ -6846,7 +6836,7 @@
                 }
                 else
                 {
-                    return ESpell.Unknown;
+                    return string.Empty;
                 }
             }
             else if (Form2.config.autoStorm_Spell == 1)
@@ -6886,12 +6876,12 @@
                 }
                 else
                 {
-                    return ESpell.Unknown;
+                    return string.Empty;
                 }
             }
             else
             {
-                return ESpell.Unknown;
+                return string.Empty;
             }
         }
 
@@ -6951,7 +6941,7 @@
             if (GeoSpell_Type == 1)
             {
                 var apiSpell = _ELITEAPIPL.Resources.GetSpell(GeoSpell.indi_spell, 0);
-                if (SpellAvailable((ESpell)apiSpell.ID))
+                if (SpellAvailable(apiSpell.Name[0]))
                 {
                     return GeoSpell.indi_spell;
                 }
@@ -6964,7 +6954,7 @@
             {
                 var apiSpell = _ELITEAPIPL.Resources.GetSpell(GeoSpell.geo_spell, 0);
 
-                if (SpellAvailable((ESpell)apiSpell.ID))
+                if (SpellAvailable(apiSpell.Name[0]))
                 {
                     return GeoSpell.geo_spell;
                 }
@@ -7394,8 +7384,8 @@
                     _ELITEAPIPL.ThirdParty.SendString("/item \"" + ItemName + "\" <me>");
                     await Task.Delay(TimeSpan.FromSeconds(5));
                     castingLockLabel.Text = "Casting is UNLOCKED";
-                    currentAction.Text = ESpell.Unknown;
-                    castingSpell = ESpell.Unknown;
+                    currentAction.Text = string.Empty;
+                    castingSpell = string.Empty;
                     JobAbilityLock_Check = false;
                 }));
             }
@@ -7413,8 +7403,8 @@
               _ELITEAPIPL.ThirdParty.SendString("/ja \"" + JobAbilityName + "\" <me>");
               await Task.Delay(TimeSpan.FromSeconds(2));
               castingLockLabel.Text = "Casting is UNLOCKED";
-              currentAction.Text = ESpell.Unknown;
-              castingSpell = ESpell.Unknown;
+              currentAction.Text = string.Empty;
+              castingSpell = string.Empty;
               JobAbilityLock_Check = false;
           }));
             }
@@ -7508,7 +7498,7 @@
 
         private void stopfollowToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Form2.config.autoFollowName = ESpell.Unknown;
+            Form2.config.autoFollowName = string.Empty;
         }
 
         private void EntrustTargetToolStripMenuItem_Click(object sender, EventArgs e)
@@ -7533,92 +7523,92 @@
 
         private void phalanxIIToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            CastSpell(_ELITEAPIMonitored.Party.GetPartyMembers()[playerOptionsSelected].Name, "Phalanx II");
+            CastSpell(_ELITEAPIMonitored.Party.GetPartyMembers()[playerOptionsSelected].Name, Spells.Phalanx_II);
         }
 
         private void invisibleToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            CastSpell(_ELITEAPIMonitored.Party.GetPartyMembers()[playerOptionsSelected].Name, "Invisible");
+            CastSpell(_ELITEAPIMonitored.Party.GetPartyMembers()[playerOptionsSelected].Name, Spells.Invisible);
         }
 
         private void refreshToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            CastSpell(_ELITEAPIMonitored.Party.GetPartyMembers()[playerOptionsSelected].Name, "Refresh");
+            CastSpell(_ELITEAPIMonitored.Party.GetPartyMembers()[playerOptionsSelected].Name, Spells.Refresh);
         }
 
         private void refreshIIToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            CastSpell(_ELITEAPIMonitored.Party.GetPartyMembers()[playerOptionsSelected].Name, "Refresh II");
+            CastSpell(_ELITEAPIMonitored.Party.GetPartyMembers()[playerOptionsSelected].Name, Spells.Refresh_II);
         }
 
         private void refreshIIIToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            CastSpell(_ELITEAPIMonitored.Party.GetPartyMembers()[playerOptionsSelected].Name, "Refresh III");
+            CastSpell(_ELITEAPIMonitored.Party.GetPartyMembers()[playerOptionsSelected].Name, Spells.Refresh_III);
         }
 
         private void sneakToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            CastSpell(_ELITEAPIMonitored.Party.GetPartyMembers()[playerOptionsSelected].Name, "Sneak");
+            CastSpell(_ELITEAPIMonitored.Party.GetPartyMembers()[playerOptionsSelected].Name, Spells.Sneak);
         }
 
         private void regenIIToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            CastSpell(_ELITEAPIMonitored.Party.GetPartyMembers()[playerOptionsSelected].Name, "Regen II");
+            CastSpell(_ELITEAPIMonitored.Party.GetPartyMembers()[playerOptionsSelected].Name, Spells.Regen_II);
         }
 
         private void regenIIIToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            CastSpell(_ELITEAPIMonitored.Party.GetPartyMembers()[playerOptionsSelected].Name, "Regen III");
+            CastSpell(_ELITEAPIMonitored.Party.GetPartyMembers()[playerOptionsSelected].Name, Spells.Regen_III);
         }
 
         private void regenIVToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            CastSpell(_ELITEAPIMonitored.Party.GetPartyMembers()[playerOptionsSelected].Name, "Regen IV");
+            CastSpell(_ELITEAPIMonitored.Party.GetPartyMembers()[playerOptionsSelected].Name, Spells.Regen_IV);
         }
 
         private void eraseToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            CastSpell(_ELITEAPIMonitored.Party.GetPartyMembers()[playerOptionsSelected].Name, ESpell.Erase);
+            CastSpell(_ELITEAPIMonitored.Party.GetPartyMembers()[playerOptionsSelected].Name, Spells.Erase);
         }
 
         private void sacrificeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            CastSpell(_ELITEAPIMonitored.Party.GetPartyMembers()[playerOptionsSelected].Name, "Sacrifice");
+            CastSpell(_ELITEAPIMonitored.Party.GetPartyMembers()[playerOptionsSelected].Name, Spells.Sacrifice);
         }
 
         private void blindnaToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            CastSpell(_ELITEAPIMonitored.Party.GetPartyMembers()[playerOptionsSelected].Name, ESpell.Blindna);
+            CastSpell(_ELITEAPIMonitored.Party.GetPartyMembers()[playerOptionsSelected].Name, Spells.Blindna);
         }
 
         private void cursnaToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            CastSpell(_ELITEAPIMonitored.Party.GetPartyMembers()[playerOptionsSelected].Name, ESpell.Cursna);
+            CastSpell(_ELITEAPIMonitored.Party.GetPartyMembers()[playerOptionsSelected].Name, Spells.Cursna);
         }
 
         private void paralynaToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            CastSpell(_ELITEAPIMonitored.Party.GetPartyMembers()[playerOptionsSelected].Name, ESpell.Paralyna);
+            CastSpell(_ELITEAPIMonitored.Party.GetPartyMembers()[playerOptionsSelected].Name, Spells.Paralyna);
         }
 
         private void poisonaToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            CastSpell(_ELITEAPIMonitored.Party.GetPartyMembers()[playerOptionsSelected].Name, ESpell.Poisona);
+            CastSpell(_ELITEAPIMonitored.Party.GetPartyMembers()[playerOptionsSelected].Name, Spells.Poisona);
         }
 
         private void stonaToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            CastSpell(_ELITEAPIMonitored.Party.GetPartyMembers()[playerOptionsSelected].Name, ESpell.Stona);
+            CastSpell(_ELITEAPIMonitored.Party.GetPartyMembers()[playerOptionsSelected].Name, Spells.Stona);
         }
 
         private void silenaToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            CastSpell(_ELITEAPIMonitored.Party.GetPartyMembers()[playerOptionsSelected].Name, ESpell.Silena);
+            CastSpell(_ELITEAPIMonitored.Party.GetPartyMembers()[playerOptionsSelected].Name, Spells.Silena);
         }
 
         private void virunaToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            CastSpell(_ELITEAPIMonitored.Party.GetPartyMembers()[playerOptionsSelected].Name, ESpell.Viruna);
+            CastSpell(_ELITEAPIMonitored.Party.GetPartyMembers()[playerOptionsSelected].Name, Spells.Viruna);
         }
 
         private void setAllStormsFalse(byte autoOptionsSelected)
@@ -7824,54 +7814,15 @@
             switch ((int)Form2.config.plShellra_Level)
             {
                 case 1:
-                    if (JobChecker("Shellra") == true && SpellAvailable("Shellra") == 0)
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-
+                    return SpellAvailable(Spells.Shellra);
                 case 2:
-                    if (JobChecker("Shellra II") == true && SpellAvailable("Shellra II") == 0)
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-
+                    return SpellAvailable(Spells.Shellra_II);
                 case 3:
-                    if (JobChecker("Shellra III") == true && SpellAvailable("Shellra III") == 0)
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-
+                    return SpellAvailable(Spells.Shellra_III);
                 case 4:
-                    if (JobChecker("Shellra IV") == true && SpellAvailable("Shellra IV") == 0)
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-
+                    return SpellAvailable(Spells.Shellra_IV);
                 case 5:
-                    if (JobChecker("Shellra V") == true && SpellAvailable("Shellra V") == 0)
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
+                    return SpellAvailable(Spells.Shellra_V);
 
                 default:
                     return false;
@@ -7883,55 +7834,15 @@
             switch ((int)Form2.config.plProtectra_Level)
             {
                 case 1:
-                    if (JobChecker("Protectra") == true && SpellAvailable("Protectra") == 0)
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-
+                    return SpellAvailable(Spells.Protectra);
                 case 2:
-                    if (JobChecker("Protectra II") == true && SpellAvailable("Protectra II") == 0)
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-
+                    return SpellAvailable(Spells.Protectra_II);
                 case 3:
-                    if (JobChecker("Protectra III") == true && SpellAvailable("Protectra III") == 0)
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-
+                    return SpellAvailable(Spells.Protectra_III);
                 case 4:
-                    if (JobChecker("Protectra IV") == true && SpellAvailable("Protectra IV") == 0)
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-
+                    return SpellAvailable(Spells.Protectra_IV);
                 case 5:
-                    if (JobChecker("Protectra V") == true && SpellAvailable("Protectra V") == 0)
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-
+                    return SpellAvailable(Spells.Protectra_V);
                 default:
                     return false;
             }
@@ -7942,76 +7853,13 @@
             switch (Form2.config.plReraise_Level)
             {
                 case 1:
-                    if (JobChecker("Reraise") == true && SpellAvailable("Reraise") == 0)
-                    {
-                        // Check SCH possiblity
-                        if (_ELITEAPIPL.Player.MainJob == 20 && _ELITEAPIPL.Player.SubJob != 3 && !BuffChecker(401, 0))
-                        {
-                            return false;
-                        }
-                        else
-                        {
-                            return true;
-                        }
-                    }
-                    else
-                    {
-                        return false;
-                    }
-
+                    return SpellAvailable(Spells.Reraise);
                 case 2:
-
-                    if (JobChecker("Reraise II") == true && SpellAvailable("Reraise II") == 0)
-                    {
-                        if (_ELITEAPIPL.Player.MainJob == 20 && !BuffChecker(401, 0))
-                        {
-                            return false;
-                        }
-                        else
-                        {
-                            return true;
-                        }
-                    }
-                    else
-                    {
-                        return false;
-                    }
-
+                    return SpellAvailable(Spells.Reraise_II);
                 case 3:
-
-                    if (JobChecker("Reraise III") == true && SpellAvailable("Reraise III") == 0)
-                    {
-                        if (_ELITEAPIPL.Player.MainJob == 20 && !BuffChecker(401, 0))
-                        {
-                            return false;
-                        }
-                        else
-                        {
-                            return true;
-                        }
-                    }
-                    else
-                    {
-                        return false;
-                    }
-
+                    return SpellAvailable(Spells.Reraise_III);
                 case 4:
-                    if (JobChecker("Reraise IV") == true && SpellAvailable("Reraise IV") == 0)
-                    {
-                        if (_ELITEAPIPL.Player.MainJob == 20 && !BuffChecker(401, 0))
-                        {
-                            return false;
-                        }
-                        else
-                        {
-                            return true;
-                        }
-                    }
-                    else
-                    {
-                        return false;
-                    }
-
+                    return SpellAvailable("Reraise IV");
                 default:
                     return false;
             }
@@ -8022,14 +7870,11 @@
             switch (Form2.config.plRefresh_Level)
             {
                 case 1:
-                    return HasSpell("Refresh");
-
+                    return SpellAvailable(Spells.Refresh);
                 case 2:
-                    return HasSpell("Refresh II");
-
+                    return SpellAvailable(Spells.Refresh_II);
                 case 3:
-                    return HasSpell("Refresh III");
-
+                    return SpellAvailable("Refresh III");
                 default:
                     return false;
             }
@@ -8042,20 +7887,15 @@
             switch (Form2.config.plRegen_Level)
             {
                 case 1:
-                    return HasSpell("Regen");
-
+                    return SpellAvailable(Spells.Regen);
                 case 2:
-                    return HasSpell("Regen II");
-
+                    return SpellAvailable(Spells.Regen_II);
                 case 3:
-                    return HasSpell("Regen III");
-
+                    return SpellAvailable(Spells.Regen_III);
                 case 4:
-                    return HasSpell("Regen IV");
-
+                    return SpellAvailable(Spells.Regen_IV);
                 case 5:
-                    return HasSpell("Regen V");
-
+                    return SpellAvailable(Spells.Regen_V);
                 default:
                     return false;
             }
@@ -8343,7 +8183,7 @@
                 for (int x = 0; x < 2048; x++)
                 {
                     EliteAPI.XiEntity z = _ELITEAPIPL.Entity.GetEntity(x);
-                    if (z.Name != ESpell.Unknown && z.Name != null)
+                    if (!string.IsNullOrEmpty(z.Name))
                     {
                         if (z.Name.ToLower() == Form2.config.LuopanSpell_Target.ToLower()) // A match was located so use this entity as a check.
                         {
@@ -8414,7 +8254,7 @@
                         for (int x = 0; x < 2048; x++)
                         {
                             EliteAPI.XiEntity z = _ELITEAPIPL.Entity.GetEntity(x);
-                            if (z.Name != ESpell.Unknown && z.Name != null)
+                            if (!string.IsNullOrEmpty(z.Name))
                             {
                                 if (z.Name.ToLower() == Form2.config.LuopanSpell_Target.ToLower()) // A match was located so use this entity as a check.
                                 {
@@ -8448,7 +8288,7 @@
 
         private int CheckEngagedStatus_Hate()
         {
-            if (Form2.config.AssistSpecifiedTarget == true && Form2.config.autoTarget_Target != ESpell.Unknown)
+            if (Form2.config.AssistSpecifiedTarget == true && !string.IsNullOrEmpty(Form2.config.autoTarget_Target))
             {
                 IDFound = 0;
 
@@ -8456,7 +8296,7 @@
                 {
                     EliteAPI.XiEntity z = _ELITEAPIPL.Entity.GetEntity(x);
 
-                    if (z.Name != null && z.Name.ToLower() == Form2.config.autoTarget_Target.ToLower())
+                    if (!string.IsNullOrEmpty(z.Name) && z.Name.ToLower() == Form2.config.autoTarget_Target.ToLower())
                     {
                         if (z.Status == 1)
                         {
@@ -8488,7 +8328,7 @@
 
         private int GrabGEOTargetID()
         {
-            if (Form2.config.specifiedEngageTarget == true && Form2.config.LuopanSpell_Target != ESpell.Unknown)
+            if (Form2.config.specifiedEngageTarget == true && !string.IsNullOrEmpty(Form2.config.LuopanSpell_Target))
             {
                 IDFound = 0;
 
@@ -8528,8 +8368,8 @@
 
         private int GrabDistance_GEO()
         {
-            string checkedName = ESpell.Unknown;
-            string name1 = ESpell.Unknown;
+            string checkedName = string.Empty;
+            string name1 = string.Empty;
 
             if (Form2.config.specifiedEngageTarget == true && !string.IsNullOrEmpty(Form2.config.LuopanSpell_Target))
             {
@@ -8802,14 +8642,14 @@
                 {
                     if (PL_BRDCount == 3)
                     {
-                        if (SpellAvailable(dummy2_song.song_name) == 0 && HasSpell(dummy2_song.song_name) && JobChecker(dummy2_song.song_name) == true)
+                        if (SpellAvailable(dummy2_song.song_name))
                         {
                             CastSpell("<me>", dummy2_song.song_name);
                         }
                     }
                     else
                     {
-                        if (SpellAvailable(song_4.song_name) == 0 && HasSpell(song_4.song_name) && JobChecker(song_4.song_name) == true)
+                        if (SpellAvailable(song_4.song_name))
                         {
                             CastSpell("<me>", song_4.song_name);
                             Last_Song_Cast = song_4.song_name;
@@ -8831,14 +8671,14 @@
                 {
                     if (PL_BRDCount == 2)
                     {
-                        if (SpellAvailable(dummy1_song.song_name) == 0 && HasSpell(dummy1_song.song_name) && JobChecker(dummy1_song.song_name) == true)
+                        if (SpellAvailable(dummy1_song.song_name))
                         {
                             CastSpell("<me>", dummy1_song.song_name);
                         }
                     }
                     else
                     {
-                        if (SpellAvailable(song_3.song_name) == 0 && HasSpell(song_3.song_name) && JobChecker(song_3.song_name) == true)
+                        if (SpellAvailable(song_3.song_name))
                         {
                             CastSpell("<me>", song_3.song_name);
                             Last_Song_Cast = song_3.song_name;
@@ -8857,7 +8697,7 @@
                 // SONG NUMBER #2
                 else if (song_casting == 1 && song_2.song_name.ToLower() != "blank" && count2_type < SongDataMax.Where(c => c == song_2.buff_id).Count() && Last_Song_Cast != song_4.song_name)
                 {
-                    if (SpellAvailable(song_2.song_name) == 0 && HasSpell(song_2.song_name) && JobChecker(song_2.song_name) == true)
+                    if (SpellAvailable(song_2.song_name))
                     {
                         CastSpell("<me>", song_2.song_name);
                         Last_Song_Cast = song_2.song_name;
@@ -8874,7 +8714,7 @@
                 // SONG NUMBER #1
                 else if ((song_casting == 0) && song_1.song_name.ToLower() != "blank" && count1_type < SongDataMax.Where(c => c == song_1.buff_id).Count() && Last_Song_Cast != song_4.song_name)
                 {
-                    if (SpellAvailable(song_1.song_name) == 0 && HasSpell(song_1.song_name) && JobChecker(song_1.song_name) == true)
+                    if (SpellAvailable(song_1.song_name))
                     {
                         CastSpell("<me>", song_1.song_name);
                         Last_Song_Cast = song_1.song_name;
@@ -8895,7 +8735,7 @@
                 {
                     if ((Form2.config.SongsOnlyWhenNear && Monitoreddistance < 10) || Form2.config.SongsOnlyWhenNear == false)
                     {
-                        if (SpellAvailable(song_1.song_name) == 0 && HasSpell(song_1.song_name) && JobChecker(song_1.song_name) == true)
+                        if (SpellAvailable(song_1.song_name))
                         {
                             CastSpell("<me>", song_1.song_name);
                             playerSong1[0] = DateTime.Now;
@@ -8907,7 +8747,7 @@
                 {
                     if ((Form2.config.SongsOnlyWhenNear && Monitoreddistance < 10) || Form2.config.SongsOnlyWhenNear == false)
                     {
-                        if (SpellAvailable(song_2.song_name) == 0 && HasSpell(song_2.song_name) && JobChecker(song_2.song_name) == true)
+                        if (SpellAvailable(song_2.song_name))
                         {
                             CastSpell("<me>", song_2.song_name);
                             playerSong2[0] = DateTime.Now;
@@ -8919,7 +8759,7 @@
                 {
                     if ((Form2.config.SongsOnlyWhenNear && Monitoreddistance < 10) || Form2.config.SongsOnlyWhenNear == false)
                     {
-                        if (SpellAvailable(song_3.song_name) == 0 && HasSpell(song_3.song_name) && JobChecker(song_3.song_name) == true)
+                        if (SpellAvailable(song_3.song_name))
                         {
                             CastSpell("<me>", song_3.song_name);
                             playerSong3[0] = DateTime.Now;
@@ -8931,7 +8771,7 @@
                 {
                     if ((Form2.config.SongsOnlyWhenNear && Monitoreddistance < 10) || Form2.config.SongsOnlyWhenNear == false)
                     {
-                        if (SpellAvailable(song_4.song_name) == 0 && HasSpell(song_4.song_name) && JobChecker(song_4.song_name) == true)
+                        if (SpellAvailable(song_4.song_name))
                         {
                             CastSpell("<me>", song_4.song_name);
                             playerSong4[0] = DateTime.Now;
@@ -9229,8 +9069,8 @@
                               castingLockLabel.Text = "PACKET: Casting is soon to be AVAILABLE!";
                               await Task.Delay(TimeSpan.FromSeconds(3));
                               castingLockLabel.Text = "Casting is UNLOCKED";
-                              currentAction.Text = ESpell.Unknown;
-                              castingSpell = ESpell.Unknown;
+                              currentAction.Text = string.Empty;
+                              castingSpell = string.Empty;
                               CastingBackground_Check = false;
                           }));
                             }
@@ -9466,10 +9306,10 @@
 
             Thread.Sleep(TimeSpan.FromSeconds(2.0));
 
-            castingSpell = ESpell.Unknown;
+            castingSpell = string.Empty;
 
             castingLockLabel.Invoke(new Action(() => { castingLockLabel.Text = "Casting is UNLOCKED"; }));
-            castingSpell = ESpell.Unknown;
+            castingSpell = string.Empty;
 
             CastingBackground_Check = false;
         }
@@ -9483,10 +9323,10 @@
           currentAction.Text = "Using a Job Ability: " + JobAbilityCMD;
           Thread.Sleep(TimeSpan.FromSeconds(2));
           castingLockLabel.Text = "Casting is UNLOCKED";
-          currentAction.Text = ESpell.Unknown;
-          castingSpell = ESpell.Unknown;
+          currentAction.Text = string.Empty;
+          castingSpell = string.Empty;
           // JobAbilityLock_Check = false;
-          JobAbilityCMD = ESpell.Unknown;
+          JobAbilityCMD = string.Empty;
       }));
         }
 
