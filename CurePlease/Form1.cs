@@ -1,5 +1,6 @@
 ﻿namespace CurePlease
 {
+    using CurePlease.Models;
     using CurePlease.Models.Constants;
     using CurePlease.Models.Enums;
     using CurePlease.Properties;
@@ -292,9 +293,16 @@
 
         public bool SpellAvailable(string spellName)
         {
+            // IF YOU HAVE OMERTA THEN BLOCK MAGIC CASTING
+            if (_ELITEAPIPL.Player.GetPlayerInfo().Buffs.Any(b => b == 262))
+            {
+                return false;
+            }
+
             var apiSpell = _ELITEAPIPL.Resources.GetSpell(spellName, 0);
 
-            return SpellAvailable(apiSpell) && (_ELITEAPIPL.Recast.GetSpellRecast(apiSpell.Index) == 0);
+            // Return true if we possess the spell AND spell is off cooldown.
+            return _ELITEAPIPL.Player.HasSpell(apiSpell.ID) && (_ELITEAPIPL.Recast.GetSpellRecast(apiSpell.Index) == 0);
         }
 
         public bool IsCure(string spell)
@@ -304,32 +312,14 @@
 
         public static bool HasAbility(string checked_abilityName)
         {
-            if (_ELITEAPIPL.Player.GetPlayerInfo().Buffs.Any(b => b == 261) || _ELITEAPIPL.Player.GetPlayerInfo().Buffs.Any(b => b == 16)) // IF YOU HAVE INPAIRMENT/AMNESIA THEN BLOCK JOB ABILITY CASTING
+            // IF YOU HAVE INPAIRMENT/AMNESIA THEN BLOCK JOB ABILITY CASTING
+            if (_ELITEAPIPL.Player.GetPlayerInfo().Buffs.Any(b => b == 261) || _ELITEAPIPL.Player.GetPlayerInfo().Buffs.Any(b => b == 16)) 
             {
                 return false;
             }
-            else if (_ELITEAPIPL.Player.HasAbility(_ELITEAPIPL.Resources.GetAbility(checked_abilityName, 0).ID))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+
+            return _ELITEAPIPL.Player.HasAbility(_ELITEAPIPL.Resources.GetAbility(checked_abilityName, 0).ID);
         }
-
-        public static bool SpellAvailable(EliteAPI.ISpell spell)
-        {
-            // IF YOU HAVE OMERTA THEN BLOCK MAGIC CASTING
-            if (_ELITEAPIPL.Player.GetPlayerInfo().Buffs.Any(b => b == 262))
-            {
-                return false;
-            }
-
-            return _ELITEAPIPL.Player.HasSpell(spell.ID);
-        }
-
-   
 
         // SPELL CHECKER CODE: (SpellAvailable("") == 0) && (SpellAvailable(""))
         // ABILITY CHECKER CODE: (GetAbilityRecast("") == 0) && (HasAbility(""))
@@ -6080,61 +6070,14 @@
 
                             CastSpell("<me>", BarstatusName);
                         }
-                        else if (Form2.config.plGainBoost && (Form2.config.plGainBoost_Spell == 0) && !plStatusCheck(StatusEffect.STR_Boost2) && SpellAvailable(Spells.Gain_STR))
+                        else if (Form2.config.plGainBoost)
                         {
-                            CastSpell("<me>", "Gain-STR");
-                        }
-                        else if (Form2.config.plGainBoost && (Form2.config.plGainBoost_Spell == 1) && !plStatusCheck(StatusEffect.DEX_Boost2) && SpellAvailable(Spells.Gain_DEX))
-                        {
-                            CastSpell("<me>", "Gain-DEX");
-                        }
-                        else if (Form2.config.plGainBoost && (Form2.config.plGainBoost_Spell == 2) && !plStatusCheck(StatusEffect.VIT_Boost2) && SpellAvailable(Spells.Gain_VIT))
-                        {
-                            CastSpell("<me>", "Gain-VIT");
-                        }
-                        else if (Form2.config.plGainBoost && (Form2.config.plGainBoost_Spell == 3) && !plStatusCheck(StatusEffect.AGI_Boost2) && SpellAvailable(Spells.Gain_AGI))
-                        {
-                            CastSpell("<me>", "Gain-AGI");
-                        }
-                        else if (Form2.config.plGainBoost && (Form2.config.plGainBoost_Spell == 4) && !plStatusCheck(StatusEffect.INT_Boost2) && SpellAvailable(Spells.Gain_INT))
-                        {
-                            CastSpell("<me>", "Gain-INT");
-                        }
-                        else if (Form2.config.plGainBoost && (Form2.config.plGainBoost_Spell == 5) && !plStatusCheck(StatusEffect.MND_Boost2) && SpellAvailable(Spells.Gain_MND))
-                        {
-                            CastSpell("<me>", "Gain-MND");
-                        }
-                        else if (Form2.config.plGainBoost && (Form2.config.plGainBoost_Spell == 6) && !plStatusCheck(StatusEffect.CHR_Boost2) && SpellAvailable(Spells.Gain_CHR))
-                        {
-                            CastSpell("<me>", "Gain-CHR");
-                        }
-                        else if (Form2.config.plGainBoost && (Form2.config.plGainBoost_Spell == 7) && !plStatusCheck(StatusEffect.STR_Boost2) && SpellAvailable(Spells.Boost_STR))
-                        {
-                            CastSpell("<me>", "Boost-STR");
-                        }
-                        else if (Form2.config.plGainBoost && (Form2.config.plGainBoost_Spell == 8) && !plStatusCheck(StatusEffect.DEX_Boost2) && SpellAvailable(Spells.Boost_DEX))
-                        {
-                            CastSpell("<me>", "Boost-DEX");
-                        }
-                        else if (Form2.config.plGainBoost && (Form2.config.plGainBoost_Spell == 9) && !plStatusCheck(StatusEffect.VIT_Boost2) && SpellAvailable(Spells.Boost_VIT))
-                        {
-                            CastSpell("<me>", "Boost-VIT");
-                        }
-                        else if (Form2.config.plGainBoost && (Form2.config.plGainBoost_Spell == 10) && !plStatusCheck(StatusEffect.AGI_Boost2) && SpellAvailable(Spells.Boost_AGI))
-                        {
-                            CastSpell("<me>", "Boost-AGI");
-                        }
-                        else if (Form2.config.plGainBoost && (Form2.config.plGainBoost_Spell == 11) && !plStatusCheck(StatusEffect.INT_Boost2) && SpellAvailable(Spells.Boost_INT))
-                        {
-                            CastSpell("<me>", "Boost-INT");
-                        }
-                        else if (Form2.config.plGainBoost && (Form2.config.plGainBoost_Spell == 12) && !plStatusCheck(StatusEffect.MND_Boost2) && SpellAvailable(Spells.Boost_MND))
-                        {
-                            CastSpell("<me>", "Boost-MND");
-                        }
-                        else if (Form2.config.plGainBoost && (Form2.config.plGainBoost_Spell == 13) && !plStatusCheck(StatusEffect.CHR_Boost2) && SpellAvailable(Spells.Boost_CHR))
-                        {
-                            CastSpell("<me>", "Boost-CHR");
+                            var gainBoostSpell = Data.GainBoostSpells[Form2.config.plGainBoost_Spell];
+
+                            if(!plStatusCheck(Data.SpellEffects[gainBoostSpell]) && SpellAvailable(gainBoostSpell))
+                            {
+                                CastSpell("<me>", gainBoostSpell);
+                            }       
                         }
                         else if (Form2.config.plStormSpell && !BuffChecker(stormspell.buffID, 0) && SpellAvailable(stormspell.Spell_Name))
                         {
@@ -6156,44 +6099,44 @@
                         {
                             if (SpellAvailable(Spells.Klimaform))
                             {
-                                CastSpell("<me>", "Klimaform");
+                                CastSpell("<me>", Spells.Klimaform);
                             }
                         }
                         else if (Form2.config.plTemper && (!plStatusCheck(StatusEffect.Multi_Strikes)))
                         {
                             if ((Form2.config.plTemper_Level == 1) && SpellAvailable(Spells.Temper))
                             {
-                                CastSpell("<me>", "Temper");
+                                CastSpell("<me>", Spells.Temper);
                             }
-                            else if ((Form2.config.plTemper_Level == 2) && SpellAvailable("Temper II"))
+                            else if ((Form2.config.plTemper_Level == 2) && SpellAvailable(Spells.Temper_II))
                             {
-                                CastSpell("<me>", "Temper II");
+                                CastSpell("<me>", Spells.Temper_II);
                             }
                         }
                         else if (Form2.config.plHaste && (!plStatusCheck(StatusEffect.Haste)))
                         {
                             if ((Form2.config.plHaste_Level == 1) && SpellAvailable(Spells.Haste))
                             {
-                                CastSpell("<me>", "Haste");
+                                CastSpell("<me>",   Spells.Haste);
                             }
                             else if ((Form2.config.plHaste_Level == 2) && SpellAvailable(Spells.Haste_II))
                             {
-                                CastSpell("<me>", "Haste II");
+                                CastSpell("<me>", Spells.Haste_II);
                             }
                         }
                         else if (Form2.config.plSpikes && ActiveSpikes() == false)
                         {
                             if ((Form2.config.plSpikes_Spell == 0) && SpellAvailable(Spells.Blaze_Spikes))
                             {
-                                CastSpell("<me>", "Blaze Spikes");
+                                CastSpell("<me>", Spells.Blaze_Spikes);
                             }
                             else if ((Form2.config.plSpikes_Spell == 1) && SpellAvailable(Spells.Ice_Spikes))
                             {
-                                CastSpell("<me>", "Ice Spikes");
+                                CastSpell("<me>", Spells.Ice_Spikes);
                             }
                             else if ((Form2.config.plSpikes_Spell == 2) && SpellAvailable(Spells.Shock_Spikes))
                             {
-                                CastSpell("<me>", "Shock Spikes");
+                                CastSpell("<me>", Spells.Shock_Spikes);
                             }
                         }
                         else if (Form2.config.plEnspell && !BuffChecker(enspell.buffID, 0) && SpellAvailable(enspell.Spell_Name))
@@ -6214,7 +6157,7 @@
                         }
                         else if (Form2.config.plAuspice && (!plStatusCheck(StatusEffect.Auspice)) && SpellAvailable(Spells.Auspice))
                         {
-                            CastSpell("<me>", "Auspice");
+                            CastSpell("<me>", Spells.Auspice);
                         }
 
                         // ENTRUSTED INDI SPELL CASTING, WILL BE CAST SO LONG AS ENTRUST IS ACTIVE
@@ -7396,17 +7339,17 @@
             if (CastingBackground_Check != true && JobAbilityLock_Check != true)
             {
                 Invoke((MethodInvoker)(async () =>
-          {
-              JobAbilityLock_Check = true;
-              castingLockLabel.Text = "Casting is LOCKED for a JA.";
-              currentAction.Text = "Using a Job Ability: " + JobabilityDATA;
-              _ELITEAPIPL.ThirdParty.SendString("/ja \"" + JobAbilityName + "\" <me>");
-              await Task.Delay(TimeSpan.FromSeconds(0.5));
-              castingLockLabel.Text = "Casting is UNLOCKED";
-              currentAction.Text = string.Empty;
-              castingSpell = string.Empty;
-              JobAbilityLock_Check = false;
-          }));
+                {
+                    JobAbilityLock_Check = true;
+                    castingLockLabel.Text = "Casting is LOCKED for a JA.";
+                    currentAction.Text = "Using a Job Ability: " + JobabilityDATA;
+                    _ELITEAPIPL.ThirdParty.SendString("/ja \"" + JobAbilityName + "\" <me>");
+                    await Task.Delay(TimeSpan.FromSeconds(0.5));
+                    castingLockLabel.Text = "Casting is UNLOCKED";
+                    currentAction.Text = string.Empty;
+                    castingSpell = string.Empty;
+                    JobAbilityLock_Check = false;
+                }));
             }
         }
 
@@ -9233,52 +9176,9 @@
             }
         }
 
-        private void CastingCheck_BackgroundTask_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
-        {
-            if (_ELITEAPIMonitored != null && _ELITEAPIPL != null)
-            {
-                if (_ELITEAPIPL.Player.LoginStatus == (int)LoginStatus.Loading || _ELITEAPIMonitored.Player.LoginStatus == (int)LoginStatus.Loading)
-                {
-                    Thread.Sleep(TimeSpan.FromSeconds(2));
-                }
-                Thread.Sleep(TimeSpan.FromSeconds(0.2));
-                var count = 0;
-                float lastPercent = 0;
-                var castPercent = _ELITEAPIPL.CastBar.Percent;
-                while (castPercent < 1 && CastingBackground_Check == true)
-                {
-
-
-                    Thread.Sleep(TimeSpan.FromSeconds(0.1));
-                    castPercent = _ELITEAPIPL.CastBar.Percent;
-                    if (lastPercent != castPercent)
-                    {
-                        count = 0;
-                        lastPercent = castPercent;
-                    }
-                    else if (count == 5)
-                    {
-                        break;
-                    }
-                    else
-                    {
-                        count++;
-                        lastPercent = castPercent;
-                    }
-                }
-                Thread.Sleep(TimeSpan.FromSeconds(1));
-                CastingBackground_Check = false;
-            }
-            else { 
-                return; 
-            }
-
-            Thread.Sleep(TimeSpan.FromMilliseconds(250));
-        }
-
         private void ProtectCasting_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
-            Thread.Sleep(TimeSpan.FromMilliseconds(500));
+            Thread.Sleep(TimeSpan.FromSeconds(0.2));
             int count = 0;
             float lastPercent = 0;
             float castPercent = _ELITEAPIPL.CastBar.Percent;
@@ -9293,7 +9193,8 @@
                 }
                 else if (count == 5)
                 {
-
+                    // We break if we don't get a new percent value within 5*loopTimeout
+                    // As configured now, half a second (0.1 * 5).
                     break;
                 }
                 else
@@ -9303,7 +9204,10 @@
                 }
             }
 
-            Thread.Sleep(TimeSpan.FromSeconds(1));
+            // This is the secret sauce to avoid "Unable to cast" messages.
+            // Best set to something that reduces messages, but doesn't waste
+            // time 100% eliminating them?
+            Thread.Sleep(TimeSpan.FromSeconds(1.3));
 
             castingSpell = string.Empty;
 
@@ -9316,66 +9220,23 @@
         private void JobAbility_Delay_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
             Invoke((MethodInvoker)(() =>
-      {
-          JobAbilityLock_Check = true;
-          castingLockLabel.Text = "Casting is LOCKED for a JA.";
-          currentAction.Text = "Using a Job Ability: " + JobAbilityCMD;
-          Thread.Sleep(TimeSpan.FromSeconds(1));
-          castingLockLabel.Text = "Casting is UNLOCKED";
-          currentAction.Text = string.Empty;
-          castingSpell = string.Empty;
-          // JobAbilityLock_Check = false;
-          JobAbilityCMD = string.Empty;
-      }));
+            {
+                JobAbilityLock_Check = true;
+                castingLockLabel.Text = "Casting is LOCKED for a JA.";
+                currentAction.Text = "Using a Job Ability: " + JobAbilityCMD;
+                // This is how long we want for Job Ability/JA to resolve.
+                // Since most of us are using JA0Wait, can be very short.
+                Thread.Sleep(TimeSpan.FromSeconds(0.5));
+                castingLockLabel.Text = "Casting is UNLOCKED";
+                currentAction.Text = string.Empty;
+                castingSpell = string.Empty;
+                //JobAbilityLock_Check = false;
+                JobAbilityCMD = string.Empty;
+            }));
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
         private void CustomCommand_Tracker_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
         }
 

@@ -71,6 +71,7 @@ namespace CurePlease.Models.Constants
         public static string Stoneskin = "Stoneskin";
         public static string Klimaform = "Klimaform";
         public static string Temper = "Temper";
+        public static string Temper_II = "Temper II";
         public static string Blaze_Spikes = "Blaze Spikes";
         public static string Shock_Spikes = "Shock Spikes";
         public static string Ice_Spikes = "Ice Spikes";
