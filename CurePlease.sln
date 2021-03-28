@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30413.136
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CurePlease", "CurePlease.csproj", "{E5FD7062-1824-4D6C-B4CD-DF94355B73C0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CurePlease", ".\CurePlease\CurePlease.csproj", "{E5FD7062-1824-4D6C-B4CD-DF94355B73C0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CurePlease.Models", "..\CurePlease.Models\CurePlease.Models.csproj", "{8E8FC162-0B31-453E-A2F4-1E9A3CEE2029}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CurePlease.Models", ".\CurePlease.Models\CurePlease.Models.csproj", "{8E8FC162-0B31-453E-A2F4-1E9A3CEE2029}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
