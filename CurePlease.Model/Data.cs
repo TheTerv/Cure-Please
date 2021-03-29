@@ -1,11 +1,17 @@
-﻿using CurePlease.Models.Constants;
+﻿using CurePlease.Model.Constants;
 using EliteMMO.API;
 using System.Collections.Generic;
 
-namespace CurePlease.Models
+namespace CurePlease.Model
 {
     public static class Data
     {
+        public static string[] CureTiers = { Spells.Cure, Spells.Cure_II, Spells.Cure_III, Spells.Cure_IV, Spells.Cure_V, Spells.Cure_VI };
+        public static string[] CuragaTiers = { Spells.Curaga, Spells.Curaga_II, Spells.Curaga_III, Spells.Curaga_IV, Spells.Curaga_V };
+
+        public static string[] RegenSpells = { Spells.Regen, Spells.Regen_II, Spells.Regen_III, Spells.Regen_IV, Spells.Regen_V };
+        public static string[] RefreshSpells = { Spells.Refresh, Spells.Refresh_II, Spells.Refresh_III };
+
         public static string[] GainBoostSpells = {
             Spells.Gain_STR,Spells.Gain_DEX, Spells.Gain_VIT, Spells.Gain_AGI, Spells.Gain_INT, Spells.Gain_MND, Spells.Gain_CHR,
             Spells.Boost_STR, Spells.Boost_DEX, Spells.Boost_VIT, Spells.Boost_AGI, Spells.Boost_INT, Spells.Boost_MND, Spells.Boost_CHR

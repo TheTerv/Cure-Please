@@ -1,7 +1,7 @@
 ﻿
-namespace CurePlease.Models.Enums
+namespace CurePlease.Model.Enums
 {
-    public enum EAbility : uint
+    public enum Ability : uint
     {
         Two_Hour = 0,
         Berserk = 1,

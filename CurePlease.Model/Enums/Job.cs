@@ -1,8 +1,8 @@
 ﻿
 
-namespace CurePlease.Models.Enums
+namespace CurePlease.Model.Enums
 {
-    public enum EJob : byte
+    public enum Job : byte
     {
         WAR = 1,
         MNK = 2,

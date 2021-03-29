@@ -191,9 +191,9 @@
     <Content Include="Cure Please Icon.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CurePlease.Models\CurePlease.Models.csproj">
+    <ProjectReference Include="..\CurePlease.Models\CurePlease.Model.csproj">
       <Project>{8e8fc162-0b31-453e-a2f4-1e9a3cee2029}</Project>
-      <Name>CurePlease.Models</Name>
+      <Name>CurePlease.Model</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

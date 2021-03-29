@@ -7,8 +7,8 @@
     <ProjectGuid>{8E8FC162-0B31-453E-A2F4-1E9A3CEE2029}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CurePlease.Models</RootNamespace>
-    <AssemblyName>CurePlease.Models</AssemblyName>
+    <RootNamespace>CurePlease.Model</RootNamespace>
+    <AssemblyName>CurePlease.Model</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -45,8 +45,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants\Spells.cs" />
-    <Compile Include="Enums\EAbility.cs" />
-    <Compile Include="Enums\EJob.cs" />
+    <Compile Include="Enums\Ability.cs" />
+    <Compile Include="Enums\Job.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

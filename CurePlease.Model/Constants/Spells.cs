@@ -1,6 +1,6 @@
 ﻿
 
-namespace CurePlease.Models.Constants
+namespace CurePlease.Model.Constants
 {
     public static class Spells
     {
