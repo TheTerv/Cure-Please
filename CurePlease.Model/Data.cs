@@ -7,6 +7,15 @@ namespace CurePlease.Model
     public static class Data
     {
         public static string[] CureTiers = { Spells.Cure, Spells.Cure_II, Spells.Cure_III, Spells.Cure_IV, Spells.Cure_V, Spells.Cure_VI };
+        public static Dictionary<string, int> SpellCosts = new Dictionary<string, int> { 
+            { Spells.Cure, 8 } ,
+            { Spells.Cure_II, 24 },
+            { Spells.Cure_III, 46 },
+            { Spells.Cure_IV, 88 },
+            { Spells.Cure_V, 125 },
+            { Spells.Cure_VI, 227 }
+        };
+
         public static string[] CuragaTiers = { Spells.Curaga, Spells.Curaga_II, Spells.Curaga_III, Spells.Curaga_IV, Spells.Curaga_V };
 
         public static string[] RegenSpells = { Spells.Regen, Spells.Regen_II, Spells.Regen_III, Spells.Regen_IV, Spells.Regen_V };
