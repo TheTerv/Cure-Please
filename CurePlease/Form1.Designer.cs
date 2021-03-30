@@ -2208,12 +2208,7 @@ namespace CurePlease
             this.resetSongTimer.Enabled = true;
             this.resetSongTimer.Interval = 60000;
             this.resetSongTimer.Tick += new System.EventHandler(this.resetSongTimer_Tick);
-            // 
-            // checkSCHCharges
-            // 
-            this.checkSCHCharges.Enabled = true;
-            this.checkSCHCharges.Interval = 500;
-            this.checkSCHCharges.Tick += new System.EventHandler(this.checkSCHCharges_Tick);
+            
             // 
             // groupBox2
             // 

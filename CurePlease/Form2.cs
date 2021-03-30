@@ -3353,19 +3353,19 @@
 
             SaveFileDialog savefile = new SaveFileDialog();
 
-            if ( Form1._ELITEAPIPL != null )
+            if ( Form1.PL != null )
             {
-                if ( Form1._ELITEAPIPL.Player.MainJob != 0 )
+                if ( Form1.PL.Player.MainJob != 0 )
                 {
-                    if ( Form1._ELITEAPIPL.Player.SubJob != 0 )
+                    if ( Form1.PL.Player.SubJob != 0 )
                     {
-                        JobTitles mainJob = JobNames.Where(c => c.job_number == Form1._ELITEAPIPL.Player.MainJob).FirstOrDefault();
-                        JobTitles subJob = JobNames.Where(c => c.job_number == Form1._ELITEAPIPL.Player.SubJob).FirstOrDefault();
+                        JobTitles mainJob = JobNames.Where(c => c.job_number == Form1.PL.Player.MainJob).FirstOrDefault();
+                        JobTitles subJob = JobNames.Where(c => c.job_number == Form1.PL.Player.SubJob).FirstOrDefault();
                         savefile.FileName = mainJob.job_name + "_" + subJob.job_name + ".xml";
                     }
                     else
                     {
-                        JobTitles mainJob = JobNames.Where(c => c.job_number == Form1._ELITEAPIPL.Player.MainJob).FirstOrDefault();
+                        JobTitles mainJob = JobNames.Where(c => c.job_number == Form1.PL.Player.MainJob).FirstOrDefault();
                         savefile.FileName = mainJob + ".xml";
                     }
                 }
@@ -3921,14 +3921,14 @@
             //decimal level = this.cureLevel.Value;
             double potency = System.Convert.ToDouble(curePotency.Value);
 
-            if ( Form1._ELITEAPIPL != null )
+            if ( Form1.PL != null )
             {
                 // First calculate default potency
 
-                double MND = Form1._ELITEAPIPL.Player.Stats.Mind;
-                double VIT = Form1._ELITEAPIPL.Player.Stats.Vitality;
+                double MND = Form1.PL.Player.Stats.Mind;
+                double VIT = Form1.PL.Player.Stats.Vitality;
 
-                ushort Healing = Form1._ELITEAPIPL.Player.CombatSkills.Healing.Skill;
+                ushort Healing = Form1.PL.Player.CombatSkills.Healing.Skill;
 
                 // Now grab calculations for each tier
 

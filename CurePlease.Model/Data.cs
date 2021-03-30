@@ -13,7 +13,12 @@ namespace CurePlease.Model
             { Spells.Cure_III, 46 },
             { Spells.Cure_IV, 88 },
             { Spells.Cure_V, 125 },
-            { Spells.Cure_VI, 227 }
+            { Spells.Cure_VI, 227 },
+            { Spells.Curaga, 60 },
+            { Spells.Curaga_II, 120 },
+            { Spells.Curaga_III, 180 },
+            { Spells.Curaga_IV, 260 },
+            { Spells.Curaga_V, 380 }
         };
 
         public static string[] CuragaTiers = { Spells.Curaga, Spells.Curaga_II, Spells.Curaga_III, Spells.Curaga_IV, Spells.Curaga_V };

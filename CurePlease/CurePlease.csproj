@@ -191,9 +191,13 @@
     <Content Include="Cure Please Icon.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CurePlease.Models\CurePlease.Model.csproj">
+    <ProjectReference Include="..\CurePlease.Model\CurePlease.Model.csproj">
       <Project>{8e8fc162-0b31-453e-a2f4-1e9a3cee2029}</Project>
       <Name>CurePlease.Model</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CurePlease.Utilities\CurePlease.Utilities.csproj">
+      <Project>{98fe190e-2faa-4600-97d3-4173456b264a}</Project>
+      <Name>CurePlease.Utilities</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
