@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 namespace CurePlease.Model
 {
+    // TODO: Mapping of Debuffs -> Cure spell + priority
     public static class Data
     {
         public static string[] CureTiers = { Spells.Cure, Spells.Cure_II, Spells.Cure_III, Spells.Cure_IV, Spells.Cure_V, Spells.Cure_VI };
