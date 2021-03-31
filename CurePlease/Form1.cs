@@ -2918,15 +2918,15 @@
                 underSpell = tierList[spellIndex - 1];
             }
 
-            if(PL.SpellAvailable(cureSpell))
+            if(PL.SpellAvailable(cureSpell) && PL.HasMPFor(cureSpell))
             {
                 return cureSpell;
             }
-            else if(Form2.config.Overcure && PL.SpellAvailable(overSpell))
+            else if(Form2.config.Overcure && PL.SpellAvailable(overSpell) && PL.HasMPFor(overSpell))
             {
                 return overSpell;
             }
-            else if(Form2.config.Undercure && PL.SpellAvailable(underSpell))
+            else if(Form2.config.Undercure && PL.SpellAvailable(underSpell) && PL.HasMPFor(underSpell))
             {
                 return underSpell;
             }
@@ -3460,14 +3460,12 @@
             // Only do this is party member is alive.
             if (partyMember.CurrentHP > 0)
             {
-                // FIRST GET HOW MUCH HP IS MISSING FROM THE CURRENT PARTY MEMBER
-                uint hpLoss = partyMember.CurrentHP * 100 / partyMember.CurrentHPP - partyMember.CurrentHP;
-
-                string cureSpell = PickCure(hpLoss);                       
+                string cureSpell = PickCure(partyMember.HPLoss());                       
 
                 if (cureSpell != Spells.Unknown)
                 {
-                    if (Array.IndexOf(Data.CureTiers, cureSpell) < 3 && Form2.config.PrioritiseOverLowerTier == true)
+                    // I consider cure/cure II to be low tier once cure III gets above 700 HP.
+                    if (Array.IndexOf(Data.CureTiers, cureSpell) < 2 && Form2.config.PrioritiseOverLowerTier == true)
                     {
                         RunDebuffChecker();
                     }
@@ -4342,27 +4340,6 @@
                     } // Closing FOREACH base_list
                 }// Closing LOCK
             }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         }
 
         private bool DebuffContains(List<string> Debuff_list, string Checked_id)
@@ -4384,168 +4361,45 @@
             }
         }
 
-        private void CuragaCalculatorAsync(PartyMember member)
+        private void CuragaCalculator(PartyMember member)
         {
-            string lowestHP_Name = member.Name;
-            uint hpLoss = (member.CurrentHP * 100 / member.CurrentHPP) - member.CurrentHP;
-
-            if (member.CurrentHP > 0)
+            uint hpLoss = member.HPLoss();
+            string cureSpell = Spells.Unknown;
+  
+            if (Form2.config.curaga5enabled && (hpLoss >= Form2.config.curaga5Amount))
             {
-                if (Form2.config.curaga5enabled && (hpLoss >= Form2.config.curaga5Amount) && PL.HasMPFor(Spells.Curaga_V) && PL.SpellAvailable(Spells.Curaga_V))
+                cureSpell = Spells.Curaga_V;          
+            }
+            else if (Form2.config.curaga4enabled && (hpLoss >= Form2.config.curaga4Amount))
+            {
+                cureSpell = Spells.Curaga_IV;           
+            }
+            else if (Form2.config.curaga3enabled && (hpLoss >= Form2.config.curaga3Amount))
+            {
+                cureSpell = Spells.Curaga_III;
+            }
+            else if (Form2.config.curaga2enabled && (hpLoss >= Form2.config.curaga2Amount))
+            {
+                cureSpell = Spells.Curaga_II;
+            }
+            else if (Form2.config.curagaEnabled && (hpLoss >= Form2.config.curagaAmount))
+            {
+                cureSpell = Spells.Curaga;
+            }
+
+            if (cureSpell != Spells.Unknown)
+            {
+                var curagaTier = PickCureTier(cureSpell, Data.CuragaTiers);
+                if (Form2.config.curagaTargetType == 0)
                 {
-                    string cureSpell = PickCureTier(Spells.Curaga_V, Data.CuragaTiers);
-                    if (cureSpell != Spells.Unknown)
-                    {
-                        if (Form2.config.curagaTargetType == 0)
-                        {
-                            CastSpell(lowestHP_Name, cureSpell);
-                        }
-                        else
-                        {
-                            CastSpell(Form2.config.curagaTargetName, cureSpell);
-                        }
-                    }
+                    CastSpell(member.Name, curagaTier);
                 }
-                else if (((Form2.config.curaga4enabled && PL.SpellAvailable(Spells.Curaga_IV)) || (Form2.config.Accession && Form2.config.accessionCure && PL.SpellAvailable(Spells.Cure_IV))) && (hpLoss >= Form2.config.curaga4Amount) && PL.HasMPFor(Spells.Curaga_IV))
+                else
                 {
-                    string cureSpell = Spells.Unknown;
-                    if (PL.SpellAvailable(Spells.Curaga_IV))
-                    {
-                        cureSpell = PickCureTier(Spells.Curaga_IV, Data.CuragaTiers);
-                    }
-                    else if (Form2.config.Accession && Form2.config.accessionCure && PL.AbilityAvailable(Ability.Accession) && PL.CurrentSCHCharges() > 0)
-                    {
-                        cureSpell = PickCureTier(Spells.Cure_IV, Data.CureTiers);
-                    }
-
-                    if (cureSpell != Spells.Unknown)
-                    {
-                        if (IsCure(cureSpell) && (PL.HasStatus(StatusEffect.Light_Arts) || PL.HasStatus(StatusEffect.Addendum_White)))
-                        {
-                            if (!PL.HasStatus(StatusEffect.Accession))
-                            {
-
-                                JobAbility_Wait("Curaga, Accession", Ability.Accession);
-                            }
-                        }
-
-                        if (Form2.config.curagaTargetType == 0)
-                        {
-                            CastSpell(lowestHP_Name, cureSpell);
-                        }
-                        else
-                        {
-                            CastSpell(Form2.config.curagaTargetName, cureSpell);
-                        }
-                    }
-                }
-                else if (((Form2.config.curaga3enabled && PL.SpellAvailable(Spells.Curaga_III)) || (Form2.config.Accession && Form2.config.accessionCure && PL.SpellAvailable(Spells.Cure_III))) && (hpLoss >= Form2.config.curaga3Amount) && PL.HasMPFor(Spells.Curaga_III))
-                {
-                    string cureSpell = Spells.Unknown;
-                    if (PL.SpellAvailable(Spells.Curaga_III))
-                    {
-                        cureSpell = PickCureTier(Spells.Curaga_III, Data.CuragaTiers);
-                    }
-                    else if (Form2.config.Accession && Form2.config.accessionCure && PL.AbilityAvailable(Ability.Accession) && PL.CurrentSCHCharges() > 0)
-                    {
-                        cureSpell = PickCureTier(Spells.Cure_III, Data.CureTiers);
-                    }
-
-                    if (cureSpell != Spells.Unknown)
-                    {
-                        if (IsCure(cureSpell) && (PL.HasStatus(StatusEffect.Light_Arts) || PL.HasStatus(StatusEffect.Addendum_White)))
-                        {
-                            if (!PL.HasStatus(StatusEffect.Accession))
-                            {
-                                JobAbility_Wait("Curaga, Accession", Ability.Accession);
-                            }
-                        }
-
-                        if (Form2.config.curagaTargetType == 0)
-                        {
-                            CastSpell(lowestHP_Name, cureSpell);
-                        }
-                        else
-                        {
-                            CastSpell(Form2.config.curagaTargetName, cureSpell);
-                        }
-                    }
-                }
-                else if (((Form2.config.curaga2enabled && PL.SpellAvailable(Spells.Curaga_II)) || (Form2.config.Accession && Form2.config.accessionCure && PL.SpellAvailable(Spells.Cure_II))) && (hpLoss >= Form2.config.curaga2Amount) && PL.HasMPFor(Spells.Curaga_II))
-                {
-                    string cureSpell = Spells.Unknown;
-                    if (PL.SpellAvailable(Spells.Curaga_II))
-                    {
-                        cureSpell = PickCureTier(Spells.Curaga_II, Data.CuragaTiers);
-                    }
-                    else if (Form2.config.Accession && Form2.config.accessionCure && PL.AbilityAvailable(Ability.Accession) && PL.CurrentSCHCharges() > 0)
-                    {
-                        cureSpell = PickCureTier(Spells.Cure_II, Data.CureTiers);
-                    }
-                    if (cureSpell != Spells.Unknown)
-                    {
-                        if (IsCure(cureSpell) && (PL.HasStatus(StatusEffect.Light_Arts) || PL.HasStatus(StatusEffect.Addendum_White)))
-                        {
-                            if (!PL.HasStatus(StatusEffect.Accession))
-                            {
-                                JobAbility_Wait("Curaga, Accession", Ability.Accession);
-                                return;
-                            }
-                        }
-
-                        if (Form2.config.curagaTargetType == 0)
-                        {
-                            CastSpell(lowestHP_Name, cureSpell);
-                        }
-                        else
-                        {
-                            CastSpell(Form2.config.curagaTargetName, cureSpell);
-                        }
-                    }
-                }
-                else if (((Form2.config.curagaEnabled && PL.SpellAvailable(Spells.Curaga)) || (Form2.config.Accession && Form2.config.accessionCure && PL.SpellAvailable(Spells.Cure))) && (hpLoss >= Form2.config.curagaAmount) && PL.HasMPFor(Spells.Curaga))
-                {
-                    string cureSpell = Spells.Unknown;
-                    if (PL.SpellAvailable(Spells.Curaga))
-                    {
-                        cureSpell = PickCureTier(Spells.Curaga, Data.CuragaTiers);
-                    }
-                    else if (Form2.config.Accession && Form2.config.accessionCure && PL.AbilityAvailable(Ability.Accession) && PL.CurrentSCHCharges() > 0)
-                    {
-                        cureSpell = PickCureTier(Spells.Cure, Data.CureTiers);
-                    }
-
-                    if (cureSpell != Spells.Unknown)
-                    {
-                        if (IsCure(cureSpell) && (PL.HasStatus(StatusEffect.Light_Arts) || PL.HasStatus(StatusEffect.Addendum_White)))
-                        {
-                            if (!PL.HasStatus(StatusEffect.Accession))
-                            {
-                                JobAbility_Wait("Curaga, Accession", Ability.Accession);
-                                return;
-                            }
-                        }
-
-                        if (Form2.config.curagaTargetType == 0)
-                        {
-                            CastSpell(lowestHP_Name, cureSpell);
-                        }
-                        else
-                        {
-                            CastSpell(Form2.config.curagaTargetName, cureSpell);
-                        }
-                    }
+                    CastSpell(Form2.config.curagaTargetName, curagaTier);
                 }
             }
-        }
 
-        // If they're in range, and alive, should be able to cast.
-        // Since we include distance = 0, should work when target is the PL itself.
-        private bool CastingPossible(PartyMember member)
-        {
-            var entity = PL.Entity.GetEntity((int)member.TargetIndex);
-
-            return (entity.Distance < 21 && entity.Distance >= 0 && member.CurrentHP > 0);
         }
 
         private bool monitoredStatusCheck(StatusEffect requestedStatus)
@@ -5228,7 +5082,8 @@
                             await Task.Delay(4000);
                         }
                     }
-                                
+
+                    #region Primary Logic                               
                     /////////////////////////// PL CURE //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
                     // TODO: Test this! Pretty sure your own character is always party member index 0.
@@ -5240,59 +5095,74 @@
 
 
                     /////////////////////////// CURAGA //////////////////////////////////////////////////////////////////////////////////////////////////////////////////                
-                    IOrderedEnumerable<PartyMember> cParty_curaga = Monitored.Party.GetPartyMembers().Where(p => p.Active != 0 && p.Zone == PL.Player.ZoneId).OrderBy(p => p.CurrentHPP);
+                    IEnumerable<PartyMember> partyByHP = Monitored.GetActivePartyMembers();
 
-                    int memberOF_curaga = PLPartyRelativeToMonitored();
-                    List<PartyMember> cures_required = new List<PartyMember>();
+                    int plParty = PLPartyRelativeToMonitored();
 
-                    if (memberOF_curaga != 0 && memberOF_curaga != 4)
+                    // Order parties that qualify for AOE cures by average missing HP.
+                    var partyNeedsAoe = Monitored.PartyNeedsAoeCure((int)Form2.config.curagaRequiredMembers, Form2.config.curagaCurePercentage).OrderBy(partyNumber => Monitored.AverageHpLossForParty(partyNumber));
+
+                    // If PL is in same alliance, and there's at least 1 party that needs an AOE cure.
+                    // Parties are ordered by most average missing HP.
+                    if (plParty > 0 && partyNeedsAoe.Any())
                     {
-                        foreach (PartyMember pData in cParty_curaga)
+                        int targetParty = 0;
+                        
+                        // We can accession if we have light arts/addendum white, and either we already have the status or we have the ability available,
+                        // and have the charges to use it.
+                        bool plCanAccession = (PL.HasStatus(StatusEffect.Light_Arts) || PL.HasStatus(StatusEffect.Addendum_White)) 
+                            && (PL.HasStatus(StatusEffect.Accession) || (PL.AbilityAvailable(Ability.Accession) && PL.CurrentSCHCharges() > 0));
+                                            
+                        foreach(int party in partyNeedsAoe)
                         {
-                            if (memberOF_curaga == 1 && pData.MemberNumber >= 0 && pData.MemberNumber <= 5)
-                            {
-                                if (CastingPossible(pData) && (Monitored.Party.GetPartyMembers()[pData.MemberNumber].Active >= 1) && enabledBoxes[pData.MemberNumber].Checked && (Monitored.Party.GetPartyMembers()[pData.MemberNumber].CurrentHP > 0))
-                                {
-                                    if ((Monitored.Party.GetPartyMembers()[pData.MemberNumber].CurrentHPP <= Form2.config.curagaCurePercentage))
-                                    {
-                                        cures_required.Add(pData);
-                                    }
-                                }
+                            // We check whether we can accession here, so that if we can't accession we don't skip a chance to curaga our own party.
+                            if(party != plParty && !plCanAccession) {
+                                continue;
                             }
-                            else if (memberOF_curaga == 2 && pData.MemberNumber >= 6 && pData.MemberNumber <= 11)
+
+                            // We get the first party with at least 1 person who's in it and checked.
+                            // As well as 1 person who's both under the cure threshold AND in casting range.
+                            if (partyByHP.Count(pm => pm.InParty(party) && enabledBoxes[pm.MemberNumber].Checked) > 0)
                             {
-                                if (CastingPossible(pData) && (Monitored.Party.GetPartyMembers()[pData.MemberNumber].Active >= 1) && enabledBoxes[pData.MemberNumber].Checked && (Monitored.Party.GetPartyMembers()[pData.MemberNumber].CurrentHP > 0))
+                                if(partyByHP.Count(pm => pm.InParty(party) && pm.CurrentHPP < Form2.config.curagaCurePercentage && PL.CanCastOn(pm)) > 0)
                                 {
-                                    if ((Monitored.Party.GetPartyMembers()[pData.MemberNumber].CurrentHPP <= Form2.config.curagaCurePercentage))
-                                    {
-                                        cures_required.Add(pData);
-                                    }
+                                    targetParty = party;
                                 }
-                            }
-                            else if (memberOF_curaga == 3 && pData.MemberNumber >= 12 && pData.MemberNumber <= 17)
-                            {
-                                if (CastingPossible(pData) && (Monitored.Party.GetPartyMembers()[pData.MemberNumber].Active >= 1) && enabledBoxes[pData.MemberNumber].Checked && (Monitored.Party.GetPartyMembers()[pData.MemberNumber].CurrentHP > 0))
-                                {
-                                    if (Monitored.Party.GetPartyMembers()[pData.MemberNumber].CurrentHPP <= Form2.config.curagaCurePercentage)
-                                    {
-                                        cures_required.Add(pData);
-                                    }
-                                }
-                            }
+                            }                         
                         }
 
-                        if (cures_required.Count >= Form2.config.curagaRequiredMembers)
+                        if (targetParty > 0)
                         {
-                            CuragaCalculatorAsync(cures_required.First());
+                            // The target is the first person
+                            var target = partyByHP.First(pm => pm.InParty(targetParty) && PL.CanCastOn(pm));
+
+                            if (target != null)
+                            {
+                                // If same party as PL, curaga. Otherwise we try to accession cure.
+                                if (targetParty == plParty)
+                                {
+                                    CuragaCalculator(target);
+                                    return;
+                                }
+                                else
+                                {
+                                    // We've already determined we can accession, or already have the status.
+                                    if (!PL.HasStatus(StatusEffect.Accession))
+                                    {
+                                        JobAbility_Wait("Accession AOE Cure", Ability.Accession);
+                                    }
+
+                                    CureCalculator(target);
+                                    return;
+                                }
+                            }
                         }
                     }
 
                     /////////////////////////// CURE //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-                    IEnumerable<PartyMember> playerHpOrder = Monitored.Party.GetPartyMembers().OrderBy(p => p.CurrentHPP).OrderBy(p => p.Active == 0);
-
                     // First run a check on the monitored target
-                    PartyMember monitoredPlayer = playerHpOrder.FirstOrDefault(p => p.Name == Monitored.Player.Name);
+                    PartyMember monitoredPlayer = partyByHP.FirstOrDefault(p => p.Name == Monitored.Player.Name);
 
                     if (Form2.config.enableMonitoredPriority && monitoredPlayer.CurrentHP > 0 && (monitoredPlayer.CurrentHPP <= Form2.config.monitoredCurePercentage))
                     {
@@ -5302,7 +5172,7 @@
                     {
                         // Calculate who needs a cure, and is a valid target.
                         // Anyone who's: Enabled + Active + Alive + Under cure threshold
-                        var validCures = playerHpOrder.Where(pm => enabledBoxes[pm.MemberNumber].Checked && (pm.Active >= 1) && (pm.CurrentHP > 0) && (pm.CurrentHPP <= Form2.config.curePercentage) && CastingPossible(pm));
+                        var validCures = partyByHP.Where(pm => enabledBoxes[pm.MemberNumber].Checked && (pm.CurrentHPP <= Form2.config.curePercentage) && PL.CanCastOn(pm));
 
                         // Now run a scan to check all targets in the High Priority Threshold
                         if (validCures != null && validCures.Any()) {
@@ -5392,52 +5262,26 @@
                         {
                             JobAbility_Wait(Ability.AddendumBlack, Ability.AddendumBlack);
                         }
-                        else if (Form2.config.plReraise && Form2.config.EnlightenmentReraise && (!PL.HasStatus(StatusEffect.Reraise)) && PL.Player.MainJob == 20 && !BuffChecker(401, 0) && PL.AbilityAvailable(Ability.Enlightenment))
+                        else if (Form2.config.plReraise && Form2.config.EnlightenmentReraise && (!PL.HasStatus(StatusEffect.Reraise)) && !PL.HasStatus(StatusEffect.Addendum_White) && PL.AbilityAvailable(Ability.Enlightenment))
                         {
-
-
                             if (!PL.HasStatus(StatusEffect.Enlightenment) && PL.AbilityAvailable(Ability.Enlightenment))
                             {
                                 JobAbility_Wait("Reraise, Enlightenment", Ability.Enlightenment);
                             }
 
-
-                            if ((Form2.config.plReraise_Level == 1) && PL.SpellAvailable(Spells.Reraise) && PL.Player.MP > 150)
+                            var reraiseSpell = Data.ReraiseTiers[Form2.config.plReraise_Level-1];
+                            if (PL.HasMPFor(reraiseSpell) && PL.SpellAvailable(reraiseSpell))
                             {
-                                CastSpell(Target.Me, Spells.Reraise);
+                                CastSpell(Target.Me, reraiseSpell);
                             }
-                            else if ((Form2.config.plReraise_Level == 2) && PL.SpellAvailable(Spells.Reraise_II) && PL.Player.MP > 150)
-                            {
-                                CastSpell(Target.Me, Spells.Reraise_II);
-                            }
-                            else if ((Form2.config.plReraise_Level == 3) && PL.SpellAvailable(Spells.Reraise_III) && PL.Player.MP > 150)
-                            {
-                                CastSpell(Target.Me, Spells.Reraise_III);
-                            }
-                            else if ((Form2.config.plReraise_Level == 4) && PL.SpellAvailable(Spells.Reraise_IV) && PL.Player.MP > 150)
-                            {
-                                CastSpell(Target.Me, Spells.Reraise_IV);
-                            }
-
                         }
-                        else if (Form2.config.plReraise && (!PL.HasStatus(StatusEffect.Reraise)) && CheckReraiseLevelPossession() == true)
+                        else if (Form2.config.plReraise && (!PL.HasStatus(StatusEffect.Reraise)))
                         {
-                            if ((Form2.config.plReraise_Level == 1) && PL.Player.MP > 150)
+                            var reraiseSpell = Data.ReraiseTiers[Form2.config.plReraise_Level-1];
+                            if (PL.HasMPFor(reraiseSpell) && PL.SpellAvailable(reraiseSpell)) 
                             {
-                                CastSpell(Target.Me, Spells.Reraise);
-                            }
-                            else if ((Form2.config.plReraise_Level == 2) && PL.Player.MP > 150)
-                            {
-                                CastSpell(Target.Me, Spells.Reraise_II);
-                            }
-                            else if ((Form2.config.plReraise_Level == 3) && PL.Player.MP > 150)
-                            {
-                                CastSpell(Target.Me, Spells.Reraise_III);
-                            }
-                            else if ((Form2.config.plReraise_Level == 4) && PL.Player.MP > 150)
-                            {
-                                CastSpell(Target.Me, Spells.Reraise_IV);
-                            }
+                                CastSpell(Target.Me, reraiseSpell);
+                            }                           
                         }
                         else if (Form2.config.plUtsusemi && BuffChecker(444, 0) != true && BuffChecker(445, 0) != true && BuffChecker(446, 0) != true)
                         {
@@ -5452,36 +5296,15 @@
                         }
                         else if (Form2.config.plProtect && (!PL.HasStatus(StatusEffect.Protect)))
                         {
-                            string protectSpell = Spells.Unknown;
-                            if (Form2.config.autoProtect_Spell == 0)
-                            {
-                                protectSpell = Spells.Protect;
-                            }
-                            else if (Form2.config.autoProtect_Spell == 1)
-                            {
-                                protectSpell = Spells.Protect_II;
-                            }
-                            else if (Form2.config.autoProtect_Spell == 2)
-                            {
-                                protectSpell = Spells.Protect_III;
-                            }
-                            else if (Form2.config.autoProtect_Spell == 3)
-                            {
-                                protectSpell = Spells.Protect_IV;
-                            }
-                            else if (Form2.config.autoProtect_Spell == 4)
-                            {
-                                protectSpell = Spells.Protect_V;
-                            }
+                            string protectSpell = Data.ProtectTiers[Form2.config.autoProtect_Spell];
 
-                            if (protectSpell != Spells.Unknown && PL.SpellAvailable(protectSpell) && PL.SpellAvailable(protectSpell))
+                            if (protectSpell != Spells.Unknown && PL.SpellAvailable(protectSpell))
                             {
                                 if (Form2.config.Accession && Form2.config.accessionProShell && PL.Party.GetPartyMembers().Count() > 2 && PL.AbilityAvailable(Ability.Accession) && PL.CurrentSCHCharges() > 0)
                                 {
                                     if (!PL.HasStatus(StatusEffect.Accession))
                                     {
                                         JobAbility_Wait("Protect, Accession", Ability.Accession);
-                                        return;
                                     }
                                 }
 
@@ -5490,31 +5313,11 @@
                         }
                         else if (Form2.config.plShell && (!PL.HasStatus(StatusEffect.Shell)))
                         {
-                            string shellSpell = Spells.Unknown;
-                            if (Form2.config.autoShell_Spell == 0)
-                            {
-                                shellSpell = Spells.Shell;
-                            }
-                            else if (Form2.config.autoShell_Spell == 1)
-                            {
-                                shellSpell = Spells.Shell_II;
-                            }
-                            else if (Form2.config.autoShell_Spell == 2)
-                            {
-                                shellSpell = Spells.Shell_III;
-                            }
-                            else if (Form2.config.autoShell_Spell == 3)
-                            {
-                                shellSpell = Spells.Shell_IV;
-                            }
-                            else if (Form2.config.autoShell_Spell == 4)
-                            {
-                                shellSpell = Spells.Shell_V;
-                            }
+                            string shellSpell = Data.ShellTiers[Form2.config.autoShell_Spell];
 
                             if (shellSpell != Spells.Unknown && PL.SpellAvailable(shellSpell))
                             {
-                                if (Form2.config.Accession && Form2.config.accessionProShell && PL.Party.GetPartyMembers().Count() > 2 && ((PL.Player.MainJob == 5 && PL.Player.SubJob == 20) || PL.Player.MainJob == 20) && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Accession))
+                                if (Form2.config.Accession && Form2.config.accessionProShell && PL.Party.GetPartyMembers().Count() > 2 && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Accession))
                                 {
                                     if (!PL.HasStatus(StatusEffect.Accession))
                                     {
@@ -5535,9 +5338,9 @@
                                 return;
                             }
 
-                            if (Form2.config.Perpetuance && Form2.config.blinkPerpetuance && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable("Perpetuance") && !PL.HasStatus(StatusEffect.Perpetuance))
+                            if (Form2.config.Perpetuance && Form2.config.blinkPerpetuance && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Perpetuance) && !PL.HasStatus(StatusEffect.Perpetuance))
                             {
-                                JobAbility_Wait("Blink, Perpetuance", "Perpetuance");
+                                JobAbility_Wait("Blink, Perpetuance", Ability.Perpetuance);
                                 return;
                             }
 
@@ -5551,75 +5354,48 @@
                                 return;
                             }
 
-                            if (Form2.config.Perpetuance && Form2.config.phalanxPerpetuance && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable("Perpetuance") && !PL.HasStatus(StatusEffect.Perpetuance))
+                            if (Form2.config.Perpetuance && Form2.config.phalanxPerpetuance && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Perpetuance) && !PL.HasStatus(StatusEffect.Perpetuance))
                             {
-                                JobAbility_Wait("Phalanx, Perpetuance", "Perpetuance");
+                                JobAbility_Wait("Phalanx, Perpetuance", Ability.Perpetuance);
                                 return;
                             }
 
                             CastSpell(Target.Me, Spells.Phalanx);
                         }
-                        else if (Form2.config.plRefresh && (!PL.HasStatus(StatusEffect.Refresh)) && CheckRefreshLevelPossession())
+                        else if (Form2.config.plRefresh && (!PL.HasStatus(StatusEffect.Refresh)))
                         {
-                            if ((Form2.config.plRefresh_Level == 1) && PL.SpellAvailable(Spells.Refresh))
+                            var refreshSpell = Data.RefreshTiers[Form2.config.plRefresh_Level - 1];
+
+                            if (PL.SpellAvailable(Spells.Refresh))
                             {
                                 if (Form2.config.Accession && Form2.config.refreshAccession && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Accession) && !PL.HasStatus(StatusEffect.Accession))
                                 {
                                     JobAbility_Wait("Refresh, Accession", Ability.Accession);
-                                    return;
                                 }
-
-                                if (Form2.config.Perpetuance && Form2.config.refreshPerpetuance && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable("Perpetuance") && !PL.HasStatus(StatusEffect.Perpetuance))
+                                if (Form2.config.Perpetuance && Form2.config.refreshPerpetuance && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Perpetuance) && !PL.HasStatus(StatusEffect.Perpetuance))
                                 {
-                                    JobAbility_Wait("Refresh, Perpetuance", "Perpetuance");
-                                    return;
+                                    JobAbility_Wait("Refresh, Perpetuance", Ability.Perpetuance);
                                 }
 
-                                CastSpell(Target.Me, Spells.Refresh);
-                            }
-                            else if ((Form2.config.plRefresh_Level == 2) && PL.SpellAvailable(Spells.Refresh_II))
-                            {
-                                CastSpell(Target.Me, Spells.Refresh_II);
-                            }
-                            else if ((Form2.config.plRefresh_Level == 3) && PL.SpellAvailable("Refresh III"))
-                            {
-                                CastSpell(Target.Me, Spells.Refresh_III);
-                            }
+                                CastSpell(Target.Me, refreshSpell);
+                            }                         
                         }
-                        else if (Form2.config.plRegen && (!PL.HasStatus(StatusEffect.Regen)) && CheckRegenLevelPossession() == true)
+                        else if (Form2.config.plRegen && (!PL.HasStatus(StatusEffect.Regen)))
                         {
                             if (Form2.config.Accession && Form2.config.regenAccession && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Accession) && !PL.HasStatus(StatusEffect.Accession))
                             {
                                 JobAbility_Wait("Regen, Accession", Ability.Accession);
-                                return;
+                            }
+                            if (Form2.config.Perpetuance && Form2.config.regenPerpetuance && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Perpetuance) && !PL.HasStatus(StatusEffect.Perpetuance))
+                            {
+                                JobAbility_Wait("Regen, Perpetuance", Ability.Perpetuance);
                             }
 
-                            if (Form2.config.Perpetuance && Form2.config.regenPerpetuance && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable("Perpetuance") && !PL.HasStatus(StatusEffect.Perpetuance))
+                            var regenSpell = Data.RegenTiers[Form2.config.plRegen_Level - 1];
+                            if(PL.HasMPFor(regenSpell) && PL.SpellAvailable(regenSpell))
                             {
-                                JobAbility_Wait("Regen, Perpetuance", "Perpetuance");
-                                return;
-                            }
-
-                            if ((Form2.config.plRegen_Level == 1) && PL.Player.MP > 15)
-                            {
-                                CastSpell(Target.Me, Spells.Regen);
-                            }
-                            else if ((Form2.config.plRegen_Level == 2) && PL.Player.MP > 36)
-                            {
-                                CastSpell(Target.Me, Spells.Regen_II);
-                            }
-                            else if ((Form2.config.plRegen_Level == 3) && PL.Player.MP > 64)
-                            {
-                                CastSpell(Target.Me, Spells.Regen_III);
-                            }
-                            else if ((Form2.config.plRegen_Level == 4) && PL.Player.MP > 82)
-                            {
-                                CastSpell(Target.Me, Spells.Regen_IV);
-                            }
-                            else if ((Form2.config.plRegen_Level == 5) && PL.Player.MP > 100)
-                            {
-                                CastSpell(Target.Me, Spells.Regen_V);
-                            }
+                                CastSpell(Target.Me, regenSpell);
+                            }                    
                         }
                         else if (Form2.config.plAdloquium && (!PL.HasStatus(StatusEffect.Regain)) && PL.SpellAvailable(Spells.Adloquium))
                         {
@@ -5629,9 +5405,9 @@
                                 return;
                             }
 
-                            if (Form2.config.Perpetuance && Form2.config.adloquiumPerpetuance && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable("Perpetuance") && !PL.HasStatus(StatusEffect.Perpetuance))
+                            if (Form2.config.Perpetuance && Form2.config.adloquiumPerpetuance && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Perpetuance) && !PL.HasStatus(StatusEffect.Perpetuance))
                             {
-                                JobAbility_Wait("Adloquium, Perpetuance", "Perpetuance");
+                                JobAbility_Wait("Adloquium, Perpetuance", Ability.Perpetuance);
                                 return;
                             }
 
@@ -5645,9 +5421,9 @@
                                 return;
                             }
 
-                            if (Form2.config.Perpetuance && Form2.config.stoneskinPerpetuance && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable("Perpetuance") && !PL.HasStatus(StatusEffect.Perpetuance))
+                            if (Form2.config.Perpetuance && Form2.config.stoneskinPerpetuance && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Perpetuance) && !PL.HasStatus(StatusEffect.Perpetuance))
                             {
-                                JobAbility_Wait("Stoneskin, Perpetuance", "Perpetuance");
+                                JobAbility_Wait("Stoneskin, Perpetuance", Ability.Perpetuance);
                                 return;
                             }
 
@@ -5661,21 +5437,29 @@
                                 return;
                             }
 
-                            if (Form2.config.Perpetuance && Form2.config.aquaveilPerpetuance && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable("Perpetuance") && PL.HasStatus(StatusEffect.Perpetuance))
+                            if (Form2.config.Perpetuance && Form2.config.aquaveilPerpetuance && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Perpetuance) && PL.HasStatus(StatusEffect.Perpetuance))
                             {
-                                JobAbility_Wait("Aquaveil, Perpetuance", "Perpetuance");
+                                JobAbility_Wait("Aquaveil, Perpetuance", Ability.Perpetuance);
                                 return;
                             }
 
                             CastSpell(Target.Me, Spells.Aquaveil);
                         }
-                        else if (Form2.config.plShellra && (!PL.HasStatus(StatusEffect.Shell)) && CheckShellraLevelPossession() == true)
+                        else if (Form2.config.plShellra && (!PL.HasStatus(StatusEffect.Shell)))
                         {
-                            CastSpell(Target.Me, GetShellraLevel(Form2.config.plShellra_Level));
+                            var shellraSpell = Data.ShellraTiers[(int)Form2.config.plShellra_Level - 1];
+                            if(PL.SpellAvailable(shellraSpell))
+                            {
+                                CastSpell(Target.Me, shellraSpell);
+                            }
                         }
-                        else if (Form2.config.plProtectra && (!PL.HasStatus(StatusEffect.Protect)) && CheckProtectraLevelPossession() == true)
+                        else if (Form2.config.plProtectra && (!PL.HasStatus(StatusEffect.Protect)))
                         {
-                            CastSpell(Target.Me, GetProtectraLevel(Form2.config.plProtectra_Level));
+                            var protectraSpell = Data.ProtectraTiers[(int)Form2.config.plProtectra_Level - 1];
+                            if (PL.SpellAvailable(protectraSpell))
+                            {
+                                CastSpell(Target.Me, protectraSpell);
+                            }
                         }
                         else if (Form2.config.plBarElement && !BuffChecker(BarspellBuffID, 0) && PL.SpellAvailable(BarspellName))
                         {
@@ -5685,9 +5469,9 @@
                                 return;
                             }
 
-                            if (Form2.config.Perpetuance && Form2.config.barspellPerpetuance && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable("Perpetuance") && !PL.HasStatus(StatusEffect.Perpetuance))
+                            if (Form2.config.Perpetuance && Form2.config.barspellPerpetuance && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Perpetuance) && !PL.HasStatus(StatusEffect.Perpetuance))
                             {
-                                JobAbility_Wait("Barspell, Perpetuance", "Perpetuance");
+                                JobAbility_Wait("Barspell, Perpetuance", Ability.Perpetuance);
                                 return;
                             }
 
@@ -5701,9 +5485,9 @@
                                 return;
                             }
 
-                            if (Form2.config.Perpetuance && Form2.config.barstatusPerpetuance && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable("Perpetuance") && !PL.HasStatus(StatusEffect.Perpetuance))
+                            if (Form2.config.Perpetuance && Form2.config.barstatusPerpetuance && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Perpetuance) && !PL.HasStatus(StatusEffect.Perpetuance))
                             {
-                                JobAbility_Wait("Barstatus, Perpetuance", "Perpetuance");
+                                JobAbility_Wait("Barstatus, Perpetuance", Ability.Perpetuance);
                                 return;
                             }
 
@@ -5726,9 +5510,9 @@
                                 return;
                             }
 
-                            if (Form2.config.Perpetuance && Form2.config.stormspellPerpetuance && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable("Perpetuance") && !PL.HasStatus(StatusEffect.Perpetuance))
+                            if (Form2.config.Perpetuance && Form2.config.stormspellPerpetuance && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Perpetuance) && !PL.HasStatus(StatusEffect.Perpetuance))
                             {
-                                JobAbility_Wait("Stormspell, Perpetuance", "Perpetuance");
+                                JobAbility_Wait("Stormspell, Perpetuance", Ability.Perpetuance);
                                 return;
                             }
 
@@ -5786,9 +5570,9 @@
                                 return;
                             }
 
-                            if (Form2.config.Perpetuance && Form2.config.enspellPerpetuance && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable("Perpetuance") && enspell.spell_position < 6 && !PL.HasStatus(StatusEffect.Perpetuance))
+                            if (Form2.config.Perpetuance && Form2.config.enspellPerpetuance && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Perpetuance) && enspell.spell_position < 6 && !PL.HasStatus(StatusEffect.Perpetuance))
                             {
-                                JobAbility_Wait("Enspell, Perpetuance", "Perpetuance");
+                                JobAbility_Wait("Enspell, Perpetuance", Ability.Perpetuance);
                                 return;
                             }
 
@@ -5798,6 +5582,7 @@
                         {
                             CastSpell(Target.Me, Spells.Auspice);
                         }
+                        #endregion
 
                         // ENTRUSTED INDI SPELL CASTING, WILL BE CAST SO LONG AS ENTRUST IS ACTIVE
                         else if (Form2.config.EnableGeoSpells && PL.HasStatus((StatusEffect)584) && PL.Player.Status != 33)
@@ -6142,47 +5927,47 @@
                             if (PL.Player.Name == charDATA.Name)
                             {
 
-                                if (autoHasteEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Haste) && PL.Player.MP > Form2.config.mpMinCastValue && CastingPossible(charDATA) && !PL.HasStatus(StatusEffect.Haste) && !PL.HasStatus(StatusEffect.Slow))
+                                if (autoHasteEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Haste) && PL.Player.MP > Form2.config.mpMinCastValue && PL.CanCastOn(charDATA) && !PL.HasStatus(StatusEffect.Haste) && !PL.HasStatus(StatusEffect.Slow))
                                 {
                                     hastePlayer(charDATA.MemberNumber);
                                 }
-                                if (autoHaste_IIEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Haste_II) && PL.Player.MP > Form2.config.mpMinCastValue && CastingPossible(charDATA) && !PL.HasStatus(StatusEffect.Haste) && !PL.HasStatus(StatusEffect.Slow))
+                                if (autoHaste_IIEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Haste_II) && PL.Player.MP > Form2.config.mpMinCastValue && PL.CanCastOn(charDATA) && !PL.HasStatus(StatusEffect.Haste) && !PL.HasStatus(StatusEffect.Slow))
                                 {
                                     haste_IIPlayer(charDATA.MemberNumber);
                                 }
-                                if (autoAdloquium_Enabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Adloquium) && PL.Player.MP > Form2.config.mpMinCastValue && CastingPossible(charDATA) && !BuffChecker(170, 0))
+                                if (autoAdloquium_Enabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Adloquium) && PL.Player.MP > Form2.config.mpMinCastValue && PL.CanCastOn(charDATA) && !BuffChecker(170, 0))
                                 {
                                     AdloquiumPlayer(charDATA.MemberNumber);
                                 }
-                                if (autoFlurryEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Flurry) && PL.Player.MP > Form2.config.mpMinCastValue && CastingPossible(charDATA) && !BuffChecker(581, 0) && !PL.HasStatus(StatusEffect.Slow))
+                                if (autoFlurryEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Flurry) && PL.Player.MP > Form2.config.mpMinCastValue && PL.CanCastOn(charDATA) && !BuffChecker(581, 0) && !PL.HasStatus(StatusEffect.Slow))
                                 {
                                     FlurryPlayer(charDATA.MemberNumber);
                                 }
-                                if (autoFlurry_IIEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Flurry_II) && PL.Player.MP > Form2.config.mpMinCastValue && CastingPossible(charDATA) && !BuffChecker(581, 0) && !PL.HasStatus(StatusEffect.Slow))
+                                if (autoFlurry_IIEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Flurry_II) && PL.Player.MP > Form2.config.mpMinCastValue && PL.CanCastOn(charDATA) && !BuffChecker(581, 0) && !PL.HasStatus(StatusEffect.Slow))
                                 {
                                     Flurry_IIPlayer(charDATA.MemberNumber);
                                 }
-                                if (autoShell_Enabled[charDATA.MemberNumber] && PL.SpellAvailable(shell_spells[Form2.config.autoShell_Spell]) && PL.Player.MP > Form2.config.mpMinCastValue && CastingPossible(charDATA) && PL.Player.Status != 33 && !PL.HasStatus(StatusEffect.Shell))
+                                if (autoShell_Enabled[charDATA.MemberNumber] && PL.SpellAvailable(shell_spells[Form2.config.autoShell_Spell]) && PL.Player.MP > Form2.config.mpMinCastValue && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && !PL.HasStatus(StatusEffect.Shell))
                                 {
                                     shellPlayer(charDATA.MemberNumber);
                                 }
-                                if (autoProtect_Enabled[charDATA.MemberNumber] && PL.SpellAvailable(protect_spells[Form2.config.autoProtect_Spell]) && PL.Player.MP > Form2.config.mpMinCastValue && CastingPossible(charDATA) && PL.Player.Status != 33 && !PL.HasStatus(StatusEffect.Protect))
+                                if (autoProtect_Enabled[charDATA.MemberNumber] && PL.SpellAvailable(protect_spells[Form2.config.autoProtect_Spell]) && PL.Player.MP > Form2.config.mpMinCastValue && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && !PL.HasStatus(StatusEffect.Protect))
                                 {
                                     protectPlayer(charDATA.MemberNumber);
                                 }
-                                if (autoPhalanx_IIEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Phalanx_II) && (PL.Player.MP > Form2.config.mpMinCastValue) && CastingPossible(charDATA) && PL.Player.Status != 33 && !PL.HasStatus(StatusEffect.Phalanx))
+                                if (autoPhalanx_IIEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Phalanx_II) && (PL.Player.MP > Form2.config.mpMinCastValue) && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && !PL.HasStatus(StatusEffect.Phalanx))
                                 {
                                     Phalanx_IIPlayer(charDATA.MemberNumber);
                                 }
-                                if (autoRegen_Enabled[charDATA.MemberNumber] && PL.SpellAvailable(Data.RegenSpells[Form2.config.autoRegen_Spell]) && (PL.Player.MP > Form2.config.mpMinCastValue) && CastingPossible(charDATA) && PL.Player.Status != 33 && !PL.HasStatus(StatusEffect.Regen))
+                                if (autoRegen_Enabled[charDATA.MemberNumber] && PL.SpellAvailable(Data.RegenTiers[Form2.config.autoRegen_Spell]) && (PL.Player.MP > Form2.config.mpMinCastValue) && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && !PL.HasStatus(StatusEffect.Regen))
                                 {
                                     Regen_Player(charDATA.MemberNumber);
                                 }
-                                if (autoRefreshEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Data.RefreshSpells[Form2.config.autoRefresh_Spell]) && (PL.Player.MP > Form2.config.mpMinCastValue) && CastingPossible(charDATA) && PL.Player.Status != 33 && !PL.HasStatus(StatusEffect.Refresh))
+                                if (autoRefreshEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Data.RefreshTiers[Form2.config.autoRefresh_Spell]) && (PL.Player.MP > Form2.config.mpMinCastValue) && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && !PL.HasStatus(StatusEffect.Refresh))
                                 {
                                     Refresh_Player(charDATA.MemberNumber);
                                 }
-                                if (CheckIfAutoStormspellEnabled(charDATA.MemberNumber) && (PL.Player.MP > Form2.config.mpMinCastValue) && CastingPossible(charDATA) && PL.Player.Status != 33 && !BuffChecker(PTstormspell.buffID, 0) && PL.SpellAvailable(PTstormspell.Spell_Name))
+                                if (CheckIfAutoStormspellEnabled(charDATA.MemberNumber) && (PL.Player.MP > Form2.config.mpMinCastValue) && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && !BuffChecker(PTstormspell.buffID, 0) && PL.SpellAvailable(PTstormspell.Spell_Name))
                                 {
                                     StormSpellPlayer(charDATA.MemberNumber, PTstormspell.Spell_Name);
                                 }
@@ -6190,94 +5975,94 @@
                             // MONITORED PLAYER BASED BUFFS
                             else if (Monitored.Player.Name == charDATA.Name)
                             {
-                                if (autoHasteEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Haste) && PL.Player.MP > Form2.config.mpMinCastValue && CastingPossible(charDATA) && !monitoredStatusCheck(StatusEffect.Haste) && !monitoredStatusCheck(StatusEffect.Slow))
+                                if (autoHasteEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Haste) && PL.Player.MP > Form2.config.mpMinCastValue && PL.CanCastOn(charDATA) && !monitoredStatusCheck(StatusEffect.Haste) && !monitoredStatusCheck(StatusEffect.Slow))
                                 {
                                     hastePlayer(charDATA.MemberNumber);
                                 }
-                                if (autoHaste_IIEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Haste_II) && PL.Player.MP > Form2.config.mpMinCastValue && CastingPossible(charDATA) && !monitoredStatusCheck(StatusEffect.Haste) && !monitoredStatusCheck(StatusEffect.Slow))
+                                if (autoHaste_IIEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Haste_II) && PL.Player.MP > Form2.config.mpMinCastValue && PL.CanCastOn(charDATA) && !monitoredStatusCheck(StatusEffect.Haste) && !monitoredStatusCheck(StatusEffect.Slow))
                                 {
                                     haste_IIPlayer(charDATA.MemberNumber);
                                 }
-                                if (autoAdloquium_Enabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Adloquium) && PL.Player.MP > Form2.config.mpMinCastValue && CastingPossible(charDATA) && !BuffChecker(170, 1))
+                                if (autoAdloquium_Enabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Adloquium) && PL.Player.MP > Form2.config.mpMinCastValue && PL.CanCastOn(charDATA) && !BuffChecker(170, 1))
                                 {
                                     AdloquiumPlayer(charDATA.MemberNumber);
                                 }
-                                if (autoFlurryEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Flurry) && PL.Player.MP > Form2.config.mpMinCastValue && CastingPossible(charDATA) && !BuffChecker(581, 1) && !monitoredStatusCheck(StatusEffect.Slow))
+                                if (autoFlurryEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Flurry) && PL.Player.MP > Form2.config.mpMinCastValue && PL.CanCastOn(charDATA) && !BuffChecker(581, 1) && !monitoredStatusCheck(StatusEffect.Slow))
                                 {
                                     FlurryPlayer(charDATA.MemberNumber);
                                 }
-                                if (autoFlurry_IIEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Flurry_II) && PL.Player.MP > Form2.config.mpMinCastValue && CastingPossible(charDATA) && !BuffChecker(581, 1) && !monitoredStatusCheck(StatusEffect.Slow))
+                                if (autoFlurry_IIEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Flurry_II) && PL.Player.MP > Form2.config.mpMinCastValue && PL.CanCastOn(charDATA) && !BuffChecker(581, 1) && !monitoredStatusCheck(StatusEffect.Slow))
                                 {
                                     Flurry_IIPlayer(charDATA.MemberNumber);
                                 }
-                                if (autoShell_Enabled[charDATA.MemberNumber] && PL.SpellAvailable(shell_spells[Form2.config.autoShell_Spell]) && PL.Player.MP > Form2.config.mpMinCastValue && CastingPossible(charDATA) && PL.Player.Status != 33 && !monitoredStatusCheck(StatusEffect.Shell))
+                                if (autoShell_Enabled[charDATA.MemberNumber] && PL.SpellAvailable(shell_spells[Form2.config.autoShell_Spell]) && PL.Player.MP > Form2.config.mpMinCastValue && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && !monitoredStatusCheck(StatusEffect.Shell))
                                 {
                                     shellPlayer(charDATA.MemberNumber);
                                 }
-                                if (autoProtect_Enabled[charDATA.MemberNumber] && PL.SpellAvailable(protect_spells[Form2.config.autoProtect_Spell]) && PL.Player.MP > Form2.config.mpMinCastValue && CastingPossible(charDATA) && PL.Player.Status != 33 && !monitoredStatusCheck(StatusEffect.Protect))
+                                if (autoProtect_Enabled[charDATA.MemberNumber] && PL.SpellAvailable(protect_spells[Form2.config.autoProtect_Spell]) && PL.Player.MP > Form2.config.mpMinCastValue && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && !monitoredStatusCheck(StatusEffect.Protect))
                                 {
                                     protectPlayer(charDATA.MemberNumber);
                                 }
-                                if (autoPhalanx_IIEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Phalanx_II) && (PL.Player.MP > Form2.config.mpMinCastValue) && CastingPossible(charDATA) && PL.Player.Status != 33 && !monitoredStatusCheck(StatusEffect.Phalanx))
+                                if (autoPhalanx_IIEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Phalanx_II) && (PL.Player.MP > Form2.config.mpMinCastValue) && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && !monitoredStatusCheck(StatusEffect.Phalanx))
                                 {
                                     Phalanx_IIPlayer(charDATA.MemberNumber);
                                 }
-                                if (autoRegen_Enabled[charDATA.MemberNumber] && PL.SpellAvailable(Data.RegenSpells[Form2.config.autoRegen_Spell]) && (PL.Player.MP > Form2.config.mpMinCastValue) && CastingPossible(charDATA) && PL.Player.Status != 33 && !monitoredStatusCheck(StatusEffect.Regen))
+                                if (autoRegen_Enabled[charDATA.MemberNumber] && PL.SpellAvailable(Data.RegenTiers[Form2.config.autoRegen_Spell]) && (PL.Player.MP > Form2.config.mpMinCastValue) && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && !monitoredStatusCheck(StatusEffect.Regen))
                                 {
                                     Regen_Player(charDATA.MemberNumber);
                                 }
-                                if (autoRefreshEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Data.RefreshSpells[Form2.config.autoRefresh_Spell]) && (PL.Player.MP > Form2.config.mpMinCastValue) && CastingPossible(charDATA) && PL.Player.Status != 33 && !monitoredStatusCheck(StatusEffect.Refresh))
+                                if (autoRefreshEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Data.RefreshTiers[Form2.config.autoRefresh_Spell]) && (PL.Player.MP > Form2.config.mpMinCastValue) && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && !monitoredStatusCheck(StatusEffect.Refresh))
                                 {
                                     Refresh_Player(charDATA.MemberNumber);
                                 }
-                                if (CheckIfAutoStormspellEnabled(charDATA.MemberNumber) && (PL.Player.MP > Form2.config.mpMinCastValue) && CastingPossible(charDATA) && PL.Player.Status != 33 && !BuffChecker(PTstormspell.buffID, 1) && PL.SpellAvailable(PTstormspell.Spell_Name))
+                                if (CheckIfAutoStormspellEnabled(charDATA.MemberNumber) && (PL.Player.MP > Form2.config.mpMinCastValue) && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && !BuffChecker(PTstormspell.buffID, 1) && PL.SpellAvailable(PTstormspell.Spell_Name))
                                 {
                                     StormSpellPlayer(charDATA.MemberNumber, PTstormspell.Spell_Name);
                                 }
                             }
                             else
                             {
-                                if (autoHasteEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Haste) && PL.Player.MP > Form2.config.mpMinCastValue && CastingPossible(charDATA) && playerHasteSpan[charDATA.MemberNumber].Minutes >= Form2.config.autoHasteMinutes)
+                                if (autoHasteEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Haste) && PL.Player.MP > Form2.config.mpMinCastValue && PL.CanCastOn(charDATA) && playerHasteSpan[charDATA.MemberNumber].Minutes >= Form2.config.autoHasteMinutes)
                                 {
                                     hastePlayer(charDATA.MemberNumber);
                                 }
-                                if (autoHaste_IIEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Haste_II) && PL.Player.MP > Form2.config.mpMinCastValue && CastingPossible(charDATA) && playerHaste_IISpan[charDATA.MemberNumber].Minutes >= Form2.config.autoHasteMinutes)
+                                if (autoHaste_IIEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Haste_II) && PL.Player.MP > Form2.config.mpMinCastValue && PL.CanCastOn(charDATA) && playerHaste_IISpan[charDATA.MemberNumber].Minutes >= Form2.config.autoHasteMinutes)
                                 {
                                     haste_IIPlayer(charDATA.MemberNumber);
                                 }
-                                if (autoAdloquium_Enabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Adloquium) && PL.Player.MP > Form2.config.mpMinCastValue && CastingPossible(charDATA) && playerAdloquium_Span[charDATA.MemberNumber].Minutes >= Form2.config.autoAdloquiumMinutes)
+                                if (autoAdloquium_Enabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Adloquium) && PL.Player.MP > Form2.config.mpMinCastValue && PL.CanCastOn(charDATA) && playerAdloquium_Span[charDATA.MemberNumber].Minutes >= Form2.config.autoAdloquiumMinutes)
                                 {
                                     AdloquiumPlayer(charDATA.MemberNumber);
                                 }
-                                if (autoFlurryEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Flurry) && PL.Player.MP > Form2.config.mpMinCastValue && CastingPossible(charDATA) && playerFlurrySpan[charDATA.MemberNumber].Minutes >= Form2.config.autoHasteMinutes)
+                                if (autoFlurryEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Flurry) && PL.Player.MP > Form2.config.mpMinCastValue && PL.CanCastOn(charDATA) && playerFlurrySpan[charDATA.MemberNumber].Minutes >= Form2.config.autoHasteMinutes)
                                 {
                                     FlurryPlayer(charDATA.MemberNumber);
                                 }
-                                if (autoFlurry_IIEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Flurry_II) && PL.Player.MP > Form2.config.mpMinCastValue && CastingPossible(charDATA) && playerHasteSpan[charDATA.MemberNumber].Minutes >= Form2.config.autoHasteMinutes)
+                                if (autoFlurry_IIEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Flurry_II) && PL.Player.MP > Form2.config.mpMinCastValue && PL.CanCastOn(charDATA) && playerHasteSpan[charDATA.MemberNumber].Minutes >= Form2.config.autoHasteMinutes)
                                 {
                                     Flurry_IIPlayer(charDATA.MemberNumber);
                                 }
-                                if (autoShell_Enabled[charDATA.MemberNumber] && PL.SpellAvailable(shell_spells[Form2.config.autoShell_Spell]) && PL.Player.MP > Form2.config.mpMinCastValue && CastingPossible(charDATA) && PL.Player.Status != 33 && playerShell_Span[charDATA.MemberNumber].Minutes >= Form2.config.autoShellMinutes)
+                                if (autoShell_Enabled[charDATA.MemberNumber] && PL.SpellAvailable(shell_spells[Form2.config.autoShell_Spell]) && PL.Player.MP > Form2.config.mpMinCastValue && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && playerShell_Span[charDATA.MemberNumber].Minutes >= Form2.config.autoShellMinutes)
                                 {
                                     shellPlayer(charDATA.MemberNumber);
                                 }
-                                if (autoProtect_Enabled[charDATA.MemberNumber] && PL.SpellAvailable(protect_spells[Form2.config.autoProtect_Spell]) && PL.Player.MP > Form2.config.mpMinCastValue && CastingPossible(charDATA) && PL.Player.Status != 33 && playerProtect_Span[charDATA.MemberNumber].Minutes >= Form2.config.autoProtect_Minutes)
+                                if (autoProtect_Enabled[charDATA.MemberNumber] && PL.SpellAvailable(protect_spells[Form2.config.autoProtect_Spell]) && PL.Player.MP > Form2.config.mpMinCastValue && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && playerProtect_Span[charDATA.MemberNumber].Minutes >= Form2.config.autoProtect_Minutes)
                                 {
                                     protectPlayer(charDATA.MemberNumber);
                                 }
-                                if (autoPhalanx_IIEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Phalanx_II) && CastingPossible(charDATA) && PL.Player.Status != 33 && playerPhalanx_IISpan[charDATA.MemberNumber].Minutes >= Form2.config.autoPhalanxIIMinutes)
+                                if (autoPhalanx_IIEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Phalanx_II) && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && playerPhalanx_IISpan[charDATA.MemberNumber].Minutes >= Form2.config.autoPhalanxIIMinutes)
                                 {
                                     Phalanx_IIPlayer(charDATA.MemberNumber);
                                 }
-                                if (autoRegen_Enabled[charDATA.MemberNumber] && PL.SpellAvailable(Data.RegenSpells[Form2.config.autoRegen_Spell]) && (PL.Player.MP > Form2.config.mpMinCastValue) && CastingPossible(charDATA) && PL.Player.Status != 33 && playerRegen_Span[charDATA.MemberNumber].Minutes >= Form2.config.autoRegen_Minutes)
+                                if (autoRegen_Enabled[charDATA.MemberNumber] && PL.SpellAvailable(Data.RegenTiers[Form2.config.autoRegen_Spell]) && (PL.Player.MP > Form2.config.mpMinCastValue) && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && playerRegen_Span[charDATA.MemberNumber].Minutes >= Form2.config.autoRegen_Minutes)
                                 {
                                     Regen_Player(charDATA.MemberNumber);
                                 }
-                                if (autoRefreshEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Data.RefreshSpells[Form2.config.autoRefresh_Spell]) && (PL.Player.MP > Form2.config.mpMinCastValue) && CastingPossible(charDATA) && PL.Player.Status != 33 && playerRefresh_Span[charDATA.MemberNumber].Minutes >= Form2.config.autoRefresh_Minutes)
+                                if (autoRefreshEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Data.RefreshTiers[Form2.config.autoRefresh_Spell]) && (PL.Player.MP > Form2.config.mpMinCastValue) && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && playerRefresh_Span[charDATA.MemberNumber].Minutes >= Form2.config.autoRefresh_Minutes)
                                 {
                                     Refresh_Player(charDATA.MemberNumber);
                                 }
-                                if (CheckIfAutoStormspellEnabled(charDATA.MemberNumber) && (PL.Player.MP > Form2.config.mpMinCastValue) && CastingPossible(charDATA) && PL.Player.Status != 33 && PL.SpellAvailable(PTstormspell.Spell_Name) && playerStormspellSpan[charDATA.MemberNumber].Minutes >= Form2.config.autoStormspellMinutes)
+                                if (CheckIfAutoStormspellEnabled(charDATA.MemberNumber) && (PL.Player.MP > Form2.config.mpMinCastValue) && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && PL.SpellAvailable(PTstormspell.Spell_Name) && playerStormspellSpan[charDATA.MemberNumber].Minutes >= Form2.config.autoStormspellMinutes)
                                 {
                                     StormSpellPlayer(charDATA.MemberNumber, PTstormspell.Spell_Name);
                                 }
@@ -6462,55 +6247,7 @@
             {
                 return string.Empty;
             }
-        }
-
-        private string GetShellraLevel(decimal p)
-        {
-            switch ((int)p)
-            {
-                case 1:
-                    return "Shellra";
-
-                case 2:
-                    return "Shellra II";
-
-                case 3:
-                    return "Shellra III";
-
-                case 4:
-                    return "Shellra IV";
-
-                case 5:
-                    return "Shellra V";
-
-                default:
-                    return "Shellra";
-            }
-        }
-
-        private string GetProtectraLevel(decimal p)
-        {
-            switch ((int)p)
-            {
-                case 1:
-                    return "Protectra";
-
-                case 2:
-                    return "Protectra II";
-
-                case 3:
-                    return "Protectra III";
-
-                case 4:
-                    return "Protectra IV";
-
-                case 5:
-                    return "Protectra V";
-
-                default:
-                    return "Protectra";
-            }
-        }
+        }       
 
         private string ReturnGeoSpell(int GEOSpell_ID, int GeoSpell_Type)
         {
@@ -7385,98 +7122,6 @@
             {
                 Hide();
                 WindowState = FormWindowState.Minimized;
-            }
-        }
-
-        private bool CheckShellraLevelPossession()
-        {
-            switch ((int)Form2.config.plShellra_Level)
-            {
-                case 1:
-                    return PL.SpellAvailable(Spells.Shellra);
-                case 2:
-                    return PL.SpellAvailable(Spells.Shellra_II);
-                case 3:
-                    return PL.SpellAvailable(Spells.Shellra_III);
-                case 4:
-                    return PL.SpellAvailable(Spells.Shellra_IV);
-                case 5:
-                    return PL.SpellAvailable(Spells.Shellra_V);
-
-                default:
-                    return false;
-            }
-        }
-
-        private bool CheckProtectraLevelPossession()
-        {
-            switch ((int)Form2.config.plProtectra_Level)
-            {
-                case 1:
-                    return PL.SpellAvailable(Spells.Protectra);
-                case 2:
-                    return PL.SpellAvailable(Spells.Protectra_II);
-                case 3:
-                    return PL.SpellAvailable(Spells.Protectra_III);
-                case 4:
-                    return PL.SpellAvailable(Spells.Protectra_IV);
-                case 5:
-                    return PL.SpellAvailable(Spells.Protectra_V);
-                default:
-                    return false;
-            }
-        }
-
-        private bool CheckReraiseLevelPossession()
-        {
-            switch (Form2.config.plReraise_Level)
-            {
-                case 1:
-                    return PL.SpellAvailable(Spells.Reraise);
-                case 2:
-                    return PL.SpellAvailable(Spells.Reraise_II);
-                case 3:
-                    return PL.SpellAvailable(Spells.Reraise_III);
-                case 4:
-                    return PL.SpellAvailable(Spells.Reraise_IV);
-                default:
-                    return false;
-            }
-        }
-
-        private bool CheckRefreshLevelPossession()
-        {
-            switch (Form2.config.plRefresh_Level)
-            {
-                case 1:
-                    return PL.SpellAvailable(Spells.Refresh);
-                case 2:
-                    return PL.SpellAvailable(Spells.Refresh_II);
-                case 3:
-                    return PL.SpellAvailable(Spells.Refresh_III);
-                default:
-                    return false;
-            }
-        }
-
-
-
-        private bool CheckRegenLevelPossession()
-        {
-            switch (Form2.config.plRegen_Level)
-            {
-                case 1:
-                    return PL.SpellAvailable(Spells.Regen);
-                case 2:
-                    return PL.SpellAvailable(Spells.Regen_II);
-                case 3:
-                    return PL.SpellAvailable(Spells.Regen_III);
-                case 4:
-                    return PL.SpellAvailable(Spells.Regen_IV);
-                case 5:
-                    return PL.SpellAvailable(Spells.Regen_V);
-                default:
-                    return false;
             }
         }
 

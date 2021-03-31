@@ -2,12 +2,22 @@
 using CurePlease.Model.Enums;
 using EliteMMO.API;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using static EliteMMO.API.EliteAPI;
 
 namespace CurePlease.Utilities
 {
     public static class EliteAPIExtensions
     {
+        public static bool CanCastOn(this EliteAPI api, PartyMember member)
+        {
+            // If they're in range, and alive, should be able to cast.
+            // Since we include distance = 0, should work when target is the PL itself.
+            var entity = api.Entity.GetEntity((int)member.TargetIndex);
+
+            return (entity.Distance < 21 && entity.Distance >= 0 && member.CurrentHP > 0);         
+        }
         public static bool HasMPFor(this EliteAPI api, string spell)
         {
             return api.Player.MP >= Data.SpellCosts[spell];
@@ -41,6 +51,11 @@ namespace CurePlease.Utilities
             }
             var apiAbility = api.Resources.GetAbility(ability, 0);
             return api.Player.HasAbility(apiAbility.ID) && (api.Recast.GetAbilityRecast(apiAbility.TimerID) == 0);
+        }
+
+        public static uint HPLoss( this PartyMember member)
+        {
+            return member.CurrentHP * 100 / member.CurrentHPP - member.CurrentHP;
         }
 
         public static int CurrentSCHCharges(this EliteAPI api)
@@ -130,6 +145,62 @@ namespace CurePlease.Utilities
             }
 
             return -1;
+        }
+
+        public static IEnumerable<int> PartyNeedsAoeCure(this EliteAPI api, int countThreshold, int cureThreshold)
+        {
+            List<int> partiesResult = new List<int>();
+
+            // Full alliance list of who's active and below the threshold.
+            var activeMembers = api.GetActivePartyMembers().Where(pm => pm.HPLoss() >= cureThreshold);
+
+            // Figure out which parties specifically qualify.
+            if (activeMembers.Where(pm => pm.InParty(1)).Count() >= countThreshold)
+            {
+                partiesResult.Add(1);
+            }
+            if (activeMembers.Where(pm => pm.InParty(2)).Count() >= countThreshold)
+            {
+                partiesResult.Add(2);
+            }
+            if (activeMembers.Where(pm => pm.InParty(3)).Count() >= countThreshold)
+            {
+                partiesResult.Add(3);
+            }
+
+            return partiesResult.OrderByDescending(partyNumber => api.AverageHpLossForParty(partyNumber));
+        }
+
+        public static IEnumerable<PartyMember> GetActivePartyMembers(this EliteAPI api)
+        {
+            return api.Party.GetPartyMembers().Where(pm => pm.Active > 0 && pm.CurrentHP > 0).OrderBy(pm => pm.CurrentHPP);
+        }
+
+        public static bool InParty(this PartyMember member, int partyNumber)
+        {
+            switch (partyNumber)
+            {
+                case 1:
+                    return member.MemberNumber <= 5;
+                case 2:
+                    return member.MemberNumber > 5 && member.MemberNumber <= 11;
+                case 3:
+                    return member.MemberNumber > 11;
+            }
+
+            return false;
+        }
+
+        public static uint AverageHpLossForParty(this EliteAPI api, int partyNumber)
+        {
+            IEnumerable<PartyMember> members = api.GetActivePartyMembers().Where(pm => pm.InParty(partyNumber));        
+
+            if(members != null && members.Any())
+            {
+                return (uint)(members.Sum(pm => pm.HPLoss()) / members.Count());
+            }
+
+            return 0;
         }
     }
 }

@@ -4,6 +4,7 @@ namespace CurePlease.Model.Constants
     public static class Ability
     {
         public static string Accession = "Accession";
+        public static string Perpetuance = "Perpetuance";
         public static string Composure = "Composure";
         public static string LightArts = "Light Arts";
         public static string AddendumWhite = "Addendum: White";
