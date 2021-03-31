@@ -50,6 +50,7 @@ namespace CurePlease.Model
             Spells.Boost_STR, Spells.Boost_DEX, Spells.Boost_VIT, Spells.Boost_AGI, Spells.Boost_INT, Spells.Boost_MND, Spells.Boost_CHR
         };
 
+        //TODO: Add storms, and fix storm casting.
         public static Dictionary<string, StatusEffect> SpellEffects = new Dictionary<string, StatusEffect>
         {
             { Spells.Gain_STR, StatusEffect.STR_Boost2 },
@@ -65,7 +66,8 @@ namespace CurePlease.Model
             { Spells.Boost_AGI, StatusEffect.AGI_Boost2 },
             { Spells.Boost_INT, StatusEffect.INT_Boost2 },
             { Spells.Boost_MND, StatusEffect.MND_Boost2 },
-            { Spells.Boost_CHR, StatusEffect.CHR_Boost2 }
+            { Spells.Boost_CHR, StatusEffect.CHR_Boost2 },
+            { Spells.AuroraStorm }
         };
 
         public static StatusEffect[] GainBoostEffects =

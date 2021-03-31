@@ -42,6 +42,14 @@ namespace CurePlease.Utilities
             return api.Player.HasSpell(apiSpell.ID) && (api.Recast.GetSpellRecast(apiSpell.Index) == 0);
         }
 
+        public static int GetAbilityRecast(this EliteAPI api, string ability)
+        {
+            var apiAbility = api.Resources.GetAbility(ability, 0);
+            var recastIndex = api.Recast.GetAbilityIds().IndexOf(apiAbility.TimerID);
+
+            return (recastIndex > -1) ? api.Recast.GetAbilityRecast(recastIndex) : 0;
+        }
+
         public static bool AbilityAvailable(this EliteAPI api, string ability)
         {
             // IF YOU HAVE INPAIRMENT/AMNESIA THEN BLOCK JOB ABILITY CASTING
@@ -49,8 +57,11 @@ namespace CurePlease.Utilities
             {
                 return false;
             }
+
             var apiAbility = api.Resources.GetAbility(ability, 0);
-            return api.Player.HasAbility(apiAbility.ID) && (api.Recast.GetAbilityRecast(apiAbility.TimerID) == 0);
+
+            //int recast = api.Recast.GetAbilityRecast(apiAbility);
+            return api.Player.HasAbility(apiAbility.ID) && api.GetAbilityRecast(ability) == 0;
         }
 
         public static uint HPLoss( this PartyMember member)

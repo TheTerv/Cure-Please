@@ -3475,6 +3475,8 @@
             }
         }
 
+        // TODO: Add debuff priorities.
+        // TODO: Add custom DOOM logic ahead of cures.
         private void RunDebuffChecker()
         {
             // PL and Monitored Player Debuff Removal Starting with PL
@@ -5507,13 +5509,11 @@
                             if (Form2.config.Accession && Form2.config.stormspellAccession && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Accession) && !PL.HasStatus(StatusEffect.Accession))
                             {
                                 JobAbility_Wait("Stormspell, Accession", Ability.Accession);
-                                return;
                             }
 
                             if (Form2.config.Perpetuance && Form2.config.stormspellPerpetuance && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Perpetuance) && !PL.HasStatus(StatusEffect.Perpetuance))
                             {
                                 JobAbility_Wait("Stormspell, Perpetuance", Ability.Perpetuance);
-                                return;
                             }
 
                             CastSpell(Target.Me, stormspell.Spell_Name);
@@ -5748,7 +5748,7 @@
 
 
                         // so PL job abilities are in order
-                        if (!PL.HasStatus(StatusEffect.Amnesia) && (PL.Player.Status == 1 || PL.Player.Status == 0))
+                        if (PL.Player.Status == 1 || PL.Player.Status == 0)
                         {
                             if (Form2.config.AfflatusSolace && (!PL.HasStatus(StatusEffect.Afflatus_Solace)) && PL.AbilityAvailable(Ability.AfflatusSolace))
                             {
@@ -6717,7 +6717,7 @@
                     castingLockLabel.Text = "Casting is LOCKED for a JA.";
                     currentAction.Text = "Using a Job Ability: " + JobabilityDATA;
                     PL.ThirdParty.SendString("/ja \"" + JobAbilityName + "\" <me>");
-                    await Task.Delay(TimeSpan.FromSeconds(0.5));
+                    await Task.Delay(TimeSpan.FromSeconds(2));
                     castingLockLabel.Text = "Casting is UNLOCKED";
                     currentAction.Text = string.Empty;
                     castingSpell = string.Empty;
@@ -8156,37 +8156,37 @@
                             if (commands[2] == "blocked")
                             {
                                 Invoke((MethodInvoker)(() =>
-                          {
-                              CastingBackground_Check = true;
-                              castingLockLabel.Text = "PACKET: Casting is LOCKED";
-                          }));
+                                {
+                                    CastingBackground_Check = true;
+                                    castingLockLabel.Text = "PACKET: Casting is LOCKED";
+                                }));
 
                                 if (!ProtectCasting.IsBusy) { ProtectCasting.RunWorkerAsync(); }
                             }
                             else if (commands[2] == "interrupted")
                             {
                                 Invoke((MethodInvoker)(async () =>
-                          {
-                              ProtectCasting.CancelAsync();
-                              castingLockLabel.Text = "PACKET: Casting is INTERRUPTED";
-                              await Task.Delay(TimeSpan.FromSeconds(3));
-                              castingLockLabel.Text = "Casting is UNLOCKED";
-                              CastingBackground_Check = false;
-                          }));
+                                {
+                                    ProtectCasting.CancelAsync();
+                                    castingLockLabel.Text = "PACKET: Casting is INTERRUPTED";
+                                    await Task.Delay(TimeSpan.FromSeconds(2));
+                                    castingLockLabel.Text = "Casting is UNLOCKED";
+                                    CastingBackground_Check = false;
+                                }));
                             }
                             else if (commands[2] == "finished")
                             {
 
                                 Invoke((MethodInvoker)(async () =>
-                          {
-                              ProtectCasting.CancelAsync();
-                              castingLockLabel.Text = "PACKET: Casting is soon to be AVAILABLE!";
-                              await Task.Delay(TimeSpan.FromSeconds(3));
-                              castingLockLabel.Text = "Casting is UNLOCKED";
-                              currentAction.Text = string.Empty;
-                              castingSpell = string.Empty;
-                              CastingBackground_Check = false;
-                          }));
+                                {
+                                    ProtectCasting.CancelAsync();
+                                    castingLockLabel.Text = "PACKET: Casting is soon to be AVAILABLE!";
+                                    await Task.Delay(TimeSpan.FromSeconds(3));
+                                    castingLockLabel.Text = "Casting is UNLOCKED";
+                                    currentAction.Text = string.Empty;
+                                    castingSpell = string.Empty;
+                                    CastingBackground_Check = false;
+                                }));
                             }
                         }
                         else if (commands[1] == "confirmed")
@@ -8347,9 +8347,10 @@
             }
         }
 
+        // This will get cancelled if we get an interrupted/finished casting packet.
         private void ProtectCasting_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
-            Thread.Sleep(TimeSpan.FromSeconds(0.2));
+            Thread.Sleep(TimeSpan.FromSeconds(1));
             int count = 0;
             float lastPercent = 0;
             float castPercent = PL.CastBar.Percent;
@@ -8362,10 +8363,10 @@
                     count = 0;
                     lastPercent = castPercent;
                 }
-                else if (count == 5)
+                else if (count == 10)
                 {
                     // We break if we don't get a new percent value within 5*loopTimeout
-                    // As configured now, half a second (0.1 * 5).
+                    // As configured now, 1 second (0.1 * 10).
                     break;
                 }
                 else
@@ -8375,10 +8376,7 @@
                 }
             }
 
-            // This is the secret sauce to avoid "Unable to cast" messages.
-            // Best set to something that reduces messages, but doesn't waste
-            // time 100% eliminating them?
-            Thread.Sleep(TimeSpan.FromSeconds(1.3));
+            Thread.Sleep(TimeSpan.FromSeconds(2));
 
             castingSpell = string.Empty;
 
@@ -8397,7 +8395,7 @@
                 currentAction.Text = "Using a Job Ability: " + JobAbilityCMD;
                 // This is how long we want for Job Ability/JA to resolve.
                 // Since most of us are using JA0Wait, can be very short.
-                Thread.Sleep(TimeSpan.FromSeconds(0.5));
+                Thread.Sleep(TimeSpan.FromSeconds(2));
                 castingLockLabel.Text = "Casting is UNLOCKED";
                 currentAction.Text = string.Empty;
                 castingSpell = string.Empty;
