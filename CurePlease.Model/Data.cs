@@ -50,29 +50,101 @@ namespace CurePlease.Model
             Spells.Boost_STR, Spells.Boost_DEX, Spells.Boost_VIT, Spells.Boost_AGI, Spells.Boost_INT, Spells.Boost_MND, Spells.Boost_CHR
         };
 
-        //TODO: Add storms, and fix storm casting.
-        public static Dictionary<string, StatusEffect> SpellEffects = new Dictionary<string, StatusEffect>
+        public static string[] StormTiers =
         {
-            { Spells.Gain_STR, StatusEffect.STR_Boost2 },
-            { Spells.Gain_DEX, StatusEffect.DEX_Boost2 },
-            { Spells.Gain_VIT, StatusEffect.VIT_Boost2 },
-            { Spells.Gain_AGI, StatusEffect.AGI_Boost2 },
-            { Spells.Gain_INT, StatusEffect.INT_Boost2 },
-            { Spells.Gain_MND, StatusEffect.MND_Boost2 },
-            { Spells.Gain_CHR, StatusEffect.CHR_Boost2 },
-            { Spells.Boost_STR, StatusEffect.STR_Boost2 },
-            { Spells.Boost_DEX, StatusEffect.DEX_Boost2 },
-            { Spells.Boost_VIT, StatusEffect.VIT_Boost2 },
-            { Spells.Boost_AGI, StatusEffect.AGI_Boost2 },
-            { Spells.Boost_INT, StatusEffect.INT_Boost2 },
-            { Spells.Boost_MND, StatusEffect.MND_Boost2 },
-            { Spells.Boost_CHR, StatusEffect.CHR_Boost2 },
-            { Spells.AuroraStorm }
+            Spells.Firestorm, Spells.Hailstorm, Spells.Windstorm, Spells.Sandstorm, Spells.Thunderstorm, Spells.Rainstorm, Spells.Aurorastorm, Spells.Voidstorm,
+            Spells.Firestorm_II, Spells.Hailstorm_II, Spells.Windstorm_II, Spells.Sandstorm_II, Spells.Thunderstorm_II, Spells.Rainstorm_II, Spells.Aurorastorm_II, Spells.Voidstorm_II
+        };
+
+        //TODO: Add storms, and fix storm casting.
+        public static Dictionary<string, short> SpellEffects = new Dictionary<string, short>
+        {
+            { Spells.Gain_STR, (short)StatusEffect.STR_Boost2 },
+            { Spells.Gain_DEX, (short)StatusEffect.DEX_Boost2 },
+            { Spells.Gain_VIT, (short)StatusEffect.VIT_Boost2 },
+            { Spells.Gain_AGI, (short)StatusEffect.AGI_Boost2 },
+            { Spells.Gain_INT, (short)StatusEffect.INT_Boost2 },
+            { Spells.Gain_MND, (short)StatusEffect.MND_Boost2 },
+            { Spells.Gain_CHR, (short)StatusEffect.CHR_Boost2 },
+            { Spells.Boost_STR, (short)StatusEffect.STR_Boost2 },
+            { Spells.Boost_DEX, (short)StatusEffect.DEX_Boost2 },
+            { Spells.Boost_VIT, (short)StatusEffect.VIT_Boost2 },
+            { Spells.Boost_AGI, (short)StatusEffect.AGI_Boost2 },
+            { Spells.Boost_INT, (short)StatusEffect.INT_Boost2 },
+            { Spells.Boost_MND, (short)StatusEffect.MND_Boost2 },
+            { Spells.Boost_CHR, (short)StatusEffect.CHR_Boost2 },
+            { Spells.Firestorm, (short)StatusEffect.Firestorm },
+            { Spells.Hailstorm, (short)StatusEffect.Hailstorm },
+            { Spells.Windstorm, (short)StatusEffect.Windstorm },
+            { Spells.Sandstorm, (short)StatusEffect.Sandstorm },
+            { Spells.Thunderstorm, (short)StatusEffect.Thunderstorm },
+            { Spells.Rainstorm, (short)StatusEffect.Rainstorm },
+            { Spells.Aurorastorm, (short)StatusEffect.Aurorastorm },
+            { Spells.Voidstorm, (short)StatusEffect.Voidstorm },
+            { Spells.Firestorm_II, 589 },
+            { Spells.Hailstorm_II, 590},
+            { Spells.Windstorm_II, 591 },
+            { Spells.Sandstorm_II, 592 },
+            { Spells.Thunderstorm_II, 593 },
+            { Spells.Rainstorm_II, 594 },
+            { Spells.Aurorastorm_II, 595 },
+            { Spells.Voidstorm_II, 596 },
         };
 
         public static StatusEffect[] GainBoostEffects =
         {
             StatusEffect.STR_Boost2, StatusEffect.DEX_Boost2, StatusEffect.VIT_Boost2, StatusEffect.AGI_Boost2, StatusEffect.INT_Boost2, StatusEffect.MND_Boost2, StatusEffect.CHR_Boost2
+        };
+
+        public static Dictionary<StatusEffect, string> DebuffPriorities = new Dictionary<StatusEffect, string>
+        {
+            { StatusEffect.Doom, Spells.Cursna },
+            { StatusEffect.Sleep, Spells.Curaga },
+            { StatusEffect.Sleep2, Spells.Curaga },
+            { StatusEffect.Petrification, Spells.Stona },
+            { StatusEffect.Silence, Spells.Silena },
+            { StatusEffect.Paralysis, Spells.Paralyna }, 
+            { StatusEffect.Amnesia, Spells.Esuna },
+            { StatusEffect.Blindness, Spells.Blindna }, 
+            { StatusEffect.Bind, Spells.Erase },
+            { StatusEffect.Weight, Spells.Erase }, 
+            { StatusEffect.Slow, Spells.Erase }, 
+            { StatusEffect.Poison, Spells.Poisona }, 
+            { StatusEffect.Attack_Down, Spells.Erase }, 
+            { StatusEffect.Curse, Spells.Cursna }, 
+            { StatusEffect.Curse2, Spells.Cursna }, 
+            { StatusEffect.Addle, Spells.Erase }, 
+            { StatusEffect.Bane, Spells.Cursna }, 
+            { StatusEffect.Plague, Spells.Viruna },
+            { StatusEffect.Disease, Spells.Viruna }, 
+            { StatusEffect.Burn, Spells.Erase },
+            { StatusEffect.Frost, Spells.Erase },
+            { StatusEffect.Choke, Spells.Erase },
+            { StatusEffect.Rasp, Spells.Erase }, 
+            { StatusEffect.Shock, Spells.Erase }, 
+            { StatusEffect.Drown, Spells.Erase },
+            { StatusEffect.Dia, Spells.Erase },
+            { StatusEffect.Bio, Spells.Erase },
+            { StatusEffect.STR_Down, Spells.Erase },
+            { StatusEffect.DEX_Down, Spells.Erase },
+            { StatusEffect.VIT_Down, Spells.Erase }, 
+            { StatusEffect.AGI_Down, Spells.Erase }, 
+            { StatusEffect.INT_Down, Spells.Erase }, 
+            { StatusEffect.MND_Down, Spells.Erase }, 
+            { StatusEffect.CHR_Down, Spells.Erase }, 
+            { StatusEffect.Max_HP_Down, Spells.Erase }, 
+            { StatusEffect.Max_MP_Down, Spells.Erase }, 
+            { StatusEffect.Accuracy_Down, Spells.Erase },
+            { StatusEffect.Evasion_Down, Spells.Erase },
+            { StatusEffect.Defense_Down, Spells.Erase }, 
+            { StatusEffect.Flash, Spells.Erase }, 
+            { StatusEffect.Magic_Acc_Down, Spells.Erase }, 
+            { StatusEffect.Magic_Atk_Down, Spells.Erase }, 
+            { StatusEffect.Helix, Spells.Erase },
+            { StatusEffect.Max_TP_Down, Spells.Erase },
+            { StatusEffect.Requiem, Spells.Erase },
+            { StatusEffect.Elegy, Spells.Erase }, 
+            { StatusEffect.Threnody,  Spells.Erase }
         };
     }
 }

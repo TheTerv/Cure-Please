@@ -48,13 +48,13 @@
             ailment_list.Text = "";
 
             // Search through current active party buffs
-            foreach (BuffStorage ailment in f1.ActiveBuffs)
+            foreach (string name in f1.ActiveBuffs.Keys)
             {
                 // First add Character name and a Line Break.
-                ailment_list.AppendText(ailment.CharacterName.ToUpper() + "\n");
+                ailment_list.AppendText(name.ToUpper() + "\n");
 
                 // Now create a list and loop through each buff and name them
-                List<string> named_buffs = ailment.CharacterBuffs.Split(',').ToList();
+                List<string> named_buffs = f1.ActiveBuffs[name].Split(',').ToList();
 
                 int i = 1;
                 int count = named_buffs.Count();

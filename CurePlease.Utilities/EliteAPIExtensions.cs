@@ -25,7 +25,12 @@ namespace CurePlease.Utilities
 
         public static bool HasStatus(this EliteAPI api, StatusEffect effect)
         {
-            return api.Player.Buffs.Any(buff => (StatusEffect)buff == effect);
+            return api.HasStatus((short)effect);
+        }
+
+        public static bool HasStatus(this EliteAPI api, short effectId)
+        {
+            return api.Player.Buffs.Any(buff => buff == effectId);
         }
 
         public static bool SpellAvailable(this EliteAPI api, string spell)
@@ -212,6 +217,34 @@ namespace CurePlease.Utilities
             }
 
             return 0;
+        }
+
+        public static PartyMember GetHighestPriorityDebuff(this EliteAPI api, Dictionary<string, string> debuffs)
+        {
+            var members = api.GetActivePartyMembers().Where(pm => api.CanCastOn(pm));
+
+            int lowestIndex = int.MaxValue;
+            PartyMember priorityMember = null;
+
+            foreach(PartyMember pm in members)
+            {
+                if(!debuffs.ContainsKey(pm.Name))
+                {
+                    continue;
+                }
+
+                // We get the debuffs and order them by priority.
+                var pmDebuffs = debuffs[pm.Name].Split(',').Select(str => (StatusEffect)short.Parse(str.Trim())).OrderBy(status => Array.IndexOf(Data.DebuffPriorities.Keys.ToArray(), status));
+
+                var priority = Array.IndexOf(Data.DebuffPriorities.Keys.ToArray(), pmDebuffs.First());
+                if(priority < lowestIndex)
+                {
+                    lowestIndex = priority;
+                    priorityMember = pm;
+                }
+            }
+
+            return priorityMember;
         }
     }
 }

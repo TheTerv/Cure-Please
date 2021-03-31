@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EliteMMO.API;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,6 +10,6 @@ namespace CurePlease.Utilities
 {
     public static class PartyUtil
     {
-        
+
     }
 }

@@ -1,5 +1,6 @@
 ﻿namespace CurePlease
 {
+    using EliteMMO.API;
     using System;
     using System.Collections.Generic;
     using System.Globalization;
@@ -7,6 +8,7 @@
     using System.Linq;
     using System.Windows.Forms;
     using System.Xml.Serialization;
+    using Keys = System.Windows.Forms.Keys;
 
     #region "== Form2"
 
@@ -4368,5 +4370,56 @@
                 na_AgiDown.Enabled = false;
             }
         }
+
+        public Dictionary<StatusEffect, bool> DebuffEnabled => new Dictionary<StatusEffect, bool>
+        {
+            { StatusEffect.Doom, true},
+            { StatusEffect.Sleep, true },
+            { StatusEffect.Sleep2, true },
+            { StatusEffect.Petrification, naPetrification.Checked },
+            { StatusEffect.Silence, naSilence.Checked },
+            { StatusEffect.Paralysis, naParalysis.Checked },
+            { StatusEffect.Amnesia, Esuna.Checked },
+            { StatusEffect.Blindness, naBlindness.Checked },
+            { StatusEffect.Bind, na_Bind.Checked },
+            { StatusEffect.Weight, na_Weight.Checked },
+            { StatusEffect.Slow, na_Slow.Checked },
+            { StatusEffect.Poison, naPoison.Checked },
+            { StatusEffect.Attack_Down, na_AttackDown.Checked },
+            { StatusEffect.Curse, naCurse.Checked },
+            { StatusEffect.Curse2, naCurse.Checked },
+            { StatusEffect.Addle, na_Addle.Checked },
+            { StatusEffect.Bane, naCurse.Checked },
+            { StatusEffect.Plague, naPlague.Checked },
+            { StatusEffect.Disease, naPlague.Checked },
+            { StatusEffect.Burn, na_Burn.Checked },
+            { StatusEffect.Frost, na_Frost.Checked },
+            { StatusEffect.Choke, na_Choke.Checked },
+            { StatusEffect.Rasp, na_Rasp.Checked},
+            { StatusEffect.Shock, na_Shock.Checked },
+            { StatusEffect.Drown, na_Drown.Checked},
+            { StatusEffect.Dia, na_Dia.Checked},
+            { StatusEffect.Bio, na_Bio.Checked },
+            { StatusEffect.STR_Down, na_StrDown.Checked },
+            { StatusEffect.DEX_Down, na_DexDown.Checked },
+            { StatusEffect.VIT_Down, na_VitDown.Checked },
+            { StatusEffect.AGI_Down, na_AgiDown.Checked},
+            { StatusEffect.INT_Down, na_IntDown.Checked},
+            { StatusEffect.MND_Down, na_MndDown.Checked },
+            { StatusEffect.CHR_Down, na_ChrDown.Checked},
+            { StatusEffect.Max_HP_Down, na_MaxHpDown.Checked},
+            { StatusEffect.Max_MP_Down, na_MaxMpDown.Checked },
+            { StatusEffect.Accuracy_Down, na_AccuracyDown.Checked },
+            { StatusEffect.Evasion_Down, na_EvasionDown.Checked },
+            { StatusEffect.Defense_Down, na_DefenseDown.Checked },
+            { StatusEffect.Flash, plFlash.Checked },
+            { StatusEffect.Magic_Acc_Down, na_MagicAccDown.Checked },
+            { StatusEffect.Magic_Atk_Down, na_MagicAttackDown.Checked },
+            { StatusEffect.Helix, na_Helix.Checked },
+            { StatusEffect.Max_TP_Down, na_MaxTpDown.Checked },
+            { StatusEffect.Requiem, na_Requiem.Checked },
+            { StatusEffect.Elegy, na_Elegy.Checked },
+            { StatusEffect.Threnody, na_Threnody.Checked }
+        };
     }
 }

@@ -96,6 +96,24 @@ namespace CurePlease.Model.Constants
         public static string Gain_MND = "Gain-MND";
         public static string Gain_CHR = "Gain-CHR";
 
+        public static string Firestorm = "Firestorm";
+        public static string Hailstorm = "Hailstorm";
+        public static string Windstorm = "Windstorm";
+        public static string Sandstorm = "Sandstorm";
+        public static string Thunderstorm = "Thunderstorm";
+        public static string Rainstorm = "Rainstorm";
+        public static string Aurorastorm = "Aurorastorm";
+        public static string Voidstorm = "Voidstorm";
+
+        public static string Firestorm_II = "Firestorm II";
+        public static string Hailstorm_II = "Hailstorm II";
+        public static string Windstorm_II = "Windstorm II";
+        public static string Sandstorm_II = "Sandstorm II";
+        public static string Thunderstorm_II = "Thunderstorm II";
+        public static string Rainstorm_II = "Rainstorm II";
+        public static string Aurorastorm_II = "Aurorastorm II";
+        public static string Voidstorm_II = "Voidstorm II";
+
         public static string Cursna = "Cursna";
         public static string Paralyna = "Paralyna";
         public static string Poisona = "Poisona";

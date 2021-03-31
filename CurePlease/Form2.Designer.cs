@@ -1,4 +1,6 @@
-﻿namespace CurePlease
+﻿using CurePlease.Model.Constants;
+
+namespace CurePlease
 {
     partial class Form2
     {
@@ -5190,22 +5192,22 @@
             this.plStormSpell_Spell.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.plStormSpell_Spell.FormattingEnabled = true;
             this.plStormSpell_Spell.Items.AddRange(new object[] {
-            "Firestorm",
-            "Sandstorm",
-            "Rainstorm",
-            "Windstorm",
-            "Hailstorm",
-            "Thunderstorm",
-            "Voidstorm ",
-            "Aurorastorm",
-            "Firestorm II",
-            "Sandstorm II",
-            "Rainstorm II",
-            "Windstorm II",
-            "Hailstorm II",
-            "Thunderstorm II",
-            "Voidstorm II",
-            "Aurorastorm II"});
+            Spells.Firestorm,
+            Spells.Hailstorm,
+            Spells.Windstorm,
+            Spells.Sandstorm,
+            Spells.Thunderstorm,
+            Spells.Rainstorm,
+            Spells.Aurorastorm,
+            Spells.Voidstorm,
+            Spells.Firestorm_II,
+            Spells.Hailstorm_II,
+            Spells.Windstorm_II,
+            Spells.Sandstorm_II,
+            Spells.Thunderstorm_II,
+            Spells.Rainstorm_II,
+            Spells.Aurorastorm_II,
+            Spells.Voidstorm_II});
             this.plStormSpell_Spell.Location = new System.Drawing.Point(85, 330);
             this.plStormSpell_Spell.Name = "plStormSpell_Spell";
             this.plStormSpell_Spell.Size = new System.Drawing.Size(174, 23);

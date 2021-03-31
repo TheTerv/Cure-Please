@@ -129,9 +129,6 @@
 
         public List<SpellsData> enspells = new List<SpellsData>();
 
-        public List<SpellsData> stormspells = new List<SpellsData>();
-
-
         private int GetInventoryItemCount(EliteAPI api, ushort itemid)
         {
             int count = 0;
@@ -199,7 +196,7 @@
         public float lastY;
 
         // Stores the previously-colored button, if any
-        public List<BuffStorage> ActiveBuffs = new List<BuffStorage>();
+        public Dictionary<string, string> ActiveBuffs = new Dictionary<string, string>();
 
         public List<SongData> SongInfo = new List<SongData>();
 
@@ -2524,121 +2521,7 @@
                 type = 1,
                 spell_position = 11,
                 buffID = 281
-            });
-
-            stormspells.Add(new SpellsData
-            {
-                Spell_Name = "Firestorm",
-                type = 1,
-                spell_position = 0,
-                buffID = 178
-            });
-            stormspells.Add(new SpellsData
-            {
-                Spell_Name = "Sandstorm",
-                type = 1,
-                spell_position = 1,
-                buffID = 181
-            });
-            stormspells.Add(new SpellsData
-            {
-                Spell_Name = "Rainstorm",
-                type = 1,
-                spell_position = 2,
-                buffID = 183
-            });
-            stormspells.Add(new SpellsData
-            {
-                Spell_Name = "Windstorm",
-                type = 1,
-                spell_position = 3,
-                buffID = 180
-            });
-            stormspells.Add(new SpellsData
-            {
-                Spell_Name = "Hailstorm",
-                type = 1,
-                spell_position = 4,
-                buffID = 179
-            });
-            stormspells.Add(new SpellsData
-            {
-                Spell_Name = "Thunderstorm",
-                type = 1,
-                spell_position = 5,
-                buffID = 182
-            });
-            stormspells.Add(new SpellsData
-            {
-                Spell_Name = "Voidstorm",
-                type = 1,
-                spell_position = 6,
-                buffID = 185
-            });
-            stormspells.Add(new SpellsData
-            {
-                Spell_Name = "Aurorastorm",
-                type = 1,
-                spell_position = 7,
-                buffID = 184
-            });
-
-            stormspells.Add(new SpellsData
-            {
-                Spell_Name = "Firestorm II",
-                type = 1,
-                spell_position = 8,
-                buffID = 589
-            });
-            stormspells.Add(new SpellsData
-            {
-                Spell_Name = "Sandstorm II",
-                type = 1,
-                spell_position = 9,
-                buffID = 592
-            });
-            stormspells.Add(new SpellsData
-            {
-                Spell_Name = "Rainstorm II",
-                type = 1,
-                spell_position = 10,
-                buffID = 594
-            });
-            stormspells.Add(new SpellsData
-            {
-                Spell_Name = "Windstorm II",
-                type = 1,
-                spell_position = 11,
-                buffID = 591
-            });
-            stormspells.Add(new SpellsData
-            {
-                Spell_Name = "Hailstorm II",
-                type = 1,
-                spell_position = 12,
-                buffID = 590
-            });
-            stormspells.Add(new SpellsData
-            {
-                Spell_Name = "Thunderstorm II",
-                type = 1,
-                spell_position = 13,
-                buffID = 593
-            });
-            stormspells.Add(new SpellsData
-            {
-                Spell_Name = "Voidstorm II",
-                type = 1,
-                spell_position = 14,
-                buffID = 596
-            });
-            stormspells.Add(new SpellsData
-            {
-                Spell_Name = "Aurorastorm II",
-                type = 1,
-                spell_position = 15,
-                buffID = 595
-            });
+            });           
 
             IEnumerable<Process> pol = Process.GetProcessesByName("pol").Union(Process.GetProcessesByName("xiloader")).Union(Process.GetProcessesByName("edenxi"));
 
@@ -3405,23 +3288,16 @@
         {
             lock (ActiveBuffs)
             {
-                foreach (BuffStorage ailment in ActiveBuffs)
+                if(ActiveBuffs.ContainsKey(characterName))
                 {
-                    if (ailment.CharacterName.ToLower() == characterName.ToLower())
-                    {
-                        //MessageBox.Show("Found Match: " + ailment.CharacterName.ToLower()+" => "+characterName.ToLower());
+                    List<string> named_Debuffs = ActiveBuffs[characterName].Split(',').ToList();
+                    named_Debuffs.Remove(debuffID.ToString());
 
-                        // Build a new list, find cast debuff and remove it.
-                        List<string> named_Debuffs = ailment.CharacterBuffs.Split(',').ToList();
-                        named_Debuffs.Remove(debuffID.ToString());
+                    // Now rebuild the list and replace previous one
+                    string stringList = string.Join(",", named_Debuffs);
 
-                        // Now rebuild the list and replace previous one
-                        string stringList = string.Join(",", named_Debuffs);
-
-                        int i = ActiveBuffs.FindIndex(x => x.CharacterName.ToLower() == characterName.ToLower());
-                        ActiveBuffs[i].CharacterBuffs = stringList;
-                    }
-                }
+                    ActiveBuffs[characterName] = stringList;
+                }               
             }
         }
 
@@ -3902,443 +3778,126 @@
 
             if (Form2.config.EnableAddOn)
             {
-                int BreakOut = 0;
-
-                List<PartyMember> partyMembers = PL.Party.GetPartyMembers();
-
-                List<BuffStorage> generated_base_list = ActiveBuffs.ToList();
-
-                lock (generated_base_list)
+                
+                lock (ActiveBuffs)
                 {
+                    // ==============================================================================================================================================================================
+                    // PARTY DEBUFF REMOVAL
 
-                    foreach (BuffStorage ailment in generated_base_list)
+                    // First remove the highest priority debuff.
+                    var priorityMember = PL.GetHighestPriorityDebuff(ActiveBuffs);
+                    if(priorityMember != null)
                     {
-                        foreach (PartyMember ptMember in partyMembers)
+                        var name = priorityMember.Name;
+                        // Get debuffs in order of priority, and find the first one we can currently cure.
+                        var debuffPriorityList = ActiveBuffs[name].Split(',').Select(dStr => (StatusEffect)short.Parse(dStr.Trim())).OrderBy(status => Array.IndexOf(Data.DebuffPriorities.Keys.ToArray(), status));
+
+                        if (debuffPriorityList.Any() && Form2.config.enablePartyDebuffRemoval && (characterNames_naRemoval.Contains(name) || Form2.config.SpecifiednaSpellsenable == false))
                         {
-                            if (ailment != null && ptMember != null)
+                            var targetDebuff = debuffPriorityList.First(status => Form2.DebuffEnabled[status] && PL.SpellAvailable(Data.DebuffPriorities[status]));
+
+                            if ((short)targetDebuff > 0)
                             {
-                                if (ailment.CharacterName != null && ptMember.Name != null && ailment.CharacterName.ToLower() == ptMember.Name.ToLower())
+                                // Don't try and curaga outside our party.
+                                if(!priorityMember.InParty(1) && (targetDebuff == StatusEffect.Sleep || targetDebuff == StatusEffect.Sleep2))
                                 {
-                                    if (ailment.CharacterBuffs != null)
-                                    {
-                                        List<string> named_Debuffs = ailment.CharacterBuffs.Split(',').ToList();
-
-                                        if (named_Debuffs != null && named_Debuffs.Count() != 0)
-                                        {
-                                            named_Debuffs = named_Debuffs.Select(t => t.Trim()).ToList();
-
-
-                                            // IF SLOW IS NOT ACTIVE, YET NEITHER IS HASTE / FLURRY DESPITE BEING ENABLED
-                                            // RESET THE TIMER TO FORCE IT TO BE CAST
-                                            if (!DebuffContains(named_Debuffs, "13") && !DebuffContains(named_Debuffs, "33") && !DebuffContains(named_Debuffs, "265") && !DebuffContains(named_Debuffs, "562"))
-                                            {
-                                                if (ptMember != null)
-                                                {
-                                                    playerHaste[ptMember.MemberNumber] = new DateTime(1970, 1, 1, 0, 0, 0);
-                                                    playerHaste_II[ptMember.MemberNumber] = new DateTime(1970, 1, 1, 0, 0, 0);
-                                                    playerFlurry[ptMember.MemberNumber] = new DateTime(1970, 1, 1, 0, 0, 0);
-                                                    playerFlurry_II[ptMember.MemberNumber] = new DateTime(1970, 1, 1, 0, 0, 0);
-                                                }
-                                            }
-                                            // IF SUBLIMATION IS NOT ACTIVE, YET NEITHER IS REFRESH DESPITE BEING
-                                            // ENABLED RESET THE TIMER TO FORCE IT TO BE CAST
-                                            if (!DebuffContains(named_Debuffs, "187") && !DebuffContains(named_Debuffs, "188") && !DebuffContains(named_Debuffs, "43"))
-                                            {
-                                                if (ptMember != null)
-                                                {
-                                                    playerRefresh[ptMember.MemberNumber] = new DateTime(1970, 1, 1, 0, 0, 0);  // ERROR
-                                                }
-                                            }
-                                            // IF REGEN IS NOT ACTIVE DESPITE BEING ENABLED RESET THE TIMER TO
-                                            // FORCE IT TO BE CAST
-                                            if (!DebuffContains(named_Debuffs, "42"))
-                                            {
-                                                if (ptMember != null)
-                                                {
-                                                    playerRegen[ptMember.MemberNumber] = new DateTime(1970, 1, 1, 0, 0, 0);
-                                                }
-                                            }
-                                            // IF PROTECT IS NOT ACTIVE DESPITE BEING ENABLED RESET THE TIMER TO
-                                            // FORCE IT TO BE CAST
-                                            if (!DebuffContains(named_Debuffs, "40"))
-                                            {
-                                                if (ptMember != null)
-                                                {
-                                                    playerProtect[ptMember.MemberNumber] = new DateTime(1970, 1, 1, 0, 0, 0);
-                                                }
-                                            }
-
-                                            // IF SHELL IS NOT ACTIVE DESPITE BEING ENABLED RESET THE TIMER TO
-                                            // FORCE IT TO BE CAST
-                                            if (!DebuffContains(named_Debuffs, "41"))
-                                            {
-                                                if (ptMember != null)
-                                                {
-                                                    playerShell[ptMember.MemberNumber] = new DateTime(1970, 1, 1, 0, 0, 0);
-                                                }
-                                            }
-                                            // IF PHALANX II IS NOT ACTIVE DESPITE BEING ENABLED RESET THE TIMER
-                                            // TO FORCE IT TO BE CAST
-                                            if (!DebuffContains(named_Debuffs, "116"))
-                                            {
-                                                if (ptMember != null)
-                                                {
-                                                    playerPhalanx_II[ptMember.MemberNumber] = new DateTime(1970, 1, 1, 0, 0, 0);
-                                                }
-
-                                            }
-                                            // IF NO STORM SPELL IS ACTIVE DESPITE BEING ENABLED RESET THE TIMER
-                                            // TO FORCE IT TO BE CAST
-                                            if (!DebuffContains(named_Debuffs, "178") && !DebuffContains(named_Debuffs, "179") && !DebuffContains(named_Debuffs, "180") && !DebuffContains(named_Debuffs, "181") &&
-                                                !DebuffContains(named_Debuffs, "182") && !DebuffContains(named_Debuffs, "183") && !DebuffContains(named_Debuffs, "184") && !DebuffContains(named_Debuffs, "185") &&
-                                                !DebuffContains(named_Debuffs, "589") && !DebuffContains(named_Debuffs, "590") && !DebuffContains(named_Debuffs, "591") && !DebuffContains(named_Debuffs, "592") &&
-                                                !DebuffContains(named_Debuffs, "593") && !DebuffContains(named_Debuffs, "594") && !DebuffContains(named_Debuffs, "595") && !DebuffContains(named_Debuffs, "596"))
-                                            {
-                                                if (ptMember != null)
-                                                {
-                                                    playerStormspell[ptMember.MemberNumber] = new DateTime(1970, 1, 1, 0, 0, 0);
-                                                }
-                                            }
-
-
-                                            // ==============================================================================================================================================================================
-                                            // PARTY DEBUFF REMOVAL
-
-
-
-                                            string character_name = ailment.CharacterName.ToLower();
-
-                                            if (Form2.config.enablePartyDebuffRemoval && !string.IsNullOrEmpty(character_name) && (characterNames_naRemoval.Contains(character_name) || Form2.config.SpecifiednaSpellsenable == false))
-                                            {
-                                                //DOOM
-                                                if (Form2.config.naCurse && DebuffContains(named_Debuffs, "15") && PL.SpellAvailable(Spells.Cursna))
-                                                {
-                                                    CastSpell(ptMember.Name, Spells.Cursna);
-                                                    BreakOut = 1;
-                                                }
-                                                //SLEEP
-                                                else if (DebuffContains(named_Debuffs, "2") && PL.SpellAvailable(wakeSleepSpell) && PL.SpellAvailable(Spells.Curaga))
-                                                {
-                                                    CastSpell(ptMember.Name, wakeSleepSpell);
-                                                    removeDebuff(ptMember.Name, 2);
-                                                    BreakOut = 1;
-                                                }
-                                                //SLEEP 2
-                                                else if (DebuffContains(named_Debuffs, "19") && PL.SpellAvailable(wakeSleepSpell) && PL.SpellAvailable(Spells.Curaga))
-                                                {
-                                                    CastSpell(ptMember.Name, wakeSleepSpell);
-                                                    removeDebuff(ptMember.Name, 19);
-                                                    BreakOut = 1;
-                                                }
-                                                //PETRIFICATION
-                                                else if (Form2.config.naPetrification && DebuffContains(named_Debuffs, "7") && PL.SpellAvailable(Spells.Stona) && PL.SpellAvailable(Spells.Stona))
-                                                {
-                                                    CastSpell(ptMember.Name, Spells.Stona);
-                                                    removeDebuff(ptMember.Name, 7);
-                                                    BreakOut = 1;
-                                                }
-                                                //SILENCE
-                                                else if (Form2.config.naSilence && DebuffContains(named_Debuffs, "6") && PL.SpellAvailable(Spells.Silena) && PL.SpellAvailable(Spells.Silena))
-                                                {
-                                                    CastSpell(ptMember.Name, Spells.Silena);
-                                                    removeDebuff(ptMember.Name, 6);
-                                                    BreakOut = 1;
-                                                }
-                                                //PARALYSIS
-                                                else if (Form2.config.naParalysis && DebuffContains(named_Debuffs, "4") && PL.SpellAvailable(Spells.Paralyna) && PL.SpellAvailable(Spells.Paralyna))
-                                                {
-                                                    CastSpell(ptMember.Name, Spells.Paralyna);
-                                                    removeDebuff(ptMember.Name, 4);
-                                                    BreakOut = 1;
-                                                }
-                                                // PLAGUE
-                                                else if (Form2.config.naDisease && DebuffContains(named_Debuffs, "31") && PL.SpellAvailable(Spells.Viruna) && PL.SpellAvailable(Spells.Viruna))
-                                                {
-                                                    CastSpell(ptMember.Name, Spells.Viruna);
-                                                    removeDebuff(ptMember.Name, 31);
-                                                    BreakOut = 1;
-                                                }
-                                                //DISEASE
-                                                else if (Form2.config.naDisease && DebuffContains(named_Debuffs, "8") && PL.SpellAvailable(Spells.Viruna) && PL.SpellAvailable(Spells.Viruna))
-                                                {
-                                                    CastSpell(ptMember.Name, Spells.Viruna);
-                                                    removeDebuff(ptMember.Name, 8);
-                                                    BreakOut = 1;
-                                                }
-                                                // AMNESIA
-                                                else if (Form2.config.Esuna && DebuffContains(named_Debuffs, "16") && PL.SpellAvailable(Spells.Esuna) && PL.SpellAvailable(Spells.Esuna) && BuffChecker(1, 418))
-                                                {
-                                                    CastSpell(ptMember.Name, Spells.Esuna);
-                                                    removeDebuff(ptMember.Name, 16);
-                                                    BreakOut = 1;
-                                                }
-                                                //CURSE
-                                                else if (Form2.config.naCurse && DebuffContains(named_Debuffs, "9") && PL.SpellAvailable(Spells.Cursna))
-                                                {
-                                                    CastSpell(ptMember.Name, Spells.Cursna);
-                                                    removeDebuff(ptMember.Name, 9);
-                                                    BreakOut = 1;
-                                                }
-                                                //BLINDNESS
-                                                else if (Form2.config.naBlindness && DebuffContains(named_Debuffs, "5") && PL.SpellAvailable(Spells.Blindna) && PL.SpellAvailable(Spells.Blindna))
-                                                {
-                                                    CastSpell(ptMember.Name, Spells.Blindna);
-                                                    removeDebuff(ptMember.Name, 5);
-                                                    BreakOut = 1;
-                                                }
-                                                //POISON
-                                                else if (Form2.config.naPoison && DebuffContains(named_Debuffs, "3") && PL.SpellAvailable(Spells.Poisona) && PL.SpellAvailable(Spells.Poisona))
-                                                {
-                                                    CastSpell(ptMember.Name, Spells.Poisona);
-                                                    removeDebuff(ptMember.Name, 3);
-                                                    BreakOut = 1;
-                                                }
-                                                // SLOW
-                                                else if (Form2.config.naErase == true && Form2.config.na_Slow && DebuffContains(named_Debuffs, "13") && PL.SpellAvailable(Spells.Erase))
-                                                {
-                                                    CastSpell(ptMember.Name, Spells.Erase, "Slow → " + ptMember.Name);
-                                                    removeDebuff(ptMember.Name, 13);
-                                                    BreakOut = 1;
-                                                }
-                                                // BIO
-                                                else if (Form2.config.naErase == true && Form2.config.na_Bio && DebuffContains(named_Debuffs, "135") && PL.SpellAvailable(Spells.Erase))
-                                                {
-                                                    CastSpell(ptMember.Name, Spells.Erase, "Bio → " + ptMember.Name);
-                                                    removeDebuff(ptMember.Name, 135);
-                                                    BreakOut = 1;
-                                                }
-                                                // BIND
-                                                else if (Form2.config.naErase == true && Form2.config.na_Bind && DebuffContains(named_Debuffs, "11") && PL.SpellAvailable(Spells.Erase))
-                                                {
-                                                    CastSpell(ptMember.Name, Spells.Erase, "Bind → " + ptMember.Name);
-                                                    removeDebuff(ptMember.Name, 11);
-                                                    BreakOut = 1;
-                                                }
-                                                // GRAVITY
-                                                else if (Form2.config.naErase == true && Form2.config.na_Weight && DebuffContains(named_Debuffs, "12") && PL.SpellAvailable(Spells.Erase))
-                                                {
-                                                    CastSpell(ptMember.Name, Spells.Erase, "Gravity → " + ptMember.Name);
-                                                    removeDebuff(ptMember.Name, 12);
-                                                    BreakOut = 1;
-                                                }
-                                                // ACCURACY DOWN
-                                                else if (Form2.config.naErase == true && Form2.config.na_AccuracyDown && DebuffContains(named_Debuffs, "146") && PL.SpellAvailable(Spells.Erase))
-                                                {
-                                                    CastSpell(ptMember.Name, Spells.Erase, "Acc. Down → " + ptMember.Name);
-                                                    removeDebuff(ptMember.Name, 146);
-                                                    BreakOut = 1;
-                                                }
-                                                // DEFENSE DOWN
-                                                else if (Form2.config.naErase == true && Form2.config.na_DefenseDown && DebuffContains(named_Debuffs, "149") && PL.SpellAvailable(Spells.Erase))
-                                                {
-                                                    CastSpell(ptMember.Name, Spells.Erase, "Def. Down → " + ptMember.Name);
-                                                    removeDebuff(ptMember.Name, 149);
-                                                    BreakOut = 1;
-                                                }
-                                                // MAGIC DEF DOWN
-                                                else if (Form2.config.naErase == true && Form2.config.na_MagicDefenseDown && DebuffContains(named_Debuffs, "167") && PL.SpellAvailable(Spells.Erase))
-                                                {
-                                                    CastSpell(ptMember.Name, Spells.Erase, "Mag. Def. Down → " + ptMember.Name);
-                                                    removeDebuff(ptMember.Name, 167);
-                                                    BreakOut = 1;
-                                                }
-                                                // ATTACK DOWN
-                                                else if (Form2.config.naErase == true && Form2.config.na_AttackDown && DebuffContains(named_Debuffs, "147") && PL.SpellAvailable(Spells.Erase))
-                                                {
-                                                    CastSpell(ptMember.Name, Spells.Erase, "Attk. Down → " + ptMember.Name);
-                                                    removeDebuff(ptMember.Name, 147);
-                                                    BreakOut = 1;
-                                                }
-                                                // HP DOWN
-                                                else if (Form2.config.naErase == true && Form2.config.na_MaxHpDown && DebuffContains(named_Debuffs, "144") && PL.SpellAvailable(Spells.Erase))
-                                                {
-                                                    CastSpell(ptMember.Name, Spells.Erase, "HP Down → " + ptMember.Name);
-                                                    removeDebuff(ptMember.Name, 144);
-                                                    BreakOut = 1;
-                                                }
-                                                // VIT Down
-                                                else if (Form2.config.naErase == true && Form2.config.na_VitDown && DebuffContains(named_Debuffs, "138") && PL.SpellAvailable(Spells.Erase))
-                                                {
-                                                    CastSpell(ptMember.Name, Spells.Erase, "VIT Down → " + ptMember.Name);
-                                                    removeDebuff(ptMember.Name, 138);
-                                                    BreakOut = 1;
-                                                }
-                                                // Threnody
-                                                else if (Form2.config.naErase == true && Form2.config.na_Threnody && DebuffContains(named_Debuffs, "217") && PL.SpellAvailable(Spells.Erase))
-                                                {
-                                                    CastSpell(ptMember.Name, Spells.Erase, "Threnody → " + ptMember.Name);
-                                                    removeDebuff(ptMember.Name, 217);
-                                                    BreakOut = 1;
-                                                }
-                                                // Shock
-                                                else if (Form2.config.naErase == true && Form2.config.na_Shock && DebuffContains(named_Debuffs, "132") && PL.SpellAvailable(Spells.Erase))
-                                                {
-                                                    CastSpell(ptMember.Name, Spells.Erase, "Shock → " + ptMember.Name);
-                                                    removeDebuff(ptMember.Name, 132);
-                                                    BreakOut = 1;
-                                                }
-                                                // StrDown
-                                                else if (Form2.config.naErase == true && Form2.config.na_StrDown && DebuffContains(named_Debuffs, "136") && PL.SpellAvailable(Spells.Erase))
-                                                {
-                                                    CastSpell(ptMember.Name, Spells.Erase, "STR Down → " + ptMember.Name);
-                                                    removeDebuff(ptMember.Name, 136);
-                                                    BreakOut = 1;
-                                                }
-                                                // Requiem
-                                                else if (Form2.config.naErase == true && Form2.config.na_Requiem && DebuffContains(named_Debuffs, "192") && PL.SpellAvailable(Spells.Erase))
-                                                {
-                                                    CastSpell(ptMember.Name, Spells.Erase, "Requiem → " + ptMember.Name);
-                                                    removeDebuff(ptMember.Name, 192);
-                                                    BreakOut = 1;
-                                                }
-                                                // Rasp
-                                                else if (Form2.config.naErase == true && Form2.config.na_Rasp && DebuffContains(named_Debuffs, "131") && PL.SpellAvailable(Spells.Erase))
-                                                {
-                                                    CastSpell(ptMember.Name, Spells.Erase, "Rasp → " + ptMember.Name);
-                                                    removeDebuff(ptMember.Name, 131);
-                                                    BreakOut = 1;
-                                                }
-                                                // Max TP Down
-                                                else if (Form2.config.naErase == true && Form2.config.na_MaxTpDown && DebuffContains(named_Debuffs, "189") && PL.SpellAvailable(Spells.Erase))
-                                                {
-                                                    CastSpell(ptMember.Name, Spells.Erase, "Max TP Down → " + ptMember.Name);
-                                                    removeDebuff(ptMember.Name, 189);
-                                                    BreakOut = 1;
-                                                }
-                                                // Max MP Down
-                                                else if (Form2.config.naErase == true && Form2.config.na_MaxMpDown && DebuffContains(named_Debuffs, "145") && PL.SpellAvailable(Spells.Erase))
-                                                {
-                                                    CastSpell(ptMember.Name, Spells.Erase, "Max MP Down → " + ptMember.Name);
-                                                    removeDebuff(ptMember.Name, 145);
-                                                    BreakOut = 1;
-                                                }
-                                                // Magic Attack Down
-                                                else if (Form2.config.naErase == true && Form2.config.na_MagicAttackDown && DebuffContains(named_Debuffs, "175") && PL.SpellAvailable(Spells.Erase))
-                                                {
-                                                    CastSpell(ptMember.Name, Spells.Erase, "Mag. Atk. Down → " + ptMember.Name);
-                                                    removeDebuff(ptMember.Name, 175);
-                                                    BreakOut = 1;
-                                                }
-                                                // Magic Acc Down
-                                                else if (Form2.config.naErase == true && Form2.config.na_MagicAccDown && DebuffContains(named_Debuffs, "174") && PL.SpellAvailable(Spells.Erase))
-                                                {
-                                                    CastSpell(ptMember.Name, Spells.Erase, "Mag. Acc. Down → " + ptMember.Name);
-                                                    removeDebuff(ptMember.Name, 174);
-                                                    BreakOut = 1;
-                                                }
-                                                // Mind Down
-                                                else if (Form2.config.naErase == true && Form2.config.na_MndDown && DebuffContains(named_Debuffs, "141") && PL.SpellAvailable(Spells.Erase))
-                                                {
-                                                    CastSpell(ptMember.Name, Spells.Erase, "MND Down → " + ptMember.Name);
-                                                    removeDebuff(ptMember.Name, 141);
-                                                    BreakOut = 1;
-                                                }
-                                                // Int Down
-                                                else if (Form2.config.naErase == true && Form2.config.na_IntDown && DebuffContains(named_Debuffs, "140") && PL.SpellAvailable(Spells.Erase))
-                                                {
-                                                    CastSpell(ptMember.Name, Spells.Erase, "INT Down → " + ptMember.Name);
-                                                    removeDebuff(ptMember.Name, 140);
-                                                    BreakOut = 1;
-                                                }
-                                                // Helix
-                                                else if (Form2.config.naErase == true && Form2.config.na_Helix && DebuffContains(named_Debuffs, "186") && PL.SpellAvailable(Spells.Erase))
-                                                {
-                                                    CastSpell(ptMember.Name, Spells.Erase, "Helix → " + ptMember.Name);
-                                                    removeDebuff(ptMember.Name, 186);
-                                                    BreakOut = 1;
-                                                }
-                                                // Frost
-                                                else if (Form2.config.naErase == true && Form2.config.na_Frost && DebuffContains(named_Debuffs, "129") && PL.SpellAvailable(Spells.Erase))
-                                                {
-                                                    CastSpell(ptMember.Name, Spells.Erase, "Frost → " + ptMember.Name);
-                                                    removeDebuff(ptMember.Name, 129);
-                                                    BreakOut = 1;
-                                                }
-                                                // EvasionDown
-                                                else if (Form2.config.naErase == true && Form2.config.na_EvasionDown && DebuffContains(named_Debuffs, "148") && PL.SpellAvailable(Spells.Erase))
-                                                {
-                                                    CastSpell(ptMember.Name, Spells.Erase, "Evasion Down → " + ptMember.Name);
-                                                    removeDebuff(ptMember.Name, 148);
-                                                    BreakOut = 1;
-                                                }
-                                                // ELEGY
-                                                else if (Form2.config.naErase == true && Form2.config.na_Elegy && DebuffContains(named_Debuffs, "194") && PL.SpellAvailable(Spells.Erase))
-                                                {
-                                                    CastSpell(ptMember.Name, Spells.Erase, "Elegy → " + ptMember.Name);
-                                                    removeDebuff(ptMember.Name, 194);
-                                                    BreakOut = 1;
-                                                }
-                                                // Drown
-                                                else if (Form2.config.naErase == true && Form2.config.na_Drown && DebuffContains(named_Debuffs, "133") && PL.SpellAvailable(Spells.Erase))
-                                                {
-                                                    CastSpell(ptMember.Name, Spells.Erase, "Drown → " + ptMember.Name);
-                                                    removeDebuff(ptMember.Name, 133);
-                                                    BreakOut = 1;
-                                                }
-                                                // Dia
-                                                else if (Form2.config.naErase == true && Form2.config.na_Dia && DebuffContains(named_Debuffs, "134") && PL.SpellAvailable(Spells.Erase))
-                                                {
-                                                    CastSpell(ptMember.Name, Spells.Erase, "Dia → " + ptMember.Name);
-                                                    removeDebuff(ptMember.Name, 134);
-                                                    BreakOut = 1;
-                                                }
-                                                // DexDown
-                                                else if (Form2.config.naErase == true && Form2.config.na_DexDown && DebuffContains(named_Debuffs, "137") && PL.SpellAvailable(Spells.Erase))
-                                                {
-                                                    CastSpell(ptMember.Name, Spells.Erase, "DEX Down → " + ptMember.Name);
-                                                    removeDebuff(ptMember.Name, 137);
-                                                    BreakOut = 1;
-                                                }
-                                                // Choke
-                                                else if (Form2.config.naErase == true && Form2.config.na_Choke && DebuffContains(named_Debuffs, "130") && PL.SpellAvailable(Spells.Erase))
-                                                {
-                                                    CastSpell(ptMember.Name, Spells.Erase, "Choke → " + ptMember.Name);
-                                                    removeDebuff(ptMember.Name, 130);
-                                                    BreakOut = 1;
-                                                }
-                                                // ChrDown
-                                                else if (Form2.config.naErase == true && Form2.config.na_ChrDown && DebuffContains(named_Debuffs, "142") && PL.SpellAvailable(Spells.Erase))
-                                                {
-                                                    CastSpell(ptMember.Name, Spells.Erase, "CHR Down → " + ptMember.Name);
-                                                    removeDebuff(ptMember.Name, 142);
-                                                    BreakOut = 1;
-                                                }
-                                                // Burn
-                                                else if (Form2.config.naErase == true && Form2.config.na_Burn && DebuffContains(named_Debuffs, "128") && PL.SpellAvailable(Spells.Erase))
-                                                {
-                                                    CastSpell(ptMember.Name, Spells.Erase, "Burn → " + ptMember.Name);
-                                                    removeDebuff(ptMember.Name, 128);
-                                                    BreakOut = 1;
-                                                }
-                                                // Addle
-                                                else if (Form2.config.naErase == true && Form2.config.na_Addle && DebuffContains(named_Debuffs, "21") && PL.SpellAvailable(Spells.Erase))
-                                                {
-                                                    CastSpell(ptMember.Name, Spells.Erase, "Addle → " + ptMember.Name);
-                                                    removeDebuff(ptMember.Name, 21);
-                                                    BreakOut = 1;
-                                                }
-                                                // AGI Down
-                                                else if (Form2.config.naErase == true && Form2.config.na_AgiDown && DebuffContains(named_Debuffs, "139") && PL.SpellAvailable(Spells.Erase))
-                                                {
-                                                    CastSpell(ptMember.Name, Spells.Erase, "AGI Down → " + ptMember.Name);
-                                                    removeDebuff(ptMember.Name, 139);
-                                                    BreakOut = 1;
-                                                }
-                                            }
-                                        }
-
-
-                                    }
-
-
+                                    CastSpell(name, Spells.Cure);
                                 }
 
-                                if (BreakOut == 1)
+                                CastSpell(name, Data.DebuffPriorities[targetDebuff]);
+                            }
+                        }
+                    }
+
+                    // Then reset any timers that need to be reset for buffs.
+                    foreach (PartyMember ptMember in PL.Party.GetPartyMembers())
+                    {
+                        if (ActiveBuffs.ContainsKey(ptMember.Name))
+                        {
+                            if (!string.IsNullOrEmpty(ActiveBuffs[ptMember.Name]))
+                            {
+                                List<string> named_Debuffs = ActiveBuffs[ptMember.Name].Split(',').ToList();
+
+                                if (named_Debuffs != null && named_Debuffs.Count() != 0)
                                 {
-                                    break;
+                                    named_Debuffs = named_Debuffs.Select(t => t.Trim()).ToList();
+
+
+                                    // IF SLOW IS NOT ACTIVE, YET NEITHER IS HASTE / FLURRY DESPITE BEING ENABLED
+                                    // RESET THE TIMER TO FORCE IT TO BE CAST
+                                    if (!DebuffContains(named_Debuffs, "13") && !DebuffContains(named_Debuffs, "33") && !DebuffContains(named_Debuffs, "265") && !DebuffContains(named_Debuffs, "562"))
+                                    {
+                                        if (ptMember != null)
+                                        {
+                                            playerHaste[ptMember.MemberNumber] = new DateTime(1970, 1, 1, 0, 0, 0);
+                                            playerHaste_II[ptMember.MemberNumber] = new DateTime(1970, 1, 1, 0, 0, 0);
+                                            playerFlurry[ptMember.MemberNumber] = new DateTime(1970, 1, 1, 0, 0, 0);
+                                            playerFlurry_II[ptMember.MemberNumber] = new DateTime(1970, 1, 1, 0, 0, 0);
+                                        }
+                                    }
+                                    // IF SUBLIMATION IS NOT ACTIVE, YET NEITHER IS REFRESH DESPITE BEING
+                                    // ENABLED RESET THE TIMER TO FORCE IT TO BE CAST
+                                    if (!DebuffContains(named_Debuffs, "187") && !DebuffContains(named_Debuffs, "188") && !DebuffContains(named_Debuffs, "43"))
+                                    {
+                                        if (ptMember != null)
+                                        {
+                                            playerRefresh[ptMember.MemberNumber] = new DateTime(1970, 1, 1, 0, 0, 0);  // ERROR
+                                        }
+                                    }
+                                    // IF REGEN IS NOT ACTIVE DESPITE BEING ENABLED RESET THE TIMER TO
+                                    // FORCE IT TO BE CAST
+                                    if (!DebuffContains(named_Debuffs, "42"))
+                                    {
+                                        if (ptMember != null)
+                                        {
+                                            playerRegen[ptMember.MemberNumber] = new DateTime(1970, 1, 1, 0, 0, 0);
+                                        }
+                                    }
+                                    // IF PROTECT IS NOT ACTIVE DESPITE BEING ENABLED RESET THE TIMER TO
+                                    // FORCE IT TO BE CAST
+                                    if (!DebuffContains(named_Debuffs, "40"))
+                                    {
+                                        if (ptMember != null)
+                                        {
+                                            playerProtect[ptMember.MemberNumber] = new DateTime(1970, 1, 1, 0, 0, 0);
+                                        }
+                                    }
+
+                                    // IF SHELL IS NOT ACTIVE DESPITE BEING ENABLED RESET THE TIMER TO
+                                    // FORCE IT TO BE CAST
+                                    if (!DebuffContains(named_Debuffs, "41"))
+                                    {
+                                        if (ptMember != null)
+                                        {
+                                            playerShell[ptMember.MemberNumber] = new DateTime(1970, 1, 1, 0, 0, 0);
+                                        }
+                                    }
+                                    // IF PHALANX II IS NOT ACTIVE DESPITE BEING ENABLED RESET THE TIMER
+                                    // TO FORCE IT TO BE CAST
+                                    if (!DebuffContains(named_Debuffs, "116"))
+                                    {
+                                        if (ptMember != null)
+                                        {
+                                            playerPhalanx_II[ptMember.MemberNumber] = new DateTime(1970, 1, 1, 0, 0, 0);
+                                        }
+
+                                    }
+                                    // IF NO STORM SPELL IS ACTIVE DESPITE BEING ENABLED RESET THE TIMER
+                                    // TO FORCE IT TO BE CAST
+                                    if (!DebuffContains(named_Debuffs, "178") && !DebuffContains(named_Debuffs, "179") && !DebuffContains(named_Debuffs, "180") && !DebuffContains(named_Debuffs, "181") &&
+                                        !DebuffContains(named_Debuffs, "182") && !DebuffContains(named_Debuffs, "183") && !DebuffContains(named_Debuffs, "184") && !DebuffContains(named_Debuffs, "185") &&
+                                        !DebuffContains(named_Debuffs, "589") && !DebuffContains(named_Debuffs, "590") && !DebuffContains(named_Debuffs, "591") && !DebuffContains(named_Debuffs, "592") &&
+                                        !DebuffContains(named_Debuffs, "593") && !DebuffContains(named_Debuffs, "594") && !DebuffContains(named_Debuffs, "595") && !DebuffContains(named_Debuffs, "596"))
+                                    {
+                                        if (ptMember != null)
+                                        {
+                                            playerStormspell[ptMember.MemberNumber] = new DateTime(1970, 1, 1, 0, 0, 0);
+                                        }
+                                    }                                
                                 }
                             }
                         }
+                        
                     } // Closing FOREACH base_list
                 }// Closing LOCK
             }
@@ -5085,7 +4644,16 @@
                         }
                     }
 
-                    #region Primary Logic                               
+                    #region Primary Logic    
+                    IEnumerable<PartyMember> partyByHP = Monitored.GetActivePartyMembers();
+
+                    /////////////////////////// CURSE CHECK /////////////////////////////////////
+                    var cursedMembers = partyByHP.Count(pm => PL.CanCastOn(pm) && ActiveBuffs.ContainsKey(pm.Name) && ActiveBuffs[pm.Name].Split(',').Select(str => (StatusEffect)short.Parse(str.Trim())).Contains(StatusEffect.Doom));
+                    if(cursedMembers > 0)
+                    {
+                        RunDebuffChecker();
+                    }
+
                     /////////////////////////// PL CURE //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
                     // TODO: Test this! Pretty sure your own character is always party member index 0.
@@ -5095,9 +4663,7 @@
                         CureCalculator(plAsPartyMember);
                     }
 
-
-                    /////////////////////////// CURAGA //////////////////////////////////////////////////////////////////////////////////////////////////////////////////                
-                    IEnumerable<PartyMember> partyByHP = Monitored.GetActivePartyMembers();
+                    /////////////////////////// CURAGA //////////////////////////////////////////////////////////////////////////////////////////////////////////////////                                    
 
                     int plParty = PLPartyRelativeToMonitored();
 
@@ -5169,6 +4735,7 @@
                     if (Form2.config.enableMonitoredPriority && monitoredPlayer.CurrentHP > 0 && (monitoredPlayer.CurrentHPP <= Form2.config.monitoredCurePercentage))
                     {
                         CureCalculator(monitoredPlayer);
+                        return;
                     }
                     else
                     {
@@ -5183,10 +4750,12 @@
                             if(highPriorityCures != null && highPriorityCures.Any())
                             {
                                 CureCalculator(highPriorityCures.First());
+                                return;
                             }
                             else
                             {
                                 CureCalculator(validCures.First());
+                                return;
                             }
                         }                     
                     }
@@ -5239,7 +4808,8 @@
                     }
 
                     SpellsData enspell = enspells.Where(c => c.spell_position == Form2.config.plEnspell_Spell && c.type == 1).SingleOrDefault();
-                    SpellsData stormspell = stormspells.Where(c => c.spell_position == Form2.config.plStormSpell_Spell).SingleOrDefault();
+                    string stormspell = Data.StormTiers[Form2.config.plStormSpell_Spell];
+                    string gainBoostSpell = Data.GainBoostSpells[Form2.config.plGainBoost_Spell];
 
                     if (PL.Player.LoginStatus == (int)LoginStatus.LoggedIn && JobAbilityLock_Check != true && CastingBackground_Check != true)
                     {
@@ -5264,11 +4834,116 @@
                         {
                             JobAbility_Wait(Ability.AddendumBlack, Ability.AddendumBlack);
                         }
+                        else if (Form2.config.plShellra && (!PL.HasStatus(StatusEffect.Shell)))
+                        {
+                            var shellraSpell = Data.ShellraTiers[(int)Form2.config.plShellra_Level - 1];
+                            if (PL.SpellAvailable(shellraSpell))
+                            {
+                                CastSpell(Target.Me, shellraSpell);
+                            }
+                        }
+                        else if (Form2.config.plProtectra && (!PL.HasStatus(StatusEffect.Protect)))
+                        {
+                            var protectraSpell = Data.ProtectraTiers[(int)Form2.config.plProtectra_Level - 1];
+                            if (PL.SpellAvailable(protectraSpell))
+                            {
+                                CastSpell(Target.Me, protectraSpell);
+                            }
+                        }
+                        else if (Form2.config.plBarElement && !BuffChecker(BarspellBuffID, 0) && PL.SpellAvailable(BarspellName))
+                        {
+                            if (Form2.config.Accession && Form2.config.barspellAccession && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Accession) && BarSpell_AOE == false && !PL.HasStatus(StatusEffect.Accession))
+                            {
+                                JobAbility_Wait("Barspell, Accession", Ability.Accession);
+                                return;
+                            }
+
+                            if (Form2.config.Perpetuance && Form2.config.barspellPerpetuance && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Perpetuance) && !PL.HasStatus(StatusEffect.Perpetuance))
+                            {
+                                JobAbility_Wait("Barspell, Perpetuance", Ability.Perpetuance);
+                                return;
+                            }
+
+                            CastSpell(Target.Me, BarspellName);
+                        }
+                        else if (Form2.config.plBarStatus && !BuffChecker(BarstatusBuffID, 0) && PL.SpellAvailable(BarstatusName))
+                        {
+                            if (Form2.config.Accession && Form2.config.barstatusAccession && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Accession) && BarStatus_AOE == false && !PL.HasStatus(StatusEffect.Accession))
+                            {
+                                JobAbility_Wait("Barstatus, Accession", Ability.Accession);
+                                return;
+                            }
+
+                            if (Form2.config.Perpetuance && Form2.config.barstatusPerpetuance && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Perpetuance) && !PL.HasStatus(StatusEffect.Perpetuance))
+                            {
+                                JobAbility_Wait("Barstatus, Perpetuance", Ability.Perpetuance);
+                                return;
+                            }
+
+                            CastSpell(Target.Me, BarstatusName);
+                        }
+                        else if (Form2.config.plGainBoost && !PL.HasStatus(Data.SpellEffects[gainBoostSpell]) && PL.SpellAvailable(gainBoostSpell))
+                        {
+                            CastSpell(Target.Me, gainBoostSpell);
+                        }
+                        else if (Form2.config.plStormSpell && !PL.HasStatus(Data.SpellEffects[stormspell]) && PL.SpellAvailable(stormspell))
+                        {
+                            if (Form2.config.Accession && Form2.config.stormspellAccession && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Accession) && !PL.HasStatus(StatusEffect.Accession))
+                            {
+                                JobAbility_Wait("Stormspell, Accession", Ability.Accession);
+                                return;
+                            }
+
+                            if (Form2.config.Perpetuance && Form2.config.stormspellPerpetuance && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Perpetuance) && !PL.HasStatus(StatusEffect.Perpetuance))
+                            {
+                                JobAbility_Wait("Stormspell, Perpetuance", Ability.Perpetuance);
+                                return;
+                            }
+
+                            CastSpell(Target.Me, stormspell);
+                        }
+                        else if (Form2.config.plProtect && (!PL.HasStatus(StatusEffect.Protect)))
+                        {
+                            string protectSpell = Data.ProtectTiers[Form2.config.autoProtect_Spell];
+
+                            if (protectSpell != Spells.Unknown && PL.SpellAvailable(protectSpell))
+                            {
+                                if (Form2.config.Accession && Form2.config.accessionProShell && PL.Party.GetPartyMembers().Count() > 2 && PL.AbilityAvailable(Ability.Accession) && PL.CurrentSCHCharges() > 0)
+                                {
+                                    if (!PL.HasStatus(StatusEffect.Accession))
+                                    {
+                                        JobAbility_Wait("Protect, Accession", Ability.Accession);
+                                        return;
+                                    }
+                                }
+
+                                CastSpell(Target.Me, protectSpell);
+                            }
+                        }
+                        else if (Form2.config.plShell && (!PL.HasStatus(StatusEffect.Shell)))
+                        {
+                            string shellSpell = Data.ShellTiers[Form2.config.autoShell_Spell];
+
+                            if (shellSpell != Spells.Unknown && PL.SpellAvailable(shellSpell))
+                            {
+                                if (Form2.config.Accession && Form2.config.accessionProShell && PL.Party.GetPartyMembers().Count() > 2 && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Accession))
+                                {
+                                    if (!PL.HasStatus(StatusEffect.Accession))
+                                    {
+                                        JobAbility_Wait("Shell, Accession", Ability.Accession);
+                                        return;
+                                    }
+                                }
+
+                                CastSpell(Target.Me, shellSpell);
+                            }
+                        }
                         else if (Form2.config.plReraise && Form2.config.EnlightenmentReraise && (!PL.HasStatus(StatusEffect.Reraise)) && !PL.HasStatus(StatusEffect.Addendum_White) && PL.AbilityAvailable(Ability.Enlightenment))
                         {
                             if (!PL.HasStatus(StatusEffect.Enlightenment) && PL.AbilityAvailable(Ability.Enlightenment))
                             {
                                 JobAbility_Wait("Reraise, Enlightenment", Ability.Enlightenment);
+                                return;
                             }
 
                             var reraiseSpell = Data.ReraiseTiers[Form2.config.plReraise_Level-1];
@@ -5296,41 +4971,7 @@
                                 CastSpell(Target.Me, Spells.Utsusemi_Ichi);
                             }
                         }
-                        else if (Form2.config.plProtect && (!PL.HasStatus(StatusEffect.Protect)))
-                        {
-                            string protectSpell = Data.ProtectTiers[Form2.config.autoProtect_Spell];
-
-                            if (protectSpell != Spells.Unknown && PL.SpellAvailable(protectSpell))
-                            {
-                                if (Form2.config.Accession && Form2.config.accessionProShell && PL.Party.GetPartyMembers().Count() > 2 && PL.AbilityAvailable(Ability.Accession) && PL.CurrentSCHCharges() > 0)
-                                {
-                                    if (!PL.HasStatus(StatusEffect.Accession))
-                                    {
-                                        JobAbility_Wait("Protect, Accession", Ability.Accession);
-                                    }
-                                }
-
-                                CastSpell(Target.Me, protectSpell);
-                            }
-                        }
-                        else if (Form2.config.plShell && (!PL.HasStatus(StatusEffect.Shell)))
-                        {
-                            string shellSpell = Data.ShellTiers[Form2.config.autoShell_Spell];
-
-                            if (shellSpell != Spells.Unknown && PL.SpellAvailable(shellSpell))
-                            {
-                                if (Form2.config.Accession && Form2.config.accessionProShell && PL.Party.GetPartyMembers().Count() > 2 && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Accession))
-                                {
-                                    if (!PL.HasStatus(StatusEffect.Accession))
-                                    {
-                                        JobAbility_Wait("Shell, Accession", Ability.Accession);
-                                        return;
-                                    }
-                                }
-
-                                CastSpell(Target.Me, shellSpell);
-                            }
-                        }
+                        
                         else if (Form2.config.plBlink && (!PL.HasStatus(StatusEffect.Blink)) && PL.SpellAvailable(Spells.Blink))
                         {
 
@@ -5373,10 +5014,12 @@
                                 if (Form2.config.Accession && Form2.config.refreshAccession && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Accession) && !PL.HasStatus(StatusEffect.Accession))
                                 {
                                     JobAbility_Wait("Refresh, Accession", Ability.Accession);
+                                    return;
                                 }
                                 if (Form2.config.Perpetuance && Form2.config.refreshPerpetuance && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Perpetuance) && !PL.HasStatus(StatusEffect.Perpetuance))
                                 {
                                     JobAbility_Wait("Refresh, Perpetuance", Ability.Perpetuance);
+                                    return;
                                 }
 
                                 CastSpell(Target.Me, refreshSpell);
@@ -5387,10 +5030,12 @@
                             if (Form2.config.Accession && Form2.config.regenAccession && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Accession) && !PL.HasStatus(StatusEffect.Accession))
                             {
                                 JobAbility_Wait("Regen, Accession", Ability.Accession);
+                                return;
                             }
                             if (Form2.config.Perpetuance && Form2.config.regenPerpetuance && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Perpetuance) && !PL.HasStatus(StatusEffect.Perpetuance))
                             {
                                 JobAbility_Wait("Regen, Perpetuance", Ability.Perpetuance);
+                                return;
                             }
 
                             var regenSpell = Data.RegenTiers[Form2.config.plRegen_Level - 1];
@@ -5446,78 +5091,7 @@
                             }
 
                             CastSpell(Target.Me, Spells.Aquaveil);
-                        }
-                        else if (Form2.config.plShellra && (!PL.HasStatus(StatusEffect.Shell)))
-                        {
-                            var shellraSpell = Data.ShellraTiers[(int)Form2.config.plShellra_Level - 1];
-                            if(PL.SpellAvailable(shellraSpell))
-                            {
-                                CastSpell(Target.Me, shellraSpell);
-                            }
-                        }
-                        else if (Form2.config.plProtectra && (!PL.HasStatus(StatusEffect.Protect)))
-                        {
-                            var protectraSpell = Data.ProtectraTiers[(int)Form2.config.plProtectra_Level - 1];
-                            if (PL.SpellAvailable(protectraSpell))
-                            {
-                                CastSpell(Target.Me, protectraSpell);
-                            }
-                        }
-                        else if (Form2.config.plBarElement && !BuffChecker(BarspellBuffID, 0) && PL.SpellAvailable(BarspellName))
-                        {
-                            if (Form2.config.Accession && Form2.config.barspellAccession && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Accession) && BarSpell_AOE == false && !PL.HasStatus(StatusEffect.Accession))
-                            {
-                                JobAbility_Wait("Barspell, Accession", Ability.Accession);
-                                return;
-                            }
-
-                            if (Form2.config.Perpetuance && Form2.config.barspellPerpetuance && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Perpetuance) && !PL.HasStatus(StatusEffect.Perpetuance))
-                            {
-                                JobAbility_Wait("Barspell, Perpetuance", Ability.Perpetuance);
-                                return;
-                            }
-
-                            CastSpell(Target.Me, BarspellName);
-                        }
-                        else if (Form2.config.plBarStatus && !BuffChecker(BarstatusBuffID, 0) && PL.SpellAvailable(BarstatusName))
-                        {
-                            if (Form2.config.Accession && Form2.config.barstatusAccession && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Accession) && BarStatus_AOE == false && !PL.HasStatus(StatusEffect.Accession))
-                            {
-                                JobAbility_Wait("Barstatus, Accession", Ability.Accession);
-                                return;
-                            }
-
-                            if (Form2.config.Perpetuance && Form2.config.barstatusPerpetuance && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Perpetuance) && !PL.HasStatus(StatusEffect.Perpetuance))
-                            {
-                                JobAbility_Wait("Barstatus, Perpetuance", Ability.Perpetuance);
-                                return;
-                            }
-
-                            CastSpell(Target.Me, BarstatusName);
-                        }
-                        else if (Form2.config.plGainBoost)
-                        {
-                            var gainBoostSpell = Data.GainBoostSpells[Form2.config.plGainBoost_Spell];
-
-                            if(!PL.HasStatus(Data.SpellEffects[gainBoostSpell]) && PL.SpellAvailable(gainBoostSpell))
-                            {
-                                CastSpell(Target.Me, gainBoostSpell);
-                            }       
-                        }
-                        else if (Form2.config.plStormSpell && !BuffChecker(stormspell.buffID, 0) && PL.SpellAvailable(stormspell.Spell_Name))
-                        {
-                            if (Form2.config.Accession && Form2.config.stormspellAccession && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Accession) && !PL.HasStatus(StatusEffect.Accession))
-                            {
-                                JobAbility_Wait("Stormspell, Accession", Ability.Accession);
-                            }
-
-                            if (Form2.config.Perpetuance && Form2.config.stormspellPerpetuance && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Perpetuance) && !PL.HasStatus(StatusEffect.Perpetuance))
-                            {
-                                JobAbility_Wait("Stormspell, Perpetuance", Ability.Perpetuance);
-                            }
-
-                            CastSpell(Target.Me, stormspell.Spell_Name);
-                        }
+                        }                       
                         else if (Form2.config.plKlimaform && !PL.HasStatus(StatusEffect.Klimaform))
                         {
                             if (PL.SpellAvailable(Spells.Klimaform))
@@ -5906,12 +5480,6 @@
                             }
                         }
 
-
-
-
-
-
-
                         var playerBuffOrder = Monitored.Party.GetPartyMembers().OrderBy(p => p.MemberNumber).OrderBy(p => p.Active == 0).Where(p => p.Active == 1);
 
                         // Auto Casting
@@ -5919,9 +5487,6 @@
                         {
                             // Grab the Storm string name to perform checks.
                             string StormSpell_Enabled = CheckStormspell(charDATA.MemberNumber);
-
-                            // Grab storm spell Data for Buff ID etc...
-                            SpellsData PTstormspell = stormspells.Where(c => c.Spell_Name == StormSpell_Enabled).SingleOrDefault();
 
                             // PL BASED BUFFS
                             if (PL.Player.Name == charDATA.Name)
@@ -5967,9 +5532,9 @@
                                 {
                                     Refresh_Player(charDATA.MemberNumber);
                                 }
-                                if (CheckIfAutoStormspellEnabled(charDATA.MemberNumber) && (PL.Player.MP > Form2.config.mpMinCastValue) && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && !BuffChecker(PTstormspell.buffID, 0) && PL.SpellAvailable(PTstormspell.Spell_Name))
+                                if (CheckIfAutoStormspellEnabled(charDATA.MemberNumber) && (PL.Player.MP > Form2.config.mpMinCastValue) && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && !PL.HasStatus(Data.SpellEffects[StormSpell_Enabled]) && PL.SpellAvailable(StormSpell_Enabled))
                                 {
-                                    StormSpellPlayer(charDATA.MemberNumber, PTstormspell.Spell_Name);
+                                    StormSpellPlayer(charDATA.MemberNumber, StormSpell_Enabled);
                                 }
                             }
                             // MONITORED PLAYER BASED BUFFS
@@ -6015,9 +5580,9 @@
                                 {
                                     Refresh_Player(charDATA.MemberNumber);
                                 }
-                                if (CheckIfAutoStormspellEnabled(charDATA.MemberNumber) && (PL.Player.MP > Form2.config.mpMinCastValue) && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && !BuffChecker(PTstormspell.buffID, 1) && PL.SpellAvailable(PTstormspell.Spell_Name))
+                                if (CheckIfAutoStormspellEnabled(charDATA.MemberNumber) && (PL.Player.MP > Form2.config.mpMinCastValue) && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && !Monitored.HasStatus(Data.SpellEffects[StormSpell_Enabled]) && PL.SpellAvailable(StormSpell_Enabled))
                                 {
-                                    StormSpellPlayer(charDATA.MemberNumber, PTstormspell.Spell_Name);
+                                    StormSpellPlayer(charDATA.MemberNumber, StormSpell_Enabled);
                                 }
                             }
                             else
@@ -6062,9 +5627,9 @@
                                 {
                                     Refresh_Player(charDATA.MemberNumber);
                                 }
-                                if (CheckIfAutoStormspellEnabled(charDATA.MemberNumber) && (PL.Player.MP > Form2.config.mpMinCastValue) && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && PL.SpellAvailable(PTstormspell.Spell_Name) && playerStormspellSpan[charDATA.MemberNumber].Minutes >= Form2.config.autoStormspellMinutes)
+                                if (CheckIfAutoStormspellEnabled(charDATA.MemberNumber) && (PL.Player.MP > Form2.config.mpMinCastValue) && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && PL.SpellAvailable(StormSpell_Enabled) && playerStormspellSpan[charDATA.MemberNumber].Minutes >= Form2.config.autoStormspellMinutes)
                                 {
-                                    StormSpellPlayer(charDATA.MemberNumber, PTstormspell.Spell_Name);
+                                    StormSpellPlayer(charDATA.MemberNumber, StormSpell_Enabled);
                                 }
                             }
                         }
@@ -8237,14 +7802,10 @@
                         {
                             lock (ActiveBuffs)
                             {
+                                var memberName = commands[2];
+                                var memberBuffs = commands[3];
 
-                                ActiveBuffs.RemoveAll(buf => buf.CharacterName == commands[2]);
-
-                                ActiveBuffs.Add(new BuffStorage
-                                {
-                                    CharacterName = commands[2],
-                                    CharacterBuffs = commands[3]
-                                });
+                                ActiveBuffs[memberName] = memberBuffs;
                             }
 
                         }
