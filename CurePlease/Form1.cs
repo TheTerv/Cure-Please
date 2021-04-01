@@ -27,13 +27,6 @@
 
         private Form2 Form2 = new Form2();
 
-        public class BuffStorage : List<BuffStorage>
-        {
-            public string CharacterName { get; set; }
-
-            public string CharacterBuffs { get; set; }
-        }
-
         public class CharacterData : List<CharacterData>
         {
             public int TargetIndex { get; set; }
@@ -196,7 +189,7 @@
         public float lastY;
 
         // Stores the previously-colored button, if any
-        public Dictionary<string, string> ActiveBuffs = new Dictionary<string, string>();
+        public Dictionary<string, IEnumerable<short>> ActiveBuffs = new Dictionary<string, IEnumerable<short>>();
 
         public List<SongData> SongInfo = new List<SongData>();
 
@@ -3290,13 +3283,10 @@
             {
                 if(ActiveBuffs.ContainsKey(characterName))
                 {
-                    List<string> named_Debuffs = ActiveBuffs[characterName].Split(',').ToList();
-                    named_Debuffs.Remove(debuffID.ToString());
+                    // Filter out the specific debuff ID
+                    var buffsFiltered = ActiveBuffs[characterName].Where(ab => ab != debuffID);                
 
-                    // Now rebuild the list and replace previous one
-                    string stringList = string.Join(",", named_Debuffs);
-
-                    ActiveBuffs[characterName] = stringList;
+                    ActiveBuffs[characterName] = buffsFiltered;
                 }               
             }
         }
@@ -3790,7 +3780,7 @@
                     {
                         var name = priorityMember.Name;
                         // Filter out non-debuffs, and convert to short IDs. Then calculate the priority order.
-                        var debuffIds = ActiveBuffs[name].Split(',').Where(dStr => Data.DebuffPriorities.Keys.Cast<short>().ToList().Contains(short.Parse(dStr.Trim()))).Select(dStr => short.Parse(dStr));
+                        var debuffIds = ActiveBuffs[name].Where(id => Data.DebuffPriorities.Keys.Cast<short>().Contains(id));
                         var debuffPriorityList = debuffIds.Cast<StatusEffect>().OrderBy(status => Array.IndexOf(Data.DebuffPriorities.Keys.ToArray(), status));
 
                         if (debuffPriorityList.Any() && Form2.config.enablePartyDebuffRemoval && (characterNames_naRemoval.Contains(name) || Form2.config.SpecifiednaSpellsenable == false))
@@ -3815,111 +3805,59 @@
                     {
                         if (ActiveBuffs.ContainsKey(ptMember.Name))
                         {
-                            if (!string.IsNullOrEmpty(ActiveBuffs[ptMember.Name]))
+                            if (ActiveBuffs[ptMember.Name].Any())
                             {
-                                List<string> named_Debuffs = ActiveBuffs[ptMember.Name].Split(',').ToList();
+                                var buffs = ActiveBuffs[ptMember.Name];
 
-                                if (named_Debuffs != null && named_Debuffs.Count() != 0)
+                                // IF SLOW IS NOT ACTIVE, YET NEITHER IS HASTE / FLURRY DESPITE BEING ENABLED
+                                // RESET THE TIMER TO FORCE IT TO BE CAST
+                                if (!buffs.Contains((short)StatusEffect.Slow) && !buffs.Contains((short)StatusEffect.Haste) && !buffs.Contains((short)StatusEffect.Flurry) && !buffs.Contains((short)562))
                                 {
-                                    named_Debuffs = named_Debuffs.Select(t => t.Trim()).ToList();
-
-
-                                    // IF SLOW IS NOT ACTIVE, YET NEITHER IS HASTE / FLURRY DESPITE BEING ENABLED
-                                    // RESET THE TIMER TO FORCE IT TO BE CAST
-                                    if (!DebuffContains(named_Debuffs, "13") && !DebuffContains(named_Debuffs, "33") && !DebuffContains(named_Debuffs, "265") && !DebuffContains(named_Debuffs, "562"))
-                                    {
-                                        if (ptMember != null)
-                                        {
-                                            playerHaste[ptMember.MemberNumber] = new DateTime(1970, 1, 1, 0, 0, 0);
-                                            playerHaste_II[ptMember.MemberNumber] = new DateTime(1970, 1, 1, 0, 0, 0);
-                                            playerFlurry[ptMember.MemberNumber] = new DateTime(1970, 1, 1, 0, 0, 0);
-                                            playerFlurry_II[ptMember.MemberNumber] = new DateTime(1970, 1, 1, 0, 0, 0);
-                                        }
-                                    }
-                                    // IF SUBLIMATION IS NOT ACTIVE, YET NEITHER IS REFRESH DESPITE BEING
-                                    // ENABLED RESET THE TIMER TO FORCE IT TO BE CAST
-                                    if (!DebuffContains(named_Debuffs, "187") && !DebuffContains(named_Debuffs, "188") && !DebuffContains(named_Debuffs, "43"))
-                                    {
-                                        if (ptMember != null)
-                                        {
-                                            playerRefresh[ptMember.MemberNumber] = new DateTime(1970, 1, 1, 0, 0, 0);  // ERROR
-                                        }
-                                    }
-                                    // IF REGEN IS NOT ACTIVE DESPITE BEING ENABLED RESET THE TIMER TO
-                                    // FORCE IT TO BE CAST
-                                    if (!DebuffContains(named_Debuffs, "42"))
-                                    {
-                                        if (ptMember != null)
-                                        {
-                                            playerRegen[ptMember.MemberNumber] = new DateTime(1970, 1, 1, 0, 0, 0);
-                                        }
-                                    }
-                                    // IF PROTECT IS NOT ACTIVE DESPITE BEING ENABLED RESET THE TIMER TO
-                                    // FORCE IT TO BE CAST
-                                    if (!DebuffContains(named_Debuffs, "40"))
-                                    {
-                                        if (ptMember != null)
-                                        {
-                                            playerProtect[ptMember.MemberNumber] = new DateTime(1970, 1, 1, 0, 0, 0);
-                                        }
-                                    }
-
-                                    // IF SHELL IS NOT ACTIVE DESPITE BEING ENABLED RESET THE TIMER TO
-                                    // FORCE IT TO BE CAST
-                                    if (!DebuffContains(named_Debuffs, "41"))
-                                    {
-                                        if (ptMember != null)
-                                        {
-                                            playerShell[ptMember.MemberNumber] = new DateTime(1970, 1, 1, 0, 0, 0);
-                                        }
-                                    }
-                                    // IF PHALANX II IS NOT ACTIVE DESPITE BEING ENABLED RESET THE TIMER
-                                    // TO FORCE IT TO BE CAST
-                                    if (!DebuffContains(named_Debuffs, "116"))
-                                    {
-                                        if (ptMember != null)
-                                        {
-                                            playerPhalanx_II[ptMember.MemberNumber] = new DateTime(1970, 1, 1, 0, 0, 0);
-                                        }
-
-                                    }
-                                    // IF NO STORM SPELL IS ACTIVE DESPITE BEING ENABLED RESET THE TIMER
-                                    // TO FORCE IT TO BE CAST
-                                    if (!DebuffContains(named_Debuffs, "178") && !DebuffContains(named_Debuffs, "179") && !DebuffContains(named_Debuffs, "180") && !DebuffContains(named_Debuffs, "181") &&
-                                        !DebuffContains(named_Debuffs, "182") && !DebuffContains(named_Debuffs, "183") && !DebuffContains(named_Debuffs, "184") && !DebuffContains(named_Debuffs, "185") &&
-                                        !DebuffContains(named_Debuffs, "589") && !DebuffContains(named_Debuffs, "590") && !DebuffContains(named_Debuffs, "591") && !DebuffContains(named_Debuffs, "592") &&
-                                        !DebuffContains(named_Debuffs, "593") && !DebuffContains(named_Debuffs, "594") && !DebuffContains(named_Debuffs, "595") && !DebuffContains(named_Debuffs, "596"))
-                                    {
-                                        if (ptMember != null)
-                                        {
-                                            playerStormspell[ptMember.MemberNumber] = new DateTime(1970, 1, 1, 0, 0, 0);
-                                        }
-                                    }                                
+                                    playerHaste[ptMember.MemberNumber] = new DateTime(1970, 1, 1, 0, 0, 0);
+                                    playerHaste_II[ptMember.MemberNumber] = new DateTime(1970, 1, 1, 0, 0, 0);
+                                    playerFlurry[ptMember.MemberNumber] = new DateTime(1970, 1, 1, 0, 0, 0);
+                                    playerFlurry_II[ptMember.MemberNumber] = new DateTime(1970, 1, 1, 0, 0, 0);                                
                                 }
-                            }
-                        }
-                        
-                    } // Closing FOREACH base_list
-                }// Closing LOCK
-            }
-        }
+                                // IF SUBLIMATION IS NOT ACTIVE, YET NEITHER IS REFRESH DESPITE BEING
+                                // ENABLED RESET THE TIMER TO FORCE IT TO BE CAST
+                                if (!buffs.Contains((short)StatusEffect.Sublimation_Activated) && !buffs.Contains((short)StatusEffect.Sublimation_Complete) && !buffs.Contains((short)StatusEffect.Refresh))
+                                {
+                                    playerRefresh[ptMember.MemberNumber] = new DateTime(1970, 1, 1, 0, 0, 0);  // ERROR                                   
+                                }
+                                // IF REGEN IS NOT ACTIVE DESPITE BEING ENABLED RESET THE TIMER TO
+                                // FORCE IT TO BE CAST
+                                if (!buffs.Contains((short)StatusEffect.Regen))
+                                {
+                                    playerRegen[ptMember.MemberNumber] = new DateTime(1970, 1, 1, 0, 0, 0);                                  
+                                }
+                                // IF PROTECT IS NOT ACTIVE DESPITE BEING ENABLED RESET THE TIMER TO
+                                // FORCE IT TO BE CAST
+                                if (!buffs.Contains((short)StatusEffect.Protect))
+                                {
+                                    playerProtect[ptMember.MemberNumber] = new DateTime(1970, 1, 1, 0, 0, 0);                                  
+                                }
 
-        private bool DebuffContains(List<string> Debuff_list, string Checked_id)
-        {
-            if (Debuff_list != null)
-            {
-                if (Debuff_list.Any(x => x == Checked_id))
-                {
-                    return true;
+                                // IF SHELL IS NOT ACTIVE DESPITE BEING ENABLED RESET THE TIMER TO
+                                // FORCE IT TO BE CAST
+                                if (!buffs.Contains((short)StatusEffect.Shell))
+                                {
+                                    playerShell[ptMember.MemberNumber] = new DateTime(1970, 1, 1, 0, 0, 0);
+                                }
+                                // IF PHALANX II IS NOT ACTIVE DESPITE BEING ENABLED RESET THE TIMER
+                                // TO FORCE IT TO BE CAST
+                                if (!buffs.Contains((short)StatusEffect.Phalanx))
+                                {
+                                    playerPhalanx_II[ptMember.MemberNumber] = new DateTime(1970, 1, 1, 0, 0, 0);                                 
+                                }
+                                // If there's no storm tier where our buffs contain it's effect.
+                                if(!Data.StormTiers.Any(tier => buffs.Contains(Data.SpellEffects[tier])))
+                                {
+                                    playerStormspell[ptMember.MemberNumber] = new DateTime(1970, 1, 1, 0, 0, 0);
+                                }                                                                                                  
+                            }
+                        }                 
+                    } 
                 }
-                else
-                {
-                    return false;
-                }
-            }
-            else
-            {
-                return false;
             }
         }
 
@@ -3972,32 +3910,6 @@
                 statusFound = true;
             }
             return statusFound;
-        }
-
-        public bool BuffChecker(int buffID, int checkedPlayer)
-        {
-            if (checkedPlayer == 1)
-            {
-                if (Monitored.Player.GetPlayerInfo().Buffs.Any(b => b == buffID))
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            else
-            {
-                if (PL.Player.GetPlayerInfo().Buffs.Any(b => b == buffID))
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
         }
 
         private void CastSpell(string partyMemberName, string spellName, [Optional] string OptionalExtras)
@@ -4649,7 +4561,7 @@
                     IEnumerable<PartyMember> partyByHP = Monitored.GetActivePartyMembers();
 
                     /////////////////////////// CURSE CHECK /////////////////////////////////////
-                    var cursedMembers = partyByHP.Count(pm => PL.CanCastOn(pm) && ActiveBuffs.ContainsKey(pm.Name) && ActiveBuffs[pm.Name].Split(',').Select(str => (StatusEffect)short.Parse(str.Trim())).Contains(StatusEffect.Doom));
+                    var cursedMembers = partyByHP.Count(pm => PL.CanCastOn(pm) && ActiveBuffs.ContainsKey(pm.Name) && ActiveBuffs[pm.Name].Contains((short)StatusEffect.Doom));
                     if(cursedMembers > 0)
                     {
                         RunDebuffChecker();
@@ -4851,7 +4763,7 @@
                                 CastSpell(Target.Me, protectraSpell);
                             }
                         }
-                        else if (Form2.config.plBarElement && !BuffChecker(BarspellBuffID, 0) && PL.SpellAvailable(BarspellName))
+                        else if (Form2.config.plBarElement && !PL.HasStatus((short)BarspellBuffID) && PL.SpellAvailable(BarspellName))
                         {
                             if (Form2.config.Accession && Form2.config.barspellAccession && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Accession) && BarSpell_AOE == false && !PL.HasStatus(StatusEffect.Accession))
                             {
@@ -4867,7 +4779,7 @@
 
                             CastSpell(Target.Me, BarspellName);
                         }
-                        else if (Form2.config.plBarStatus && !BuffChecker(BarstatusBuffID, 0) && PL.SpellAvailable(BarstatusName))
+                        else if (Form2.config.plBarStatus && !PL.HasStatus((short)BarstatusBuffID) && PL.SpellAvailable(BarstatusName))
                         {
                             if (Form2.config.Accession && Form2.config.barstatusAccession && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Accession) && BarStatus_AOE == false && !PL.HasStatus(StatusEffect.Accession))
                             {
@@ -4961,13 +4873,13 @@
                                 CastSpell(Target.Me, reraiseSpell);
                             }                           
                         }
-                        else if (Form2.config.plUtsusemi && BuffChecker(444, 0) != true && BuffChecker(445, 0) != true && BuffChecker(446, 0) != true)
+                        else if (Form2.config.plUtsusemi && PL.ShadowsRemaining() < 2)
                         {
                             if (PL.SpellAvailable(Spells.Utsusemi_Ni) && GetInventoryItemCount(PL, GetItemId("Shihei")) > 0)
                             {
                                 CastSpell(Target.Me, Spells.Utsusemi_Ni);
                             }
-                            else if (PL.SpellAvailable(Spells.Utsusemi_Ichi) && BuffChecker(62, 0) != true && BuffChecker(444, 0) != true && BuffChecker(445, 0) != true && BuffChecker(446, 0) != true && GetInventoryItemCount(PL, GetItemId("Shihei")) > 0)
+                            else if (PL.SpellAvailable(Spells.Utsusemi_Ichi) && (PL.ShadowsRemaining() == 0) && GetInventoryItemCount(PL, GetItemId("Shihei")) > 0)
                             {
                                 CastSpell(Target.Me, Spells.Utsusemi_Ichi);
                             }
@@ -5137,7 +5049,7 @@
                                 CastSpell(Target.Me, Spells.Shock_Spikes);
                             }
                         }
-                        else if (Form2.config.plEnspell && !BuffChecker(enspell.buffID, 0) && PL.SpellAvailable(enspell.Spell_Name))
+                        else if (Form2.config.plEnspell && !PL.HasStatus((short)enspell.buffID) && PL.SpellAvailable(enspell.Spell_Name))
                         {
                             if (Form2.config.Accession && Form2.config.enspellAccession && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Accession) && enspell.spell_position < 6 && !PL.HasStatus(StatusEffect.Accession))
                             {
@@ -5185,7 +5097,7 @@
                         }
 
                         // CAST NON ENTRUSTED INDI SPELL
-                        else if (Form2.config.EnableGeoSpells && !BuffChecker(612, 0) && PL.Player.Status != 33 && (CheckEngagedStatus() == true || !Form2.config.IndiWhenEngaged))
+                        else if (Form2.config.EnableGeoSpells && !PL.HasStatus(612) && PL.Player.Status != 33 && (CheckEngagedStatus() == true || !Form2.config.IndiWhenEngaged))
                         {
                             string SpellCheckedResult = ReturnGeoSpell(Form2.config.IndiSpell_Spell, 1);
 
@@ -5229,25 +5141,15 @@
                             {
                                 if (PL.Resources.GetSpell(SpellCheckedResult, 0).ValidTargets == 5)
                                 { // PLAYER CHARACTER TARGET
-                                    if (string.IsNullOrEmpty(Form2.config.LuopanSpell_Target))
+                                    var target = string.IsNullOrEmpty(Form2.config.LuopanSpell_Target) ? monitoredPlayer.Name : Form2.config.LuopanSpell_Target;
+
+                                    if (PL.HasStatus(516)) // IF ECLIPTIC IS UP THEN ACTIVATE THE BOOL
                                     {
-
-                                        if (BuffChecker(516, 0)) // IF ECLIPTIC IS UP THEN ACTIVATE THE BOOL
-                                        {
-                                            EclipticStillUp = true;
-                                        }
-
-                                        CastSpell(Monitored.Player.Name, SpellCheckedResult);
+                                        EclipticStillUp = true;
                                     }
-                                    else
-                                    {
-                                        if (BuffChecker(516, 0)) // IF ECLIPTIC IS UP THEN ACTIVATE THE BOOL
-                                        {
-                                            EclipticStillUp = true;
-                                        }
 
-                                        CastSpell(Form2.config.LuopanSpell_Target, SpellCheckedResult);
-                                    }
+                                    CastSpell(target, SpellCheckedResult);
+                                    
                                 }
                                 else
                                 { // ENEMY BASED TARGET NEED TO ASSURE PLAYER IS ENGAGED
@@ -5262,7 +5164,7 @@
                                             PL.Target.SetTarget(GrabbedTargetID);
                                             await Task.Delay(TimeSpan.FromSeconds(1));
 
-                                            if (BuffChecker(516, 0)) // IF ECLIPTIC IS UP THEN ACTIVATE THE BOOL
+                                            if (PL.HasStatus(516)) // IF ECLIPTIC IS UP THEN ACTIVATE THE BOOL
                                             {
                                                 EclipticStillUp = true;
                                             }
@@ -5365,7 +5267,7 @@
                             {
                                 JobAbility_Wait(Ability.Dematerialize, Ability.Dematerialize);
                             }
-                            else if (Form2.config.EclipticAttrition && CheckEngagedStatus() == true && PL.Player.Pet.HealthPercent >= 90  && PL.AbilityAvailable(Ability.EclipticAttrition) && (BuffChecker(516, 2) != true) && EclipticStillUp != true)
+                            else if (Form2.config.EclipticAttrition && CheckEngagedStatus() == true && PL.Player.Pet.HealthPercent >= 90  && PL.AbilityAvailable(Ability.EclipticAttrition) && !PL.HasStatus(516) && EclipticStillUp != true)
                             {
                                 JobAbility_Wait(Ability.EclipticAttrition, Ability.EclipticAttrition);
                             }
@@ -5501,15 +5403,15 @@
                                 {
                                     haste_IIPlayer(charDATA.MemberNumber);
                                 }
-                                if (autoAdloquium_Enabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Adloquium) && PL.Player.MP > Form2.config.mpMinCastValue && PL.CanCastOn(charDATA) && !BuffChecker(170, 0))
+                                if (autoAdloquium_Enabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Adloquium) && PL.Player.MP > Form2.config.mpMinCastValue && PL.CanCastOn(charDATA) && !PL.HasStatus(StatusEffect.Regain))
                                 {
                                     AdloquiumPlayer(charDATA.MemberNumber);
                                 }
-                                if (autoFlurryEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Flurry) && PL.Player.MP > Form2.config.mpMinCastValue && PL.CanCastOn(charDATA) && !BuffChecker(581, 0) && !PL.HasStatus(StatusEffect.Slow))
+                                if (autoFlurryEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Flurry) && PL.Player.MP > Form2.config.mpMinCastValue && PL.CanCastOn(charDATA) && !PL.HasStatus(581) && !PL.HasStatus(StatusEffect.Slow))
                                 {
                                     FlurryPlayer(charDATA.MemberNumber);
                                 }
-                                if (autoFlurry_IIEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Flurry_II) && PL.Player.MP > Form2.config.mpMinCastValue && PL.CanCastOn(charDATA) && !BuffChecker(581, 0) && !PL.HasStatus(StatusEffect.Slow))
+                                if (autoFlurry_IIEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Flurry_II) && PL.Player.MP > Form2.config.mpMinCastValue && PL.CanCastOn(charDATA) && !PL.HasStatus(581) && !PL.HasStatus(StatusEffect.Slow))
                                 {
                                     Flurry_IIPlayer(charDATA.MemberNumber);
                                 }
@@ -5549,15 +5451,15 @@
                                 {
                                     haste_IIPlayer(charDATA.MemberNumber);
                                 }
-                                if (autoAdloquium_Enabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Adloquium) && PL.Player.MP > Form2.config.mpMinCastValue && PL.CanCastOn(charDATA) && !BuffChecker(170, 1))
+                                if (autoAdloquium_Enabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Adloquium) && PL.Player.MP > Form2.config.mpMinCastValue && PL.CanCastOn(charDATA) && !Monitored.HasStatus(StatusEffect.Regain))
                                 {
                                     AdloquiumPlayer(charDATA.MemberNumber);
                                 }
-                                if (autoFlurryEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Flurry) && PL.Player.MP > Form2.config.mpMinCastValue && PL.CanCastOn(charDATA) && !BuffChecker(581, 1) && !monitoredStatusCheck(StatusEffect.Slow))
+                                if (autoFlurryEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Flurry) && PL.Player.MP > Form2.config.mpMinCastValue && PL.CanCastOn(charDATA) && !Monitored.HasStatus(581) && !monitoredStatusCheck(StatusEffect.Slow))
                                 {
                                     FlurryPlayer(charDATA.MemberNumber);
                                 }
-                                if (autoFlurry_IIEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Flurry_II) && PL.Player.MP > Form2.config.mpMinCastValue && PL.CanCastOn(charDATA) && !BuffChecker(581, 1) && !monitoredStatusCheck(StatusEffect.Slow))
+                                if (autoFlurry_IIEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Flurry_II) && PL.Player.MP > Form2.config.mpMinCastValue && PL.CanCastOn(charDATA) && !Monitored.HasStatus(581) && !monitoredStatusCheck(StatusEffect.Slow))
                                 {
                                     Flurry_IIPlayer(charDATA.MemberNumber);
                                 }
@@ -7805,8 +7707,11 @@
                             {
                                 var memberName = commands[2];
                                 var memberBuffs = commands[3];
-
-                                ActiveBuffs[memberName] = memberBuffs;
+                                
+                                if(!string.IsNullOrEmpty(memberBuffs))
+                                {
+                                    ActiveBuffs[memberName] = memberBuffs.Split(',').Select(str => short.Parse(str.Trim()));
+                                }                             
                             }
 
                         }

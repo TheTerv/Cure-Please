@@ -54,16 +54,16 @@
                 ailment_list.AppendText(name.ToUpper() + "\n");
 
                 // Now create a list and loop through each buff and name them
-                List<string> named_buffs = f1.ActiveBuffs[name].Split(',').ToList();
+                var buffIds = f1.ActiveBuffs[name];
 
                 int i = 1;
-                int count = named_buffs.Count();
+                int count = buffIds.Count();
 
-                foreach (string acBuff in named_buffs)
+                foreach (short acBuff in buffIds)
                 {
                     i++;
 
-                    var found_Buff = XMLBuffList.Find(r => r.ID == acBuff);
+                    var found_Buff = XMLBuffList.Find(r => r.ID == acBuff.ToString());
 
                     if (found_Buff != null)
                     {

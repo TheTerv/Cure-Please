@@ -219,7 +219,7 @@ namespace CurePlease.Utilities
             return 0;
         }
 
-        public static PartyMember GetHighestPriorityDebuff(this EliteAPI api, Dictionary<string, string> debuffs)
+        public static PartyMember GetHighestPriorityDebuff(this EliteAPI api, Dictionary<string, IEnumerable<short>> debuffs)
         {
             var members = api.GetActivePartyMembers().Where(pm => api.CanCastOn(pm));
 
@@ -234,7 +234,7 @@ namespace CurePlease.Utilities
                 }
 
                 // We get the debuffs and order them by priority.
-                var debuffIds = debuffs[pm.Name].Split(',').Where(dStr => Data.DebuffPriorities.Keys.Cast<short>().ToList().Contains(short.Parse(dStr.Trim()))).Select(dStr => short.Parse(dStr));
+                var debuffIds = debuffs[pm.Name].Where(id => Data.DebuffPriorities.Keys.Cast<short>().Contains(id));
                 var pmPriorities = debuffIds.Cast<StatusEffect>().OrderBy(status => Array.IndexOf(Data.DebuffPriorities.Keys.ToArray(), status));
 
                 //var pmDebuffs = debuffs[pm.Name].Split(',').Select(str => (StatusEffect)short.Parse(str.Trim())).OrderBy(status => Array.IndexOf(Data.DebuffPriorities.Keys.ToArray(), status));
@@ -247,6 +247,28 @@ namespace CurePlease.Utilities
             }
 
             return priorityMember;
+        }
+
+        public static int ShadowsRemaining(this EliteAPI api)
+        {
+            if (api.HasStatus(StatusEffect.Utsusemi_4_Shadows_Left))
+            {
+                return 4;
+            }
+            else if (api.HasStatus(StatusEffect.Utsusemi_3_Shadows_Left))
+            {
+                return 3;
+            }
+            else if (api.HasStatus(StatusEffect.Utsusemi_2_Shadows_Left))
+            {
+                return 2;
+            }
+            else if (api.HasStatus(StatusEffect.Utsusemi_1_Shadow_Left))
+            {
+                return 1;
+            }
+
+            return 0;
         }
     }
 }
