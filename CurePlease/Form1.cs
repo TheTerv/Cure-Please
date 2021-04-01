@@ -3341,430 +3341,95 @@
             }
         }
 
-        // TODO: Add debuff priorities.
-        // TODO: Add custom DOOM logic ahead of cures.
         private void RunDebuffChecker()
         {
-            // PL and Monitored Player Debuff Removal Starting with PL
-            if (PL.Player.Status != 33)
+            if (Form2.config.plSilenceItem == 0)
             {
-                if (Form2.config.plSilenceItem == 0)
-                {
-                    plSilenceitemName = "Catholicon";
-                }
-                else if (Form2.config.plSilenceItem == 1)
-                {
-                    plSilenceitemName = "Echo Drops";
-                }
-                else if (Form2.config.plSilenceItem == 2)
-                {
-                    plSilenceitemName = "Remedy";
-                }
-                else if (Form2.config.plSilenceItem == 3)
-                {
-                    plSilenceitemName = "Remedy Ointment";
-                }
-                else if (Form2.config.plSilenceItem == 4)
-                {
-                    plSilenceitemName = "Vicar's Drink";
-                }
+                plSilenceitemName = "Catholicon";
+            }
+            else if (Form2.config.plSilenceItem == 1)
+            {
+                plSilenceitemName = "Echo Drops";
+            }
+            else if (Form2.config.plSilenceItem == 2)
+            {
+                plSilenceitemName = "Remedy";
+            }
+            else if (Form2.config.plSilenceItem == 3)
+            {
+                plSilenceitemName = "Remedy Ointment";
+            }
+            else if (Form2.config.plSilenceItem == 4)
+            {
+                plSilenceitemName = "Vicar's Drink";
+            }
 
-                if (Form2.config.plDoomitem == 0)
-                {
-                    plDoomItemName = "Holy Water";
-                }
-                else if (Form2.config.plDoomitem == 1)
-                {
-                    plDoomItemName = "Hallowed Water";
-                }
+            if (Form2.config.plDoomitem == 0)
+            {
+                plDoomItemName = "Holy Water";
+            }
+            else if (Form2.config.plDoomitem == 1)
+            {
+                plDoomItemName = "Hallowed Water";
+            }
 
-                if (Form2.config.wakeSleepSpell == 0)
-                {
-                    wakeSleepSpell = Spells.Cure;
-                }
-                else if (Form2.config.wakeSleepSpell == 1)
-                {
-                    wakeSleepSpell = Spells.Cura;
-                }
-                else if (Form2.config.wakeSleepSpell == 2)
-                {
-                    wakeSleepSpell = Spells.Curaga;
-                }
+            if (Form2.config.wakeSleepSpell == 0)
+            {
+                wakeSleepSpell = Spells.Cure;
+            }
+            else if (Form2.config.wakeSleepSpell == 1)
+            {
+                wakeSleepSpell = Spells.Cura;
+            }
+            else if (Form2.config.wakeSleepSpell == 2)
+            {
+                wakeSleepSpell = Spells.Curaga;
+            }
 
-                foreach (StatusEffect plEffect in PL.Player.Buffs)
+            // PL and Monitored Player Debuff Removal Starting with PL
+            if (PL.Player.Status != 33 && Form2.config.plDebuffEnabled)
+            {            
+                var debuffIds = PL.Player.Buffs.Where(id => Data.DebuffPriorities.Keys.Cast<short>().Contains(id));
+                var debuffPriorityList = debuffIds.Cast<StatusEffect>().OrderBy(status => Array.IndexOf(Data.DebuffPriorities.Keys.ToArray(), status));
+
+                if (debuffPriorityList.Any())
                 {
-                    if ((plEffect == StatusEffect.Doom) && Form2.config.plDoom && PL.SpellAvailable(Spells.Cursna))
+                    // Get the highest priority debuff we have the right spell off cooldown for.
+                    var targetDebuff = debuffPriorityList.First(status => Form2.DebuffEnabled[status] && PL.SpellAvailable(Data.DebuffPriorities[status]));
+
+                    if ((short)targetDebuff > 0)
                     {
-                        CastSpell(PL.Player.Name, Spells.Cursna);
-                    }
-                    else if ((plEffect == StatusEffect.Paralysis) && Form2.config.plParalysis && PL.SpellAvailable(Spells.Paralyna))
-                    {
-                        CastSpell(PL.Player.Name, Spells.Paralyna);
-                    }
-                    else if ((plEffect == StatusEffect.Amnesia) && Form2.config.plAmnesia && PL.SpellAvailable(Spells.Esuna))
-                    {
-                        CastSpell(PL.Player.Name, Spells.Esuna);
-                    }
-                    else if ((plEffect == StatusEffect.Poison) && Form2.config.plPoison && PL.SpellAvailable(Spells.Poisona))
-                    {
-                        CastSpell(PL.Player.Name, Spells.Poisona);
-                    }
-                    else if ((plEffect == StatusEffect.Attack_Down) && Form2.config.plAttackDown && PL.SpellAvailable(Spells.Erase))
-                    {
-                        CastSpell(PL.Player.Name, Spells.Erase);
-                    }
-                    else if ((plEffect == StatusEffect.Blindness) && Form2.config.plBlindness && PL.SpellAvailable(Spells.Blindna))
-                    {
-                        CastSpell(PL.Player.Name, Spells.Blindna);
-                    }
-                    else if ((plEffect == StatusEffect.Bind) && Form2.config.plBind && Form2.config.plAttackDown && PL.SpellAvailable(Spells.Erase))
-                    {
-                        CastSpell(PL.Player.Name, Spells.Erase);
-                    }
-                    else if ((plEffect == StatusEffect.Weight) && Form2.config.plWeight && PL.SpellAvailable(Spells.Erase))
-                    {
-                        CastSpell(PL.Player.Name, Spells.Erase);
-                    }
-                    else if ((plEffect == StatusEffect.Slow) && Form2.config.plSlow && PL.SpellAvailable(Spells.Erase))
-                    {
-                        CastSpell(PL.Player.Name, Spells.Erase);
-                    }
-                    else if ((plEffect == StatusEffect.Curse) && Form2.config.plCurse && PL.SpellAvailable(Spells.Cursna))
-                    {
-                        CastSpell(PL.Player.Name, Spells.Cursna);
-                    }
-                    else if ((plEffect == StatusEffect.Curse2) && Form2.config.plCurse2 && PL.SpellAvailable(Spells.Cursna))
-                    {
-                        CastSpell(PL.Player.Name, Spells.Cursna);
-                    }
-                    else if ((plEffect == StatusEffect.Addle) && Form2.config.plAddle && Form2.config.plAttackDown && PL.SpellAvailable(Spells.Erase))
-                    {
-                        CastSpell(PL.Player.Name, Spells.Erase);
-                    }
-                    else if ((plEffect == StatusEffect.Bane) && Form2.config.plBane && PL.SpellAvailable(Spells.Cursna))
-                    {
-                        CastSpell(PL.Player.Name, Spells.Cursna);
-                    }
-                    else if ((plEffect == StatusEffect.Plague) && Form2.config.plPlague && PL.SpellAvailable(Spells.Viruna))
-                    {
-                        CastSpell(PL.Player.Name, Spells.Viruna);
-                    }
-                    else if ((plEffect == StatusEffect.Disease) && Form2.config.plDisease && PL.SpellAvailable(Spells.Viruna))
-                    {
-                        CastSpell(PL.Player.Name, Spells.Viruna);
-                    }
-                    else if ((plEffect == StatusEffect.Burn) && Form2.config.plBurn && Form2.config.plAttackDown && PL.SpellAvailable(Spells.Erase))
-                    {
-                        CastSpell(PL.Player.Name, Spells.Erase);
-                    }
-                    else if ((plEffect == StatusEffect.Frost) && Form2.config.plFrost && Form2.config.plAttackDown && PL.SpellAvailable(Spells.Erase))
-                    {
-                        CastSpell(PL.Player.Name, Spells.Erase);
-                    }
-                    else if ((plEffect == StatusEffect.Choke) && Form2.config.plChoke && Form2.config.plAttackDown && PL.SpellAvailable(Spells.Erase))
-                    {
-                        CastSpell(PL.Player.Name, Spells.Erase);
-                    }
-                    else if ((plEffect == StatusEffect.Rasp) && Form2.config.plRasp && Form2.config.plAttackDown && PL.SpellAvailable(Spells.Erase))
-                    {
-                        CastSpell(PL.Player.Name, Spells.Erase);
-                    }
-                    else if ((plEffect == StatusEffect.Shock) && Form2.config.plShock && Form2.config.plAttackDown && PL.SpellAvailable(Spells.Erase))
-                    {
-                        CastSpell(PL.Player.Name, Spells.Erase);
-                    }
-                    else if ((plEffect == StatusEffect.Drown) && Form2.config.plDrown && Form2.config.plAttackDown && PL.SpellAvailable(Spells.Erase))
-                    {
-                        CastSpell(PL.Player.Name, Spells.Erase);
-                    }
-                    else if ((plEffect == StatusEffect.Dia) && Form2.config.plDia && Form2.config.plAttackDown && PL.SpellAvailable(Spells.Erase))
-                    {
-                        CastSpell(PL.Player.Name, Spells.Erase);
-                    }
-                    else if ((plEffect == StatusEffect.Bio) && Form2.config.plBio && Form2.config.plAttackDown && PL.SpellAvailable(Spells.Erase))
-                    {
-                        CastSpell(PL.Player.Name, Spells.Erase);
-                    }
-                    else if ((plEffect == StatusEffect.STR_Down) && Form2.config.plStrDown && Form2.config.plAttackDown && PL.SpellAvailable(Spells.Erase))
-                    {
-                        CastSpell(PL.Player.Name, Spells.Erase);
-                    }
-                    else if ((plEffect == StatusEffect.DEX_Down) && Form2.config.plDexDown && Form2.config.plAttackDown && PL.SpellAvailable(Spells.Erase))
-                    {
-                        CastSpell(PL.Player.Name, Spells.Erase);
-                    }
-                    else if ((plEffect == StatusEffect.VIT_Down) && Form2.config.plVitDown && Form2.config.plAttackDown && PL.SpellAvailable(Spells.Erase))
-                    {
-                        CastSpell(PL.Player.Name, Spells.Erase);
-                    }
-                    else if ((plEffect == StatusEffect.AGI_Down) && Form2.config.plAgiDown && Form2.config.plAttackDown && PL.SpellAvailable(Spells.Erase))
-                    {
-                        CastSpell(PL.Player.Name, Spells.Erase);
-                    }
-                    else if ((plEffect == StatusEffect.INT_Down) && Form2.config.plIntDown && Form2.config.plAttackDown && PL.SpellAvailable(Spells.Erase))
-                    {
-                        CastSpell(PL.Player.Name, Spells.Erase);
-                    }
-                    else if ((plEffect == StatusEffect.MND_Down) && Form2.config.plMndDown && Form2.config.plAttackDown && PL.SpellAvailable(Spells.Erase))
-                    {
-                        CastSpell(PL.Player.Name, Spells.Erase);
-                    }
-                    else if ((plEffect == StatusEffect.CHR_Down) && Form2.config.plChrDown && Form2.config.plAttackDown && PL.SpellAvailable(Spells.Erase))
-                    {
-                        CastSpell(PL.Player.Name, Spells.Erase);
-                    }
-                    else if ((plEffect == StatusEffect.Max_HP_Down) && Form2.config.plMaxHpDown && Form2.config.plAttackDown && PL.SpellAvailable(Spells.Erase))
-                    {
-                        CastSpell(PL.Player.Name, Spells.Erase);
-                    }
-                    else if ((plEffect == StatusEffect.Max_MP_Down) && Form2.config.plMaxMpDown && Form2.config.plAttackDown && PL.SpellAvailable(Spells.Erase))
-                    {
-                        CastSpell(PL.Player.Name, Spells.Erase);
-                    }
-                    else if ((plEffect == StatusEffect.Accuracy_Down) && Form2.config.plAccuracyDown && Form2.config.plAttackDown && PL.SpellAvailable(Spells.Erase))
-                    {
-                        CastSpell(PL.Player.Name, Spells.Erase);
-                    }
-                    else if ((plEffect == StatusEffect.Evasion_Down) && Form2.config.plEvasionDown && Form2.config.plAttackDown && PL.SpellAvailable(Spells.Erase))
-                    {
-                        CastSpell(PL.Player.Name, Spells.Erase);
-                    }
-                    else if ((plEffect == StatusEffect.Defense_Down) && Form2.config.plDefenseDown && Form2.config.plAttackDown && PL.SpellAvailable(Spells.Erase))
-                    {
-                        CastSpell(PL.Player.Name, Spells.Erase);
-                    }
-                    else if ((plEffect == StatusEffect.Flash) && Form2.config.plFlash && Form2.config.plAttackDown && PL.SpellAvailable(Spells.Erase))
-                    {
-                        CastSpell(PL.Player.Name, Spells.Erase);
-                    }
-                    else if ((plEffect == StatusEffect.Magic_Acc_Down) && Form2.config.plMagicAccDown && Form2.config.plAttackDown && PL.SpellAvailable(Spells.Erase))
-                    {
-                        CastSpell(PL.Player.Name, Spells.Erase);
-                    }
-                    else if ((plEffect == StatusEffect.Magic_Atk_Down) && Form2.config.plMagicAtkDown && Form2.config.plAttackDown && PL.SpellAvailable(Spells.Erase))
-                    {
-                        CastSpell(PL.Player.Name, Spells.Erase);
-                    }
-                    else if ((plEffect == StatusEffect.Helix) && Form2.config.plHelix && Form2.config.plAttackDown && PL.SpellAvailable(Spells.Erase))
-                    {
-                        CastSpell(PL.Player.Name, Spells.Erase);
-                    }
-                    else if ((plEffect == StatusEffect.Max_TP_Down) && Form2.config.plMaxTpDown && Form2.config.plAttackDown && PL.SpellAvailable(Spells.Erase))
-                    {
-                        CastSpell(PL.Player.Name, Spells.Erase);
-                    }
-                    else if ((plEffect == StatusEffect.Requiem) && Form2.config.plRequiem && Form2.config.plAttackDown && PL.SpellAvailable(Spells.Erase))
-                    {
-                        CastSpell(PL.Player.Name, Spells.Erase);
-                    }
-                    else if ((plEffect == StatusEffect.Elegy) && Form2.config.plElegy && Form2.config.plAttackDown && PL.SpellAvailable(Spells.Erase))
-                    {
-                        CastSpell(PL.Player.Name, Spells.Erase);
-                    }
-                    else if ((plEffect == StatusEffect.Threnody) && Form2.config.plThrenody && Form2.config.plAttackDown && PL.SpellAvailable(Spells.Erase))
-                    {
-                        CastSpell(PL.Player.Name, Spells.Erase);
+                        CastSpell(Target.Me, Data.DebuffPriorities[targetDebuff]);
                     }
                 }
             }
 
             // Next, we check monitored player
-            if ((PL.Entity.GetEntity((int)Monitored.Party.GetPartyMember(0).TargetIndex).Distance < 21) && (PL.Entity.GetEntity((int)Monitored.Party.GetPartyMember(0).TargetIndex).Distance > 0) && (Monitored.Player.HP > 0) && PL.Player.Status != 33)
+            if (Form2.config.monitoredDebuffEnabled && (PL.Entity.GetEntity((int)Monitored.Party.GetPartyMember(0).TargetIndex).Distance < 21) && (PL.Entity.GetEntity((int)Monitored.Party.GetPartyMember(0).TargetIndex).Distance > 0) && (Monitored.Player.HP > 0) && PL.Player.Status != 33)
             {
-                foreach (StatusEffect monitoredEffect in Monitored.Player.Buffs)
-                {
-                    if ((monitoredEffect == StatusEffect.Doom) && Form2.config.monitoredDoom && PL.SpellAvailable(Spells.Cursna))
-                    {
-                        CastSpell(Monitored.Player.Name, Spells.Cursna);
-                    }
-                    else if ((monitoredEffect == StatusEffect.Sleep) && Form2.config.monitoredSleep && Form2.config.wakeSleepEnabled && PL.SpellAvailable(wakeSleepSpell))
-                    {
-                        CastSpell(Monitored.Player.Name, wakeSleepSpell);
-                    }
-                    else if ((monitoredEffect == StatusEffect.Sleep2) && Form2.config.monitoredSleep2 && Form2.config.wakeSleepEnabled && PL.SpellAvailable(wakeSleepSpell))
-                    {
-                        CastSpell(Monitored.Player.Name, wakeSleepSpell);
-                    }
-                    else if ((monitoredEffect == StatusEffect.Silence) && Form2.config.monitoredSilence && PL.SpellAvailable(Spells.Silena))
-                    {
-                        CastSpell(Monitored.Player.Name, Spells.Silena);
-                    }
-                    else if ((monitoredEffect == StatusEffect.Petrification) && Form2.config.monitoredPetrification && PL.SpellAvailable(Spells.Stona))
-                    {
-                        CastSpell(Monitored.Player.Name, Spells.Stona);
-                    }
-                    else if ((monitoredEffect == StatusEffect.Paralysis) && Form2.config.monitoredParalysis && PL.SpellAvailable(Spells.Paralyna))
-                    {
-                        CastSpell(Monitored.Player.Name, Spells.Paralyna);
-                    }
-                    else if ((monitoredEffect == StatusEffect.Amnesia) && Form2.config.monitoredAmnesia && PL.SpellAvailable(Spells.Esuna))
-                    {
-                        CastSpell(Monitored.Player.Name, Spells.Esuna);
-                    }
-                    else if ((monitoredEffect == StatusEffect.Poison) && Form2.config.monitoredPoison && PL.SpellAvailable(Spells.Poisona))
-                    {
-                        CastSpell(Monitored.Player.Name, Spells.Poisona);
-                    }
-                    else if ((monitoredEffect == StatusEffect.Attack_Down) && Form2.config.monitoredAttackDown && PL.SpellAvailable(Spells.Erase) && plMonitoredSameParty())
-                    {
-                        CastSpell(Monitored.Player.Name, Spells.Erase);
-                    }
-                    else if ((monitoredEffect == StatusEffect.Blindness) && Form2.config.monitoredBlindness && PL.SpellAvailable(Spells.Blindna))
-                    {
-                        CastSpell(Monitored.Player.Name, Spells.Blindna);
-                    }
-                    else if ((monitoredEffect == StatusEffect.Bind) && Form2.config.monitoredBind && PL.SpellAvailable(Spells.Erase) && plMonitoredSameParty())
-                    {
-                        CastSpell(Monitored.Player.Name, Spells.Erase);
-                    }
-                    else if ((monitoredEffect == StatusEffect.Weight) && Form2.config.monitoredWeight && PL.SpellAvailable(Spells.Erase) && plMonitoredSameParty())
-                    {
-                        CastSpell(Monitored.Player.Name, Spells.Erase);
-                    }
-                    else if ((monitoredEffect == StatusEffect.Slow) && Form2.config.monitoredSlow && PL.SpellAvailable(Spells.Erase) && plMonitoredSameParty())
-                    {
-                        CastSpell(Monitored.Player.Name, Spells.Erase);
-                    }
-                    else if ((monitoredEffect == StatusEffect.Curse) && Form2.config.monitoredCurse && PL.SpellAvailable(Spells.Cursna))
-                    {
-                        CastSpell(Monitored.Player.Name, Spells.Cursna);
-                    }
-                    else if ((monitoredEffect == StatusEffect.Curse2) && Form2.config.monitoredCurse2 && PL.SpellAvailable(Spells.Cursna))
-                    {
-                        CastSpell(Monitored.Player.Name, Spells.Cursna);
-                    }
-                    else if ((monitoredEffect == StatusEffect.Addle) && Form2.config.monitoredAddle && PL.SpellAvailable(Spells.Erase) && plMonitoredSameParty())
-                    {
-                        CastSpell(Monitored.Player.Name, Spells.Erase);
-                    }
-                    else if ((monitoredEffect == StatusEffect.Bane) && Form2.config.monitoredBane && PL.SpellAvailable(Spells.Cursna))
-                    {
-                        CastSpell(Monitored.Player.Name, Spells.Cursna);
-                    }
-                    else if ((monitoredEffect == StatusEffect.Plague) && Form2.config.monitoredPlague && PL.SpellAvailable(Spells.Viruna))
-                    {
-                        CastSpell(Monitored.Player.Name, Spells.Viruna);
-                    }
-                    else if ((monitoredEffect == StatusEffect.Disease) && Form2.config.monitoredDisease && PL.SpellAvailable(Spells.Viruna))
-                    {
-                        CastSpell(Monitored.Player.Name, Spells.Viruna);
-                    }
-                    else if ((monitoredEffect == StatusEffect.Burn) && Form2.config.monitoredBurn && PL.SpellAvailable(Spells.Erase) && plMonitoredSameParty())
-                    {
-                        CastSpell(Monitored.Player.Name, Spells.Erase);
-                    }
-                    else if ((monitoredEffect == StatusEffect.Frost) && Form2.config.monitoredFrost && PL.SpellAvailable(Spells.Erase) && plMonitoredSameParty())
-                    {
-                        CastSpell(Monitored.Player.Name, Spells.Erase);
-                    }
-                    else if ((monitoredEffect == StatusEffect.Choke) && Form2.config.monitoredChoke && PL.SpellAvailable(Spells.Erase) && plMonitoredSameParty())
-                    {
-                        CastSpell(Monitored.Player.Name, Spells.Erase);
-                    }
-                    else if ((monitoredEffect == StatusEffect.Rasp) && Form2.config.monitoredRasp && PL.SpellAvailable(Spells.Erase) && plMonitoredSameParty())
-                    {
-                        CastSpell(Monitored.Player.Name, Spells.Erase);
-                    }
-                    else if ((monitoredEffect == StatusEffect.Shock) && Form2.config.monitoredShock && PL.SpellAvailable(Spells.Erase) && plMonitoredSameParty())
-                    {
-                        CastSpell(Monitored.Player.Name, Spells.Erase);
-                    }
-                    else if ((monitoredEffect == StatusEffect.Drown) && Form2.config.monitoredDrown && PL.SpellAvailable(Spells.Erase) && plMonitoredSameParty())
-                    {
-                        CastSpell(Monitored.Player.Name, Spells.Erase);
-                    }
-                    else if ((monitoredEffect == StatusEffect.Dia) && Form2.config.monitoredDia && PL.SpellAvailable(Spells.Erase) && plMonitoredSameParty())
-                    {
-                        CastSpell(Monitored.Player.Name, Spells.Erase);
-                    }
-                    else if ((monitoredEffect == StatusEffect.Bio) && Form2.config.monitoredBio && PL.SpellAvailable(Spells.Erase) && plMonitoredSameParty())
-                    {
-                        CastSpell(Monitored.Player.Name, Spells.Erase);
-                    }
-                    else if ((monitoredEffect == StatusEffect.STR_Down) && Form2.config.monitoredStrDown && PL.SpellAvailable(Spells.Erase) && plMonitoredSameParty())
-                    {
-                        CastSpell(Monitored.Player.Name, Spells.Erase);
-                    }
-                    else if ((monitoredEffect == StatusEffect.DEX_Down) && Form2.config.monitoredDexDown && PL.SpellAvailable(Spells.Erase) && plMonitoredSameParty())
-                    {
-                        CastSpell(Monitored.Player.Name, Spells.Erase);
-                    }
-                    else if ((monitoredEffect == StatusEffect.VIT_Down) && Form2.config.monitoredVitDown && PL.SpellAvailable(Spells.Erase) && plMonitoredSameParty())
-                    {
-                        CastSpell(Monitored.Player.Name, Spells.Erase);
-                    }
-                    else if ((monitoredEffect == StatusEffect.AGI_Down) && Form2.config.monitoredAgiDown && PL.SpellAvailable(Spells.Erase) && plMonitoredSameParty())
-                    {
-                        CastSpell(Monitored.Player.Name, Spells.Erase);
-                    }
-                    else if ((monitoredEffect == StatusEffect.INT_Down) && Form2.config.monitoredIntDown && PL.SpellAvailable(Spells.Erase) && plMonitoredSameParty())
-                    {
-                        CastSpell(Monitored.Player.Name, Spells.Erase);
-                    }
-                    else if ((monitoredEffect == StatusEffect.MND_Down) && Form2.config.monitoredMndDown && PL.SpellAvailable(Spells.Erase) && plMonitoredSameParty())
-                    {
-                        CastSpell(Monitored.Player.Name, Spells.Erase);
-                    }
-                    else if ((monitoredEffect == StatusEffect.CHR_Down) && Form2.config.monitoredChrDown && PL.SpellAvailable(Spells.Erase) && plMonitoredSameParty())
-                    {
-                        CastSpell(Monitored.Player.Name, Spells.Erase);
-                    }
-                    else if ((monitoredEffect == StatusEffect.Max_HP_Down) && Form2.config.monitoredMaxHpDown && PL.SpellAvailable(Spells.Erase) && plMonitoredSameParty())
-                    {
-                        CastSpell(Monitored.Player.Name, Spells.Erase);
-                    }
-                    else if ((monitoredEffect == StatusEffect.Max_MP_Down) && Form2.config.monitoredMaxMpDown && PL.SpellAvailable(Spells.Erase) && plMonitoredSameParty())
-                    {
-                        CastSpell(Monitored.Player.Name, Spells.Erase);
-                    }
-                    else if ((monitoredEffect == StatusEffect.Accuracy_Down) && Form2.config.monitoredAccuracyDown && PL.SpellAvailable(Spells.Erase) && plMonitoredSameParty())
-                    {
-                        CastSpell(Monitored.Player.Name, Spells.Erase);
-                    }
-                    else if ((monitoredEffect == StatusEffect.Evasion_Down) && Form2.config.monitoredEvasionDown && PL.SpellAvailable(Spells.Erase) && plMonitoredSameParty())
-                    {
-                        CastSpell(Monitored.Player.Name, Spells.Erase);
-                    }
-                    else if ((monitoredEffect == StatusEffect.Defense_Down) && Form2.config.monitoredDefenseDown && PL.SpellAvailable(Spells.Erase) && plMonitoredSameParty())
-                    {
-                        CastSpell(Monitored.Player.Name, Spells.Erase);
-                    }
-                    else if ((monitoredEffect == StatusEffect.Flash) && Form2.config.monitoredFlash && PL.SpellAvailable(Spells.Erase) && plMonitoredSameParty())
-                    {
-                        CastSpell(Monitored.Player.Name, Spells.Erase);
-                    }
-                    else if ((monitoredEffect == StatusEffect.Magic_Acc_Down) && Form2.config.monitoredMagicAccDown && PL.SpellAvailable(Spells.Erase) && plMonitoredSameParty())
-                    {
-                        CastSpell(Monitored.Player.Name, Spells.Erase);
-                    }
-                    else if ((monitoredEffect == StatusEffect.Magic_Atk_Down) && Form2.config.monitoredMagicAtkDown && PL.SpellAvailable(Spells.Erase) && plMonitoredSameParty())
-                    {
-                        CastSpell(Monitored.Player.Name, Spells.Erase);
-                    }
-                    else if ((monitoredEffect == StatusEffect.Helix) && Form2.config.monitoredHelix && PL.SpellAvailable(Spells.Erase) && plMonitoredSameParty())
-                    {
-                        CastSpell(Monitored.Player.Name, Spells.Erase);
-                    }
-                    else if ((monitoredEffect == StatusEffect.Max_TP_Down) && Form2.config.monitoredMaxTpDown && PL.SpellAvailable(Spells.Erase) && plMonitoredSameParty())
-                    {
-                        CastSpell(Monitored.Player.Name, Spells.Erase);
-                    }
-                    else if ((monitoredEffect == StatusEffect.Requiem) && Form2.config.monitoredRequiem && PL.SpellAvailable(Spells.Erase) && plMonitoredSameParty())
-                    {
-                        CastSpell(Monitored.Player.Name, Spells.Erase);
-                    }
-                    else if ((monitoredEffect == StatusEffect.Elegy) && Form2.config.monitoredElegy && PL.SpellAvailable(Spells.Erase) && plMonitoredSameParty())
-                    {
-                        CastSpell(Monitored.Player.Name, Spells.Erase);
-                    }
-                    else if ((monitoredEffect == StatusEffect.Threnody) && Form2.config.monitoredThrenody && PL.SpellAvailable(Spells.Erase) && plMonitoredSameParty())
-                    {
-                        CastSpell(Monitored.Player.Name, Spells.Erase);
-                    }
-                }
-            }
-            // End MONITORED Debuff Removal
+                var debuffIds = Monitored.Player.Buffs.Where(id => Data.DebuffPriorities.Keys.Cast<short>().Contains(id));
+                var debuffPriorityList = debuffIds.Cast<StatusEffect>().OrderBy(status => Array.IndexOf(Data.DebuffPriorities.Keys.ToArray(), status));
 
+                if (debuffPriorityList.Any())
+                {
+                    // Get the highest priority debuff we have the right spell off cooldown for.
+                    var targetDebuff = debuffPriorityList.First(status => Form2.DebuffEnabled[status] && PL.SpellAvailable(Data.DebuffPriorities[status]));
+
+                    if ((short)targetDebuff > 0)
+                    {
+                        // Don't try and curaga outside our party.
+                        if ((targetDebuff == StatusEffect.Sleep || targetDebuff == StatusEffect.Sleep2) && !plMonitoredSameParty())
+                        {
+                            CastSpell(Monitored.Player.Name, Spells.Cure);
+                        }
+
+                        if (Data.DebuffPriorities[targetDebuff] != Spells.Erase || plMonitoredSameParty()) 
+                        { 
+                            CastSpell(Monitored.Player.Name, Data.DebuffPriorities[targetDebuff]);
+                        }
+                    }
+                 }
+            }
 
             if (Form2.config.EnableAddOn)
             {
@@ -3785,6 +3450,7 @@
 
                         if (debuffPriorityList.Any() && Form2.config.enablePartyDebuffRemoval && (characterNames_naRemoval.Contains(name) || Form2.config.SpecifiednaSpellsenable == false))
                         {
+                            // Get the highest priority debuff we have the right spell off cooldown for.
                             var targetDebuff = debuffPriorityList.First(status => Form2.DebuffEnabled[status] && PL.SpellAvailable(Data.DebuffPriorities[status]));
 
                             if ((short)targetDebuff > 0)
@@ -3889,6 +3555,7 @@
 
             if (cureSpell != Spells.Unknown)
             {
+                // Check if we need to over/under cure.
                 var curagaTier = PickCureTier(cureSpell, Data.CuragaTiers);
                 if (Form2.config.curagaTargetType == 0)
                 {
@@ -4560,9 +4227,9 @@
                     #region Primary Logic    
                     IEnumerable<PartyMember> partyByHP = Monitored.GetActivePartyMembers();
 
-                    /////////////////////////// CURSE CHECK /////////////////////////////////////
-                    var cursedMembers = partyByHP.Count(pm => PL.CanCastOn(pm) && ActiveBuffs.ContainsKey(pm.Name) && ActiveBuffs[pm.Name].Contains((short)StatusEffect.Doom));
-                    if(cursedMembers > 0)
+                    /////////////////////////// DOOM CHECK /////////////////////////////////////
+                    var doomedMembers = partyByHP.Count(pm => PL.CanCastOn(pm) && ActiveBuffs.ContainsKey(pm.Name) && ActiveBuffs[pm.Name].Contains((short)StatusEffect.Doom));
+                    if(doomedMembers > 0)
                     {
                         RunDebuffChecker();
                     }
@@ -4603,6 +4270,8 @@
 
                             // We get the first party with at least 1 person who's in it and checked.
                             // As well as 1 person who's both under the cure threshold AND in casting range.
+                            // This way we won't AOE parties we haven't got anyone checked in, and we won't attempt
+                            // to AOE a party where we can't reach any of the injured members.
                             if (partyByHP.Count(pm => pm.InParty(party) && enabledBoxes[pm.MemberNumber].Checked) > 0)
                             {
                                 if(partyByHP.Count(pm => pm.InParty(party) && pm.CurrentHPP < Form2.config.curagaCurePercentage && PL.CanCastOn(pm)) > 0)
@@ -4614,7 +4283,7 @@
 
                         if (targetParty > 0)
                         {
-                            // The target is the first person
+                            // The target is the first person we can cast on, since they're already ordered by HPP.
                             var target = partyByHP.First(pm => pm.InParty(targetParty) && PL.CanCastOn(pm));
 
                             if (target != null)
@@ -4643,10 +4312,10 @@
                     /////////////////////////// CURE //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
                     // First run a check on the monitored target
-                    PartyMember monitoredPlayer = partyByHP.FirstOrDefault(p => p.Name == Monitored.Player.Name);
-
-                    if (Form2.config.enableMonitoredPriority && monitoredPlayer.CurrentHP > 0 && (monitoredPlayer.CurrentHPP <= Form2.config.monitoredCurePercentage))
+                    if (Form2.config.enableMonitoredPriority && Monitored.Player.HP > 0 && (Monitored.Player.HPP <= Form2.config.monitoredCurePercentage))
                     {
+                        // Need to get monitored player as a PartyMember
+                        PartyMember monitoredPlayer = partyByHP.FirstOrDefault(p => p.Name == Monitored.Player.Name);
                         CureCalculator(monitoredPlayer);
                         return;
                     }
@@ -5141,7 +4810,7 @@
                             {
                                 if (PL.Resources.GetSpell(SpellCheckedResult, 0).ValidTargets == 5)
                                 { // PLAYER CHARACTER TARGET
-                                    var target = string.IsNullOrEmpty(Form2.config.LuopanSpell_Target) ? monitoredPlayer.Name : Form2.config.LuopanSpell_Target;
+                                    var target = string.IsNullOrEmpty(Form2.config.LuopanSpell_Target) ? Monitored.Player.Name : Form2.config.LuopanSpell_Target;
 
                                     if (PL.HasStatus(516)) // IF ECLIPTIC IS UP THEN ACTIVATE THE BOOL
                                     {

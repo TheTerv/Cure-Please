@@ -233,11 +233,10 @@ namespace CurePlease.Utilities
                     continue;
                 }
 
-                // We get the debuffs and order them by priority.
+                // We get the debuffs and order them by priority, filtering for statuses we have the right spell off cooldown.
                 var debuffIds = debuffs[pm.Name].Where(id => Data.DebuffPriorities.Keys.Cast<short>().Contains(id));
-                var pmPriorities = debuffIds.Cast<StatusEffect>().OrderBy(status => Array.IndexOf(Data.DebuffPriorities.Keys.ToArray(), status));
+                var pmPriorities = debuffIds.Cast<StatusEffect>().OrderBy(status => Array.IndexOf(Data.DebuffPriorities.Keys.ToArray(), status)).Where(status => api.SpellAvailable(Data.DebuffPriorities[status]));
 
-                //var pmDebuffs = debuffs[pm.Name].Split(',').Select(str => (StatusEffect)short.Parse(str.Trim())).OrderBy(status => Array.IndexOf(Data.DebuffPriorities.Keys.ToArray(), status));
                 var priority = Array.IndexOf(Data.DebuffPriorities.Keys.ToArray(), pmPriorities.First());
                 if(priority < lowestIndex)
                 {
