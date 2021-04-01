@@ -3786,11 +3786,12 @@
 
                     // First remove the highest priority debuff.
                     var priorityMember = PL.GetHighestPriorityDebuff(ActiveBuffs);
-                    if(priorityMember != null)
+                    if(priorityMember != null && ActiveBuffs.ContainsKey(priorityMember.Name))
                     {
                         var name = priorityMember.Name;
-                        // Get debuffs in order of priority, and find the first one we can currently cure.
-                        var debuffPriorityList = ActiveBuffs[name].Split(',').Select(dStr => (StatusEffect)short.Parse(dStr.Trim())).OrderBy(status => Array.IndexOf(Data.DebuffPriorities.Keys.ToArray(), status));
+                        // Filter out non-debuffs, and convert to short IDs. Then calculate the priority order.
+                        var debuffIds = ActiveBuffs[name].Split(',').Where(dStr => Data.DebuffPriorities.Keys.Cast<short>().ToList().Contains(short.Parse(dStr.Trim()))).Select(dStr => short.Parse(dStr));
+                        var debuffPriorityList = debuffIds.Cast<StatusEffect>().OrderBy(status => Array.IndexOf(Data.DebuffPriorities.Keys.ToArray(), status));
 
                         if (debuffPriorityList.Any() && Form2.config.enablePartyDebuffRemoval && (characterNames_naRemoval.Contains(name) || Form2.config.SpecifiednaSpellsenable == false))
                         {

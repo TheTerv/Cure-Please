@@ -234,9 +234,11 @@ namespace CurePlease.Utilities
                 }
 
                 // We get the debuffs and order them by priority.
-                var pmDebuffs = debuffs[pm.Name].Split(',').Select(str => (StatusEffect)short.Parse(str.Trim())).OrderBy(status => Array.IndexOf(Data.DebuffPriorities.Keys.ToArray(), status));
+                var debuffIds = debuffs[pm.Name].Split(',').Where(dStr => Data.DebuffPriorities.Keys.Cast<short>().ToList().Contains(short.Parse(dStr.Trim()))).Select(dStr => short.Parse(dStr));
+                var pmPriorities = debuffIds.Cast<StatusEffect>().OrderBy(status => Array.IndexOf(Data.DebuffPriorities.Keys.ToArray(), status));
 
-                var priority = Array.IndexOf(Data.DebuffPriorities.Keys.ToArray(), pmDebuffs.First());
+                //var pmDebuffs = debuffs[pm.Name].Split(',').Select(str => (StatusEffect)short.Parse(str.Trim())).OrderBy(status => Array.IndexOf(Data.DebuffPriorities.Keys.ToArray(), status));
+                var priority = Array.IndexOf(Data.DebuffPriorities.Keys.ToArray(), pmPriorities.First());
                 if(priority < lowestIndex)
                 {
                     lowestIndex = priority;
