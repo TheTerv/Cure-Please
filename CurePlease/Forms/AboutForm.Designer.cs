@@ -1,6 +1,6 @@
 ﻿namespace CurePlease
 {
-    partial class Form3
+    partial class AboutForm
     {
         /// <summary>
         /// Required designer variable.

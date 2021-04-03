@@ -2,7 +2,7 @@
 
 namespace CurePlease
 {
-    partial class Form2
+    partial class ConfigForm
     {
         /// <summary>
         /// Required designer variable.
@@ -31,7 +31,7 @@ namespace CurePlease
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form2));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ConfigForm));
             this.button4 = new System.Windows.Forms.Button();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.recastSongs_monitored = new System.Windows.Forms.CheckBox();

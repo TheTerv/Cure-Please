@@ -3,13 +3,13 @@
     using EliteMMO.API;
     using System;
     using System.Windows.Forms;
-    using static Form1;
+    using static MainForm;
 
-    public partial class Form4 : Form
+    public partial class ChatlogForm : Form
     {
-        private Form1 f1;
+        private MainForm f1;
 
-        public Form4(Form1 f)
+        public ChatlogForm(MainForm f)
         {
             this.StartPosition = FormStartPosition.CenterScreen;
 

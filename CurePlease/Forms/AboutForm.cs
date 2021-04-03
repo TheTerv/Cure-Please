@@ -2,9 +2,9 @@
 {
     using System.Windows.Forms;
 
-    public partial class Form3 : Form
+    public partial class AboutForm : Form
     {
-        public Form3()
+        public AboutForm()
         {
             this.StartPosition = FormStartPosition.CenterScreen;
 

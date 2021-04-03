@@ -2,7 +2,7 @@
 
 namespace CurePlease
 {
-    partial class Form1
+    partial class MainForm
     {
         /// <summary>
         /// Required designer variable.
@@ -31,15 +31,15 @@ namespace CurePlease
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.player0optionsButton = new System.Windows.Forms.Button();
             this.party0 = new System.Windows.Forms.GroupBox();
-            this.player5HP = new CurePlease.NewProgressBar();
-            this.player4HP = new CurePlease.NewProgressBar();
-            this.player3HP = new CurePlease.NewProgressBar();
-            this.player1HP = new CurePlease.NewProgressBar();
-            this.player2HP = new CurePlease.NewProgressBar();
-            this.player0HP = new CurePlease.NewProgressBar();
+            this.player5HP = new CurePlease.ProgressBarEx();
+            this.player4HP = new CurePlease.ProgressBarEx();
+            this.player3HP = new CurePlease.ProgressBarEx();
+            this.player1HP = new CurePlease.ProgressBarEx();
+            this.player2HP = new CurePlease.ProgressBarEx();
+            this.player0HP = new CurePlease.ProgressBarEx();
             this.player5buffsButton = new System.Windows.Forms.Button();
             this.player4buffsButton = new System.Windows.Forms.Button();
             this.player3buffsButton = new System.Windows.Forms.Button();
@@ -127,17 +127,17 @@ namespace CurePlease
             this.POLID = new System.Windows.Forms.ComboBox();
             this.plLabel = new System.Windows.Forms.Label();
             this.party2 = new System.Windows.Forms.GroupBox();
-            this.player17HP = new CurePlease.NewProgressBar();
+            this.player17HP = new CurePlease.ProgressBarEx();
             this.player17optionsButton = new System.Windows.Forms.Button();
-            this.player16HP = new CurePlease.NewProgressBar();
+            this.player16HP = new CurePlease.ProgressBarEx();
             this.player17priority = new System.Windows.Forms.CheckBox();
-            this.player15HP = new CurePlease.NewProgressBar();
+            this.player15HP = new CurePlease.ProgressBarEx();
             this.player17enabled = new System.Windows.Forms.CheckBox();
-            this.player13HP = new CurePlease.NewProgressBar();
+            this.player13HP = new CurePlease.ProgressBarEx();
             this.player16optionsButton = new System.Windows.Forms.Button();
-            this.player14HP = new CurePlease.NewProgressBar();
+            this.player14HP = new CurePlease.ProgressBarEx();
             this.player16priority = new System.Windows.Forms.CheckBox();
-            this.player12HP = new CurePlease.NewProgressBar();
+            this.player12HP = new CurePlease.ProgressBarEx();
             this.player16enabled = new System.Windows.Forms.CheckBox();
             this.player15optionsButton = new System.Windows.Forms.Button();
             this.player15priority = new System.Windows.Forms.CheckBox();
@@ -172,16 +172,16 @@ namespace CurePlease
             this.player10enabled = new System.Windows.Forms.CheckBox();
             this.player11enabled = new System.Windows.Forms.CheckBox();
             this.party1 = new System.Windows.Forms.GroupBox();
-            this.player11HP = new CurePlease.NewProgressBar();
+            this.player11HP = new CurePlease.ProgressBarEx();
             this.player11optionsButton = new System.Windows.Forms.Button();
-            this.player10HP = new CurePlease.NewProgressBar();
+            this.player10HP = new CurePlease.ProgressBarEx();
             this.player11priority = new System.Windows.Forms.CheckBox();
-            this.player9HP = new CurePlease.NewProgressBar();
+            this.player9HP = new CurePlease.ProgressBarEx();
             this.player10optionsButton = new System.Windows.Forms.Button();
-            this.player7HP = new CurePlease.NewProgressBar();
-            this.player8HP = new CurePlease.NewProgressBar();
+            this.player7HP = new CurePlease.ProgressBarEx();
+            this.player8HP = new CurePlease.ProgressBarEx();
             this.player9optionsButton = new System.Windows.Forms.Button();
-            this.player6HP = new CurePlease.NewProgressBar();
+            this.player6HP = new CurePlease.ProgressBarEx();
             this.player10priority = new System.Windows.Forms.CheckBox();
             this.player8optionsButton = new System.Windows.Forms.Button();
             this.player7optionsButton = new System.Windows.Forms.Button();
@@ -2608,24 +2608,24 @@ namespace CurePlease
         private Timer updateInstances;
         private Button player0optionsButton;
         private Timer checkCustomActions;
-        private NewProgressBar player0HP;
-        private NewProgressBar player5HP;
-        private NewProgressBar player4HP;
-        private NewProgressBar player3HP;
-        private NewProgressBar player1HP;
-        private NewProgressBar player2HP;
-        private NewProgressBar player17HP;
-        private NewProgressBar player16HP;
-        private NewProgressBar player15HP;
-        private NewProgressBar player13HP;
-        private NewProgressBar player14HP;
-        private NewProgressBar player12HP;
-        private NewProgressBar player11HP;
-        private NewProgressBar player10HP;
-        private NewProgressBar player9HP;
-        private NewProgressBar player7HP;
-        private NewProgressBar player8HP;
-        private NewProgressBar player6HP;
+        private ProgressBarEx player0HP;
+        private ProgressBarEx player5HP;
+        private ProgressBarEx player4HP;
+        private ProgressBarEx player3HP;
+        private ProgressBarEx player1HP;
+        private ProgressBarEx player2HP;
+        private ProgressBarEx player17HP;
+        private ProgressBarEx player16HP;
+        private ProgressBarEx player15HP;
+        private ProgressBarEx player13HP;
+        private ProgressBarEx player14HP;
+        private ProgressBarEx player12HP;
+        private ProgressBarEx player11HP;
+        private ProgressBarEx player10HP;
+        private ProgressBarEx player9HP;
+        private ProgressBarEx player7HP;
+        private ProgressBarEx player8HP;
+        private ProgressBarEx player6HP;
         private TrackBar trackBar1;
         private Label castingLockLabel;
         private System.ComponentModel.BackgroundWorker Follow_BGW;

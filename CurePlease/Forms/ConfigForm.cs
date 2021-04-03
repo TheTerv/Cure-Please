@@ -12,7 +12,7 @@
 
     #region "== Form2"
 
-    public partial class Form2 : Form
+    public partial class ConfigForm : Form
     {
         #region "== Settings Class"
         public class JobTitles : List<JobTitles>
@@ -1812,7 +1812,7 @@
         public List<JobTitles> JobNames = new List<JobTitles>();
         public int runOnce = 0;
 
-        public Form2 ( )
+        public ConfigForm ( )
         {
             StartPosition = FormStartPosition.CenterScreen;
 
@@ -3355,19 +3355,19 @@
 
             SaveFileDialog savefile = new SaveFileDialog();
 
-            if ( Form1.PL != null )
+            if ( MainForm.PL != null )
             {
-                if ( Form1.PL.Player.MainJob != 0 )
+                if ( MainForm.PL.Player.MainJob != 0 )
                 {
-                    if ( Form1.PL.Player.SubJob != 0 )
+                    if ( MainForm.PL.Player.SubJob != 0 )
                     {
-                        JobTitles mainJob = JobNames.Where(c => c.job_number == Form1.PL.Player.MainJob).FirstOrDefault();
-                        JobTitles subJob = JobNames.Where(c => c.job_number == Form1.PL.Player.SubJob).FirstOrDefault();
+                        JobTitles mainJob = JobNames.Where(c => c.job_number == MainForm.PL.Player.MainJob).FirstOrDefault();
+                        JobTitles subJob = JobNames.Where(c => c.job_number == MainForm.PL.Player.SubJob).FirstOrDefault();
                         savefile.FileName = mainJob.job_name + "_" + subJob.job_name + ".xml";
                     }
                     else
                     {
-                        JobTitles mainJob = JobNames.Where(c => c.job_number == Form1.PL.Player.MainJob).FirstOrDefault();
+                        JobTitles mainJob = JobNames.Where(c => c.job_number == MainForm.PL.Player.MainJob).FirstOrDefault();
                         savefile.FileName = mainJob + ".xml";
                     }
                 }
@@ -3923,14 +3923,14 @@
             //decimal level = this.cureLevel.Value;
             double potency = System.Convert.ToDouble(curePotency.Value);
 
-            if ( Form1.PL != null )
+            if ( MainForm.PL != null )
             {
                 // First calculate default potency
 
-                double MND = Form1.PL.Player.Stats.Mind;
-                double VIT = Form1.PL.Player.Stats.Vitality;
+                double MND = MainForm.PL.Player.Stats.Mind;
+                double VIT = MainForm.PL.Player.Stats.Vitality;
 
-                ushort Healing = Form1.PL.Player.CombatSkills.Healing.Skill;
+                ushort Healing = MainForm.PL.Player.CombatSkills.Healing.Skill;
 
                 // Now grab calculations for each tier
 

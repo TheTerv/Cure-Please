@@ -5,11 +5,11 @@
     using System.Linq;
     using System.Windows.Forms;
     using System.Xml.Linq;
-    using static Form1;
+    using static MainForm;
 
     public partial class PartyBuffs : Form
     {
-        private Form1 f1;
+        private MainForm f1;
 
         public class BuffList
         {
@@ -19,7 +19,7 @@
 
         public List<BuffList> XMLBuffList = new List<BuffList>();
 
-        public PartyBuffs(Form1 f)
+        public PartyBuffs(MainForm f)
         {
             this.StartPosition = FormStartPosition.CenterScreen;
 

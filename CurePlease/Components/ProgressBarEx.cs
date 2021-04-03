@@ -4,9 +4,9 @@
     using System.Drawing.Drawing2D;
     using System.Windows.Forms;
 
-    public class NewProgressBar : ProgressBar
+    public class ProgressBarEx : ProgressBar
     {
-        public NewProgressBar() => this.SetStyle(ControlStyles.UserPaint, true);
+        public ProgressBarEx() => this.SetStyle(ControlStyles.UserPaint, true);
 
         protected override void OnPaintBackground(PaintEventArgs e)
         {

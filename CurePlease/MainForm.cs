@@ -22,10 +22,10 @@
     using System.Xml.Serialization;
     using static EliteMMO.API.EliteAPI;
 
-    public partial class Form1 : Form
+    public partial class MainForm : Form
     {
 
-        private Form2 Form2 = new Form2();
+        private ConfigForm Form2 = new ConfigForm();
 
         public class CharacterData : List<CharacterData>
         {
@@ -1297,7 +1297,7 @@
         }
 
 
-        public Form1()
+        public MainForm()
         {
 
 
@@ -2564,7 +2564,7 @@
             POLID.BackColor = Color.White;
             plPosition.Enabled = true;
             setinstance2.Enabled = true;
-            Form2.config.autoFollowName = string.Empty;
+            ConfigForm.config.autoFollowName = string.Empty;
 
             ForceSongRecast = true;
 
@@ -2607,12 +2607,12 @@
 
                         if (System.IO.File.Exists(filename))
                         {
-                            Form2.MySettings config = new Form2.MySettings();
+                            ConfigForm.MySettings config = new ConfigForm.MySettings();
 
-                            XmlSerializer mySerializer = new XmlSerializer(typeof(Form2.MySettings));
+                            XmlSerializer mySerializer = new XmlSerializer(typeof(ConfigForm.MySettings));
 
                             StreamReader reader = new StreamReader(filename);
-                            config = (Form2.MySettings)mySerializer.Deserialize(reader);
+                            config = (ConfigForm.MySettings)mySerializer.Deserialize(reader);
 
                             reader.Close();
                             reader.Dispose();
@@ -2621,12 +2621,12 @@
                         }
                         else if (System.IO.File.Exists(filename2))
                         {
-                            Form2.MySettings config = new Form2.MySettings();
+                            ConfigForm.MySettings config = new ConfigForm.MySettings();
 
-                            XmlSerializer mySerializer = new XmlSerializer(typeof(Form2.MySettings));
+                            XmlSerializer mySerializer = new XmlSerializer(typeof(ConfigForm.MySettings));
 
                             StreamReader reader = new StreamReader(filename2);
-                            config = (Form2.MySettings)mySerializer.Deserialize(reader);
+                            config = (ConfigForm.MySettings)mySerializer.Deserialize(reader);
 
                             reader.Close();
                             reader.Dispose();
@@ -2637,7 +2637,7 @@
                 }
             }
 
-            if (LUA_Plugin_Loaded == 0 && !Form2.config.pauseOnStartBox && Monitored != null)
+            if (LUA_Plugin_Loaded == 0 && !ConfigForm.config.pauseOnStartBox && Monitored != null)
             {
                 // Wait a milisecond and then load and set the config.
                 Thread.Sleep(500);
@@ -2646,10 +2646,10 @@
                 {
                     PL.ThirdParty.SendString("//lua load CurePlease_addon");
                     Thread.Sleep(1500);
-                    PL.ThirdParty.SendString("//cpaddon settings " + Form2.config.ipAddress + " " + Form2.config.listeningPort);
+                    PL.ThirdParty.SendString("//cpaddon settings " + ConfigForm.config.ipAddress + " " + ConfigForm.config.listeningPort);
                     Thread.Sleep(100);
                     PL.ThirdParty.SendString("//cpaddon verify");
-                    if (Form2.config.enableHotKeys)
+                    if (ConfigForm.config.enableHotKeys)
                     {
                         PL.ThirdParty.SendString("//bind ^!F1 cureplease toggle");
                         PL.ThirdParty.SendString("//bind ^!F2 cureplease start");
@@ -2660,11 +2660,11 @@
                 {
                     PL.ThirdParty.SendString("/addon load CurePlease_addon");
                     Thread.Sleep(1500);
-                    PL.ThirdParty.SendString("/cpaddon settings " + Form2.config.ipAddress + " " + Form2.config.listeningPort);
+                    PL.ThirdParty.SendString("/cpaddon settings " + ConfigForm.config.ipAddress + " " + ConfigForm.config.listeningPort);
                     Thread.Sleep(100);
 
                     PL.ThirdParty.SendString("/cpaddon verify");
-                    if (Form2.config.enableHotKeys)
+                    if (ConfigForm.config.enableHotKeys)
                     {
                         PL.ThirdParty.SendString("/bind ^!F1 /cureplease toggle");
                         PL.ThirdParty.SendString("/bind ^!F2 /cureplease start");
@@ -2675,7 +2675,7 @@
                 AddOnStatus_Click(sender, e);
 
 
-                currentAction.Text = "LUA Addon loaded. ( " + Form2.config.ipAddress + " - " + Form2.config.listeningPort + " )";
+                currentAction.Text = "LUA Addon loaded. ( " + ConfigForm.config.ipAddress + " - " + ConfigForm.config.listeningPort + " )";
 
                 LUA_Plugin_Loaded = 1;
             }
@@ -2700,7 +2700,7 @@
             pauseButton.Enabled = true;
             hpUpdates.Enabled = true;
 
-            if (Form2.config.pauseOnStartBox)
+            if (ConfigForm.config.pauseOnStartBox)
             {
                 pauseActions = true;
                 pauseButton.Text = "Loaded, Paused!";
@@ -2709,13 +2709,13 @@
             }
             else
             {
-                if (Form2.config.MinimiseonStart == true && WindowState != FormWindowState.Minimized)
+                if (ConfigForm.config.MinimiseonStart == true && WindowState != FormWindowState.Minimized)
                 {
                     WindowState = FormWindowState.Minimized;
                 }
             }
 
-            if (LUA_Plugin_Loaded == 0 && !Form2.config.pauseOnStartBox && PL != null)
+            if (LUA_Plugin_Loaded == 0 && !ConfigForm.config.pauseOnStartBox && PL != null)
             {
                 // Wait a milisecond and then load and set the config.
                 Thread.Sleep(500);
@@ -2723,11 +2723,11 @@
                 {
                     PL.ThirdParty.SendString("//lua load CurePlease_addon");
                     Thread.Sleep(1500);
-                    PL.ThirdParty.SendString("//cpaddon settings " + Form2.config.ipAddress + " " + Form2.config.listeningPort);
+                    PL.ThirdParty.SendString("//cpaddon settings " + ConfigForm.config.ipAddress + " " + ConfigForm.config.listeningPort);
                     Thread.Sleep(100);
                     PL.ThirdParty.SendString("//cpaddon verify");
 
-                    if (Form2.config.enableHotKeys)
+                    if (ConfigForm.config.enableHotKeys)
                     {
                         PL.ThirdParty.SendString("//bind ^!F1 cureplease toggle");
                         PL.ThirdParty.SendString("//bind ^!F2 cureplease start");
@@ -2738,10 +2738,10 @@
                 {
                     PL.ThirdParty.SendString("/addon load CurePlease_addon");
                     Thread.Sleep(1500);
-                    PL.ThirdParty.SendString("/cpaddon settings " + Form2.config.ipAddress + " " + Form2.config.listeningPort);
+                    PL.ThirdParty.SendString("/cpaddon settings " + ConfigForm.config.ipAddress + " " + ConfigForm.config.listeningPort);
                     Thread.Sleep(100);
                     PL.ThirdParty.SendString("/cpaddon verify");
-                    if (Form2.config.enableHotKeys)
+                    if (ConfigForm.config.enableHotKeys)
                     {
                         PL.ThirdParty.SendString("/bind ^!F1 /cureplease toggle");
                         PL.ThirdParty.SendString("/bind ^!F2 /cureplease start");
@@ -2749,7 +2749,7 @@
                     }
                 }
 
-                currentAction.Text = "LUA Addon loaded. ( " + Form2.config.ipAddress + " - " + Form2.config.listeningPort + " )";
+                currentAction.Text = "LUA Addon loaded. ( " + ConfigForm.config.ipAddress + " - " + ConfigForm.config.listeningPort + " )";
 
                 LUA_Plugin_Loaded = 1;
 
@@ -2798,11 +2798,11 @@
             {
                 return cureSpell;
             }
-            else if(Form2.config.Overcure && PL.SpellAvailable(overSpell) && PL.HasMPFor(overSpell))
+            else if(ConfigForm.config.Overcure && PL.SpellAvailable(overSpell) && PL.HasMPFor(overSpell))
             {
                 return overSpell;
             }
-            else if(Form2.config.Undercure && PL.SpellAvailable(underSpell) && PL.HasMPFor(underSpell))
+            else if(ConfigForm.config.Undercure && PL.SpellAvailable(underSpell) && PL.HasMPFor(underSpell))
             {
                 return underSpell;
             }
@@ -2833,7 +2833,7 @@
 
             if (PL.Player.LoginStatus == (int)EliteMMO.API.LoginStatus.Loading || Monitored.Player.LoginStatus == (int)LoginStatus.Loading)
             {
-                if (Form2.config.pauseOnZoneBox == true)
+                if (ConfigForm.config.pauseOnZoneBox == true)
                 {
                     song_casting = 0;
                     ForceSongRecast = true;
@@ -3293,27 +3293,27 @@
 
         private string PickCure(uint hpLoss)
         {
-            if (Form2.config.cure6enabled && hpLoss >= Form2.config.cure6amount && PL.HasMPFor(Spells.Cure_VI))
+            if (ConfigForm.config.cure6enabled && hpLoss >= ConfigForm.config.cure6amount && PL.HasMPFor(Spells.Cure_VI))
             {
                 return PickCureTier(Spells.Cure_VI, Data.CureTiers);
             }
-            else if (Form2.config.cure5enabled && hpLoss >= Form2.config.cure5amount && PL.HasMPFor(Spells.Cure_V))
+            else if (ConfigForm.config.cure5enabled && hpLoss >= ConfigForm.config.cure5amount && PL.HasMPFor(Spells.Cure_V))
             {
                 return PickCureTier(Spells.Cure_V, Data.CureTiers);
             }
-            else if (Form2.config.cure4enabled && hpLoss >= Form2.config.cure4amount && PL.HasMPFor(Spells.Cure_IV))
+            else if (ConfigForm.config.cure4enabled && hpLoss >= ConfigForm.config.cure4amount && PL.HasMPFor(Spells.Cure_IV))
             {
                 return PickCureTier(Spells.Cure_IV, Data.CureTiers);
             }
-            else if (Form2.config.cure3enabled && hpLoss >= Form2.config.cure3amount && PL.HasMPFor(Spells.Cure_III))
+            else if (ConfigForm.config.cure3enabled && hpLoss >= ConfigForm.config.cure3amount && PL.HasMPFor(Spells.Cure_III))
             {
                 return PickCureTier(Spells.Cure_III, Data.CureTiers);
             }
-            else if (Form2.config.cure2enabled && hpLoss >= Form2.config.cure2amount && PL.HasMPFor(Spells.Cure_II))
+            else if (ConfigForm.config.cure2enabled && hpLoss >= ConfigForm.config.cure2amount && PL.HasMPFor(Spells.Cure_II))
             {
                 return PickCureTier(Spells.Cure_II, Data.CureTiers);
             }
-            else if (Form2.config.cure1enabled && hpLoss >= Form2.config.cure1amount && PL.HasMPFor(Spells.Cure))
+            else if (ConfigForm.config.cure1enabled && hpLoss >= ConfigForm.config.cure1amount && PL.HasMPFor(Spells.Cure))
             {
                 return PickCureTier(Spells.Cure, Data.CureTiers);
             }
@@ -3331,7 +3331,7 @@
                 if (cureSpell != Spells.Unknown)
                 {
                     // I consider cure/cure II to be low tier once cure III gets above 700 HP.
-                    if (Array.IndexOf(Data.CureTiers, cureSpell) < 2 && Form2.config.PrioritiseOverLowerTier == true)
+                    if (Array.IndexOf(Data.CureTiers, cureSpell) < 2 && ConfigForm.config.PrioritiseOverLowerTier == true)
                     {
                         RunDebuffChecker();
                     }
@@ -3343,51 +3343,51 @@
 
         private void RunDebuffChecker()
         {
-            if (Form2.config.plSilenceItem == 0)
+            if (ConfigForm.config.plSilenceItem == 0)
             {
                 plSilenceitemName = "Catholicon";
             }
-            else if (Form2.config.plSilenceItem == 1)
+            else if (ConfigForm.config.plSilenceItem == 1)
             {
                 plSilenceitemName = "Echo Drops";
             }
-            else if (Form2.config.plSilenceItem == 2)
+            else if (ConfigForm.config.plSilenceItem == 2)
             {
                 plSilenceitemName = "Remedy";
             }
-            else if (Form2.config.plSilenceItem == 3)
+            else if (ConfigForm.config.plSilenceItem == 3)
             {
                 plSilenceitemName = "Remedy Ointment";
             }
-            else if (Form2.config.plSilenceItem == 4)
+            else if (ConfigForm.config.plSilenceItem == 4)
             {
                 plSilenceitemName = "Vicar's Drink";
             }
 
-            if (Form2.config.plDoomitem == 0)
+            if (ConfigForm.config.plDoomitem == 0)
             {
                 plDoomItemName = "Holy Water";
             }
-            else if (Form2.config.plDoomitem == 1)
+            else if (ConfigForm.config.plDoomitem == 1)
             {
                 plDoomItemName = "Hallowed Water";
             }
 
-            if (Form2.config.wakeSleepSpell == 0)
+            if (ConfigForm.config.wakeSleepSpell == 0)
             {
                 wakeSleepSpell = Spells.Cure;
             }
-            else if (Form2.config.wakeSleepSpell == 1)
+            else if (ConfigForm.config.wakeSleepSpell == 1)
             {
                 wakeSleepSpell = Spells.Cura;
             }
-            else if (Form2.config.wakeSleepSpell == 2)
+            else if (ConfigForm.config.wakeSleepSpell == 2)
             {
                 wakeSleepSpell = Spells.Curaga;
             }
 
             // PL and Monitored Player Debuff Removal Starting with PL
-            if (PL.Player.Status != 33 && Form2.config.plDebuffEnabled)
+            if (PL.Player.Status != 33 && ConfigForm.config.plDebuffEnabled)
             {            
                 var debuffIds = PL.Player.Buffs.Where(id => Data.DebuffPriorities.Keys.Cast<short>().Contains(id));
                 var debuffPriorityList = debuffIds.Cast<StatusEffect>().OrderBy(status => Array.IndexOf(Data.DebuffPriorities.Keys.ToArray(), status));
@@ -3405,7 +3405,7 @@
             }
 
             // Next, we check monitored player
-            if (Form2.config.monitoredDebuffEnabled && (PL.Entity.GetEntity((int)Monitored.Party.GetPartyMember(0).TargetIndex).Distance < 21) && (PL.Entity.GetEntity((int)Monitored.Party.GetPartyMember(0).TargetIndex).Distance > 0) && (Monitored.Player.HP > 0) && PL.Player.Status != 33)
+            if (ConfigForm.config.monitoredDebuffEnabled && (PL.Entity.GetEntity((int)Monitored.Party.GetPartyMember(0).TargetIndex).Distance < 21) && (PL.Entity.GetEntity((int)Monitored.Party.GetPartyMember(0).TargetIndex).Distance > 0) && (Monitored.Player.HP > 0) && PL.Player.Status != 33)
             {
                 var debuffIds = Monitored.Player.Buffs.Where(id => Data.DebuffPriorities.Keys.Cast<short>().Contains(id));
                 var debuffPriorityList = debuffIds.Cast<StatusEffect>().OrderBy(status => Array.IndexOf(Data.DebuffPriorities.Keys.ToArray(), status));
@@ -3431,7 +3431,7 @@
                  }
             }
 
-            if (Form2.config.EnableAddOn)
+            if (ConfigForm.config.EnableAddOn)
             {
                 
                 lock (ActiveBuffs)
@@ -3448,7 +3448,7 @@
                         var debuffIds = ActiveBuffs[name].Where(id => Data.DebuffPriorities.Keys.Cast<short>().Contains(id));
                         var debuffPriorityList = debuffIds.Cast<StatusEffect>().OrderBy(status => Array.IndexOf(Data.DebuffPriorities.Keys.ToArray(), status));
 
-                        if (debuffPriorityList.Any() && Form2.config.enablePartyDebuffRemoval && (characterNames_naRemoval.Contains(name) || Form2.config.SpecifiednaSpellsenable == false))
+                        if (debuffPriorityList.Any() && ConfigForm.config.enablePartyDebuffRemoval && (characterNames_naRemoval.Contains(name) || ConfigForm.config.SpecifiednaSpellsenable == false))
                         {
                             // Get the highest priority debuff we have the right spell off cooldown for.
                             var targetDebuff = debuffPriorityList.First(status => Form2.DebuffEnabled[status] && PL.SpellAvailable(Data.DebuffPriorities[status]));
@@ -3532,23 +3532,23 @@
             uint hpLoss = member.HPLoss();
             string cureSpell = Spells.Unknown;
   
-            if (Form2.config.curaga5enabled && (hpLoss >= Form2.config.curaga5Amount))
+            if (ConfigForm.config.curaga5enabled && (hpLoss >= ConfigForm.config.curaga5Amount))
             {
                 cureSpell = Spells.Curaga_V;          
             }
-            else if (Form2.config.curaga4enabled && (hpLoss >= Form2.config.curaga4Amount))
+            else if (ConfigForm.config.curaga4enabled && (hpLoss >= ConfigForm.config.curaga4Amount))
             {
                 cureSpell = Spells.Curaga_IV;           
             }
-            else if (Form2.config.curaga3enabled && (hpLoss >= Form2.config.curaga3Amount))
+            else if (ConfigForm.config.curaga3enabled && (hpLoss >= ConfigForm.config.curaga3Amount))
             {
                 cureSpell = Spells.Curaga_III;
             }
-            else if (Form2.config.curaga2enabled && (hpLoss >= Form2.config.curaga2Amount))
+            else if (ConfigForm.config.curaga2enabled && (hpLoss >= ConfigForm.config.curaga2Amount))
             {
                 cureSpell = Spells.Curaga_II;
             }
-            else if (Form2.config.curagaEnabled && (hpLoss >= Form2.config.curagaAmount))
+            else if (ConfigForm.config.curagaEnabled && (hpLoss >= ConfigForm.config.curagaAmount))
             {
                 cureSpell = Spells.Curaga;
             }
@@ -3557,13 +3557,13 @@
             {
                 // Check if we need to over/under cure.
                 var curagaTier = PickCureTier(cureSpell, Data.CuragaTiers);
-                if (Form2.config.curagaTargetType == 0)
+                if (ConfigForm.config.curagaTargetType == 0)
                 {
                     CastSpell(member.Name, curagaTier);
                 }
                 else
                 {
-                    CastSpell(Form2.config.curagaTargetName, curagaTier);
+                    CastSpell(ConfigForm.config.curagaTargetName, curagaTier);
                 }
             }
 
@@ -3609,7 +3609,7 @@
 
             CastingBackground_Check = true;
 
-            if (Form2.config.trackCastingPackets == true && Form2.config.EnableAddOn == true)
+            if (ConfigForm.config.trackCastingPackets == true && ConfigForm.config.EnableAddOn == true)
             {
                 if (!ProtectCasting.IsBusy) { ProtectCasting.RunWorkerAsync(); }
             }
@@ -3665,21 +3665,21 @@
         private void Regen_Player(byte partyMemberId)
         {
             string[] regen_spells = { Spells.Regen, Spells.Regen_II, Spells.Regen_III, Spells.Regen_IV, Spells.Regen_V };
-            CastSpell(Monitored.Party.GetPartyMembers()[partyMemberId].Name, regen_spells[Form2.config.autoRegen_Spell]);
+            CastSpell(Monitored.Party.GetPartyMembers()[partyMemberId].Name, regen_spells[ConfigForm.config.autoRegen_Spell]);
             playerRegen[partyMemberId] = DateTime.Now;
         }
 
         private void Refresh_Player(byte partyMemberId)
         {
             string[] refresh_spells = { Spells.Refresh, Spells.Refresh_II, Spells.Refresh_III };
-            CastSpell(Monitored.Party.GetPartyMembers()[partyMemberId].Name, refresh_spells[Form2.config.autoRefresh_Spell]);
+            CastSpell(Monitored.Party.GetPartyMembers()[partyMemberId].Name, refresh_spells[ConfigForm.config.autoRefresh_Spell]);
             playerRefresh[partyMemberId] = DateTime.Now;
         }
 
         private void protectPlayer(byte partyMemberId)
         {
             string[] protect_spells = { Spells.Protect, Spells.Protect_II, Spells.Protect_III, Spells.Protect_IV, Spells.Protect_V };
-            CastSpell(Monitored.Party.GetPartyMembers()[partyMemberId].Name, protect_spells[Form2.config.autoProtect_Spell]);
+            CastSpell(Monitored.Party.GetPartyMembers()[partyMemberId].Name, protect_spells[ConfigForm.config.autoProtect_Spell]);
             playerProtect[partyMemberId] = DateTime.Now;
         }
 
@@ -3687,21 +3687,21 @@
         {
             string[] shell_spells = { Spells.Shell, Spells.Shell_II, Spells.Shell_III, Spells.Shell_IV, Spells.Shell_V };
 
-            CastSpell(Monitored.Party.GetPartyMembers()[partyMemberId].Name, shell_spells[Form2.config.autoShell_Spell]);
+            CastSpell(Monitored.Party.GetPartyMembers()[partyMemberId].Name, shell_spells[ConfigForm.config.autoShell_Spell]);
             playerShell[partyMemberId] = DateTime.Now;
         }
 
         private bool ActiveSpikes()
         {
-            if ((Form2.config.plSpikes_Spell == 0) && PL.HasStatus(StatusEffect.Blaze_Spikes))
+            if ((ConfigForm.config.plSpikes_Spell == 0) && PL.HasStatus(StatusEffect.Blaze_Spikes))
             {
                 return true;
             }
-            else if ((Form2.config.plSpikes_Spell == 1) && PL.HasStatus(StatusEffect.Ice_Spikes))
+            else if ((ConfigForm.config.plSpikes_Spell == 1) && PL.HasStatus(StatusEffect.Ice_Spikes))
             {
                 return true;
             }
-            else if ((Form2.config.plSpikes_Spell == 2) && PL.HasStatus(StatusEffect.Shock_Spikes))
+            else if ((ConfigForm.config.plSpikes_Spell == 2) && PL.HasStatus(StatusEffect.Shock_Spikes))
             {
                 return true;
             }
@@ -4020,23 +4020,23 @@
 
 
             // IF ENABLED PAUSE ON KO
-            if (Form2.config.pauseOnKO && (PL.Player.Status == 2 || PL.Player.Status == 3))
+            if (ConfigForm.config.pauseOnKO && (PL.Player.Status == 2 || PL.Player.Status == 3))
             {
                 pauseButton.Text = "Paused!";
                 pauseButton.ForeColor = Color.Red;
                 actionTimer.Enabled = false;
                 ActiveBuffs.Clear();
                 pauseActions = true;
-                if (Form2.config.FFXIDefaultAutoFollow == false)
+                if (ConfigForm.config.FFXIDefaultAutoFollow == false)
                 {
                     PL.AutoFollow.IsAutoFollowing = false;
                 }
             }
 
             // IF YOU ARE DEAD BUT RERAISE IS AVAILABLE THEN ACCEPT RAISE
-            if (Form2.config.AcceptRaise == true && (PL.Player.Status == 2 || PL.Player.Status == 3))
+            if (ConfigForm.config.AcceptRaise == true && (PL.Player.Status == 2 || PL.Player.Status == 3))
             {
-                if (PL.Menu.IsMenuOpen && PL.Menu.HelpName == "Revival" && PL.Menu.MenuIndex == 1 && ((Form2.config.AcceptRaiseOnlyWhenNotInCombat == true && Monitored.Player.Status != 1) || Form2.config.AcceptRaiseOnlyWhenNotInCombat == false))
+                if (PL.Menu.IsMenuOpen && PL.Menu.HelpName == "Revival" && PL.Menu.MenuIndex == 1 && ((ConfigForm.config.AcceptRaiseOnlyWhenNotInCombat == true && Monitored.Player.Status != 1) || ConfigForm.config.AcceptRaiseOnlyWhenNotInCombat == false))
                 {
                     await Task.Delay(2000);
                     currentAction.Text = "Accepting Raise or Reraise.";
@@ -4052,7 +4052,7 @@
             {
 
                 // FIRST IF YOU ARE SILENCED OR DOOMED ATTEMPT REMOVAL NOW
-                if (PL.HasStatus(StatusEffect.Silence) && Form2.config.plSilenceItemEnabled)
+                if (PL.HasStatus(StatusEffect.Silence) && ConfigForm.config.plSilenceItemEnabled)
                 {
                     // Check to make sure we have echo drops
                     if (GetInventoryItemCount(PL, GetItemId(plSilenceitemName)) > 0 || GetTempItemCount(PL, GetItemId(plSilenceitemName)) > 0)
@@ -4061,7 +4061,7 @@
                     }
 
                 }
-                else if (PL.HasStatus(StatusEffect.Doom) && Form2.config.plDoomEnabled /* Add more options from UI HERE*/)
+                else if (PL.HasStatus(StatusEffect.Doom) && ConfigForm.config.plDoomEnabled /* Add more options from UI HERE*/)
                 {
                     // Check to make sure we have holy water
                     if (GetInventoryItemCount(PL, GetItemId(plDoomItemName)) > 0 || GetTempItemCount(PL, GetItemId(plDoomItemName)) > 0)
@@ -4071,16 +4071,16 @@
                     }
                 }
 
-                else if (Form2.config.DivineSeal && PL.Player.MPP <= 11 && PL.AbilityAvailable(Ability.DivineSeal) && !PL.Player.Buffs.Contains((short)StatusEffect.Weakness))
+                else if (ConfigForm.config.DivineSeal && PL.Player.MPP <= 11 && PL.AbilityAvailable(Ability.DivineSeal) && !PL.Player.Buffs.Contains((short)StatusEffect.Weakness))
                 {
                     JobAbility_Wait(Ability.DivineSeal, Ability.DivineSeal);
                 }
-                else if (Form2.config.Convert && (PL.Player.MP <= Form2.config.convertMP) && PL.AbilityAvailable(Ability.Convert) && !PL.Player.Buffs.Contains((short)StatusEffect.Weakness))
+                else if (ConfigForm.config.Convert && (PL.Player.MP <= ConfigForm.config.convertMP) && PL.AbilityAvailable(Ability.Convert) && !PL.Player.Buffs.Contains((short)StatusEffect.Weakness))
                 {
                     JobAbility_Wait(Ability.Convert, Ability.Convert);
                     return;
                 }
-                else if (Form2.config.RadialArcana && (PL.Player.MP <= Form2.config.RadialArcanaMP) && PL.AbilityAvailable(Ability.RadialArcana) && !PL.Player.Buffs.Contains((short)StatusEffect.Weakness))
+                else if (ConfigForm.config.RadialArcana && (PL.Player.MP <= ConfigForm.config.RadialArcanaMP) && PL.AbilityAvailable(Ability.RadialArcana) && !PL.Player.Buffs.Contains((short)StatusEffect.Weakness))
                 {
                     // Check if a pet is already active
                     if (PL.Player.Pet.HealthPercent >= 1 && PL.Player.Pet.Distance <= 9)
@@ -4091,16 +4091,16 @@
                     {
                         JobAbility_Wait(Ability.FullCircle, Ability.FullCircle);
                         await Task.Delay(2000);
-                        string SpellCheckedResult = ReturnGeoSpell(Form2.config.RadialArcana_Spell, 2);
+                        string SpellCheckedResult = ReturnGeoSpell(ConfigForm.config.RadialArcana_Spell, 2);
                         CastSpell(Target.Me, SpellCheckedResult);
                     }
                     else
                     {
-                        string SpellCheckedResult = ReturnGeoSpell(Form2.config.RadialArcana_Spell, 2);
+                        string SpellCheckedResult = ReturnGeoSpell(ConfigForm.config.RadialArcana_Spell, 2);
                         CastSpell(Target.Me, SpellCheckedResult);
                     }
                 }
-                else if (Form2.config.FullCircle)
+                else if (ConfigForm.config.FullCircle)
                 {
 
 
@@ -4110,7 +4110,7 @@
                     //Check if "pet" is active and out of range of the monitored player
                     if (PL.Player.Pet.HealthPercent >= 1)
                     {
-                        if (Form2.config.Fullcircle_GEOTarget == true && Form2.config.LuopanSpell_Target != "")
+                        if (ConfigForm.config.Fullcircle_GEOTarget == true && ConfigForm.config.LuopanSpell_Target != "")
                         {
 
                             ushort PetsIndex = PL.Player.PetIndex;
@@ -4123,7 +4123,7 @@
                             {
                                 XiEntity entity = PL.Entity.GetEntity(x);
 
-                                if (entity.Name != null && entity.Name.ToLower().Equals(Form2.config.LuopanSpell_Target.ToLower()))
+                                if (entity.Name != null && entity.Name.ToLower().Equals(ConfigForm.config.LuopanSpell_Target.ToLower()))
                                 {
                                     FullCircle_CharID = Convert.ToInt32(entity.TargetID);
                                     break;
@@ -4147,7 +4147,7 @@
                             }
 
                         }
-                        else if (Form2.config.Fullcircle_GEOTarget == false && Monitored.Player.Status == 1)
+                        else if (ConfigForm.config.Fullcircle_GEOTarget == false && Monitored.Player.Status == 1)
                         {
                             ushort PetsIndex = PL.Player.PetIndex;
 
@@ -4161,18 +4161,18 @@
 
                     }
                 }
-                else if (Form2.config.Troubadour && PL.AbilityAvailable("Troubadour") && songs_currently_up1 == 0)
+                else if (ConfigForm.config.Troubadour && PL.AbilityAvailable("Troubadour") && songs_currently_up1 == 0)
                 {
                     JobAbility_Wait("Troubadour", "Troubadour");
                 }
-                else if (Form2.config.Nightingale && PL.AbilityAvailable("Nightingale") && songs_currently_up1 == 0)
+                else if (ConfigForm.config.Nightingale && PL.AbilityAvailable("Nightingale") && songs_currently_up1 == 0)
                 {
                     JobAbility_Wait("Nightingale", "Nightingale");
                 }
 
-                if (PL.Player.MP <= (int)Form2.config.mpMinCastValue && PL.Player.MP != 0)
+                if (PL.Player.MP <= (int)ConfigForm.config.mpMinCastValue && PL.Player.MP != 0)
                 {
-                    if (Form2.config.lowMPcheckBox && !islowmp && !Form2.config.healLowMP)
+                    if (ConfigForm.config.lowMPcheckBox && !islowmp && !ConfigForm.config.healLowMP)
                     {
                         PL.ThirdParty.SendString("/tell " + Monitored.Player.Name + " MP is low!");
                         islowmp = true;
@@ -4181,27 +4181,27 @@
                     islowmp = true;
                     return;
                 }
-                if (PL.Player.MP > (int)Form2.config.mpMinCastValue && PL.Player.MP != 0)
+                if (PL.Player.MP > (int)ConfigForm.config.mpMinCastValue && PL.Player.MP != 0)
                 {
-                    if (Form2.config.lowMPcheckBox && islowmp && !Form2.config.healLowMP)
+                    if (ConfigForm.config.lowMPcheckBox && islowmp && !ConfigForm.config.healLowMP)
                     {
                         PL.ThirdParty.SendString("/tell " + Monitored.Player.Name + " MP OK!");
                         islowmp = false;
                     }
                 }
 
-                if (Form2.config.healLowMP == true && PL.Player.MP <= Form2.config.healWhenMPBelow && PL.Player.Status == 0)
+                if (ConfigForm.config.healLowMP == true && PL.Player.MP <= ConfigForm.config.healWhenMPBelow && PL.Player.Status == 0)
                 {
-                    if (Form2.config.lowMPcheckBox && !islowmp)
+                    if (ConfigForm.config.lowMPcheckBox && !islowmp)
                     {
                         PL.ThirdParty.SendString("/tell " + Monitored.Player.Name + " MP is seriously low, /healing.");
                         islowmp = true;
                     }
                     PL.ThirdParty.SendString("/heal");
                 }
-                else if (Form2.config.standAtMP == true && PL.Player.MPP >= Form2.config.standAtMP_Percentage && PL.Player.Status == 33)
+                else if (ConfigForm.config.standAtMP == true && PL.Player.MPP >= ConfigForm.config.standAtMP_Percentage && PL.Player.Status == 33)
                 {
-                    if (Form2.config.lowMPcheckBox && !islowmp)
+                    if (ConfigForm.config.lowMPcheckBox && !islowmp)
                     {
                         PL.ThirdParty.SendString("/tell " + Monitored.Player.Name + " MP has recovered.");
                         islowmp = false;
@@ -4212,9 +4212,9 @@
                 // Only perform actions if PL is stationary PAUSE GOES HERE
                 if ((PL.Player.X == plX) && (PL.Player.Y == plY) && (PL.Player.Z == plZ) && (PL.Player.LoginStatus == (int)LoginStatus.LoggedIn) && JobAbilityLock_Check != true && CastingBackground_Check != true && curePlease_autofollow == false && ((PL.Player.Status == (uint)Status.Standing) || (PL.Player.Status == (uint)Status.Fighting)))
                 {
-                    plSilenceitemName = Items.SilenceRemoval[Form2.config.plSilenceItem];
+                    plSilenceitemName = Items.SilenceRemoval[ConfigForm.config.plSilenceItem];
 
-                    if (PL.Player.Buffs.Contains((short)StatusEffect.Silence) && Form2.config.plSilenceItemEnabled)
+                    if (PL.Player.Buffs.Contains((short)StatusEffect.Silence) && ConfigForm.config.plSilenceItemEnabled)
                     {
                         // Check to make sure we have echo drops
                         if (GetInventoryItemCount(PL, GetItemId(plSilenceitemName)) > 0 || GetTempItemCount(PL, GetItemId(plSilenceitemName)) > 0)
@@ -4237,7 +4237,7 @@
                     /////////////////////////// PL CURE //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
                     // TODO: Test this! Pretty sure your own character is always party member index 0.
-                    if (PL.Player.HP > 0 && (PL.Player.HPP <= Form2.config.monitoredCurePercentage) && Form2.config.enableOutOfPartyHealing == true && PLInParty() == false)
+                    if (PL.Player.HP > 0 && (PL.Player.HPP <= ConfigForm.config.monitoredCurePercentage) && ConfigForm.config.enableOutOfPartyHealing == true && PLInParty() == false)
                     {
                         var plAsPartyMember = PL.Party.GetPartyMember(0);
                         CureCalculator(plAsPartyMember);
@@ -4248,7 +4248,7 @@
                     int plParty = PLPartyRelativeToMonitored();
 
                     // Order parties that qualify for AOE cures by average missing HP.
-                    var partyNeedsAoe = Monitored.PartyNeedsAoeCure((int)Form2.config.curagaRequiredMembers, Form2.config.curagaCurePercentage).OrderBy(partyNumber => Monitored.AverageHpLossForParty(partyNumber));
+                    var partyNeedsAoe = Monitored.PartyNeedsAoeCure((int)ConfigForm.config.curagaRequiredMembers, ConfigForm.config.curagaCurePercentage).OrderBy(partyNumber => Monitored.AverageHpLossForParty(partyNumber));
 
                     // If PL is in same alliance, and there's at least 1 party that needs an AOE cure.
                     // Parties are ordered by most average missing HP.
@@ -4274,7 +4274,7 @@
                             // to AOE a party where we can't reach any of the injured members.
                             if (partyByHP.Count(pm => pm.InParty(party) && enabledBoxes[pm.MemberNumber].Checked) > 0)
                             {
-                                if(partyByHP.Count(pm => pm.InParty(party) && pm.CurrentHPP < Form2.config.curagaCurePercentage && PL.CanCastOn(pm)) > 0)
+                                if(partyByHP.Count(pm => pm.InParty(party) && pm.CurrentHPP < ConfigForm.config.curagaCurePercentage && PL.CanCastOn(pm)) > 0)
                                 {
                                     targetParty = party;
                                 }
@@ -4312,7 +4312,7 @@
                     /////////////////////////// CURE //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
                     // First run a check on the monitored target
-                    if (Form2.config.enableMonitoredPriority && Monitored.Player.HP > 0 && (Monitored.Player.HPP <= Form2.config.monitoredCurePercentage))
+                    if (ConfigForm.config.enableMonitoredPriority && Monitored.Player.HP > 0 && (Monitored.Player.HPP <= ConfigForm.config.monitoredCurePercentage))
                     {
                         // Need to get monitored player as a PartyMember
                         PartyMember monitoredPlayer = partyByHP.FirstOrDefault(p => p.Name == Monitored.Player.Name);
@@ -4323,7 +4323,7 @@
                     {
                         // Calculate who needs a cure, and is a valid target.
                         // Anyone who's: Enabled + Active + Alive + Under cure threshold
-                        var validCures = partyByHP.Where(pm => enabledBoxes[pm.MemberNumber].Checked && (pm.CurrentHPP <= Form2.config.curePercentage) && PL.CanCastOn(pm));
+                        var validCures = partyByHP.Where(pm => enabledBoxes[pm.MemberNumber].Checked && (pm.CurrentHPP <= ConfigForm.config.curePercentage) && PL.CanCastOn(pm));
 
                         // Now run a scan to check all targets in the High Priority Threshold
                         if (validCures != null && validCures.Any()) {
@@ -4351,9 +4351,9 @@
                     int BarspellBuffID = 0;
                     bool BarSpell_AOE = false;
 
-                    if (Form2.config.AOE_Barelemental == false)
+                    if (ConfigForm.config.AOE_Barelemental == false)
                     {
-                        SpellsData barspell = barspells.Where(c => c.spell_position == Form2.config.plBarElement_Spell && c.type == 1 && c.aoe_version != true).SingleOrDefault();
+                        SpellsData barspell = barspells.Where(c => c.spell_position == ConfigForm.config.plBarElement_Spell && c.type == 1 && c.aoe_version != true).SingleOrDefault();
 
                         BarspellName = barspell.Spell_Name;
                         BarspellBuffID = barspell.buffID;
@@ -4361,7 +4361,7 @@
                     }
                     else
                     {
-                        SpellsData barspell = barspells.Where(c => c.spell_position == Form2.config.plBarElement_Spell && c.type == 1 && c.aoe_version == true).SingleOrDefault();
+                        SpellsData barspell = barspells.Where(c => c.spell_position == ConfigForm.config.plBarElement_Spell && c.type == 1 && c.aoe_version == true).SingleOrDefault();
 
                         BarspellName = barspell.Spell_Name;
                         BarspellBuffID = barspell.buffID;
@@ -4372,9 +4372,9 @@
                     int BarstatusBuffID = 0;
                     bool BarStatus_AOE = false;
 
-                    if (Form2.config.AOE_Barstatus == false)
+                    if (ConfigForm.config.AOE_Barstatus == false)
                     {
-                        SpellsData barstatus = barspells.Where(c => c.spell_position == Form2.config.plBarStatus_Spell && c.type == 2 && c.aoe_version != true).SingleOrDefault();
+                        SpellsData barstatus = barspells.Where(c => c.spell_position == ConfigForm.config.plBarStatus_Spell && c.type == 2 && c.aoe_version != true).SingleOrDefault();
 
                         BarstatusName = barstatus.Spell_Name;
                         BarstatusBuffID = barstatus.buffID;
@@ -4382,65 +4382,65 @@
                     }
                     else
                     {
-                        SpellsData barstatus = barspells.Where(c => c.spell_position == Form2.config.plBarStatus_Spell && c.type == 2 && c.aoe_version == true).SingleOrDefault();
+                        SpellsData barstatus = barspells.Where(c => c.spell_position == ConfigForm.config.plBarStatus_Spell && c.type == 2 && c.aoe_version == true).SingleOrDefault();
 
                         BarstatusName = barstatus.Spell_Name;
                         BarstatusBuffID = barstatus.buffID;
                         BarStatus_AOE = true;
                     }
 
-                    SpellsData enspell = enspells.Where(c => c.spell_position == Form2.config.plEnspell_Spell && c.type == 1).SingleOrDefault();
-                    string stormspell = Data.StormTiers[Form2.config.plStormSpell_Spell];
-                    string gainBoostSpell = Data.GainBoostSpells[Form2.config.plGainBoost_Spell];
+                    SpellsData enspell = enspells.Where(c => c.spell_position == ConfigForm.config.plEnspell_Spell && c.type == 1).SingleOrDefault();
+                    string stormspell = Data.StormTiers[ConfigForm.config.plStormSpell_Spell];
+                    string gainBoostSpell = Data.GainBoostSpells[ConfigForm.config.plGainBoost_Spell];
 
                     if (PL.Player.LoginStatus == (int)LoginStatus.LoggedIn && JobAbilityLock_Check != true && CastingBackground_Check != true)
                     {
-                        if (Form2.config.Composure && (!PL.HasStatus(StatusEffect.Composure)) && PL.AbilityAvailable(Ability.Composure))
+                        if (ConfigForm.config.Composure && (!PL.HasStatus(StatusEffect.Composure)) && PL.AbilityAvailable(Ability.Composure))
                         {
 
                             JobAbility_Wait(Ability.Composure, Ability.Composure);
                         }
-                        else if (Form2.config.LightArts && (!PL.HasStatus(StatusEffect.Light_Arts)) && (!PL.HasStatus(StatusEffect.Addendum_White)) && PL.AbilityAvailable(Ability.LightArts))
+                        else if (ConfigForm.config.LightArts && (!PL.HasStatus(StatusEffect.Light_Arts)) && (!PL.HasStatus(StatusEffect.Addendum_White)) && PL.AbilityAvailable(Ability.LightArts))
                         {
                             JobAbility_Wait(Ability.LightArts, Ability.LightArts);
                         }
-                        else if (Form2.config.AddendumWhite && (!PL.HasStatus(StatusEffect.Addendum_White)) && PL.HasStatus(StatusEffect.Light_Arts) && PL.CurrentSCHCharges() > 0)
+                        else if (ConfigForm.config.AddendumWhite && (!PL.HasStatus(StatusEffect.Addendum_White)) && PL.HasStatus(StatusEffect.Light_Arts) && PL.CurrentSCHCharges() > 0)
                         {
                             JobAbility_Wait(Ability.AddendumWhite, Ability.AddendumWhite);
                         }
-                        else if (Form2.config.DarkArts && (!PL.HasStatus(StatusEffect.Dark_Arts)) && (!PL.HasStatus(StatusEffect.Addendum_Black)) && PL.AbilityAvailable(Ability.DarkArts))
+                        else if (ConfigForm.config.DarkArts && (!PL.HasStatus(StatusEffect.Dark_Arts)) && (!PL.HasStatus(StatusEffect.Addendum_Black)) && PL.AbilityAvailable(Ability.DarkArts))
                         {
                             JobAbility_Wait(Ability.DarkArts, Ability.DarkArts);
                         }
-                        else if (Form2.config.AddendumBlack && PL.HasStatus(StatusEffect.Dark_Arts) && (!PL.HasStatus(StatusEffect.Addendum_Black)) && PL.CurrentSCHCharges() > 0)
+                        else if (ConfigForm.config.AddendumBlack && PL.HasStatus(StatusEffect.Dark_Arts) && (!PL.HasStatus(StatusEffect.Addendum_Black)) && PL.CurrentSCHCharges() > 0)
                         {
                             JobAbility_Wait(Ability.AddendumBlack, Ability.AddendumBlack);
                         }
-                        else if (Form2.config.plShellra && (!PL.HasStatus(StatusEffect.Shell)))
+                        else if (ConfigForm.config.plShellra && (!PL.HasStatus(StatusEffect.Shell)))
                         {
-                            var shellraSpell = Data.ShellraTiers[(int)Form2.config.plShellra_Level - 1];
+                            var shellraSpell = Data.ShellraTiers[(int)ConfigForm.config.plShellra_Level - 1];
                             if (PL.SpellAvailable(shellraSpell))
                             {
                                 CastSpell(Target.Me, shellraSpell);
                             }
                         }
-                        else if (Form2.config.plProtectra && (!PL.HasStatus(StatusEffect.Protect)))
+                        else if (ConfigForm.config.plProtectra && (!PL.HasStatus(StatusEffect.Protect)))
                         {
-                            var protectraSpell = Data.ProtectraTiers[(int)Form2.config.plProtectra_Level - 1];
+                            var protectraSpell = Data.ProtectraTiers[(int)ConfigForm.config.plProtectra_Level - 1];
                             if (PL.SpellAvailable(protectraSpell))
                             {
                                 CastSpell(Target.Me, protectraSpell);
                             }
                         }
-                        else if (Form2.config.plBarElement && !PL.HasStatus((short)BarspellBuffID) && PL.SpellAvailable(BarspellName))
+                        else if (ConfigForm.config.plBarElement && !PL.HasStatus((short)BarspellBuffID) && PL.SpellAvailable(BarspellName))
                         {
-                            if (Form2.config.Accession && Form2.config.barspellAccession && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Accession) && BarSpell_AOE == false && !PL.HasStatus(StatusEffect.Accession))
+                            if (ConfigForm.config.Accession && ConfigForm.config.barspellAccession && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Accession) && BarSpell_AOE == false && !PL.HasStatus(StatusEffect.Accession))
                             {
                                 JobAbility_Wait("Barspell, Accession", Ability.Accession);
                                 return;
                             }
 
-                            if (Form2.config.Perpetuance && Form2.config.barspellPerpetuance && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Perpetuance) && !PL.HasStatus(StatusEffect.Perpetuance))
+                            if (ConfigForm.config.Perpetuance && ConfigForm.config.barspellPerpetuance && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Perpetuance) && !PL.HasStatus(StatusEffect.Perpetuance))
                             {
                                 JobAbility_Wait("Barspell, Perpetuance", Ability.Perpetuance);
                                 return;
@@ -4448,15 +4448,15 @@
 
                             CastSpell(Target.Me, BarspellName);
                         }
-                        else if (Form2.config.plBarStatus && !PL.HasStatus((short)BarstatusBuffID) && PL.SpellAvailable(BarstatusName))
+                        else if (ConfigForm.config.plBarStatus && !PL.HasStatus((short)BarstatusBuffID) && PL.SpellAvailable(BarstatusName))
                         {
-                            if (Form2.config.Accession && Form2.config.barstatusAccession && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Accession) && BarStatus_AOE == false && !PL.HasStatus(StatusEffect.Accession))
+                            if (ConfigForm.config.Accession && ConfigForm.config.barstatusAccession && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Accession) && BarStatus_AOE == false && !PL.HasStatus(StatusEffect.Accession))
                             {
                                 JobAbility_Wait("Barstatus, Accession", Ability.Accession);
                                 return;
                             }
 
-                            if (Form2.config.Perpetuance && Form2.config.barstatusPerpetuance && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Perpetuance) && !PL.HasStatus(StatusEffect.Perpetuance))
+                            if (ConfigForm.config.Perpetuance && ConfigForm.config.barstatusPerpetuance && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Perpetuance) && !PL.HasStatus(StatusEffect.Perpetuance))
                             {
                                 JobAbility_Wait("Barstatus, Perpetuance", Ability.Perpetuance);
                                 return;
@@ -4464,19 +4464,19 @@
 
                             CastSpell(Target.Me, BarstatusName);
                         }
-                        else if (Form2.config.plGainBoost && !PL.HasStatus(Data.SpellEffects[gainBoostSpell]) && PL.SpellAvailable(gainBoostSpell))
+                        else if (ConfigForm.config.plGainBoost && !PL.HasStatus(Data.SpellEffects[gainBoostSpell]) && PL.SpellAvailable(gainBoostSpell))
                         {
                             CastSpell(Target.Me, gainBoostSpell);
                         }
-                        else if (Form2.config.plStormSpell && !PL.HasStatus(Data.SpellEffects[stormspell]) && PL.SpellAvailable(stormspell))
+                        else if (ConfigForm.config.plStormSpell && !PL.HasStatus(Data.SpellEffects[stormspell]) && PL.SpellAvailable(stormspell))
                         {
-                            if (Form2.config.Accession && Form2.config.stormspellAccession && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Accession) && !PL.HasStatus(StatusEffect.Accession))
+                            if (ConfigForm.config.Accession && ConfigForm.config.stormspellAccession && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Accession) && !PL.HasStatus(StatusEffect.Accession))
                             {
                                 JobAbility_Wait("Stormspell, Accession", Ability.Accession);
                                 return;
                             }
 
-                            if (Form2.config.Perpetuance && Form2.config.stormspellPerpetuance && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Perpetuance) && !PL.HasStatus(StatusEffect.Perpetuance))
+                            if (ConfigForm.config.Perpetuance && ConfigForm.config.stormspellPerpetuance && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Perpetuance) && !PL.HasStatus(StatusEffect.Perpetuance))
                             {
                                 JobAbility_Wait("Stormspell, Perpetuance", Ability.Perpetuance);
                                 return;
@@ -4484,13 +4484,13 @@
 
                             CastSpell(Target.Me, stormspell);
                         }
-                        else if (Form2.config.plProtect && (!PL.HasStatus(StatusEffect.Protect)))
+                        else if (ConfigForm.config.plProtect && (!PL.HasStatus(StatusEffect.Protect)))
                         {
-                            string protectSpell = Data.ProtectTiers[Form2.config.autoProtect_Spell];
+                            string protectSpell = Data.ProtectTiers[ConfigForm.config.autoProtect_Spell];
 
                             if (protectSpell != Spells.Unknown && PL.SpellAvailable(protectSpell))
                             {
-                                if (Form2.config.Accession && Form2.config.accessionProShell && PL.Party.GetPartyMembers().Count() > 2 && PL.AbilityAvailable(Ability.Accession) && PL.CurrentSCHCharges() > 0)
+                                if (ConfigForm.config.Accession && ConfigForm.config.accessionProShell && PL.Party.GetPartyMembers().Count() > 2 && PL.AbilityAvailable(Ability.Accession) && PL.CurrentSCHCharges() > 0)
                                 {
                                     if (!PL.HasStatus(StatusEffect.Accession))
                                     {
@@ -4502,13 +4502,13 @@
                                 CastSpell(Target.Me, protectSpell);
                             }
                         }
-                        else if (Form2.config.plShell && (!PL.HasStatus(StatusEffect.Shell)))
+                        else if (ConfigForm.config.plShell && (!PL.HasStatus(StatusEffect.Shell)))
                         {
-                            string shellSpell = Data.ShellTiers[Form2.config.autoShell_Spell];
+                            string shellSpell = Data.ShellTiers[ConfigForm.config.autoShell_Spell];
 
                             if (shellSpell != Spells.Unknown && PL.SpellAvailable(shellSpell))
                             {
-                                if (Form2.config.Accession && Form2.config.accessionProShell && PL.Party.GetPartyMembers().Count() > 2 && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Accession))
+                                if (ConfigForm.config.Accession && ConfigForm.config.accessionProShell && PL.Party.GetPartyMembers().Count() > 2 && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Accession))
                                 {
                                     if (!PL.HasStatus(StatusEffect.Accession))
                                     {
@@ -4520,7 +4520,7 @@
                                 CastSpell(Target.Me, shellSpell);
                             }
                         }
-                        else if (Form2.config.plReraise && Form2.config.EnlightenmentReraise && (!PL.HasStatus(StatusEffect.Reraise)) && !PL.HasStatus(StatusEffect.Addendum_White) && PL.AbilityAvailable(Ability.Enlightenment))
+                        else if (ConfigForm.config.plReraise && ConfigForm.config.EnlightenmentReraise && (!PL.HasStatus(StatusEffect.Reraise)) && !PL.HasStatus(StatusEffect.Addendum_White) && PL.AbilityAvailable(Ability.Enlightenment))
                         {
                             if (!PL.HasStatus(StatusEffect.Enlightenment) && PL.AbilityAvailable(Ability.Enlightenment))
                             {
@@ -4528,21 +4528,21 @@
                                 return;
                             }
 
-                            var reraiseSpell = Data.ReraiseTiers[Form2.config.plReraise_Level-1];
+                            var reraiseSpell = Data.ReraiseTiers[ConfigForm.config.plReraise_Level-1];
                             if (PL.HasMPFor(reraiseSpell) && PL.SpellAvailable(reraiseSpell))
                             {
                                 CastSpell(Target.Me, reraiseSpell);
                             }
                         }
-                        else if (Form2.config.plReraise && (!PL.HasStatus(StatusEffect.Reraise)))
+                        else if (ConfigForm.config.plReraise && (!PL.HasStatus(StatusEffect.Reraise)))
                         {
-                            var reraiseSpell = Data.ReraiseTiers[Form2.config.plReraise_Level-1];
+                            var reraiseSpell = Data.ReraiseTiers[ConfigForm.config.plReraise_Level-1];
                             if (PL.HasMPFor(reraiseSpell) && PL.SpellAvailable(reraiseSpell)) 
                             {
                                 CastSpell(Target.Me, reraiseSpell);
                             }                           
                         }
-                        else if (Form2.config.plUtsusemi && PL.ShadowsRemaining() < 2)
+                        else if (ConfigForm.config.plUtsusemi && PL.ShadowsRemaining() < 2)
                         {
                             if (PL.SpellAvailable(Spells.Utsusemi_Ni) && GetInventoryItemCount(PL, GetItemId("Shihei")) > 0)
                             {
@@ -4554,16 +4554,16 @@
                             }
                         }
                         
-                        else if (Form2.config.plBlink && (!PL.HasStatus(StatusEffect.Blink)) && PL.SpellAvailable(Spells.Blink))
+                        else if (ConfigForm.config.plBlink && (!PL.HasStatus(StatusEffect.Blink)) && PL.SpellAvailable(Spells.Blink))
                         {
 
-                            if (Form2.config.Accession && Form2.config.blinkAccession && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Accession) && !PL.HasStatus(StatusEffect.Accession))
+                            if (ConfigForm.config.Accession && ConfigForm.config.blinkAccession && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Accession) && !PL.HasStatus(StatusEffect.Accession))
                             {
                                 JobAbility_Wait("Blink, Accession", Ability.Accession);
                                 return;
                             }
 
-                            if (Form2.config.Perpetuance && Form2.config.blinkPerpetuance && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Perpetuance) && !PL.HasStatus(StatusEffect.Perpetuance))
+                            if (ConfigForm.config.Perpetuance && ConfigForm.config.blinkPerpetuance && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Perpetuance) && !PL.HasStatus(StatusEffect.Perpetuance))
                             {
                                 JobAbility_Wait("Blink, Perpetuance", Ability.Perpetuance);
                                 return;
@@ -4571,15 +4571,15 @@
 
                             CastSpell(Target.Me, Spells.Blink);
                         }
-                        else if (Form2.config.plPhalanx && (!PL.HasStatus(StatusEffect.Phalanx)) && PL.SpellAvailable(Spells.Phalanx))
+                        else if (ConfigForm.config.plPhalanx && (!PL.HasStatus(StatusEffect.Phalanx)) && PL.SpellAvailable(Spells.Phalanx))
                         {
-                            if (Form2.config.Accession && Form2.config.phalanxAccession && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Accession) && !PL.HasStatus(StatusEffect.Accession))
+                            if (ConfigForm.config.Accession && ConfigForm.config.phalanxAccession && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Accession) && !PL.HasStatus(StatusEffect.Accession))
                             {
                                 JobAbility_Wait("Phalanx, Accession", Ability.Accession);
                                 return;
                             }
 
-                            if (Form2.config.Perpetuance && Form2.config.phalanxPerpetuance && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Perpetuance) && !PL.HasStatus(StatusEffect.Perpetuance))
+                            if (ConfigForm.config.Perpetuance && ConfigForm.config.phalanxPerpetuance && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Perpetuance) && !PL.HasStatus(StatusEffect.Perpetuance))
                             {
                                 JobAbility_Wait("Phalanx, Perpetuance", Ability.Perpetuance);
                                 return;
@@ -4587,18 +4587,18 @@
 
                             CastSpell(Target.Me, Spells.Phalanx);
                         }
-                        else if (Form2.config.plRefresh && (!PL.HasStatus(StatusEffect.Refresh)))
+                        else if (ConfigForm.config.plRefresh && (!PL.HasStatus(StatusEffect.Refresh)))
                         {
-                            var refreshSpell = Data.RefreshTiers[Form2.config.plRefresh_Level - 1];
+                            var refreshSpell = Data.RefreshTiers[ConfigForm.config.plRefresh_Level - 1];
 
                             if (PL.SpellAvailable(Spells.Refresh))
                             {
-                                if (Form2.config.Accession && Form2.config.refreshAccession && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Accession) && !PL.HasStatus(StatusEffect.Accession))
+                                if (ConfigForm.config.Accession && ConfigForm.config.refreshAccession && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Accession) && !PL.HasStatus(StatusEffect.Accession))
                                 {
                                     JobAbility_Wait("Refresh, Accession", Ability.Accession);
                                     return;
                                 }
-                                if (Form2.config.Perpetuance && Form2.config.refreshPerpetuance && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Perpetuance) && !PL.HasStatus(StatusEffect.Perpetuance))
+                                if (ConfigForm.config.Perpetuance && ConfigForm.config.refreshPerpetuance && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Perpetuance) && !PL.HasStatus(StatusEffect.Perpetuance))
                                 {
                                     JobAbility_Wait("Refresh, Perpetuance", Ability.Perpetuance);
                                     return;
@@ -4607,34 +4607,34 @@
                                 CastSpell(Target.Me, refreshSpell);
                             }                         
                         }
-                        else if (Form2.config.plRegen && (!PL.HasStatus(StatusEffect.Regen)))
+                        else if (ConfigForm.config.plRegen && (!PL.HasStatus(StatusEffect.Regen)))
                         {
-                            if (Form2.config.Accession && Form2.config.regenAccession && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Accession) && !PL.HasStatus(StatusEffect.Accession))
+                            if (ConfigForm.config.Accession && ConfigForm.config.regenAccession && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Accession) && !PL.HasStatus(StatusEffect.Accession))
                             {
                                 JobAbility_Wait("Regen, Accession", Ability.Accession);
                                 return;
                             }
-                            if (Form2.config.Perpetuance && Form2.config.regenPerpetuance && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Perpetuance) && !PL.HasStatus(StatusEffect.Perpetuance))
+                            if (ConfigForm.config.Perpetuance && ConfigForm.config.regenPerpetuance && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Perpetuance) && !PL.HasStatus(StatusEffect.Perpetuance))
                             {
                                 JobAbility_Wait("Regen, Perpetuance", Ability.Perpetuance);
                                 return;
                             }
 
-                            var regenSpell = Data.RegenTiers[Form2.config.plRegen_Level - 1];
+                            var regenSpell = Data.RegenTiers[ConfigForm.config.plRegen_Level - 1];
                             if(PL.HasMPFor(regenSpell) && PL.SpellAvailable(regenSpell))
                             {
                                 CastSpell(Target.Me, regenSpell);
                             }                    
                         }
-                        else if (Form2.config.plAdloquium && (!PL.HasStatus(StatusEffect.Regain)) && PL.SpellAvailable(Spells.Adloquium))
+                        else if (ConfigForm.config.plAdloquium && (!PL.HasStatus(StatusEffect.Regain)) && PL.SpellAvailable(Spells.Adloquium))
                         {
-                            if (Form2.config.Accession && Form2.config.adloquiumAccession && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Accession) && !PL.HasStatus(StatusEffect.Accession))
+                            if (ConfigForm.config.Accession && ConfigForm.config.adloquiumAccession && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Accession) && !PL.HasStatus(StatusEffect.Accession))
                             {
                                 JobAbility_Wait("Adloquium, Accession", Ability.Accession);
                                 return;
                             }
 
-                            if (Form2.config.Perpetuance && Form2.config.adloquiumPerpetuance && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Perpetuance) && !PL.HasStatus(StatusEffect.Perpetuance))
+                            if (ConfigForm.config.Perpetuance && ConfigForm.config.adloquiumPerpetuance && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Perpetuance) && !PL.HasStatus(StatusEffect.Perpetuance))
                             {
                                 JobAbility_Wait("Adloquium, Perpetuance", Ability.Perpetuance);
                                 return;
@@ -4642,15 +4642,15 @@
 
                             CastSpell(Target.Me, Spells.Adloquium);
                         }
-                        else if (Form2.config.plStoneskin && (!PL.HasStatus(StatusEffect.Stoneskin)) && PL.SpellAvailable(Spells.Stoneskin))
+                        else if (ConfigForm.config.plStoneskin && (!PL.HasStatus(StatusEffect.Stoneskin)) && PL.SpellAvailable(Spells.Stoneskin))
                         {
-                            if (Form2.config.Accession && Form2.config.stoneskinAccession && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Accession) && !PL.HasStatus(StatusEffect.Accession))
+                            if (ConfigForm.config.Accession && ConfigForm.config.stoneskinAccession && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Accession) && !PL.HasStatus(StatusEffect.Accession))
                             {
                                 JobAbility_Wait("Stoneskin, Accession", Ability.Accession);
                                 return;
                             }
 
-                            if (Form2.config.Perpetuance && Form2.config.stoneskinPerpetuance && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Perpetuance) && !PL.HasStatus(StatusEffect.Perpetuance))
+                            if (ConfigForm.config.Perpetuance && ConfigForm.config.stoneskinPerpetuance && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Perpetuance) && !PL.HasStatus(StatusEffect.Perpetuance))
                             {
                                 JobAbility_Wait("Stoneskin, Perpetuance", Ability.Perpetuance);
                                 return;
@@ -4658,15 +4658,15 @@
 
                             CastSpell(Target.Me, Spells.Stoneskin);
                         }
-                        else if (Form2.config.plAquaveil && (!PL.HasStatus(StatusEffect.Aquaveil)) && PL.SpellAvailable(Spells.Aquaveil))
+                        else if (ConfigForm.config.plAquaveil && (!PL.HasStatus(StatusEffect.Aquaveil)) && PL.SpellAvailable(Spells.Aquaveil))
                         {
-                            if (Form2.config.Accession && Form2.config.aquaveilAccession && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Accession) && !PL.HasStatus(StatusEffect.Accession))
+                            if (ConfigForm.config.Accession && ConfigForm.config.aquaveilAccession && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Accession) && !PL.HasStatus(StatusEffect.Accession))
                             {
                                 JobAbility_Wait("Aquaveil, Accession", Ability.Accession);
                                 return;
                             }
 
-                            if (Form2.config.Perpetuance && Form2.config.aquaveilPerpetuance && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Perpetuance) && PL.HasStatus(StatusEffect.Perpetuance))
+                            if (ConfigForm.config.Perpetuance && ConfigForm.config.aquaveilPerpetuance && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Perpetuance) && PL.HasStatus(StatusEffect.Perpetuance))
                             {
                                 JobAbility_Wait("Aquaveil, Perpetuance", Ability.Perpetuance);
                                 return;
@@ -4674,59 +4674,59 @@
 
                             CastSpell(Target.Me, Spells.Aquaveil);
                         }                       
-                        else if (Form2.config.plKlimaform && !PL.HasStatus(StatusEffect.Klimaform))
+                        else if (ConfigForm.config.plKlimaform && !PL.HasStatus(StatusEffect.Klimaform))
                         {
                             if (PL.SpellAvailable(Spells.Klimaform))
                             {
                                 CastSpell(Target.Me, Spells.Klimaform);
                             }
                         }
-                        else if (Form2.config.plTemper && (!PL.HasStatus(StatusEffect.Multi_Strikes)))
+                        else if (ConfigForm.config.plTemper && (!PL.HasStatus(StatusEffect.Multi_Strikes)))
                         {
-                            if ((Form2.config.plTemper_Level == 1) && PL.SpellAvailable(Spells.Temper))
+                            if ((ConfigForm.config.plTemper_Level == 1) && PL.SpellAvailable(Spells.Temper))
                             {
                                 CastSpell(Target.Me, Spells.Temper);
                             }
-                            else if ((Form2.config.plTemper_Level == 2) && PL.SpellAvailable(Spells.Temper_II))
+                            else if ((ConfigForm.config.plTemper_Level == 2) && PL.SpellAvailable(Spells.Temper_II))
                             {
                                 CastSpell(Target.Me, Spells.Temper_II);
                             }
                         }
-                        else if (Form2.config.plHaste && (!PL.HasStatus(StatusEffect.Haste)))
+                        else if (ConfigForm.config.plHaste && (!PL.HasStatus(StatusEffect.Haste)))
                         {
-                            if ((Form2.config.plHaste_Level == 1) && PL.SpellAvailable(Spells.Haste))
+                            if ((ConfigForm.config.plHaste_Level == 1) && PL.SpellAvailable(Spells.Haste))
                             {
                                 CastSpell(Target.Me,   Spells.Haste);
                             }
-                            else if ((Form2.config.plHaste_Level == 2) && PL.SpellAvailable(Spells.Haste_II))
+                            else if ((ConfigForm.config.plHaste_Level == 2) && PL.SpellAvailable(Spells.Haste_II))
                             {
                                 CastSpell(Target.Me, Spells.Haste_II);
                             }
                         }
-                        else if (Form2.config.plSpikes && ActiveSpikes() == false)
+                        else if (ConfigForm.config.plSpikes && ActiveSpikes() == false)
                         {
-                            if ((Form2.config.plSpikes_Spell == 0) && PL.SpellAvailable(Spells.Blaze_Spikes))
+                            if ((ConfigForm.config.plSpikes_Spell == 0) && PL.SpellAvailable(Spells.Blaze_Spikes))
                             {
                                 CastSpell(Target.Me, Spells.Blaze_Spikes);
                             }
-                            else if ((Form2.config.plSpikes_Spell == 1) && PL.SpellAvailable(Spells.Ice_Spikes))
+                            else if ((ConfigForm.config.plSpikes_Spell == 1) && PL.SpellAvailable(Spells.Ice_Spikes))
                             {
                                 CastSpell(Target.Me, Spells.Ice_Spikes);
                             }
-                            else if ((Form2.config.plSpikes_Spell == 2) && PL.SpellAvailable(Spells.Shock_Spikes))
+                            else if ((ConfigForm.config.plSpikes_Spell == 2) && PL.SpellAvailable(Spells.Shock_Spikes))
                             {
                                 CastSpell(Target.Me, Spells.Shock_Spikes);
                             }
                         }
-                        else if (Form2.config.plEnspell && !PL.HasStatus((short)enspell.buffID) && PL.SpellAvailable(enspell.Spell_Name))
+                        else if (ConfigForm.config.plEnspell && !PL.HasStatus((short)enspell.buffID) && PL.SpellAvailable(enspell.Spell_Name))
                         {
-                            if (Form2.config.Accession && Form2.config.enspellAccession && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Accession) && enspell.spell_position < 6 && !PL.HasStatus(StatusEffect.Accession))
+                            if (ConfigForm.config.Accession && ConfigForm.config.enspellAccession && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Accession) && enspell.spell_position < 6 && !PL.HasStatus(StatusEffect.Accession))
                             {
                                 JobAbility_Wait("Enspell, Accession", Ability.Accession);
                                 return;
                             }
 
-                            if (Form2.config.Perpetuance && Form2.config.enspellPerpetuance && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Perpetuance) && enspell.spell_position < 6 && !PL.HasStatus(StatusEffect.Perpetuance))
+                            if (ConfigForm.config.Perpetuance && ConfigForm.config.enspellPerpetuance && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Perpetuance) && enspell.spell_position < 6 && !PL.HasStatus(StatusEffect.Perpetuance))
                             {
                                 JobAbility_Wait("Enspell, Perpetuance", Ability.Perpetuance);
                                 return;
@@ -4734,19 +4734,19 @@
 
                             CastSpell(Target.Me, enspell.Spell_Name);
                         }
-                        else if (Form2.config.plAuspice && (!PL.HasStatus(StatusEffect.Auspice)) && PL.SpellAvailable(Spells.Auspice))
+                        else if (ConfigForm.config.plAuspice && (!PL.HasStatus(StatusEffect.Auspice)) && PL.SpellAvailable(Spells.Auspice))
                         {
                             CastSpell(Target.Me, Spells.Auspice);
                         }
                         #endregion
 
                         // ENTRUSTED INDI SPELL CASTING, WILL BE CAST SO LONG AS ENTRUST IS ACTIVE
-                        else if (Form2.config.EnableGeoSpells && PL.HasStatus((StatusEffect)584) && PL.Player.Status != 33)
+                        else if (ConfigForm.config.EnableGeoSpells && PL.HasStatus((StatusEffect)584) && PL.Player.Status != 33)
                         {
-                            string SpellCheckedResult = ReturnGeoSpell(Form2.config.EntrustedSpell_Spell, 1);
+                            string SpellCheckedResult = ReturnGeoSpell(ConfigForm.config.EntrustedSpell_Spell, 1);
                             if (SpellCheckedResult == "SpellError_Cancel")
                             {
-                                Form2.config.EnableGeoSpells = false;
+                                ConfigForm.config.EnableGeoSpells = false;
                                 MessageBox.Show("An error has occurred with Entrusted INDI spell casting, please report what spell was active at the time.");
                             }
                             else if (SpellCheckedResult == "SpellRecast" || SpellCheckedResult == "SpellUnknown")
@@ -4754,25 +4754,25 @@
                             }
                             else
                             {
-                                if (string.IsNullOrEmpty(Form2.config.EntrustedSpell_Target))
+                                if (string.IsNullOrEmpty(ConfigForm.config.EntrustedSpell_Target))
                                 {
                                     CastSpell(Monitored.Player.Name, SpellCheckedResult);
                                 }
                                 else
                                 {
-                                    CastSpell(Form2.config.EntrustedSpell_Target, SpellCheckedResult);
+                                    CastSpell(ConfigForm.config.EntrustedSpell_Target, SpellCheckedResult);
                                 }
                             }
                         }
 
                         // CAST NON ENTRUSTED INDI SPELL
-                        else if (Form2.config.EnableGeoSpells && !PL.HasStatus(612) && PL.Player.Status != 33 && (CheckEngagedStatus() == true || !Form2.config.IndiWhenEngaged))
+                        else if (ConfigForm.config.EnableGeoSpells && !PL.HasStatus(612) && PL.Player.Status != 33 && (CheckEngagedStatus() == true || !ConfigForm.config.IndiWhenEngaged))
                         {
-                            string SpellCheckedResult = ReturnGeoSpell(Form2.config.IndiSpell_Spell, 1);
+                            string SpellCheckedResult = ReturnGeoSpell(ConfigForm.config.IndiSpell_Spell, 1);
 
                             if (SpellCheckedResult == "SpellError_Cancel")
                             {
-                                Form2.config.EnableGeoSpells = false;
+                                ConfigForm.config.EnableGeoSpells = false;
                                 MessageBox.Show("An error has occurred with INDI spell casting, please report what spell was active at the time.");
                             }
                             else if (SpellCheckedResult == "SpellRecast" || SpellCheckedResult == "SpellUnknown")
@@ -4786,20 +4786,20 @@
                         }
 
                         // GEO SPELL CASTING 
-                        else if (Form2.config.EnableLuopanSpells && (PL.Player.Pet.HealthPercent < 1) && (CheckEngagedStatus() == true))
+                        else if (ConfigForm.config.EnableLuopanSpells && (PL.Player.Pet.HealthPercent < 1) && (CheckEngagedStatus() == true))
                         {
                             // Use BLAZE OF GLORY if ENABLED
-                            if (Form2.config.BlazeOfGlory && PL.AbilityAvailable("Blaze of Glory") && CheckEngagedStatus() == true && GEO_EnemyCheck() == true)
+                            if (ConfigForm.config.BlazeOfGlory && PL.AbilityAvailable("Blaze of Glory") && CheckEngagedStatus() == true && GEO_EnemyCheck() == true)
                             {
                                 JobAbility_Wait("Blaze of Glory", "Blaze of Glory");
                             }
 
                             // Grab GEO spell name
-                            string SpellCheckedResult = ReturnGeoSpell(Form2.config.GeoSpell_Spell, 2);
+                            string SpellCheckedResult = ReturnGeoSpell(ConfigForm.config.GeoSpell_Spell, 2);
 
                             if (SpellCheckedResult == "SpellError_Cancel")
                             {
-                                Form2.config.EnableGeoSpells = false;
+                                ConfigForm.config.EnableGeoSpells = false;
                                 MessageBox.Show("An error has occurred with GEO spell casting, please report what spell was active at the time.");
                             }
                             else if (SpellCheckedResult == "SpellRecast" || SpellCheckedResult == "SpellUnknown")
@@ -4810,7 +4810,7 @@
                             {
                                 if (PL.Resources.GetSpell(SpellCheckedResult, 0).ValidTargets == 5)
                                 { // PLAYER CHARACTER TARGET
-                                    var target = string.IsNullOrEmpty(Form2.config.LuopanSpell_Target) ? Monitored.Player.Name : Form2.config.LuopanSpell_Target;
+                                    var target = string.IsNullOrEmpty(ConfigForm.config.LuopanSpell_Target) ? Monitored.Player.Name : ConfigForm.config.LuopanSpell_Target;
 
                                     if (PL.HasStatus(516)) // IF ECLIPTIC IS UP THEN ACTIVATE THE BOOL
                                     {
@@ -4840,9 +4840,9 @@
 
                                             CastSpell("<t>", SpellCheckedResult);
                                             await Task.Delay(TimeSpan.FromSeconds(4));
-                                            if (Form2.config.DisableTargettingCancel == false)
+                                            if (ConfigForm.config.DisableTargettingCancel == false)
                                             {
-                                                await Task.Delay(TimeSpan.FromSeconds((double)Form2.config.TargetRemoval_Delay));
+                                                await Task.Delay(TimeSpan.FromSeconds((double)ConfigForm.config.TargetRemoval_Delay));
                                                 PL.Target.SetTarget(0);
                                             }
                                         }
@@ -4851,15 +4851,15 @@
                             }
                         }
 
-                        else if (Form2.config.autoTarget && PL.SpellAvailable(Form2.config.autoTargetSpell))
+                        else if (ConfigForm.config.autoTarget && PL.SpellAvailable(ConfigForm.config.autoTargetSpell))
                         {
-                            if (Form2.config.Hate_SpellType == 1) // PARTY BASED HATE SPELL
+                            if (ConfigForm.config.Hate_SpellType == 1) // PARTY BASED HATE SPELL
                             {
                                 int enemyID = CheckEngagedStatus_Hate();
 
                                 if (enemyID != 0 && enemyID != lastKnownEstablisherTarget)
                                 {
-                                    CastSpell(Form2.config.autoTarget_Target, Form2.config.autoTargetSpell);
+                                    CastSpell(ConfigForm.config.autoTarget_Target, ConfigForm.config.autoTargetSpell);
                                     lastKnownEstablisherTarget = enemyID;
                                 }
                             }
@@ -4871,13 +4871,13 @@
                                 {
                                     PL.Target.SetTarget(enemyID);
                                     await Task.Delay(TimeSpan.FromMilliseconds(500));
-                                    CastSpell("<t>", Form2.config.autoTargetSpell);
+                                    CastSpell("<t>", ConfigForm.config.autoTargetSpell);
                                     lastKnownEstablisherTarget = enemyID;
                                     await Task.Delay(TimeSpan.FromMilliseconds(1000));
 
-                                    if (Form2.config.DisableTargettingCancel == false)
+                                    if (ConfigForm.config.DisableTargettingCancel == false)
                                     {
-                                        await Task.Delay(TimeSpan.FromSeconds((double)Form2.config.TargetRemoval_Delay));
+                                        await Task.Delay(TimeSpan.FromSeconds((double)ConfigForm.config.TargetRemoval_Delay));
                                         PL.Target.SetTarget(0);
                                     }
                                 }
@@ -4886,7 +4886,7 @@
 
                         // BARD SONGS
 
-                        else if (Form2.config.enableSinging && !PL.HasStatus(StatusEffect.Silence) && (PL.Player.Status == 1 || PL.Player.Status == 0))
+                        else if (ConfigForm.config.enableSinging && !PL.HasStatus(StatusEffect.Silence) && (PL.Player.Status == 1 || PL.Player.Status == 0))
                         {
                             Run_BardSongs();
 
@@ -4896,55 +4896,55 @@
                         // so PL job abilities are in order
                         if (PL.Player.Status == 1 || PL.Player.Status == 0)
                         {
-                            if (Form2.config.AfflatusSolace && (!PL.HasStatus(StatusEffect.Afflatus_Solace)) && PL.AbilityAvailable(Ability.AfflatusSolace))
+                            if (ConfigForm.config.AfflatusSolace && (!PL.HasStatus(StatusEffect.Afflatus_Solace)) && PL.AbilityAvailable(Ability.AfflatusSolace))
                             {
                                 JobAbility_Wait(Ability.AfflatusSolace, Ability.AfflatusSolace);
                             }
-                            else if (Form2.config.AfflatusMisery && (!PL.HasStatus(StatusEffect.Afflatus_Misery)) && PL.AbilityAvailable(Ability.AfflatusMisery))
+                            else if (ConfigForm.config.AfflatusMisery && (!PL.HasStatus(StatusEffect.Afflatus_Misery)) && PL.AbilityAvailable(Ability.AfflatusMisery))
                             {
                                 JobAbility_Wait(Ability.AfflatusMisery, Ability.AfflatusMisery);
                             }
-                            else if (Form2.config.Composure && (!PL.HasStatus(StatusEffect.Composure)) && PL.AbilityAvailable(Ability.Composure))
+                            else if (ConfigForm.config.Composure && (!PL.HasStatus(StatusEffect.Composure)) && PL.AbilityAvailable(Ability.Composure))
                             {
                                 JobAbility_Wait("Composure #2", Ability.Composure);
                             }
-                            else if (Form2.config.LightArts && (!PL.HasStatus(StatusEffect.Light_Arts)) && (!PL.HasStatus(StatusEffect.Addendum_White)) && PL.AbilityAvailable(Ability.LightArts))
+                            else if (ConfigForm.config.LightArts && (!PL.HasStatus(StatusEffect.Light_Arts)) && (!PL.HasStatus(StatusEffect.Addendum_White)) && PL.AbilityAvailable(Ability.LightArts))
                             {
                                 JobAbility_Wait("Light Arts #2", Ability.LightArts);
                             }
-                            else if (Form2.config.AddendumWhite && (!PL.HasStatus(StatusEffect.Addendum_White)) && PL.CurrentSCHCharges() > 0)
+                            else if (ConfigForm.config.AddendumWhite && (!PL.HasStatus(StatusEffect.Addendum_White)) && PL.CurrentSCHCharges() > 0)
                             {
                                 JobAbility_Wait(Ability.AddendumWhite, Ability.AddendumWhite);
                             }
-                            else if (Form2.config.Sublimation && (!PL.HasStatus(StatusEffect.Sublimation_Activated)) && (!PL.HasStatus(StatusEffect.Sublimation_Complete)) && (!PL.HasStatus(StatusEffect.Refresh)) && PL.AbilityAvailable(Ability.Sublimation))
+                            else if (ConfigForm.config.Sublimation && (!PL.HasStatus(StatusEffect.Sublimation_Activated)) && (!PL.HasStatus(StatusEffect.Sublimation_Complete)) && (!PL.HasStatus(StatusEffect.Refresh)) && PL.AbilityAvailable(Ability.Sublimation))
                             {
                                 JobAbility_Wait("Sublimation, Charging", Ability.Sublimation);
                             }
-                            else if (Form2.config.Sublimation && ((PL.Player.MPMax - PL.Player.MP) > Form2.config.sublimationMP) && PL.HasStatus(StatusEffect.Sublimation_Complete) && PL.AbilityAvailable(Ability.Sublimation))
+                            else if (ConfigForm.config.Sublimation && ((PL.Player.MPMax - PL.Player.MP) > ConfigForm.config.sublimationMP) && PL.HasStatus(StatusEffect.Sublimation_Complete) && PL.AbilityAvailable(Ability.Sublimation))
                             {
                                 JobAbility_Wait("Sublimation, Recovery", Ability.Sublimation);
                             }
-                            else if (Form2.config.DivineCaress && (Form2.config.plDebuffEnabled || Form2.config.monitoredDebuffEnabled || Form2.config.enablePartyDebuffRemoval) && PL.AbilityAvailable(Ability.DivineCaress))
+                            else if (ConfigForm.config.DivineCaress && (ConfigForm.config.plDebuffEnabled || ConfigForm.config.monitoredDebuffEnabled || ConfigForm.config.enablePartyDebuffRemoval) && PL.AbilityAvailable(Ability.DivineCaress))
                             {
                                 JobAbility_Wait(Ability.DivineCaress, Ability.DivineCaress);
                             }
-                            else if (Form2.config.Entrust && !PL.HasStatus((StatusEffect)584) && CheckEngagedStatus() == true && PL.AbilityAvailable(Ability.Entrust))
+                            else if (ConfigForm.config.Entrust && !PL.HasStatus((StatusEffect)584) && CheckEngagedStatus() == true && PL.AbilityAvailable(Ability.Entrust))
                             {
                                 JobAbility_Wait(Ability.Entrust, Ability.Entrust);
                             }
-                            else if (Form2.config.Dematerialize && CheckEngagedStatus() == true && PL.Player.Pet.HealthPercent >= 90  && PL.AbilityAvailable(Ability.Dematerialize))
+                            else if (ConfigForm.config.Dematerialize && CheckEngagedStatus() == true && PL.Player.Pet.HealthPercent >= 90  && PL.AbilityAvailable(Ability.Dematerialize))
                             {
                                 JobAbility_Wait(Ability.Dematerialize, Ability.Dematerialize);
                             }
-                            else if (Form2.config.EclipticAttrition && CheckEngagedStatus() == true && PL.Player.Pet.HealthPercent >= 90  && PL.AbilityAvailable(Ability.EclipticAttrition) && !PL.HasStatus(516) && EclipticStillUp != true)
+                            else if (ConfigForm.config.EclipticAttrition && CheckEngagedStatus() == true && PL.Player.Pet.HealthPercent >= 90  && PL.AbilityAvailable(Ability.EclipticAttrition) && !PL.HasStatus(516) && EclipticStillUp != true)
                             {
                                 JobAbility_Wait(Ability.EclipticAttrition, Ability.EclipticAttrition);
                             }
-                            else if (Form2.config.LifeCycle && CheckEngagedStatus() == true && PL.Player.Pet.HealthPercent <= 30 && PL.Player.Pet.HealthPercent >= 5 && PL.Player.HPP >= 90  && PL.AbilityAvailable(Ability.LifeCycle))
+                            else if (ConfigForm.config.LifeCycle && CheckEngagedStatus() == true && PL.Player.Pet.HealthPercent <= 30 && PL.Player.Pet.HealthPercent >= 5 && PL.Player.HPP >= 90  && PL.AbilityAvailable(Ability.LifeCycle))
                             {
                                 JobAbility_Wait(Ability.LifeCycle, Ability.LifeCycle);
                             }
-                            else if (Form2.config.Devotion && PL.AbilityAvailable(Ability.Devotion) && PL.Player.HPP > 80 && (!Form2.config.DevotionWhenEngaged || (Monitored.Player.Status == 1)))
+                            else if (ConfigForm.config.Devotion && PL.AbilityAvailable(Ability.Devotion) && PL.Player.HPP > 80 && (!ConfigForm.config.DevotionWhenEngaged || (Monitored.Player.Status == 1)))
                             {
                                 // First Generate the current party number, this will be used
                                 // regardless of the type
@@ -4964,14 +4964,14 @@
                                         {
                                             if (!string.IsNullOrEmpty(pData.Name) && pData.Name != PL.Player.Name)
                                             {
-                                                if (Form2.config.DevotionTargetType == 0)
+                                                if (ConfigForm.config.DevotionTargetType == 0)
                                                 {
-                                                    if (pData.Name == Form2.config.DevotionTargetName)
+                                                    if (pData.Name == ConfigForm.config.DevotionTargetName)
                                                     {
                                                         XiEntity playerInfo = PL.Entity.GetEntity((int)pData.TargetIndex);
-                                                        if (playerInfo.Distance < 10 && playerInfo.Distance > 0 && pData.CurrentMP <= Form2.config.DevotionMP && pData.CurrentMPP <= 30)
+                                                        if (playerInfo.Distance < 10 && playerInfo.Distance > 0 && pData.CurrentMP <= ConfigForm.config.DevotionMP && pData.CurrentMPP <= 30)
                                                         {
-                                                            PL.ThirdParty.SendString("/ja \"Devotion\" " + Form2.config.DevotionTargetName);
+                                                            PL.ThirdParty.SendString("/ja \"Devotion\" " + ConfigForm.config.DevotionTargetName);
                                                             Thread.Sleep(TimeSpan.FromSeconds(2));
                                                         }
                                                     }
@@ -4980,7 +4980,7 @@
                                                 {
                                                     XiEntity playerInfo = PL.Entity.GetEntity((int)pData.TargetIndex);
 
-                                                    if ((pData.CurrentMP <= Form2.config.DevotionMP) && (playerInfo.Distance < 10) && pData.CurrentMPP <= 30)
+                                                    if ((pData.CurrentMP <= ConfigForm.config.DevotionMP) && (playerInfo.Distance < 10) && pData.CurrentMPP <= 30)
                                                     {
                                                         PL.ThirdParty.SendString("/ja \"Devotion\" " + pData.Name);
                                                         Thread.Sleep(TimeSpan.FromSeconds(2));
@@ -4993,14 +4993,14 @@
                                         {
                                             if (!string.IsNullOrEmpty(pData.Name) && pData.Name != PL.Player.Name)
                                             {
-                                                if (Form2.config.DevotionTargetType == 0)
+                                                if (ConfigForm.config.DevotionTargetType == 0)
                                                 {
-                                                    if (pData.Name == Form2.config.DevotionTargetName)
+                                                    if (pData.Name == ConfigForm.config.DevotionTargetName)
                                                     {
                                                         XiEntity playerInfo = PL.Entity.GetEntity((int)pData.TargetIndex);
-                                                        if (playerInfo.Distance < 10 && playerInfo.Distance > 0 && pData.CurrentMP <= Form2.config.DevotionMP)
+                                                        if (playerInfo.Distance < 10 && playerInfo.Distance > 0 && pData.CurrentMP <= ConfigForm.config.DevotionMP)
                                                         {
-                                                            PL.ThirdParty.SendString("/ja \"Devotion\" " + Form2.config.DevotionTargetName);
+                                                            PL.ThirdParty.SendString("/ja \"Devotion\" " + ConfigForm.config.DevotionTargetName);
                                                             Thread.Sleep(TimeSpan.FromSeconds(2));
                                                         }
                                                     }
@@ -5009,7 +5009,7 @@
                                                 {
                                                     XiEntity playerInfo = PL.Entity.GetEntity((int)pData.TargetIndex);
 
-                                                    if ((pData.CurrentMP <= Form2.config.DevotionMP) && (playerInfo.Distance < 10) && pData.CurrentMPP <= 50)
+                                                    if ((pData.CurrentMP <= ConfigForm.config.DevotionMP) && (playerInfo.Distance < 10) && pData.CurrentMPP <= 50)
                                                     {
                                                         PL.ThirdParty.SendString("/ja \"Devotion\" " + pData.Name);
                                                         Thread.Sleep(TimeSpan.FromSeconds(2));
@@ -5022,14 +5022,14 @@
                                         {
                                             if (!string.IsNullOrEmpty(pData.Name) && pData.Name != PL.Player.Name)
                                             {
-                                                if (Form2.config.DevotionTargetType == 0)
+                                                if (ConfigForm.config.DevotionTargetType == 0)
                                                 {
-                                                    if (pData.Name == Form2.config.DevotionTargetName)
+                                                    if (pData.Name == ConfigForm.config.DevotionTargetName)
                                                     {
                                                         XiEntity playerInfo = PL.Entity.GetEntity((int)pData.TargetIndex);
-                                                        if (playerInfo.Distance < 10 && playerInfo.Distance > 0 && pData.CurrentMP <= Form2.config.DevotionMP)
+                                                        if (playerInfo.Distance < 10 && playerInfo.Distance > 0 && pData.CurrentMP <= ConfigForm.config.DevotionMP)
                                                         {
-                                                            PL.ThirdParty.SendString("/ja \"Devotion\" " + Form2.config.DevotionTargetName);
+                                                            PL.ThirdParty.SendString("/ja \"Devotion\" " + ConfigForm.config.DevotionTargetName);
                                                             Thread.Sleep(TimeSpan.FromSeconds(2));
                                                         }
                                                     }
@@ -5038,7 +5038,7 @@
                                                 {
                                                     XiEntity playerInfo = PL.Entity.GetEntity((int)pData.TargetIndex);
 
-                                                    if ((pData.CurrentMP <= Form2.config.DevotionMP) && (playerInfo.Distance < 10) && pData.CurrentMPP <= 50)
+                                                    if ((pData.CurrentMP <= ConfigForm.config.DevotionMP) && (playerInfo.Distance < 10) && pData.CurrentMPP <= 50)
                                                     {
                                                         PL.ThirdParty.SendString("/ja \"Devotion\" " + pData.Name);
                                                         Thread.Sleep(TimeSpan.FromSeconds(2));
@@ -5064,47 +5064,47 @@
                             if (PL.Player.Name == charDATA.Name)
                             {
 
-                                if (autoHasteEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Haste) && PL.Player.MP > Form2.config.mpMinCastValue && PL.CanCastOn(charDATA) && !PL.HasStatus(StatusEffect.Haste) && !PL.HasStatus(StatusEffect.Slow))
+                                if (autoHasteEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Haste) && PL.Player.MP > ConfigForm.config.mpMinCastValue && PL.CanCastOn(charDATA) && !PL.HasStatus(StatusEffect.Haste) && !PL.HasStatus(StatusEffect.Slow))
                                 {
                                     hastePlayer(charDATA.MemberNumber);
                                 }
-                                if (autoHaste_IIEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Haste_II) && PL.Player.MP > Form2.config.mpMinCastValue && PL.CanCastOn(charDATA) && !PL.HasStatus(StatusEffect.Haste) && !PL.HasStatus(StatusEffect.Slow))
+                                if (autoHaste_IIEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Haste_II) && PL.Player.MP > ConfigForm.config.mpMinCastValue && PL.CanCastOn(charDATA) && !PL.HasStatus(StatusEffect.Haste) && !PL.HasStatus(StatusEffect.Slow))
                                 {
                                     haste_IIPlayer(charDATA.MemberNumber);
                                 }
-                                if (autoAdloquium_Enabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Adloquium) && PL.Player.MP > Form2.config.mpMinCastValue && PL.CanCastOn(charDATA) && !PL.HasStatus(StatusEffect.Regain))
+                                if (autoAdloquium_Enabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Adloquium) && PL.Player.MP > ConfigForm.config.mpMinCastValue && PL.CanCastOn(charDATA) && !PL.HasStatus(StatusEffect.Regain))
                                 {
                                     AdloquiumPlayer(charDATA.MemberNumber);
                                 }
-                                if (autoFlurryEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Flurry) && PL.Player.MP > Form2.config.mpMinCastValue && PL.CanCastOn(charDATA) && !PL.HasStatus(581) && !PL.HasStatus(StatusEffect.Slow))
+                                if (autoFlurryEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Flurry) && PL.Player.MP > ConfigForm.config.mpMinCastValue && PL.CanCastOn(charDATA) && !PL.HasStatus(581) && !PL.HasStatus(StatusEffect.Slow))
                                 {
                                     FlurryPlayer(charDATA.MemberNumber);
                                 }
-                                if (autoFlurry_IIEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Flurry_II) && PL.Player.MP > Form2.config.mpMinCastValue && PL.CanCastOn(charDATA) && !PL.HasStatus(581) && !PL.HasStatus(StatusEffect.Slow))
+                                if (autoFlurry_IIEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Flurry_II) && PL.Player.MP > ConfigForm.config.mpMinCastValue && PL.CanCastOn(charDATA) && !PL.HasStatus(581) && !PL.HasStatus(StatusEffect.Slow))
                                 {
                                     Flurry_IIPlayer(charDATA.MemberNumber);
                                 }
-                                if (autoShell_Enabled[charDATA.MemberNumber] && PL.SpellAvailable(shell_spells[Form2.config.autoShell_Spell]) && PL.Player.MP > Form2.config.mpMinCastValue && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && !PL.HasStatus(StatusEffect.Shell))
+                                if (autoShell_Enabled[charDATA.MemberNumber] && PL.SpellAvailable(shell_spells[ConfigForm.config.autoShell_Spell]) && PL.Player.MP > ConfigForm.config.mpMinCastValue && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && !PL.HasStatus(StatusEffect.Shell))
                                 {
                                     shellPlayer(charDATA.MemberNumber);
                                 }
-                                if (autoProtect_Enabled[charDATA.MemberNumber] && PL.SpellAvailable(protect_spells[Form2.config.autoProtect_Spell]) && PL.Player.MP > Form2.config.mpMinCastValue && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && !PL.HasStatus(StatusEffect.Protect))
+                                if (autoProtect_Enabled[charDATA.MemberNumber] && PL.SpellAvailable(protect_spells[ConfigForm.config.autoProtect_Spell]) && PL.Player.MP > ConfigForm.config.mpMinCastValue && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && !PL.HasStatus(StatusEffect.Protect))
                                 {
                                     protectPlayer(charDATA.MemberNumber);
                                 }
-                                if (autoPhalanx_IIEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Phalanx_II) && (PL.Player.MP > Form2.config.mpMinCastValue) && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && !PL.HasStatus(StatusEffect.Phalanx))
+                                if (autoPhalanx_IIEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Phalanx_II) && (PL.Player.MP > ConfigForm.config.mpMinCastValue) && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && !PL.HasStatus(StatusEffect.Phalanx))
                                 {
                                     Phalanx_IIPlayer(charDATA.MemberNumber);
                                 }
-                                if (autoRegen_Enabled[charDATA.MemberNumber] && PL.SpellAvailable(Data.RegenTiers[Form2.config.autoRegen_Spell]) && (PL.Player.MP > Form2.config.mpMinCastValue) && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && !PL.HasStatus(StatusEffect.Regen))
+                                if (autoRegen_Enabled[charDATA.MemberNumber] && PL.SpellAvailable(Data.RegenTiers[ConfigForm.config.autoRegen_Spell]) && (PL.Player.MP > ConfigForm.config.mpMinCastValue) && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && !PL.HasStatus(StatusEffect.Regen))
                                 {
                                     Regen_Player(charDATA.MemberNumber);
                                 }
-                                if (autoRefreshEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Data.RefreshTiers[Form2.config.autoRefresh_Spell]) && (PL.Player.MP > Form2.config.mpMinCastValue) && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && !PL.HasStatus(StatusEffect.Refresh))
+                                if (autoRefreshEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Data.RefreshTiers[ConfigForm.config.autoRefresh_Spell]) && (PL.Player.MP > ConfigForm.config.mpMinCastValue) && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && !PL.HasStatus(StatusEffect.Refresh))
                                 {
                                     Refresh_Player(charDATA.MemberNumber);
                                 }
-                                if (CheckIfAutoStormspellEnabled(charDATA.MemberNumber) && (PL.Player.MP > Form2.config.mpMinCastValue) && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && !PL.HasStatus(Data.SpellEffects[StormSpell_Enabled]) && PL.SpellAvailable(StormSpell_Enabled))
+                                if (CheckIfAutoStormspellEnabled(charDATA.MemberNumber) && (PL.Player.MP > ConfigForm.config.mpMinCastValue) && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && !PL.HasStatus(Data.SpellEffects[StormSpell_Enabled]) && PL.SpellAvailable(StormSpell_Enabled))
                                 {
                                     StormSpellPlayer(charDATA.MemberNumber, StormSpell_Enabled);
                                 }
@@ -5112,94 +5112,94 @@
                             // MONITORED PLAYER BASED BUFFS
                             else if (Monitored.Player.Name == charDATA.Name)
                             {
-                                if (autoHasteEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Haste) && PL.Player.MP > Form2.config.mpMinCastValue && PL.CanCastOn(charDATA) && !monitoredStatusCheck(StatusEffect.Haste) && !monitoredStatusCheck(StatusEffect.Slow))
+                                if (autoHasteEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Haste) && PL.Player.MP > ConfigForm.config.mpMinCastValue && PL.CanCastOn(charDATA) && !monitoredStatusCheck(StatusEffect.Haste) && !monitoredStatusCheck(StatusEffect.Slow))
                                 {
                                     hastePlayer(charDATA.MemberNumber);
                                 }
-                                if (autoHaste_IIEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Haste_II) && PL.Player.MP > Form2.config.mpMinCastValue && PL.CanCastOn(charDATA) && !monitoredStatusCheck(StatusEffect.Haste) && !monitoredStatusCheck(StatusEffect.Slow))
+                                if (autoHaste_IIEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Haste_II) && PL.Player.MP > ConfigForm.config.mpMinCastValue && PL.CanCastOn(charDATA) && !monitoredStatusCheck(StatusEffect.Haste) && !monitoredStatusCheck(StatusEffect.Slow))
                                 {
                                     haste_IIPlayer(charDATA.MemberNumber);
                                 }
-                                if (autoAdloquium_Enabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Adloquium) && PL.Player.MP > Form2.config.mpMinCastValue && PL.CanCastOn(charDATA) && !Monitored.HasStatus(StatusEffect.Regain))
+                                if (autoAdloquium_Enabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Adloquium) && PL.Player.MP > ConfigForm.config.mpMinCastValue && PL.CanCastOn(charDATA) && !Monitored.HasStatus(StatusEffect.Regain))
                                 {
                                     AdloquiumPlayer(charDATA.MemberNumber);
                                 }
-                                if (autoFlurryEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Flurry) && PL.Player.MP > Form2.config.mpMinCastValue && PL.CanCastOn(charDATA) && !Monitored.HasStatus(581) && !monitoredStatusCheck(StatusEffect.Slow))
+                                if (autoFlurryEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Flurry) && PL.Player.MP > ConfigForm.config.mpMinCastValue && PL.CanCastOn(charDATA) && !Monitored.HasStatus(581) && !monitoredStatusCheck(StatusEffect.Slow))
                                 {
                                     FlurryPlayer(charDATA.MemberNumber);
                                 }
-                                if (autoFlurry_IIEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Flurry_II) && PL.Player.MP > Form2.config.mpMinCastValue && PL.CanCastOn(charDATA) && !Monitored.HasStatus(581) && !monitoredStatusCheck(StatusEffect.Slow))
+                                if (autoFlurry_IIEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Flurry_II) && PL.Player.MP > ConfigForm.config.mpMinCastValue && PL.CanCastOn(charDATA) && !Monitored.HasStatus(581) && !monitoredStatusCheck(StatusEffect.Slow))
                                 {
                                     Flurry_IIPlayer(charDATA.MemberNumber);
                                 }
-                                if (autoShell_Enabled[charDATA.MemberNumber] && PL.SpellAvailable(shell_spells[Form2.config.autoShell_Spell]) && PL.Player.MP > Form2.config.mpMinCastValue && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && !monitoredStatusCheck(StatusEffect.Shell))
+                                if (autoShell_Enabled[charDATA.MemberNumber] && PL.SpellAvailable(shell_spells[ConfigForm.config.autoShell_Spell]) && PL.Player.MP > ConfigForm.config.mpMinCastValue && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && !monitoredStatusCheck(StatusEffect.Shell))
                                 {
                                     shellPlayer(charDATA.MemberNumber);
                                 }
-                                if (autoProtect_Enabled[charDATA.MemberNumber] && PL.SpellAvailable(protect_spells[Form2.config.autoProtect_Spell]) && PL.Player.MP > Form2.config.mpMinCastValue && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && !monitoredStatusCheck(StatusEffect.Protect))
+                                if (autoProtect_Enabled[charDATA.MemberNumber] && PL.SpellAvailable(protect_spells[ConfigForm.config.autoProtect_Spell]) && PL.Player.MP > ConfigForm.config.mpMinCastValue && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && !monitoredStatusCheck(StatusEffect.Protect))
                                 {
                                     protectPlayer(charDATA.MemberNumber);
                                 }
-                                if (autoPhalanx_IIEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Phalanx_II) && (PL.Player.MP > Form2.config.mpMinCastValue) && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && !monitoredStatusCheck(StatusEffect.Phalanx))
+                                if (autoPhalanx_IIEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Phalanx_II) && (PL.Player.MP > ConfigForm.config.mpMinCastValue) && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && !monitoredStatusCheck(StatusEffect.Phalanx))
                                 {
                                     Phalanx_IIPlayer(charDATA.MemberNumber);
                                 }
-                                if (autoRegen_Enabled[charDATA.MemberNumber] && PL.SpellAvailable(Data.RegenTiers[Form2.config.autoRegen_Spell]) && (PL.Player.MP > Form2.config.mpMinCastValue) && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && !monitoredStatusCheck(StatusEffect.Regen))
+                                if (autoRegen_Enabled[charDATA.MemberNumber] && PL.SpellAvailable(Data.RegenTiers[ConfigForm.config.autoRegen_Spell]) && (PL.Player.MP > ConfigForm.config.mpMinCastValue) && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && !monitoredStatusCheck(StatusEffect.Regen))
                                 {
                                     Regen_Player(charDATA.MemberNumber);
                                 }
-                                if (autoRefreshEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Data.RefreshTiers[Form2.config.autoRefresh_Spell]) && (PL.Player.MP > Form2.config.mpMinCastValue) && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && !monitoredStatusCheck(StatusEffect.Refresh))
+                                if (autoRefreshEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Data.RefreshTiers[ConfigForm.config.autoRefresh_Spell]) && (PL.Player.MP > ConfigForm.config.mpMinCastValue) && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && !monitoredStatusCheck(StatusEffect.Refresh))
                                 {
                                     Refresh_Player(charDATA.MemberNumber);
                                 }
-                                if (CheckIfAutoStormspellEnabled(charDATA.MemberNumber) && (PL.Player.MP > Form2.config.mpMinCastValue) && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && !Monitored.HasStatus(Data.SpellEffects[StormSpell_Enabled]) && PL.SpellAvailable(StormSpell_Enabled))
+                                if (CheckIfAutoStormspellEnabled(charDATA.MemberNumber) && (PL.Player.MP > ConfigForm.config.mpMinCastValue) && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && !Monitored.HasStatus(Data.SpellEffects[StormSpell_Enabled]) && PL.SpellAvailable(StormSpell_Enabled))
                                 {
                                     StormSpellPlayer(charDATA.MemberNumber, StormSpell_Enabled);
                                 }
                             }
                             else
                             {
-                                if (autoHasteEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Haste) && PL.Player.MP > Form2.config.mpMinCastValue && PL.CanCastOn(charDATA) && playerHasteSpan[charDATA.MemberNumber].Minutes >= Form2.config.autoHasteMinutes)
+                                if (autoHasteEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Haste) && PL.Player.MP > ConfigForm.config.mpMinCastValue && PL.CanCastOn(charDATA) && playerHasteSpan[charDATA.MemberNumber].Minutes >= ConfigForm.config.autoHasteMinutes)
                                 {
                                     hastePlayer(charDATA.MemberNumber);
                                 }
-                                if (autoHaste_IIEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Haste_II) && PL.Player.MP > Form2.config.mpMinCastValue && PL.CanCastOn(charDATA) && playerHaste_IISpan[charDATA.MemberNumber].Minutes >= Form2.config.autoHasteMinutes)
+                                if (autoHaste_IIEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Haste_II) && PL.Player.MP > ConfigForm.config.mpMinCastValue && PL.CanCastOn(charDATA) && playerHaste_IISpan[charDATA.MemberNumber].Minutes >= ConfigForm.config.autoHasteMinutes)
                                 {
                                     haste_IIPlayer(charDATA.MemberNumber);
                                 }
-                                if (autoAdloquium_Enabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Adloquium) && PL.Player.MP > Form2.config.mpMinCastValue && PL.CanCastOn(charDATA) && playerAdloquium_Span[charDATA.MemberNumber].Minutes >= Form2.config.autoAdloquiumMinutes)
+                                if (autoAdloquium_Enabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Adloquium) && PL.Player.MP > ConfigForm.config.mpMinCastValue && PL.CanCastOn(charDATA) && playerAdloquium_Span[charDATA.MemberNumber].Minutes >= ConfigForm.config.autoAdloquiumMinutes)
                                 {
                                     AdloquiumPlayer(charDATA.MemberNumber);
                                 }
-                                if (autoFlurryEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Flurry) && PL.Player.MP > Form2.config.mpMinCastValue && PL.CanCastOn(charDATA) && playerFlurrySpan[charDATA.MemberNumber].Minutes >= Form2.config.autoHasteMinutes)
+                                if (autoFlurryEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Flurry) && PL.Player.MP > ConfigForm.config.mpMinCastValue && PL.CanCastOn(charDATA) && playerFlurrySpan[charDATA.MemberNumber].Minutes >= ConfigForm.config.autoHasteMinutes)
                                 {
                                     FlurryPlayer(charDATA.MemberNumber);
                                 }
-                                if (autoFlurry_IIEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Flurry_II) && PL.Player.MP > Form2.config.mpMinCastValue && PL.CanCastOn(charDATA) && playerHasteSpan[charDATA.MemberNumber].Minutes >= Form2.config.autoHasteMinutes)
+                                if (autoFlurry_IIEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Flurry_II) && PL.Player.MP > ConfigForm.config.mpMinCastValue && PL.CanCastOn(charDATA) && playerHasteSpan[charDATA.MemberNumber].Minutes >= ConfigForm.config.autoHasteMinutes)
                                 {
                                     Flurry_IIPlayer(charDATA.MemberNumber);
                                 }
-                                if (autoShell_Enabled[charDATA.MemberNumber] && PL.SpellAvailable(shell_spells[Form2.config.autoShell_Spell]) && PL.Player.MP > Form2.config.mpMinCastValue && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && playerShell_Span[charDATA.MemberNumber].Minutes >= Form2.config.autoShellMinutes)
+                                if (autoShell_Enabled[charDATA.MemberNumber] && PL.SpellAvailable(shell_spells[ConfigForm.config.autoShell_Spell]) && PL.Player.MP > ConfigForm.config.mpMinCastValue && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && playerShell_Span[charDATA.MemberNumber].Minutes >= ConfigForm.config.autoShellMinutes)
                                 {
                                     shellPlayer(charDATA.MemberNumber);
                                 }
-                                if (autoProtect_Enabled[charDATA.MemberNumber] && PL.SpellAvailable(protect_spells[Form2.config.autoProtect_Spell]) && PL.Player.MP > Form2.config.mpMinCastValue && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && playerProtect_Span[charDATA.MemberNumber].Minutes >= Form2.config.autoProtect_Minutes)
+                                if (autoProtect_Enabled[charDATA.MemberNumber] && PL.SpellAvailable(protect_spells[ConfigForm.config.autoProtect_Spell]) && PL.Player.MP > ConfigForm.config.mpMinCastValue && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && playerProtect_Span[charDATA.MemberNumber].Minutes >= ConfigForm.config.autoProtect_Minutes)
                                 {
                                     protectPlayer(charDATA.MemberNumber);
                                 }
-                                if (autoPhalanx_IIEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Phalanx_II) && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && playerPhalanx_IISpan[charDATA.MemberNumber].Minutes >= Form2.config.autoPhalanxIIMinutes)
+                                if (autoPhalanx_IIEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Phalanx_II) && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && playerPhalanx_IISpan[charDATA.MemberNumber].Minutes >= ConfigForm.config.autoPhalanxIIMinutes)
                                 {
                                     Phalanx_IIPlayer(charDATA.MemberNumber);
                                 }
-                                if (autoRegen_Enabled[charDATA.MemberNumber] && PL.SpellAvailable(Data.RegenTiers[Form2.config.autoRegen_Spell]) && (PL.Player.MP > Form2.config.mpMinCastValue) && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && playerRegen_Span[charDATA.MemberNumber].Minutes >= Form2.config.autoRegen_Minutes)
+                                if (autoRegen_Enabled[charDATA.MemberNumber] && PL.SpellAvailable(Data.RegenTiers[ConfigForm.config.autoRegen_Spell]) && (PL.Player.MP > ConfigForm.config.mpMinCastValue) && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && playerRegen_Span[charDATA.MemberNumber].Minutes >= ConfigForm.config.autoRegen_Minutes)
                                 {
                                     Regen_Player(charDATA.MemberNumber);
                                 }
-                                if (autoRefreshEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Data.RefreshTiers[Form2.config.autoRefresh_Spell]) && (PL.Player.MP > Form2.config.mpMinCastValue) && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && playerRefresh_Span[charDATA.MemberNumber].Minutes >= Form2.config.autoRefresh_Minutes)
+                                if (autoRefreshEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Data.RefreshTiers[ConfigForm.config.autoRefresh_Spell]) && (PL.Player.MP > ConfigForm.config.mpMinCastValue) && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && playerRefresh_Span[charDATA.MemberNumber].Minutes >= ConfigForm.config.autoRefresh_Minutes)
                                 {
                                     Refresh_Player(charDATA.MemberNumber);
                                 }
-                                if (CheckIfAutoStormspellEnabled(charDATA.MemberNumber) && (PL.Player.MP > Form2.config.mpMinCastValue) && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && PL.SpellAvailable(StormSpell_Enabled) && playerStormspellSpan[charDATA.MemberNumber].Minutes >= Form2.config.autoStormspellMinutes)
+                                if (CheckIfAutoStormspellEnabled(charDATA.MemberNumber) && (PL.Player.MP > ConfigForm.config.mpMinCastValue) && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && PL.SpellAvailable(StormSpell_Enabled) && playerStormspellSpan[charDATA.MemberNumber].Minutes >= ConfigForm.config.autoStormspellMinutes)
                                 {
                                     StormSpellPlayer(charDATA.MemberNumber, StormSpell_Enabled);
                                 }
@@ -5214,7 +5214,7 @@
         private bool CheckIfAutoStormspellEnabled(byte id)
         {
 
-            if (Form2.config.autoStorm_Spell == 0)
+            if (ConfigForm.config.autoStorm_Spell == 0)
             {
                 if (autoSandstormEnabled[id])
                 {
@@ -5253,7 +5253,7 @@
                     return false;
                 }
             }
-            else if (Form2.config.autoStorm_Spell == 1)
+            else if (ConfigForm.config.autoStorm_Spell == 1)
             {
                 if (autoSandstormEnabled[id])
                 {
@@ -5301,7 +5301,7 @@
 
         private string CheckStormspell(byte id)
         {
-            if (Form2.config.autoStorm_Spell == 0)
+            if (ConfigForm.config.autoStorm_Spell == 0)
             {
                 if (autoSandstormEnabled[id])
                 {
@@ -5340,7 +5340,7 @@
                     return string.Empty;
                 }
             }
-            else if (Form2.config.autoStorm_Spell == 1)
+            else if (ConfigForm.config.autoStorm_Spell == 1)
             {
                 if (autoSandstormEnabled[id])
                 {
@@ -5424,7 +5424,7 @@
 
         private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Form2 settings = new Form2();
+            ConfigForm settings = new ConfigForm();
             settings.Show();
         }
 
@@ -5946,32 +5946,32 @@
 
         private void followToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Form2.config.autoFollowName = Monitored.Party.GetPartyMembers()[playerOptionsSelected].Name;
+            ConfigForm.config.autoFollowName = Monitored.Party.GetPartyMembers()[playerOptionsSelected].Name;
         }
 
         private void stopfollowToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Form2.config.autoFollowName = string.Empty;
+            ConfigForm.config.autoFollowName = string.Empty;
         }
 
         private void EntrustTargetToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Form2.config.EntrustedSpell_Target = Monitored.Party.GetPartyMembers()[playerOptionsSelected].Name;
+            ConfigForm.config.EntrustedSpell_Target = Monitored.Party.GetPartyMembers()[playerOptionsSelected].Name;
         }
 
         private void GeoTargetToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Form2.config.LuopanSpell_Target = Monitored.Party.GetPartyMembers()[playerOptionsSelected].Name;
+            ConfigForm.config.LuopanSpell_Target = Monitored.Party.GetPartyMembers()[playerOptionsSelected].Name;
         }
 
         private void DevotionTargetToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Form2.config.DevotionTargetName = Monitored.Party.GetPartyMembers()[playerOptionsSelected].Name;
+            ConfigForm.config.DevotionTargetName = Monitored.Party.GetPartyMembers()[playerOptionsSelected].Name;
         }
 
         private void HateEstablisherToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Form2.config.autoTarget_Target = Monitored.Party.GetPartyMembers()[playerOptionsSelected].Name;
+            ConfigForm.config.autoTarget_Target = Monitored.Party.GetPartyMembers()[playerOptionsSelected].Name;
         }
 
         private void phalanxIIToolStripMenuItem_Click(object sender, EventArgs e)
@@ -6168,7 +6168,7 @@
                 actionTimer.Enabled = false;
                 ActiveBuffs.Clear();
                 pauseActions = true;
-                if (Form2.config.FFXIDefaultAutoFollow == false)
+                if (ConfigForm.config.FFXIDefaultAutoFollow == false)
                 {
                     PL.AutoFollow.IsAutoFollowing = false;
                 }
@@ -6180,20 +6180,20 @@
                 actionTimer.Enabled = true;
                 pauseActions = false;
 
-                if (Form2.config.MinimiseonStart == true && WindowState != FormWindowState.Minimized)
+                if (ConfigForm.config.MinimiseonStart == true && WindowState != FormWindowState.Minimized)
                 {
                     WindowState = FormWindowState.Minimized;
                 }
 
-                if (Form2.config.EnableAddOn && LUA_Plugin_Loaded == 0)
+                if (ConfigForm.config.EnableAddOn && LUA_Plugin_Loaded == 0)
                 {
                     if (WindowerMode == "Windower")
                     {
                         PL.ThirdParty.SendString("//lua load CurePlease_addon");
                         Thread.Sleep(1500);
-                        PL.ThirdParty.SendString("//cpaddon settings " + Form2.config.ipAddress + " " + Form2.config.listeningPort);
+                        PL.ThirdParty.SendString("//cpaddon settings " + ConfigForm.config.ipAddress + " " + ConfigForm.config.listeningPort);
                         Thread.Sleep(100);
-                        if (Form2.config.enableHotKeys)
+                        if (ConfigForm.config.enableHotKeys)
                         {
                             PL.ThirdParty.SendString("//bind ^!F1 cureplease toggle");
                             PL.ThirdParty.SendString("//bind ^!F2 cureplease start");
@@ -6204,9 +6204,9 @@
                     {
                         PL.ThirdParty.SendString("/addon load CurePlease_addon");
                         Thread.Sleep(1500);
-                        PL.ThirdParty.SendString("/cpaddon settings " + Form2.config.ipAddress + " " + Form2.config.listeningPort);
+                        PL.ThirdParty.SendString("/cpaddon settings " + ConfigForm.config.ipAddress + " " + ConfigForm.config.listeningPort);
                         Thread.Sleep(100);
-                        if (Form2.config.enableHotKeys)
+                        if (ConfigForm.config.enableHotKeys)
                         {
                             PL.ThirdParty.SendString("/bind ^!F1 /cureplease toggle");
                             PL.ThirdParty.SendString("/bind ^!F2 /cureplease start");
@@ -6264,7 +6264,7 @@
 
         private void chatLogToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Form4 form4 = new Form4(this);
+            ChatlogForm form4 = new ChatlogForm(this);
             form4.Show();
         }
 
@@ -6316,7 +6316,7 @@
                 if (WindowerMode == "Ashita")
                 {
                     PL.ThirdParty.SendString("/addon unload CurePlease_addon");
-                    if (Form2.config.enableHotKeys)
+                    if (ConfigForm.config.enableHotKeys)
                     {
                         PL.ThirdParty.SendString("/unbind ^!F1");
                         PL.ThirdParty.SendString("/unbind ^!F2");
@@ -6327,7 +6327,7 @@
                 {
                     PL.ThirdParty.SendString("//lua unload CurePlease_addon");
 
-                    if (Form2.config.enableHotKeys)
+                    if (ConfigForm.config.enableHotKeys)
                     {
                         PL.ThirdParty.SendString("//unbind ^!F1");
                         PL.ThirdParty.SendString("//unbind ^!F2");
@@ -6341,13 +6341,13 @@
 
         private int followID()
         {
-            if ((setinstance2.Enabled == true) && !string.IsNullOrEmpty(Form2.config.autoFollowName) && !pauseActions)
+            if ((setinstance2.Enabled == true) && !string.IsNullOrEmpty(ConfigForm.config.autoFollowName) && !pauseActions)
             {
                 for (int x = 0; x < 2048; x++)
                 {
                     XiEntity entity = PL.Entity.GetEntity(x);
 
-                    if (entity.Name != null && entity.Name.ToLower().Equals(Form2.config.autoFollowName.ToLower()))
+                    if (entity.Name != null && entity.Name.ToLower().Equals(ConfigForm.config.autoFollowName.ToLower()))
                     {
                         return Convert.ToInt32(entity.TargetID);
                     }
@@ -6440,18 +6440,18 @@
             if (Monitored == null || PL == null) { return false; }
 
 
-            if (Form2.config.GeoWhenEngaged == false)
+            if (ConfigForm.config.GeoWhenEngaged == false)
             {
                 return true;
             }
-            else if (Form2.config.specifiedEngageTarget == true && !string.IsNullOrEmpty(Form2.config.LuopanSpell_Target))
+            else if (ConfigForm.config.specifiedEngageTarget == true && !string.IsNullOrEmpty(ConfigForm.config.LuopanSpell_Target))
             {
                 for (int x = 0; x < 2048; x++)
                 {
                     XiEntity z = PL.Entity.GetEntity(x);
                     if (!string.IsNullOrEmpty(z.Name))
                     {
-                        if (z.Name.ToLower() == Form2.config.LuopanSpell_Target.ToLower()) // A match was located so use this entity as a check.
+                        if (z.Name.ToLower() == ConfigForm.config.LuopanSpell_Target.ToLower()) // A match was located so use this entity as a check.
                         {
                             if (z.Status == 1)
                             {
@@ -6500,7 +6500,7 @@
             if (Monitored == null || PL == null) { return false; }
 
             // Grab GEO spell name
-            string SpellCheckedResult = ReturnGeoSpell(Form2.config.GeoSpell_Spell, 2);
+            string SpellCheckedResult = ReturnGeoSpell(ConfigForm.config.GeoSpell_Spell, 2);
 
             if (SpellCheckedResult == "SpellError_Cancel" || SpellCheckedResult == "SpellRecast" || SpellCheckedResult == "SpellUnknown")
             {
@@ -6515,14 +6515,14 @@
                 }
                 else
                 {
-                    if (Form2.config.specifiedEngageTarget == true && !string.IsNullOrEmpty(Form2.config.LuopanSpell_Target))
+                    if (ConfigForm.config.specifiedEngageTarget == true && !string.IsNullOrEmpty(ConfigForm.config.LuopanSpell_Target))
                     {
                         for (int x = 0; x < 2048; x++)
                         {
                             XiEntity z = PL.Entity.GetEntity(x);
                             if (!string.IsNullOrEmpty(z.Name))
                             {
-                                if (z.Name.ToLower() == Form2.config.LuopanSpell_Target.ToLower()) // A match was located so use this entity as a check.
+                                if (z.Name.ToLower() == ConfigForm.config.LuopanSpell_Target.ToLower()) // A match was located so use this entity as a check.
                                 {
                                     if (z.Status == 1)
                                     {
@@ -6554,7 +6554,7 @@
 
         private int CheckEngagedStatus_Hate()
         {
-            if (Form2.config.AssistSpecifiedTarget == true && !string.IsNullOrEmpty(Form2.config.autoTarget_Target))
+            if (ConfigForm.config.AssistSpecifiedTarget == true && !string.IsNullOrEmpty(ConfigForm.config.autoTarget_Target))
             {
                 IDFound = 0;
 
@@ -6562,7 +6562,7 @@
                 {
                     XiEntity z = PL.Entity.GetEntity(x);
 
-                    if (!string.IsNullOrEmpty(z.Name) && z.Name.ToLower() == Form2.config.autoTarget_Target.ToLower())
+                    if (!string.IsNullOrEmpty(z.Name) && z.Name.ToLower() == ConfigForm.config.autoTarget_Target.ToLower())
                     {
                         if (z.Status == 1)
                         {
@@ -6594,7 +6594,7 @@
 
         private int GrabGEOTargetID()
         {
-            if (Form2.config.specifiedEngageTarget == true && !string.IsNullOrEmpty(Form2.config.LuopanSpell_Target))
+            if (ConfigForm.config.specifiedEngageTarget == true && !string.IsNullOrEmpty(ConfigForm.config.LuopanSpell_Target))
             {
                 IDFound = 0;
 
@@ -6602,7 +6602,7 @@
                 {
                     XiEntity z = PL.Entity.GetEntity(x);
 
-                    if (z.Name != null && z.Name.ToLower() == Form2.config.LuopanSpell_Target.ToLower())
+                    if (z.Name != null && z.Name.ToLower() == ConfigForm.config.LuopanSpell_Target.ToLower())
                     {
                         if (z.Status == 1)
                         {
@@ -6637,9 +6637,9 @@
             string checkedName = string.Empty;
             string name1 = string.Empty;
 
-            if (Form2.config.specifiedEngageTarget == true && !string.IsNullOrEmpty(Form2.config.LuopanSpell_Target))
+            if (ConfigForm.config.specifiedEngageTarget == true && !string.IsNullOrEmpty(ConfigForm.config.LuopanSpell_Target))
             {
-                checkedName = Form2.config.LuopanSpell_Target;
+                checkedName = ConfigForm.config.LuopanSpell_Target;
             }
             else
             {
@@ -6764,7 +6764,7 @@
                                 pauseActions = true;
                                 song_casting = 0;
                                 ForceSongRecast = true;
-                                if (Form2.config.FFXIDefaultAutoFollow == false)
+                                if (ConfigForm.config.FFXIDefaultAutoFollow == false)
                                 {
                                     PL.AutoFollow.IsAutoFollowing = false;
                                 }
@@ -6798,7 +6798,7 @@
                                 pauseActions = true;
                                 song_casting = 0;
                                 ForceSongRecast = true;
-                                if (Form2.config.FFXIDefaultAutoFollow == false)
+                                if (ConfigForm.config.FFXIDefaultAutoFollow == false)
                                 {
                                     PL.AutoFollow.IsAutoFollowing = false;
                                 }
@@ -6833,18 +6833,18 @@
         {
             PL_BRDCount = PL.Player.GetPlayerInfo().Buffs.Where(b => b == 195 || b == 196 || b == 197 || b == 198 || b == 199 || b == 200 || b == 201 || b == 214 || b == 215 || b == 216 || b == 218 || b == 219 || b == 222).Count();
 
-            if (Form2.config.enableSinging && PL.Player.Status != 33)
+            if (ConfigForm.config.enableSinging && PL.Player.Status != 33)
             {
 
                 debug_MSG_show = "ORDER: " + song_casting;
 
-                SongData song_1 = SongInfo.Where(c => c.song_position == Form2.config.song1).FirstOrDefault();
-                SongData song_2 = SongInfo.Where(c => c.song_position == Form2.config.song2).FirstOrDefault();
-                SongData song_3 = SongInfo.Where(c => c.song_position == Form2.config.song3).FirstOrDefault();
-                SongData song_4 = SongInfo.Where(c => c.song_position == Form2.config.song4).FirstOrDefault();
+                SongData song_1 = SongInfo.Where(c => c.song_position == ConfigForm.config.song1).FirstOrDefault();
+                SongData song_2 = SongInfo.Where(c => c.song_position == ConfigForm.config.song2).FirstOrDefault();
+                SongData song_3 = SongInfo.Where(c => c.song_position == ConfigForm.config.song3).FirstOrDefault();
+                SongData song_4 = SongInfo.Where(c => c.song_position == ConfigForm.config.song4).FirstOrDefault();
 
-                SongData dummy1_song = SongInfo.Where(c => c.song_position == Form2.config.dummy1).FirstOrDefault();
-                SongData dummy2_song = SongInfo.Where(c => c.song_position == Form2.config.dummy2).FirstOrDefault();
+                SongData dummy1_song = SongInfo.Where(c => c.song_position == ConfigForm.config.dummy1).FirstOrDefault();
+                SongData dummy2_song = SongInfo.Where(c => c.song_position == ConfigForm.config.dummy2).FirstOrDefault();
 
                 // Check the distance of the Monitored player
                 int Monitoreddistance = 50;
@@ -6988,9 +6988,9 @@
 
 
                 // ONCE ALL SONGS HAVE BEEN CAST ONLY RECAST THEM WHEN THEY MEET THE THRESHOLD SET ON SONG RECAST AND BLOCK IF IT'S SET AT LAUNCH DEFAULTS
-                if (playerSong1[0] != DefaultTime && playerSong1_Span[0].Minutes >= Form2.config.recastSongTime)
+                if (playerSong1[0] != DefaultTime && playerSong1_Span[0].Minutes >= ConfigForm.config.recastSongTime)
                 {
-                    if ((Form2.config.SongsOnlyWhenNear && Monitoreddistance < 10) || Form2.config.SongsOnlyWhenNear == false)
+                    if ((ConfigForm.config.SongsOnlyWhenNear && Monitoreddistance < 10) || ConfigForm.config.SongsOnlyWhenNear == false)
                     {
                         if (PL.SpellAvailable(song_1.song_name))
                         {
@@ -7000,9 +7000,9 @@
                         }
                     }
                 }
-                else if (playerSong2[0] != DefaultTime && playerSong2_Span[0].Minutes >= Form2.config.recastSongTime)
+                else if (playerSong2[0] != DefaultTime && playerSong2_Span[0].Minutes >= ConfigForm.config.recastSongTime)
                 {
-                    if ((Form2.config.SongsOnlyWhenNear && Monitoreddistance < 10) || Form2.config.SongsOnlyWhenNear == false)
+                    if ((ConfigForm.config.SongsOnlyWhenNear && Monitoreddistance < 10) || ConfigForm.config.SongsOnlyWhenNear == false)
                     {
                         if (PL.SpellAvailable(song_2.song_name))
                         {
@@ -7012,9 +7012,9 @@
                         }
                     }
                 }
-                else if (playerSong3[0] != DefaultTime && playerSong3_Span[0].Minutes >= Form2.config.recastSongTime)
+                else if (playerSong3[0] != DefaultTime && playerSong3_Span[0].Minutes >= ConfigForm.config.recastSongTime)
                 {
-                    if ((Form2.config.SongsOnlyWhenNear && Monitoreddistance < 10) || Form2.config.SongsOnlyWhenNear == false)
+                    if ((ConfigForm.config.SongsOnlyWhenNear && Monitoreddistance < 10) || ConfigForm.config.SongsOnlyWhenNear == false)
                     {
                         if (PL.SpellAvailable(song_3.song_name))
                         {
@@ -7024,9 +7024,9 @@
                         }
                     }
                 }
-                else if (playerSong4[0] != DefaultTime && playerSong4_Span[0].Minutes >= Form2.config.recastSongTime)
+                else if (playerSong4[0] != DefaultTime && playerSong4_Span[0].Minutes >= ConfigForm.config.recastSongTime)
                 {
-                    if ((Form2.config.SongsOnlyWhenNear && Monitoreddistance < 10) || Form2.config.SongsOnlyWhenNear == false)
+                    if ((ConfigForm.config.SongsOnlyWhenNear && Monitoreddistance < 10) || ConfigForm.config.SongsOnlyWhenNear == false)
                     {
                         if (PL.SpellAvailable(song_4.song_name))
                         {
@@ -7044,10 +7044,10 @@
         {
 
             // MAKE SURE BOTH ELITEAPI INSTANCES ARE ACTIVE, THE BOT ISN'T PAUSED, AND THERE IS AN AUTOFOLLOWTARGET NAMED
-            if (PL != null && Monitored != null && !string.IsNullOrEmpty(Form2.config.autoFollowName) && !pauseActions)
+            if (PL != null && Monitored != null && !string.IsNullOrEmpty(ConfigForm.config.autoFollowName) && !pauseActions)
             {
 
-                if (Form2.config.FFXIDefaultAutoFollow != true)
+                if (ConfigForm.config.FFXIDefaultAutoFollow != true)
                 {
                     // CANCEL ALL PREVIOUS FOLLOW ACTIONS
                     PL.AutoFollow.IsAutoFollowing = false;
@@ -7065,12 +7065,12 @@
                     // GRAB THE FOLLOW TARGETS ENTITY TABLE TO CHECK DISTANCE ETC
                     XiEntity followTarget = PL.Entity.GetEntity(followersTargetID);
 
-                    if (Math.Truncate(followTarget.Distance) >= (int)Form2.config.autoFollowDistance && curePlease_autofollow == false)
+                    if (Math.Truncate(followTarget.Distance) >= (int)ConfigForm.config.autoFollowDistance && curePlease_autofollow == false)
                     {
                         // THE DISTANCE IS GREATER THAN REQUIRED SO IF AUTOFOLLOW IS NOT ACTIVE THEN DEPENDING ON THE TYPE, FOLLOW
 
                         // SQUARE ENIX FINAL FANTASY XI DEFAULT AUTO FOLLOW
-                        if (Form2.config.FFXIDefaultAutoFollow == true && PL.AutoFollow.IsAutoFollowing != true)
+                        if (ConfigForm.config.FFXIDefaultAutoFollow == true && PL.AutoFollow.IsAutoFollowing != true)
                         {
                             // IF THE CURRENT TARGET IS NOT THE FOLLOWERS TARGET ID THEN CHANGE THAT NOW
                             if (PL.Target.GetTargetInfo().TargetIndex != followersTargetID)
@@ -7094,10 +7094,10 @@
                             }
                         }
                         // ELITEAPI'S IMPROVED AUTO FOLLOW
-                        else if (Form2.config.FFXIDefaultAutoFollow != true && PL.AutoFollow.IsAutoFollowing != true)
+                        else if (ConfigForm.config.FFXIDefaultAutoFollow != true && PL.AutoFollow.IsAutoFollowing != true)
                         {
                             // IF YOU ARE TOO FAR TO FOLLOW THEN STOP AND IF ENABLED WARN THE MONITORED PLAYER
-                            if (Form2.config.autoFollow_Warning == true && Math.Truncate(followTarget.Distance) >= 40 && Monitored.Player.Name != PL.Player.Name && followWarning == 0)
+                            if (ConfigForm.config.autoFollow_Warning == true && Math.Truncate(followTarget.Distance) >= 40 && Monitored.Player.Name != PL.Player.Name && followWarning == 0)
                             {
                                 string createdTell = "/tell " + Monitored.Player.Name + " " + "You're too far to follow.";
                                 PL.ThirdParty.SendString(createdTell);
@@ -7107,7 +7107,7 @@
                             else if (Math.Truncate(followTarget.Distance) <= 40)
                             {
                                 // ONLY TARGET AND BEGIN FOLLOW IF TARGET IS AT THE DEFINED DISTANCE
-                                if (Math.Truncate(followTarget.Distance) >= (int)Form2.config.autoFollowDistance && Math.Truncate(followTarget.Distance) <= 48)
+                                if (Math.Truncate(followTarget.Distance) >= (int)ConfigForm.config.autoFollowDistance && Math.Truncate(followTarget.Distance) <= 48)
                                 {
                                     followWarning = 0;
 
@@ -7125,7 +7125,7 @@
 
                                     if (!string.IsNullOrEmpty(FollowerTargetEntity.Name))
                                     {
-                                        while (Math.Truncate(followTarget.Distance) >= (int)Form2.config.autoFollowDistance)
+                                        while (Math.Truncate(followTarget.Distance) >= (int)ConfigForm.config.autoFollowDistance)
                                         {
 
                                             float Player_X = PL.Player.X;
@@ -7188,7 +7188,7 @@
                                             if (distance < .1)
                                             {
                                                 stuckCount = stuckCount + 1;
-                                                if (Form2.config.autoFollow_Warning == true && stuckWarning != true && FollowerTargetEntity.Name == Monitored.Player.Name && stuckCount == 10)
+                                                if (ConfigForm.config.autoFollow_Warning == true && stuckWarning != true && FollowerTargetEntity.Name == Monitored.Player.Name && stuckCount == 10)
                                                 {
                                                     string createdTell = "/tell " + Monitored.Player.Name + " " + "I appear to be stuck.";
                                                     PL.ThirdParty.SendString(createdTell);
@@ -7235,7 +7235,7 @@
         {
             if ((settings == null) || settings.IsDisposed)
             {
-                settings = new Form2();
+                settings = new ConfigForm();
             }
             settings.Show();
 
@@ -7243,7 +7243,7 @@
 
         private void ChatLogButton_Click(object sender, EventArgs e)
         {
-            Form4 form4 = new Form4(this);
+            ChatlogForm form4 = new ChatlogForm(this);
 
             if (PL != null)
             {
@@ -7262,18 +7262,18 @@
 
         private void AboutButton_Click(object sender, EventArgs e)
         {
-            new Form3().Show();
+            new AboutForm().Show();
         }
 
         private void AddonReader_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
-            if (Form2.config.EnableAddOn == true && pauseActions == false && Monitored != null && PL != null)
+            if (ConfigForm.config.EnableAddOn == true && pauseActions == false && Monitored != null && PL != null)
             {
 
                 bool done = false;
 
-                UdpClient listener = new UdpClient(Convert.ToInt32(Form2.config.listeningPort));
-                IPEndPoint groupEP = new IPEndPoint(IPAddress.Parse(Form2.config.ipAddress), Convert.ToInt32(Form2.config.listeningPort));
+                UdpClient listener = new UdpClient(Convert.ToInt32(ConfigForm.config.listeningPort));
+                IPEndPoint groupEP = new IPEndPoint(IPAddress.Parse(ConfigForm.config.ipAddress), Convert.ToInt32(ConfigForm.config.listeningPort));
                 string received_data;
                 byte[] receive_byte_array;
                 try
@@ -7288,7 +7288,7 @@
                         string[] commands = received_data.Split('_');
 
                         // MessageBox.Show(commands[1] + " " + commands[2]);
-                        if (commands[1] == "casting" && commands.Count() == 3 && Form2.config.trackCastingPackets == true)
+                        if (commands[1] == "casting" && commands.Count() == 3 && ConfigForm.config.trackCastingPackets == true)
                         {
                             if (commands[2] == "blocked")
                             {
@@ -7355,7 +7355,7 @@
                                     actionTimer.Enabled = false;
                                     ActiveBuffs.Clear();
                                     pauseActions = true;
-                                    if (Form2.config.FFXIDefaultAutoFollow == false)
+                                    if (ConfigForm.config.FFXIDefaultAutoFollow == false)
                                     {
                                         PL.AutoFollow.IsAutoFollowing = false;
                                     }
@@ -7411,7 +7411,7 @@
             {
                 ushort PetsIndex = PL.Player.PetIndex;
 
-                if (Form2.config.Fullcircle_GEOTarget == true && Form2.config.LuopanSpell_Target != "")
+                if (ConfigForm.config.Fullcircle_GEOTarget == true && ConfigForm.config.LuopanSpell_Target != "")
                 {
                     XiEntity PetsEntity = PL.Entity.GetEntity(PetsIndex);
 
@@ -7421,7 +7421,7 @@
                     {
                         XiEntity entity = PL.Entity.GetEntity(x);
 
-                        if (entity.Name != null && entity.Name.ToLower().Equals(Form2.config.LuopanSpell_Target.ToLower()))
+                        if (entity.Name != null && entity.Name.ToLower().Equals(ConfigForm.config.LuopanSpell_Target.ToLower()))
                         {
                             FullCircle_CharID = Convert.ToInt32(entity.TargetID);
                             break;
@@ -7445,15 +7445,15 @@
                     }
 
                 }
-                else if (Form2.config.Fullcircle_GEOTarget == false && Monitored.Player.Status == 1)
+                else if (ConfigForm.config.Fullcircle_GEOTarget == false && Monitored.Player.Status == 1)
                 {
 
 
-                    string SpellCheckedResult = ReturnGeoSpell(Form2.config.GeoSpell_Spell, 2);
+                    string SpellCheckedResult = ReturnGeoSpell(ConfigForm.config.GeoSpell_Spell, 2);
 
 
 
-                    if (Form2.config.Fullcircle_DisableEnemy != true || (Form2.config.Fullcircle_DisableEnemy == true && PL.Resources.GetSpell(SpellCheckedResult, 0).ValidTargets == 32))
+                    if (ConfigForm.config.Fullcircle_DisableEnemy != true || (ConfigForm.config.Fullcircle_DisableEnemy == true && PL.Resources.GetSpell(SpellCheckedResult, 0).ValidTargets == 32))
                     {
                         XiEntity PetsEntity = Monitored.Entity.GetEntity(PetsIndex);
 
