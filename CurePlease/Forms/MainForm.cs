@@ -67,13 +67,6 @@
             public string geo_spell { get; set; }
         }
 
-        public class JobTitles : List<JobTitles>
-        {
-            public int job_number { get; set; }
-
-            public string job_name { get; set; }
-        }
-
         private string debug_MSG_show = string.Empty;
 
         private int lastCommand = 0;

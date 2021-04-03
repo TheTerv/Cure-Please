@@ -10,13 +10,19 @@ namespace CurePlease.Utilities
 {
     public static class EliteAPIExtensions
     {
+        public static bool EntityWithin(this EliteAPI api, int distance, uint targetIndex)
+        {
+            var entity = api.Entity.GetEntity((int)targetIndex);
+
+            return entity.Distance < distance;
+        }
         public static bool CanCastOn(this EliteAPI api, PartyMember member)
         {
             // If they're in range, and alive, should be able to cast.
             // Since we include distance = 0, should work when target is the PL itself.
             var entity = api.Entity.GetEntity((int)member.TargetIndex);
 
-            return (entity.Distance < 21 && entity.Distance >= 0 && member.CurrentHP > 0);         
+            return api.EntityWithin(21, member.TargetIndex) && member.CurrentHP > 0;         
         }
         public static bool HasMPFor(this EliteAPI api, string spell)
         {
