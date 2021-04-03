@@ -4,7 +4,6 @@ using System.Collections.Generic;
 
 namespace CurePlease.Model
 {
-    // TODO: Mapping of Debuffs -> Cure spell + priority
     public static class Data
     {
         public static Dictionary<string, int> SpellCosts = new Dictionary<string, int> {
@@ -56,7 +55,9 @@ namespace CurePlease.Model
             Spells.Firestorm_II, Spells.Hailstorm_II, Spells.Windstorm_II, Spells.Sandstorm_II, Spells.Thunderstorm_II, Spells.Rainstorm_II, Spells.Aurorastorm_II, Spells.Voidstorm_II
         };
 
-        //TODO: Add storms, and fix storm casting.
+        // This is tricky because the EliteAPI is closed source, so we're stuck working around it.
+        // In this case they don't have the newer status effects yet, so we need to still treat them
+        // as shorts, for the situations where there isn't an enum value for it.
         public static Dictionary<string, short> SpellEffects = new Dictionary<string, short>
         {
             { Spells.Gain_STR, (short)StatusEffect.STR_Boost2 },
@@ -96,6 +97,8 @@ namespace CurePlease.Model
             StatusEffect.STR_Boost2, StatusEffect.DEX_Boost2, StatusEffect.VIT_Boost2, StatusEffect.AGI_Boost2, StatusEffect.INT_Boost2, StatusEffect.MND_Boost2, StatusEffect.CHR_Boost2
         };
 
+        // We use this dictionary to both prioritize certain debuffs above others, and map which spells are
+        // used to cure each debuff.
         public static Dictionary<StatusEffect, string> DebuffPriorities = new Dictionary<StatusEffect, string>
         {
             { StatusEffect.Doom, Spells.Cursna },
@@ -103,12 +106,12 @@ namespace CurePlease.Model
             { StatusEffect.Sleep2, Spells.Curaga },
             { StatusEffect.Petrification, Spells.Stona },
             { StatusEffect.Silence, Spells.Silena },
+            { StatusEffect.Bind, Spells.Erase },
+            { StatusEffect.Weight, Spells.Erase },
             { StatusEffect.Paralysis, Spells.Paralyna }, 
             { StatusEffect.Amnesia, Spells.Esuna },
-            { StatusEffect.Blindness, Spells.Blindna }, 
-            { StatusEffect.Bind, Spells.Erase },
-            { StatusEffect.Weight, Spells.Erase }, 
-            { StatusEffect.Slow, Spells.Erase }, 
+            { StatusEffect.Slow, Spells.Erase },
+            { StatusEffect.Blindness, Spells.Blindna },
             { StatusEffect.Poison, Spells.Poisona }, 
             { StatusEffect.Attack_Down, Spells.Erase }, 
             { StatusEffect.Curse, Spells.Cursna }, 
@@ -144,7 +147,7 @@ namespace CurePlease.Model
             { StatusEffect.Max_TP_Down, Spells.Erase },
             { StatusEffect.Requiem, Spells.Erase },
             { StatusEffect.Elegy, Spells.Erase }, 
-            { StatusEffect.Threnody,  Spells.Erase }
+            { StatusEffect.Threnody, Spells.Erase }
         };
     }
 }
