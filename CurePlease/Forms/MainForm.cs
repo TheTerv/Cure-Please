@@ -111,10 +111,6 @@
 
         public string WindowerMode = "Windower";
 
-        public List<SpellsData> barspells = new List<SpellsData>();
-
-        public List<SpellsData> enspells = new List<SpellsData>();
-
         private int GetInventoryItemCount(EliteAPI api, ushort itemid)
         {
             int count = 0;
@@ -2209,305 +2205,7 @@
                 geo_spell = "Geo-Fade",
                 geo_position = geo_position,
             });
-            geo_position++;
-
-            barspells.Add(new SpellsData
-            {
-                Spell_Name = "Barfire",
-                type = 1,
-                spell_position = 0,
-                buffID = 100,
-            });
-            barspells.Add(new SpellsData
-            {
-                Spell_Name = "Barfira",
-                type = 1,
-                spell_position = 0,
-                buffID = 100,
-                aoe_version = true,
-            });
-            barspells.Add(new SpellsData
-            {
-                Spell_Name = "Barstone",
-                type = 1,
-                spell_position = 1,
-                buffID = 103,
-            });
-            barspells.Add(new SpellsData
-            {
-                Spell_Name = "Barstonra",
-                type = 1,
-                spell_position = 1,
-                buffID = 103,
-                aoe_version = true,
-            });
-            barspells.Add(new SpellsData
-            {
-                Spell_Name = "Barwater",
-                type = 1,
-                spell_position = 2,
-                buffID = 105,
-            });
-            barspells.Add(new SpellsData
-            {
-                Spell_Name = "Barwatera",
-                type = 1,
-                spell_position = 2,
-                buffID = 105,
-                aoe_version = true,
-            });
-            barspells.Add(new SpellsData
-            {
-                Spell_Name = "Baraero",
-                type = 1,
-                spell_position = 3,
-                buffID = 102
-            });
-            barspells.Add(new SpellsData
-            {
-                Spell_Name = "Baraera",
-                type = 1,
-                spell_position = 3,
-                buffID = 102,
-                aoe_version = true,
-            });
-            barspells.Add(new SpellsData
-            {
-                Spell_Name = "Barblizzard",
-                type = 1,
-                spell_position = 4,
-                buffID = 101
-            });
-            barspells.Add(new SpellsData
-            {
-                Spell_Name = "Barblizzara",
-                type = 1,
-                spell_position = 4,
-                buffID = 101,
-                aoe_version = true,
-            });
-            barspells.Add(new SpellsData
-            {
-                Spell_Name = "Barthunder",
-                type = 1,
-                spell_position = 5,
-                buffID = 104
-            });
-            barspells.Add(new SpellsData
-            {
-                Spell_Name = "Barthundra",
-                type = 1,
-                spell_position = 5,
-                buffID = 104,
-                aoe_version = true,
-            });
-
-            barspells.Add(new SpellsData
-            {
-                Spell_Name = "Baramnesia",
-                type = 2,
-                spell_position = 0,
-                buffID = 286,
-            });
-            barspells.Add(new SpellsData
-            {
-                Spell_Name = "Baramnesra",
-                type = 2,
-                spell_position = 0,
-                buffID = 286,
-                aoe_version = true,
-            });
-            barspells.Add(new SpellsData
-            {
-                Spell_Name = "Barvirus",
-                type = 2,
-                spell_position = 1,
-                buffID = 112
-            });
-            barspells.Add(new SpellsData
-            {
-                Spell_Name = "Barvira",
-                type = 2,
-                spell_position = 1,
-                buffID = 112,
-                aoe_version = true,
-            });
-            barspells.Add(new SpellsData
-            {
-                Spell_Name = "Barparalyze",
-                type = 2,
-                spell_position = 2,
-                buffID = 108
-            });
-            barspells.Add(new SpellsData
-            {
-                Spell_Name = "Barparalyzra",
-                type = 2,
-                spell_position = 2,
-                buffID = 108,
-                aoe_version = true,
-            });
-            barspells.Add(new SpellsData
-            {
-                Spell_Name = "Barsilence",
-                type = 2,
-                spell_position = 3,
-                buffID = 110
-            });
-            barspells.Add(new SpellsData
-            {
-                Spell_Name = "Barsilencera",
-                type = 2,
-                spell_position = 3,
-                buffID = 110,
-                aoe_version = true,
-            });
-            barspells.Add(new SpellsData
-            {
-                Spell_Name = "Barpetrify",
-                type = 2,
-                spell_position = 4,
-                buffID = 111
-            });
-            barspells.Add(new SpellsData
-            {
-                Spell_Name = "Barpetra",
-                type = 2,
-                spell_position = 4,
-                buffID = 111,
-                aoe_version = true,
-            });
-            barspells.Add(new SpellsData
-            {
-                Spell_Name = "Barpoison",
-                type = 2,
-                spell_position = 5,
-                buffID = 107
-            });
-            barspells.Add(new SpellsData
-            {
-                Spell_Name = "Barpoisonra",
-                type = 2,
-                spell_position = 5,
-                buffID = 107,
-                aoe_version = true,
-            });
-            barspells.Add(new SpellsData
-            {
-                Spell_Name = "Barblind",
-                type = 2,
-                spell_position = 6,
-                buffID = 109
-            });
-            barspells.Add(new SpellsData
-            {
-                Spell_Name = "Barblindra",
-                type = 2,
-                spell_position = 6,
-                buffID = 109,
-                aoe_version = true,
-            });
-            barspells.Add(new SpellsData
-            {
-                Spell_Name = "Barsleep",
-                type = 2,
-                spell_position = 7,
-                buffID = 106
-            });
-            barspells.Add(new SpellsData
-            {
-                Spell_Name = "Barsleepra",
-                type = 2,
-                spell_position = 7,
-                buffID = 106,
-                aoe_version = true,
-            });
-
-            enspells.Add(new SpellsData
-            {
-                Spell_Name = "Enfire",
-                type = 1,
-                spell_position = 0,
-                buffID = 94
-            });
-            enspells.Add(new SpellsData
-            {
-                Spell_Name = "Enstone",
-                type = 1,
-                spell_position = 1,
-                buffID = 97
-            });
-            enspells.Add(new SpellsData
-            {
-                Spell_Name = "Enwater",
-                type = 1,
-                spell_position = 2,
-                buffID = 99
-            });
-            enspells.Add(new SpellsData
-            {
-                Spell_Name = "Enaero",
-                type = 1,
-                spell_position = 3,
-                buffID = 96
-            });
-            enspells.Add(new SpellsData
-            {
-                Spell_Name = "Enblizzard",
-                type = 1,
-                spell_position = 4,
-                buffID = 95
-            });
-            enspells.Add(new SpellsData
-            {
-                Spell_Name = "Enthunder",
-                type = 1,
-                spell_position = 5,
-                buffID = 98
-            });
-
-            enspells.Add(new SpellsData
-            {
-                Spell_Name = "Enfire II",
-                type = 1,
-                spell_position = 6,
-                buffID = 277
-            });
-            enspells.Add(new SpellsData
-            {
-                Spell_Name = "Enstone II",
-                type = 1,
-                spell_position = 7,
-                buffID = 280
-            });
-            enspells.Add(new SpellsData
-            {
-                Spell_Name = "Enwater II",
-                type = 1,
-                spell_position = 8,
-                buffID = 282
-            });
-            enspells.Add(new SpellsData
-            {
-                Spell_Name = "Enaero II",
-                type = 1,
-                spell_position = 9,
-                buffID = 279
-            });
-            enspells.Add(new SpellsData
-            {
-                Spell_Name = "Enblizzard II",
-                type = 1,
-                spell_position = 10,
-                buffID = 278
-            });
-            enspells.Add(new SpellsData
-            {
-                Spell_Name = "Enthunder II",
-                type = 1,
-                spell_position = 11,
-                buffID = 281
-            });           
+            geo_position++;         
 
             IEnumerable<Process> pol = Process.GetProcessesByName("pol").Union(Process.GetProcessesByName("xiloader")).Union(Process.GetProcessesByName("edenxi"));
 
@@ -4220,11 +3918,35 @@
                     #region Primary Logic    
                     IEnumerable<PartyMember> partyByHP = Monitored.GetActivePartyMembers();
 
+                    /////////////////////////// Charmed CHECK /////////////////////////////////////
+                    // TODO: Charm logic is messy because it's not configurable currently. Clean this up when adding auto-sleep options.
+                    if (PL.Player.MainJob == (byte)Job.BRD)
+                    {
+                        // Get the list of anyone who's charmed and in range.
+                        var charmedMembers = partyByHP.Where(pm => PL.CanCastOn(pm) && ActiveBuffs.ContainsKey(pm.Name) && (ActiveBuffs[pm.Name].Contains((short)StatusEffect.Charm1) || ActiveBuffs[pm.Name].Contains((short)StatusEffect.Charm2)));
+                        
+                        if (charmedMembers.Any())
+                        {
+                            // We target the first charmed member who's not already asleep.
+                            var sleepTarget = charmedMembers.First(member => !(ActiveBuffs[member.Name].Contains((short)StatusEffect.Sleep) || ActiveBuffs[member.Name].Contains((short)StatusEffect.Sleep2)));
+
+                            if (sleepTarget != null)
+                            {
+                                // For now add some redundancy in case the first cast is resisted.
+                                var sleepSong = PL.SpellAvailable(Spells.Foe_Lullaby_II) ? Spells.Foe_Lullaby_II : Spells.Foe_Lullaby;
+                                
+                                CastSpell(sleepTarget.Name, sleepSong);
+                                return;
+                            }
+                        }
+                    }
+
                     /////////////////////////// DOOM CHECK /////////////////////////////////////
-                    var doomedMembers = partyByHP.Count(pm => PL.CanCastOn(pm) && ActiveBuffs.ContainsKey(pm.Name) && ActiveBuffs[pm.Name].Contains((short)StatusEffect.Doom));
+                    var doomedMembers = partyByHP.Count(pm => PL.CanCastOn(pm) && ActiveBuffs.ContainsKey(pm.Name) && (ActiveBuffs[pm.Name].Contains((short)StatusEffect.Doom) || ActiveBuffs[pm.Name].Contains((short)StatusEffect.Charm1) || ActiveBuffs[pm.Name].Contains((short)StatusEffect.Charm2)));
                     if(doomedMembers > 0)
                     {
                         RunDebuffChecker();
+                        return;
                     }
 
                     /////////////////////////// PL CURE //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -4234,6 +3956,7 @@
                     {
                         var plAsPartyMember = PL.Party.GetPartyMember(0);
                         CureCalculator(plAsPartyMember);
+                        return;
                     }
 
                     /////////////////////////// CURAGA //////////////////////////////////////////////////////////////////////////////////////////////////////////////////                                    
@@ -4340,49 +4063,11 @@
 
                     // PL Auto Buffs
 
-                    string BarspellName = string.Empty;
-                    int BarspellBuffID = 0;
-                    bool BarSpell_AOE = false;
+                    string barSpell = ConfigForm.config.AOE_Barelemental ? Data.AoeBarSpells[ConfigForm.config.plBarElement_Spell] : Data.BarSpells[ConfigForm.config.plBarElement_Spell];
 
-                    if (ConfigForm.config.AOE_Barelemental == false)
-                    {
-                        SpellsData barspell = barspells.Where(c => c.spell_position == ConfigForm.config.plBarElement_Spell && c.type == 1 && c.aoe_version != true).SingleOrDefault();
+                    string barStatus = ConfigForm.config.AOE_Barstatus ? Data.AoeBarStatus[ConfigForm.config.plBarStatus_Spell] : Data.BarStatus[ConfigForm.config.plBarStatus_Spell];
 
-                        BarspellName = barspell.Spell_Name;
-                        BarspellBuffID = barspell.buffID;
-                        BarSpell_AOE = false;
-                    }
-                    else
-                    {
-                        SpellsData barspell = barspells.Where(c => c.spell_position == ConfigForm.config.plBarElement_Spell && c.type == 1 && c.aoe_version == true).SingleOrDefault();
-
-                        BarspellName = barspell.Spell_Name;
-                        BarspellBuffID = barspell.buffID;
-                        BarSpell_AOE = true;
-                    }
-
-                    string BarstatusName = string.Empty;
-                    int BarstatusBuffID = 0;
-                    bool BarStatus_AOE = false;
-
-                    if (ConfigForm.config.AOE_Barstatus == false)
-                    {
-                        SpellsData barstatus = barspells.Where(c => c.spell_position == ConfigForm.config.plBarStatus_Spell && c.type == 2 && c.aoe_version != true).SingleOrDefault();
-
-                        BarstatusName = barstatus.Spell_Name;
-                        BarstatusBuffID = barstatus.buffID;
-                        BarStatus_AOE = false;
-                    }
-                    else
-                    {
-                        SpellsData barstatus = barspells.Where(c => c.spell_position == ConfigForm.config.plBarStatus_Spell && c.type == 2 && c.aoe_version == true).SingleOrDefault();
-
-                        BarstatusName = barstatus.Spell_Name;
-                        BarstatusBuffID = barstatus.buffID;
-                        BarStatus_AOE = true;
-                    }
-
-                    SpellsData enspell = enspells.Where(c => c.spell_position == ConfigForm.config.plEnspell_Spell && c.type == 1).SingleOrDefault();
+                    string enspell = Data.Enspells[ConfigForm.config.plEnspell_Spell];
                     string stormspell = Data.StormTiers[ConfigForm.config.plStormSpell_Spell];
                     string gainBoostSpell = Data.GainBoostSpells[ConfigForm.config.plGainBoost_Spell];
 
@@ -4425,9 +4110,9 @@
                                 CastSpell(Target.Me, protectraSpell);
                             }
                         }
-                        else if (ConfigForm.config.plBarElement && !PL.HasStatus((short)BarspellBuffID) && PL.SpellAvailable(BarspellName))
+                        else if (ConfigForm.config.plBarElement && !PL.HasStatus(Data.SpellEffects[barSpell]) && PL.SpellAvailable(barSpell))
                         {
-                            if (ConfigForm.config.Accession && ConfigForm.config.barspellAccession && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Accession) && BarSpell_AOE == false && !PL.HasStatus(StatusEffect.Accession))
+                            if (ConfigForm.config.Accession && ConfigForm.config.barspellAccession && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Accession) && ConfigForm.config.AOE_Barelemental == false && !PL.HasStatus(StatusEffect.Accession))
                             {
                                 JobAbility_Wait("Barspell, Accession", Ability.Accession);
                                 return;
@@ -4439,11 +4124,11 @@
                                 return;
                             }
 
-                            CastSpell(Target.Me, BarspellName);
+                            CastSpell(Target.Me, barSpell);
                         }
-                        else if (ConfigForm.config.plBarStatus && !PL.HasStatus((short)BarstatusBuffID) && PL.SpellAvailable(BarstatusName))
+                        else if (ConfigForm.config.plBarStatus && !PL.HasStatus(Data.SpellEffects[barStatus]) && PL.SpellAvailable(barStatus))
                         {
-                            if (ConfigForm.config.Accession && ConfigForm.config.barstatusAccession && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Accession) && BarStatus_AOE == false && !PL.HasStatus(StatusEffect.Accession))
+                            if (ConfigForm.config.Accession && ConfigForm.config.barstatusAccession && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Accession) && ConfigForm.config.AOE_Barstatus == false && !PL.HasStatus(StatusEffect.Accession))
                             {
                                 JobAbility_Wait("Barstatus, Accession", Ability.Accession);
                                 return;
@@ -4455,7 +4140,7 @@
                                 return;
                             }
 
-                            CastSpell(Target.Me, BarstatusName);
+                            CastSpell(Target.Me, barStatus);
                         }
                         else if (ConfigForm.config.plGainBoost && !PL.HasStatus(Data.SpellEffects[gainBoostSpell]) && PL.SpellAvailable(gainBoostSpell))
                         {
@@ -4711,21 +4396,22 @@
                                 CastSpell(Target.Me, Spells.Shock_Spikes);
                             }
                         }
-                        else if (ConfigForm.config.plEnspell && !PL.HasStatus((short)enspell.buffID) && PL.SpellAvailable(enspell.Spell_Name))
+                        else if (ConfigForm.config.plEnspell && !PL.HasStatus(Data.SpellEffects[enspell]) && PL.SpellAvailable(enspell))
                         {
-                            if (ConfigForm.config.Accession && ConfigForm.config.enspellAccession && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Accession) && enspell.spell_position < 6 && !PL.HasStatus(StatusEffect.Accession))
+                            // Only tries to accession for tier 1 enspells, not tier 2.
+                            if (ConfigForm.config.Accession && ConfigForm.config.enspellAccession && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Accession) && ConfigForm.config.plEnspell_Spell < 6 && !PL.HasStatus(StatusEffect.Accession))
                             {
                                 JobAbility_Wait("Enspell, Accession", Ability.Accession);
                                 return;
                             }
 
-                            if (ConfigForm.config.Perpetuance && ConfigForm.config.enspellPerpetuance && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Perpetuance) && enspell.spell_position < 6 && !PL.HasStatus(StatusEffect.Perpetuance))
+                            if (ConfigForm.config.Perpetuance && ConfigForm.config.enspellPerpetuance && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Perpetuance) && ConfigForm.config.plEnspell_Spell < 6 && !PL.HasStatus(StatusEffect.Perpetuance))
                             {
                                 JobAbility_Wait("Enspell, Perpetuance", Ability.Perpetuance);
                                 return;
                             }
 
-                            CastSpell(Target.Me, enspell.Spell_Name);
+                            CastSpell(Target.Me, enspell);
                         }
                         else if (ConfigForm.config.plAuspice && (!PL.HasStatus(StatusEffect.Auspice)) && PL.SpellAvailable(Spells.Auspice))
                         {
@@ -4939,109 +4625,23 @@
                             }
                             else if (ConfigForm.config.Devotion && PL.AbilityAvailable(Ability.Devotion) && PL.Player.HPP > 80 && (!ConfigForm.config.DevotionWhenEngaged || (Monitored.Player.Status == 1)))
                             {
-                                // First Generate the current party number, this will be used
-                                // regardless of the type
-                                int memberOF = PLPartyRelativeToMonitored();
+                                // Get all active members who are in the PLs party.
+                                IEnumerable<PartyMember> cParty = Monitored.GetActivePartyMembers().Where(member => member.InParty(plParty) && member.Name != PL.Player.Name);
 
-                                // Now generate the party
-                                IEnumerable<PartyMember> cParty = Monitored.Party.GetPartyMembers().Where(p => p.Active != 0 && p.Zone == PL.Player.ZoneId);
-
-                                // Make sure member number is not 0 (null) or 4 (void)
-                                if (memberOF > 0)
+                                // If we're set to only devotion a specific target, filter the list for that target.
+                                if(ConfigForm.config.DevotionTargetType == 0)
                                 {
-                                    // Run through Each party member as we're looking for either a specifc name or if set otherwise anyone with the MP criteria in the current party.
-                                    foreach (PartyMember pData in cParty)
-                                    {
-                                        // If party of party v1
-                                        if (memberOF == 1 && pData.MemberNumber >= 0 && pData.MemberNumber <= 5)
-                                        {
-                                            if (!string.IsNullOrEmpty(pData.Name) && pData.Name != PL.Player.Name)
-                                            {
-                                                if (ConfigForm.config.DevotionTargetType == 0)
-                                                {
-                                                    if (pData.Name == ConfigForm.config.DevotionTargetName)
-                                                    {
-                                                        XiEntity playerInfo = PL.Entity.GetEntity((int)pData.TargetIndex);
-                                                        if (playerInfo.Distance < 10 && playerInfo.Distance > 0 && pData.CurrentMP <= ConfigForm.config.DevotionMP && pData.CurrentMPP <= 30)
-                                                        {
-                                                            PL.ThirdParty.SendString("/ja \"Devotion\" " + ConfigForm.config.DevotionTargetName);
-                                                            Thread.Sleep(TimeSpan.FromSeconds(2));
-                                                        }
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    XiEntity playerInfo = PL.Entity.GetEntity((int)pData.TargetIndex);
-
-                                                    if ((pData.CurrentMP <= ConfigForm.config.DevotionMP) && (playerInfo.Distance < 10) && pData.CurrentMPP <= 30)
-                                                    {
-                                                        PL.ThirdParty.SendString("/ja \"Devotion\" " + pData.Name);
-                                                        Thread.Sleep(TimeSpan.FromSeconds(2));
-                                                        break;
-                                                    }
-                                                }
-                                            }
-                                        } // If part of party 2
-                                        else if (memberOF == 2 && pData.MemberNumber >= 6 && pData.MemberNumber <= 11)
-                                        {
-                                            if (!string.IsNullOrEmpty(pData.Name) && pData.Name != PL.Player.Name)
-                                            {
-                                                if (ConfigForm.config.DevotionTargetType == 0)
-                                                {
-                                                    if (pData.Name == ConfigForm.config.DevotionTargetName)
-                                                    {
-                                                        XiEntity playerInfo = PL.Entity.GetEntity((int)pData.TargetIndex);
-                                                        if (playerInfo.Distance < 10 && playerInfo.Distance > 0 && pData.CurrentMP <= ConfigForm.config.DevotionMP)
-                                                        {
-                                                            PL.ThirdParty.SendString("/ja \"Devotion\" " + ConfigForm.config.DevotionTargetName);
-                                                            Thread.Sleep(TimeSpan.FromSeconds(2));
-                                                        }
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    XiEntity playerInfo = PL.Entity.GetEntity((int)pData.TargetIndex);
-
-                                                    if ((pData.CurrentMP <= ConfigForm.config.DevotionMP) && (playerInfo.Distance < 10) && pData.CurrentMPP <= 50)
-                                                    {
-                                                        PL.ThirdParty.SendString("/ja \"Devotion\" " + pData.Name);
-                                                        Thread.Sleep(TimeSpan.FromSeconds(2));
-                                                        break;
-                                                    }
-                                                }
-                                            }
-                                        } // If part of party 3
-                                        else if (memberOF == 3 && pData.MemberNumber >= 12 && pData.MemberNumber <= 17)
-                                        {
-                                            if (!string.IsNullOrEmpty(pData.Name) && pData.Name != PL.Player.Name)
-                                            {
-                                                if (ConfigForm.config.DevotionTargetType == 0)
-                                                {
-                                                    if (pData.Name == ConfigForm.config.DevotionTargetName)
-                                                    {
-                                                        XiEntity playerInfo = PL.Entity.GetEntity((int)pData.TargetIndex);
-                                                        if (playerInfo.Distance < 10 && playerInfo.Distance > 0 && pData.CurrentMP <= ConfigForm.config.DevotionMP)
-                                                        {
-                                                            PL.ThirdParty.SendString("/ja \"Devotion\" " + ConfigForm.config.DevotionTargetName);
-                                                            Thread.Sleep(TimeSpan.FromSeconds(2));
-                                                        }
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    XiEntity playerInfo = PL.Entity.GetEntity((int)pData.TargetIndex);
-
-                                                    if ((pData.CurrentMP <= ConfigForm.config.DevotionMP) && (playerInfo.Distance < 10) && pData.CurrentMPP <= 50)
-                                                    {
-                                                        PL.ThirdParty.SendString("/ja \"Devotion\" " + pData.Name);
-                                                        Thread.Sleep(TimeSpan.FromSeconds(2));
-                                                        break;
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
+                                    cParty = cParty.Where(member => member.Name == ConfigForm.config.DevotionTargetName);
                                 }
+
+                                // Get the first member who's within range, and has enough missing MP to meet our config criteria.
+                                var devotionTarget = cParty.First(member => member.CurrentMP <= ConfigForm.config.DevotionMP && PL.EntityWithin(10, member.TargetIndex));
+
+                                if(devotionTarget != null)
+                                {
+                                    PL.ThirdParty.SendString("/ja \"Devotion\" " + devotionTarget.Name);
+                                    Thread.Sleep(TimeSpan.FromSeconds(2));
+                                }                          
                             }
                         }
 

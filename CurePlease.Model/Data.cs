@@ -55,6 +55,19 @@ namespace CurePlease.Model
             Spells.Firestorm_II, Spells.Hailstorm_II, Spells.Windstorm_II, Spells.Sandstorm_II, Spells.Thunderstorm_II, Spells.Rainstorm_II, Spells.Aurorastorm_II, Spells.Voidstorm_II
         };
 
+        public static string[] BarSpells = { Spells.Barfire, Spells.Barstone, Spells.Barwater, Spells.Baraero, Spells.Barblizzard, Spells.Barthunder };
+
+        public static string[] AoeBarSpells = { Spells.Barfira, Spells.Barstonra, Spells.Barwatera, Spells.Baraera, Spells.Barblizzara, Spells.Barthundra };
+
+        public static string[] BarStatus = { Spells.Baramnesia, Spells.Barvirus, Spells.Barparalyze, Spells.Barsilence, Spells.Barpetrify, Spells.Barpoison, Spells.Barblind, Spells.Barsleep };
+
+        public static string[] AoeBarStatus = { Spells.Baramnesra, Spells.Barvira, Spells.Barparalyzra, Spells.Barsilencera, Spells.Barpetra, Spells.Barpoisonra, Spells.Barblindra, Spells.Barsleepra };
+
+        public static string[] Enspells = { 
+            Spells.Enfire, Spells.Enstone, Spells.Enwater, Spells.Enaero, Spells.Enblizzard, Spells.Enthunder,
+            Spells.Enfire_II, Spells.Enstone_II, Spells.Enwater_II, Spells.Enaero_II, Spells.Enblizzard_II, Spells.Enthunder_II,
+        };
+
         // This is tricky because the EliteAPI is closed source, so we're stuck working around it.
         // In this case they don't have the newer status effects yet, so we need to still treat them
         // as shorts, for the situations where there isn't an enum value for it.
@@ -90,6 +103,46 @@ namespace CurePlease.Model
             { Spells.Rainstorm_II, 594 },
             { Spells.Aurorastorm_II, 595 },
             { Spells.Voidstorm_II, 596 },
+            { Spells.Barfire, (short)StatusEffect.Barfire },
+            { Spells.Barfira, (short)StatusEffect.Barfire },
+            { Spells.Barstone, (short)StatusEffect.Barstone },
+            { Spells.Barstonra, (short)StatusEffect.Barstone },
+            { Spells.Barwater, (short)StatusEffect.Barwater },
+            { Spells.Barwatera, (short)StatusEffect.Barwater },
+            { Spells.Baraero, (short)StatusEffect.Baraero },
+            { Spells.Baraera, (short)StatusEffect.Baraero },
+            { Spells.Barblizzard, (short)StatusEffect.Barblizzard },
+            { Spells.Barblizzara, (short)StatusEffect.Barblizzard },
+            { Spells.Barthunder, (short)StatusEffect.Barthunder },
+            { Spells.Barthundra, (short)StatusEffect.Barthunder },
+            { Spells.Baramnesia, (short)StatusEffect.Baramnesia },
+            { Spells.Baramnesra, (short)StatusEffect.Baramnesia },
+            { Spells.Barvirus, (short)StatusEffect.Barvirus },
+            { Spells.Barvira, (short)StatusEffect.Barvirus },
+            { Spells.Barparalyze, (short)StatusEffect.Barparalyze },
+            { Spells.Barparalyzra, (short)StatusEffect.Barparalyze },
+            { Spells.Barsilence, (short)StatusEffect.Barsilence },
+            { Spells.Barsilencera, (short)StatusEffect.Barsilence },
+            { Spells.Barpetrify, (short)StatusEffect.Barpetrify },
+            { Spells.Barpetra, (short)StatusEffect.Barpetrify },
+            { Spells.Barpoison, (short)StatusEffect.Barpoison },
+            { Spells.Barpoisonra, (short)StatusEffect.Barpoison },
+            { Spells.Barblind, (short)StatusEffect.Barblind },
+            { Spells.Barblindra, (short)StatusEffect.Barblind },
+            { Spells.Barsleep, (short)StatusEffect.Barsleep },
+            { Spells.Barsleepra, (short)StatusEffect.Barsleep },
+            { Spells.Enfire, (short)StatusEffect.Enfire },
+            { Spells.Enstone, (short)StatusEffect.Enstone },
+            { Spells.Enwater, (short)StatusEffect.Enwater },
+            { Spells.Enaero, (short)StatusEffect.Enaero },
+            { Spells.Enblizzard, (short)StatusEffect.Enblizzard },
+            { Spells.Enthunder, (short)StatusEffect.Enthunder },
+            { Spells.Enfire_II, (short)StatusEffect.Enfire_2 },
+            { Spells.Enstone_II, (short)StatusEffect.Enstone_2 },
+            { Spells.Enwater_II, (short)StatusEffect.Enwater_2 },
+            { Spells.Enaero_II, (short)StatusEffect.Enaero_2 },
+            { Spells.Enblizzard_II, (short)StatusEffect.Enblizzard_2 },
+            { Spells.Enthunder_II, (short)StatusEffect.Enthunder_2 },
         };
 
         public static StatusEffect[] GainBoostEffects =
@@ -99,8 +152,12 @@ namespace CurePlease.Model
 
         // We use this dictionary to both prioritize certain debuffs above others, and map which spells are
         // used to cure each debuff.
+        // TODO: Currently this is hardcoded to only auto-sleep charmed members on bard, will have to make this configurable
+        // in a generic way later.
         public static Dictionary<StatusEffect, string> DebuffPriorities = new Dictionary<StatusEffect, string>
         {
+            { StatusEffect.Charm1, Spells.Foe_Lullaby_II },
+            { StatusEffect.Charm2, Spells.Foe_Lullaby_II },
             { StatusEffect.Doom, Spells.Cursna },
             { StatusEffect.Sleep, Spells.Curaga },
             { StatusEffect.Sleep2, Spells.Curaga },

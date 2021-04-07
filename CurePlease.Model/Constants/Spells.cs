@@ -128,5 +128,54 @@ namespace CurePlease.Model.Constants
 
         public static string Utsusemi_Ichi = "Utsusemi: Ichi";
         public static string Utsusemi_Ni = "Utsusemi: Ni";
+
+        public static string Foe_Lullaby = "Foe Lullaby";
+        public static string Foe_Lullaby_II = "Foe Lullaby II";
+
+        public static string Barfire = "Barfire";
+        public static string Barstone = "Barstone";
+        public static string Barwater = "Barwater";
+        public static string Baraero =  "Baraero";
+        public static string Barblizzard =  "Barblizzard";
+        public static string Barthunder =  "Barthunder";
+
+        public static string Barfira = "Barfira";
+        public static string Barstonra = "Barstonra";
+        public static string Barwatera =  "Barwatera";
+        public static string Baraera =  "Baraera";
+        public static string Barblizzara =  "Barblizzara";
+        public static string Barthundra =  "Barthundra";
+
+        public static string Baramnesia = "Baramnesia";
+        public static string Barvirus = "Barvirus";
+        public static string Barparalyze = "Barparalyze";
+        public static string Barsilence = "Barsilence";
+        public static string Barpetrify = "Barpetrify";
+        public static string Barpoison = "Barpoison";
+        public static string Barblind = "Barblind";
+        public static string Barsleep = "Barsleep";
+
+        public static string Baramnesra = "Baramnesra";
+        public static string Barvira = "Barvira";
+        public static string Barparalyzra = "Barparalyzra";
+        public static string Barsilencera = "Barsilencera";
+        public static string Barpetra = "Barpetra";
+        public static string Barpoisonra = "Barpoisonra";
+        public static string Barblindra = "Barblindra";
+        public static string Barsleepra = "Barsleepra";
+
+        public static string Enfire = "Enfire";
+        public static string Enstone = "Enstone";
+        public static string Enwater = "Enwater";
+        public static string Enaero = "Enaero";
+        public static string Enblizzard = "Enblizzard";
+        public static string Enthunder = "Enthunder";
+
+        public static string Enfire_II = "Enfire II";
+        public static string Enstone_II = "Enstone II";
+        public static string Enwater_II = "Enwater II";
+        public static string Enaero_II = "Enaero II";
+        public static string Enblizzard_II = "Enblizzard II";
+        public static string Enthunder_II = "Enthunder II";
     }
 }
