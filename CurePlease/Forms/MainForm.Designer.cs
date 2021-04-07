@@ -1538,7 +1538,7 @@ namespace CurePlease
             // 
             // partyMembersUpdate
             // 
-            this.partyMembersUpdate.Interval = 500;
+            this.partyMembersUpdate.Interval = 250;
             this.partyMembersUpdate.Tick += new System.EventHandler(this.partyMembersUpdate_TickAsync);
             // 
             // actionTimer

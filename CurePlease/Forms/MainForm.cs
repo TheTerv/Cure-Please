@@ -27,13 +27,6 @@
 
         private ConfigForm Form2 = new ConfigForm();
 
-        public class CharacterData : List<CharacterData>
-        {
-            public int TargetIndex { get; set; }
-
-            public int MemberNumber { get; set; }
-        }
-
         public class SongData : List<SongData>
         {
             public string song_type { get; set; }
@@ -43,19 +36,6 @@
             public string song_name { get; set; }
 
             public int buff_id { get; set; }
-        }
-
-        public class SpellsData : List<SpellsData>
-        {
-            public string Spell_Name { get; set; }
-
-            public int spell_position { get; set; }
-
-            public int type { get; set; }
-
-            public int buffID { get; set; }
-
-            public bool aoe_version { get; set; }
         }
 
         public class GeoData : List<GeoData>
@@ -79,18 +59,6 @@
         private int PL_BRDCount = 0;
         private bool ForceSongRecast = false;
         private string Last_Song_Cast = string.Empty;
-
-
-        private uint PL_Index = 0;
-        private uint Monitored_Index = 0;
-
-
-        //  private int song_casting = 0;
-        //  private string LastSongCast = Spells.Unknown;
-
-
-        // private bool ForceSongRecast = false;
-        //  private string Last_Song_Cast = Spells.Unknown;
 
 
         // GEO ENGAGED CHECK
@@ -3429,23 +3397,6 @@
             }
         }
 
-        private void GrabPlayerMonitoredData()
-        {
-            for (int x = 0; x < 2048; x++)
-            {
-                XiEntity entity = PL.Entity.GetEntity(x);
-
-                if (entity.Name != null && entity.Name == Monitored.Player.Name)
-                {
-                    Monitored_Index = entity.TargetID;
-                }
-                else if (entity.Name != null && entity.Name == PL.Player.Name)
-                {
-                    PL_Index = entity.TargetID;
-                }
-            }
-        }
-
         private async void actionTimer_TickAsync(object sender, EventArgs e)
         {
             string[] shell_spells = { "Shell", "Shell II", "Shell III", "Shell IV", "Shell V" };
@@ -3460,9 +3411,6 @@
             {
                 return;
             }
-
-
-            GrabPlayerMonitoredData();
 
             // Grab current time for calculations below
 
