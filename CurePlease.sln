@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CurePlease.Model", "CurePle
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CurePlease.Utilities", "CurePlease.Utilities\CurePlease.Utilities.csproj", "{98FE190E-2FAA-4600-97D3-4173456B264A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CurePlease.Engine", "CurePlease.Engine\CurePlease.Engine.csproj", "{E9E551B0-451E-4C08-8D25-3CF057912A0E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,14 @@ Global
 		{98FE190E-2FAA-4600-97D3-4173456B264A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{98FE190E-2FAA-4600-97D3-4173456B264A}.Release|x86.ActiveCfg = Release|Any CPU
 		{98FE190E-2FAA-4600-97D3-4173456B264A}.Release|x86.Build.0 = Release|Any CPU
+		{E9E551B0-451E-4C08-8D25-3CF057912A0E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E9E551B0-451E-4C08-8D25-3CF057912A0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E9E551B0-451E-4C08-8D25-3CF057912A0E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E9E551B0-451E-4C08-8D25-3CF057912A0E}.Debug|x86.Build.0 = Debug|Any CPU
+		{E9E551B0-451E-4C08-8D25-3CF057912A0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E9E551B0-451E-4C08-8D25-3CF057912A0E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E9E551B0-451E-4C08-8D25-3CF057912A0E}.Release|x86.ActiveCfg = Release|Any CPU
+		{E9E551B0-451E-4C08-8D25-3CF057912A0E}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

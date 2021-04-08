@@ -15,6 +15,8 @@
     </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
     <IsWebBootstrapper>false</IsWebBootstrapper>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -29,8 +31,6 @@
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -193,6 +193,10 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CurePlease.Engine\CurePlease.Engine.csproj">
+      <Project>{E9E551B0-451E-4C08-8D25-3CF057912A0E}</Project>
+      <Name>CurePlease.Engine</Name>
+    </ProjectReference>
     <ProjectReference Include="..\CurePlease.Model\CurePlease.Model.csproj">
       <Project>{8e8fc162-0b31-453e-a2f4-1e9a3cee2029}</Project>
       <Name>CurePlease.Model</Name>

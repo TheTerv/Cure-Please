@@ -225,6 +225,7 @@ namespace CurePlease.Utilities
             return 0;
         }
 
+        // TODO: Not working? No debuffs being cured
         public static PartyMember GetHighestPriorityDebuff(this EliteAPI api, Dictionary<string, IEnumerable<short>> debuffs)
         {
             var members = api.GetActivePartyMembers().Where(pm => api.CanCastOn(pm));
@@ -241,14 +242,21 @@ namespace CurePlease.Utilities
 
                 // We get the debuffs and order them by priority, filtering for statuses we have the right spell off cooldown.
                 var debuffIds = debuffs[pm.Name].Where(id => Data.DebuffPriorities.Keys.Cast<short>().Contains(id));
-                var pmPriorities = debuffIds.Cast<StatusEffect>().OrderBy(status => Array.IndexOf(Data.DebuffPriorities.Keys.ToArray(), status)).Where(status => api.SpellAvailable(Data.DebuffPriorities[status]));
-
-                var priority = Array.IndexOf(Data.DebuffPriorities.Keys.ToArray(), pmPriorities.First());
-                if(priority < lowestIndex)
+                
+                if(debuffIds.Any())
                 {
-                    lowestIndex = priority;
-                    priorityMember = pm;
-                }
+                    var pmPriorities = debuffIds.Cast<StatusEffect>().OrderBy(status => Array.IndexOf(Data.DebuffPriorities.Keys.ToArray(), status)).Where(status => api.SpellAvailable(Data.DebuffPriorities[status]));
+
+                    if (pmPriorities.Any())
+                    {
+                        var priority = Array.IndexOf(Data.DebuffPriorities.Keys.ToArray(), pmPriorities.FirstOrDefault());
+                        if (priority < lowestIndex)
+                        {
+                            lowestIndex = priority;
+                            priorityMember = pm;
+                        }
+                    }
+                }            
             }
 
             return priorityMember;

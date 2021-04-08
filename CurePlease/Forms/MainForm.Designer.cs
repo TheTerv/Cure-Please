@@ -218,7 +218,6 @@ namespace CurePlease
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
             this.debugging_MSGBOX = new System.Windows.Forms.Label();
-            this.resetSongTimer = new System.Windows.Forms.Timer(this.components);
             this.checkSCHCharges = new System.Windows.Forms.Timer(this.components);
             this.AutomaticChecks = new System.Windows.Forms.Timer(this.components);
             this.groupBox2 = new System.Windows.Forms.GroupBox();
@@ -2202,12 +2201,6 @@ namespace CurePlease
             this.debugging_MSGBOX.Name = "debugging_MSGBOX";
             this.debugging_MSGBOX.Size = new System.Drawing.Size(0, 13);
             this.debugging_MSGBOX.TabIndex = 22;
-            // 
-            // resetSongTimer
-            // 
-            this.resetSongTimer.Enabled = true;
-            this.resetSongTimer.Interval = 60000;
-            this.resetSongTimer.Tick += new System.EventHandler(this.resetSongTimer_Tick);
             
             // 
             // groupBox2
@@ -2598,8 +2591,7 @@ namespace CurePlease
         private ToolStripMenuItem autoRefreshIIToolStripMenuItem;
         public Button setinstance;
         public Button setinstance2;
-        public Label debugging_MSGBOX;
-        private Timer resetSongTimer;
+        public Label debugging_MSGBOX;       
         private Timer checkSCHCharges;
         private Timer AutomaticChecks;
         private GroupBox groupBox2;

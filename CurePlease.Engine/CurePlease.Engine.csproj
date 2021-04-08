@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{8E8FC162-0B31-453E-A2F4-1E9A3CEE2029}</ProjectGuid>
+    <ProjectGuid>{E9E551B0-451E-4C08-8D25-3CF057912A0E}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CurePlease.Model</RootNamespace>
-    <AssemblyName>CurePlease.Model</AssemblyName>
+    <RootNamespace>CurePlease.Engine</RootNamespace>
+    <AssemblyName>CurePlease.Engine</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -21,7 +21,6 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -30,7 +29,6 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="EliteMMO.API">
@@ -46,18 +44,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="EngineAction.cs" />
-    <Compile Include="Config\SongConfig.cs" />
-    <Compile Include="Constants\Ability.cs" />
-    <Compile Include="Constants\Items.cs" />
-    <Compile Include="Constants\Spells.cs" />
-    <Compile Include="Constants\Target.cs" />
-    <Compile Include="Enums\Job.cs" />
-    <Compile Include="Enums\Status.cs" />
+    <Compile Include="SongEngine.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Data.cs" />
+    <ProjectReference Include="..\CurePlease.Model\CurePlease.Model.csproj">
+      <Project>{8e8fc162-0b31-453e-a2f4-1e9a3cee2029}</Project>
+      <Name>CurePlease.Model</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CurePlease.Utilities\CurePlease.Utilities.csproj">
+      <Project>{98fe190e-2faa-4600-97d3-4173456b264a}</Project>
+      <Name>CurePlease.Utilities</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

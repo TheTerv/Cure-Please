@@ -1,5 +1,6 @@
 ﻿namespace CurePlease
 {
+    using CurePlease.Model.Config;
     using EliteMMO.API;
     using System;
     using System.Collections.Generic;
@@ -4421,5 +4422,21 @@
             { StatusEffect.Elegy, na_Elegy.Checked },
             { StatusEffect.Threnody, na_Threnody.Checked }
         };
+
+        public SongConfig GetSongConfig()
+        {
+            return new SongConfig()
+            {
+                SingingEnabled = enableSinging.Checked,
+                SingOnlyWhenNear = SongsOnlyWhenNearEngaged.Checked,
+                SongRecastMinutes = recastSong.Value,
+                Dummy1 = dummy1.SelectedIndex,
+                Dummy2 = dummy2.SelectedIndex,
+                Song1 = song1.SelectedIndex,
+                Song2 = song2.SelectedIndex,
+                Song3 = song3.SelectedIndex,
+                Song4 = song4.SelectedIndex
+            };
+        }
     }
 }
