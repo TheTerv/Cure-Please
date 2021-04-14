@@ -25,5 +25,8 @@ namespace CurePlease.Model.Constants
         public static string Devotion = "Devotion";
         public static string EclipticAttrition = "Ecliptic Attrition";
         public static string LifeCycle = "Life Cycle";
+        public static string Troubadour = "Troubadour";
+        public static string Nightingale = "Nightingale";
+        public static string BlazeOfGlory = "Blaze of Glory";
     }
 }

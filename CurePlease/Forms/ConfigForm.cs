@@ -4435,7 +4435,36 @@
                 Song1 = song1.SelectedIndex,
                 Song2 = song2.SelectedIndex,
                 Song3 = song3.SelectedIndex,
-                Song4 = song4.SelectedIndex
+                Song4 = song4.SelectedIndex,
+                TroubadourEnabled = config.Troubadour,
+                NightingaleEnabled = config.Nightingale
+            };
+        }
+
+        public GeoConfig GetGeoConfig()
+        {
+            return new GeoConfig()
+            {
+                GeoSpellsEnabled = config.EnableGeoSpells,
+                GeoWhenEngaged = config.GeoWhenEngaged,
+                RadialArcanaEnabled = config.RadialArcana,
+                RadialArcanaMP = config.RadialArcanaMP,
+                RadialArcanaSpell = config.RadialArcana_Spell,
+                GeoSpell = config.GeoSpell_Spell,
+                FullCircleEnabled = config.FullCircle,
+                FullCircleGeoTarget = config.Fullcircle_GEOTarget,
+                FullCircleDisableEnemy = config.Fullcircle_DisableEnemy,
+                LuopanSpellsEnabled = config.EnableLuopanSpells,
+                LuopanSpellTarget = config.LuopanSpell_Target,
+                SpecifiedEngageTarget = config.specifiedEngageTarget,
+                EntrustEnabled = config.Entrust,
+                EntrustSpell = config.EntrustedSpell_Spell,
+                EntrustSpellTarget = config.EntrustedSpell_Target,
+                IndiWhenEngaged = config.IndiWhenEngaged,
+                DematerializeEnabled = config.Dematerialize,
+                EclipticAttritionEnabled = config.EclipticAttrition,
+                LifeCycleEnabled = config.LifeCycle,
+                BlazeOfGloryEnabled = config.BlazeOfGlory
             };
         }
     }

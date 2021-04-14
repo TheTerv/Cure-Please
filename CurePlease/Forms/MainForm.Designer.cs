@@ -2336,11 +2336,6 @@ namespace CurePlease
             this.AddonReader.DoWork += new System.ComponentModel.DoWorkEventHandler(this.AddonReader_DoWork);
             this.AddonReader.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.AddonReader_RunWorkerCompleted);
             // 
-            // FullCircle_Timer
-            // 
-            this.FullCircle_Timer.Interval = 5000;
-            this.FullCircle_Timer.Tick += new System.EventHandler(this.FullCircle_Timer_Tick);
-            // 
             // AddOnStatus
             // 
             this.AddOnStatus.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
@@ -2360,15 +2355,6 @@ namespace CurePlease
             // 
             this.ProtectCasting.WorkerSupportsCancellation = true;
             this.ProtectCasting.DoWork += new System.ComponentModel.DoWorkEventHandler(this.ProtectCasting_DoWork);
-            // 
-            // JobAbility_Delay
-            // 
-            this.JobAbility_Delay.DoWork += new System.ComponentModel.DoWorkEventHandler(this.JobAbility_Delay_DoWork);
-            // 
-            // EclipticTimer
-            // 
-            this.EclipticTimer.Interval = 1000;
-            this.EclipticTimer.Tick += new System.EventHandler(this.EclipticTimer_Tick);
             // 
             // CustomCommand_Tracker
             // 
@@ -2627,7 +2613,6 @@ namespace CurePlease
         private Button AboutButton;
         private System.ComponentModel.BackgroundWorker AddonReader;
         private System.ComponentModel.BackgroundWorker JobAbilityDelay;
-        private Timer FullCircle_Timer;
         private ToolStripSeparator toolStripSeparator1;
         private ToolStripMenuItem SandstormToolStripMenuItem;
         private ToolStripMenuItem RainstormToolStripMenuItem;
@@ -2639,7 +2624,6 @@ namespace CurePlease
         private ToolStripMenuItem HailstormToolStripMenuItem;
         private Button AddOnStatus;
         private System.ComponentModel.BackgroundWorker ProtectCasting;
-        private System.ComponentModel.BackgroundWorker JobAbility_Delay;
         private Timer EclipticTimer;
         private System.ComponentModel.BackgroundWorker CustomCommand_Tracker;
     }

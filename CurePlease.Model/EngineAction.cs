@@ -22,5 +22,6 @@ namespace CurePlease.Model
                 return $"Casting {Spell} on {Target}";
             } 
         }
+        public string Error { get; set; }
     }
 }

@@ -860,6 +860,23 @@ namespace CurePlease.Engine
 
             if (Config.SingingEnabled && PL.Player.Status != 33)
             {
+                int songs_currently_up = Monitored.Player.GetPlayerInfo().Buffs.Where(b => b == 197 || b == 198 || b == 195 || b == 199 || b == 200 || b == 215 || b == 196 || b == 214 || b == 216 || b == 218 || b == 222).Count();
+
+                // TODO: Add support for multiple JAs per cast, or else this will never work.
+                // For now we just return the action with only the ability in it.
+                // ie. If N + T were up, this would return once with Troub, then next cycle return Night,
+                // then finally return the song cast.
+                if (Config.TroubadourEnabled && PL.AbilityAvailable(Ability.Troubadour) && songs_currently_up == 0)
+                {
+                    actionResult.JobAbility = Ability.Troubadour;
+                    return actionResult;
+                }
+                else if (Config.NightingaleEnabled && PL.AbilityAvailable(Ability.Nightingale) && songs_currently_up == 0)
+                {
+                    actionResult.JobAbility = Ability.Nightingale;
+                    return actionResult;
+                }
+
                 SongData song_1 = SongInfo.Where(c => c.song_position == Config.Song1).FirstOrDefault();
                 SongData song_2 = SongInfo.Where(c => c.song_position == Config.Song2).FirstOrDefault();
                 SongData song_3 = SongInfo.Where(c => c.song_position == Config.Song3).FirstOrDefault();

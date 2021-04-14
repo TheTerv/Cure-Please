@@ -28,25 +28,11 @@
 
         private static ConfigForm Form2 = new ConfigForm();
 
-        public class GeoData : List<GeoData>
-        {
-            public int geo_position { get; set; }
-
-            public string indi_spell { get; set; }
-
-            public string geo_spell { get; set; }
-        }
-
         private string debug_MSG_show = string.Empty;
 
         private int lastCommand = 0;
 
         private int lastKnownEstablisherTarget = 0;       
-
-        // GEO ENGAGED CHECK
-        public bool targetEngaged = false;
-
-        public bool EclipticStillUp = false;
 
         public bool CastingBackground_Check = false;
         public bool JobAbilityLock_Check = false;
@@ -107,6 +93,8 @@
 
         public SongEngine SongEngine = new SongEngine(PL, Monitored, Form2.GetSongConfig());
 
+        public GeoEngine GeoEngine = new GeoEngine(PL, Monitored, Form2.GetGeoConfig());
+
         public double last_percent = 1;
 
         public string castingSpell = string.Empty;
@@ -123,18 +111,12 @@
 
         public int protectionCount = 0;
 
-        public int IDFound = 0;
-
         public float lastZ;
         public float lastX;
         public float lastY;
 
         // Stores the previously-colored button, if any
-        public Dictionary<string, IEnumerable<short>> ActiveBuffs = new Dictionary<string, IEnumerable<short>>();
-
-        
-
-        public List<GeoData> GeomancerInfo = new List<GeoData>();
+        public Dictionary<string, IEnumerable<short>> ActiveBuffs = new Dictionary<string, IEnumerable<short>>();     
 
         public List<string> TemporaryItem_Zones = new List<string> { "Escha Ru'Aun", "Escha Zi'Tah", "Reisenjima", "Abyssea - La Theine", "Abyssea - Konschtat", "Abyssea - Tahrongi",
                                                                         "Abyssea - Attohwa", "Abyssea - Misareaux", "Abyssea - Vunkerl", "Abyssea - Altepa", "Abyssea - Uleguerand", "Abyssea - Grauberg", "Walk of Echoes" };
@@ -1116,249 +1098,7 @@
             if (System.IO.File.Exists("debug"))
             {
                 debug.Visible = true;
-            }
-          
-            int geo_position = 0;
-
-            GeomancerInfo.Add(new GeoData
-            {
-                indi_spell = "Indi-Voidance",
-                geo_spell = "Geo-Voidance",
-                geo_position = geo_position,
-            });
-            geo_position++;
-
-            GeomancerInfo.Add(new GeoData
-            {
-                indi_spell = "Indi-Precision",
-                geo_spell = "Geo-Precision",
-                geo_position = geo_position,
-            });
-            geo_position++;
-
-            GeomancerInfo.Add(new GeoData
-            {
-                indi_spell = "Indi-Regen",
-                geo_spell = "Geo-Regen",
-                geo_position = geo_position,
-            });
-            geo_position++;
-
-            GeomancerInfo.Add(new GeoData
-            {
-                indi_spell = "Indi-Haste",
-                geo_spell = "Geo-Haste",
-                geo_position = geo_position,
-            });
-            geo_position++;
-
-            GeomancerInfo.Add(new GeoData
-            {
-                indi_spell = "Indi-Attunement",
-                geo_spell = "Geo-Attunement",
-                geo_position = geo_position,
-            });
-            geo_position++;
-
-            GeomancerInfo.Add(new GeoData
-            {
-                indi_spell = "Indi-Focus",
-                geo_spell = "Geo-Focus",
-                geo_position = geo_position,
-            });
-            geo_position++;
-
-            GeomancerInfo.Add(new GeoData
-            {
-                indi_spell = "Indi-Barrier",
-                geo_spell = "Geo-Barrier",
-                geo_position = geo_position,
-            });
-            geo_position++;
-
-            GeomancerInfo.Add(new GeoData
-            {
-                indi_spell = "Indi-Refresh",
-                geo_spell = "Geo-Refresh",
-                geo_position = geo_position,
-            });
-            geo_position++;
-
-            GeomancerInfo.Add(new GeoData
-            {
-                indi_spell = "Indi-CHR",
-                geo_spell = "Geo-CHR",
-                geo_position = geo_position,
-            });
-            geo_position++;
-
-            GeomancerInfo.Add(new GeoData
-            {
-                indi_spell = "Indi-MND",
-                geo_spell = "Geo-MND",
-                geo_position = geo_position,
-            });
-            geo_position++;
-
-            GeomancerInfo.Add(new GeoData
-            {
-                indi_spell = "Indi-Fury",
-                geo_spell = "Geo-Fury",
-                geo_position = geo_position,
-            });
-            geo_position++;
-
-            GeomancerInfo.Add(new GeoData
-            {
-                indi_spell = "Indi-INT",
-                geo_spell = "Geo-INT",
-                geo_position = geo_position,
-            });
-            geo_position++;
-
-            GeomancerInfo.Add(new GeoData
-            {
-                indi_spell = "Indi-AGI",
-                geo_spell = "Geo-AGI",
-                geo_position = geo_position,
-            });
-            geo_position++;
-
-            GeomancerInfo.Add(new GeoData
-            {
-                indi_spell = "Indi-Fend",
-                geo_spell = "Geo-Fend",
-                geo_position = geo_position,
-            });
-            geo_position++;
-
-            GeomancerInfo.Add(new GeoData
-            {
-                indi_spell = "Indi-VIT",
-                geo_spell = "Geo-VIT",
-                geo_position = geo_position,
-            });
-            geo_position++;
-
-            GeomancerInfo.Add(new GeoData
-            {
-                indi_spell = "Indi-DEX",
-                geo_spell = "Geo-DEX",
-                geo_position = geo_position,
-            });
-            geo_position++;
-
-            GeomancerInfo.Add(new GeoData
-            {
-                indi_spell = "Indi-Acumen",
-                geo_spell = "Geo-Acumen",
-                geo_position = geo_position,
-            });
-            geo_position++;
-
-            GeomancerInfo.Add(new GeoData
-            {
-                indi_spell = "Indi-STR",
-                geo_spell = "Geo-STR",
-                geo_position = geo_position,
-            });
-            geo_position++;
-
-            GeomancerInfo.Add(new GeoData
-            {
-                indi_spell = "Indi-Poison",
-                geo_spell = "Geo-Poison",
-                geo_position = geo_position,
-            });
-            geo_position++;
-
-            GeomancerInfo.Add(new GeoData
-            {
-                indi_spell = "Indi-Slow",
-                geo_spell = "Geo-Slow",
-                geo_position = geo_position,
-            });
-            geo_position++;
-
-            GeomancerInfo.Add(new GeoData
-            {
-                indi_spell = "Indi-Torpor",
-                geo_spell = "Geo-Torpor",
-                geo_position = geo_position,
-            });
-            geo_position++;
-
-            GeomancerInfo.Add(new GeoData
-            {
-                indi_spell = "Indi-Slip",
-                geo_spell = "Geo-Slip",
-                geo_position = geo_position,
-            });
-            geo_position++;
-
-            GeomancerInfo.Add(new GeoData
-            {
-                indi_spell = "Indi-Languor",
-                geo_spell = "Geo-Languor",
-                geo_position = geo_position,
-            });
-            geo_position++;
-
-            GeomancerInfo.Add(new GeoData
-            {
-                indi_spell = "Indi-Paralysis",
-                geo_spell = "Geo-Paralysis",
-                geo_position = geo_position,
-            });
-            geo_position++;
-
-            GeomancerInfo.Add(new GeoData
-            {
-                indi_spell = "Indi-Vex",
-                geo_spell = "Geo-Vex",
-                geo_position = geo_position,
-            });
-            geo_position++;
-
-            GeomancerInfo.Add(new GeoData
-            {
-                indi_spell = "Indi-Frailty",
-                geo_spell = "Geo-Frailty",
-                geo_position = geo_position,
-            });
-            geo_position++;
-
-            GeomancerInfo.Add(new GeoData
-            {
-                indi_spell = "Indi-Wilt",
-                geo_spell = "Geo-Wilt",
-                geo_position = geo_position,
-            });
-            geo_position++;
-
-            GeomancerInfo.Add(new GeoData
-            {
-                indi_spell = "Indi-Malaise",
-                geo_spell = "Geo-Malaise",
-                geo_position = geo_position,
-            });
-            geo_position++;
-
-            GeomancerInfo.Add(new GeoData
-            {
-                indi_spell = "Indi-Gravity",
-                geo_spell = "Geo-Gravity",
-                geo_position = geo_position,
-            });
-            geo_position++;
-
-            GeomancerInfo.Add(new GeoData
-            {
-                indi_spell = "Indi-Fade",
-                geo_spell = "Geo-Fade",
-                geo_position = geo_position,
-            });
-            geo_position++;         
+            }              
 
             IEnumerable<Process> pol = Process.GetProcessesByName("pol").Union(Process.GetProcessesByName("xiloader")).Union(Process.GetProcessesByName("edenxi"));
 
@@ -2817,12 +2557,7 @@
             highPriorityBoxes[15] = player15priority;
             highPriorityBoxes[16] = player16priority;
             highPriorityBoxes[17] = player17priority;
-
-
-            int songs_currently_up1 = Monitored.Player.GetPlayerInfo().Buffs.Where(b => b == 197 || b == 198 || b == 195 || b == 199 || b == 200 || b == 215 || b == 196 || b == 214 || b == 216 || b == 218 || b == 222).Count();
-
-
-
+         
             // IF ENABLED PAUSE ON KO
             if (ConfigForm.config.pauseOnKO && (PL.Player.Status == 2 || PL.Player.Status == 3))
             {
@@ -2883,97 +2618,7 @@
                 {
                     JobAbility_Wait(Ability.Convert, Ability.Convert);
                     return;
-                }
-                else if (ConfigForm.config.RadialArcana && (PL.Player.MP <= ConfigForm.config.RadialArcanaMP) && PL.AbilityAvailable(Ability.RadialArcana) && !PL.Player.Buffs.Contains((short)StatusEffect.Weakness))
-                {
-                    // Check if a pet is already active
-                    if (PL.Player.Pet.HealthPercent >= 1 && PL.Player.Pet.Distance <= 9)
-                    {
-                        JobAbility_Wait(Ability.RadialArcana, Ability.RadialArcana);
-                    }
-                    else if (PL.Player.Pet.HealthPercent >= 1 && PL.Player.Pet.Distance >= 9 && PL.AbilityAvailable(Ability.FullCircle))
-                    {
-                        JobAbility_Wait(Ability.FullCircle, Ability.FullCircle);
-                        await Task.Delay(2000);
-                        string SpellCheckedResult = ReturnGeoSpell(ConfigForm.config.RadialArcana_Spell, 2);
-                        CastSpell(Target.Me, SpellCheckedResult);
-                    }
-                    else
-                    {
-                        string SpellCheckedResult = ReturnGeoSpell(ConfigForm.config.RadialArcana_Spell, 2);
-                        CastSpell(Target.Me, SpellCheckedResult);
-                    }
-                }
-                else if (ConfigForm.config.FullCircle)
-                {
-
-
-                    // When out of range Distance is 59 Yalms regardless, Must be within 15 yalms to gain
-                    // the effect
-
-                    //Check if "pet" is active and out of range of the monitored player
-                    if (PL.Player.Pet.HealthPercent >= 1)
-                    {
-                        if (ConfigForm.config.Fullcircle_GEOTarget == true && ConfigForm.config.LuopanSpell_Target != "")
-                        {
-
-                            ushort PetsIndex = PL.Player.PetIndex;
-
-                            XiEntity PetsEntity = PL.Entity.GetEntity(PetsIndex);
-
-                            int FullCircle_CharID = 0;
-
-                            for (int x = 0; x < 2048; x++)
-                            {
-                                XiEntity entity = PL.Entity.GetEntity(x);
-
-                                if (entity.Name != null && entity.Name.ToLower().Equals(ConfigForm.config.LuopanSpell_Target.ToLower()))
-                                {
-                                    FullCircle_CharID = Convert.ToInt32(entity.TargetID);
-                                    break;
-                                }
-                            }
-
-                            if (FullCircle_CharID != 0)
-                            {
-                                XiEntity FullCircleEntity = PL.Entity.GetEntity(FullCircle_CharID);
-
-                                float fX = PetsEntity.X - FullCircleEntity.X;
-                                float fY = PetsEntity.Y - FullCircleEntity.Y;
-                                float fZ = PetsEntity.Z - FullCircleEntity.Z;
-
-                                float generatedDistance = (float)Math.Sqrt((fX * fX) + (fY * fY) + (fZ * fZ));
-
-                                if (generatedDistance >= 10)
-                                {
-                                    FullCircle_Timer.Enabled = true;
-                                }
-                            }
-
-                        }
-                        else if (ConfigForm.config.Fullcircle_GEOTarget == false && Monitored.Player.Status == 1)
-                        {
-                            ushort PetsIndex = PL.Player.PetIndex;
-
-                            XiEntity PetsEntity = Monitored.Entity.GetEntity(PetsIndex);
-
-                            if (PetsEntity.Distance >= 10)
-                            {
-                                FullCircle_Timer.Enabled = true;
-                            }
-                        }
-
-                    }
-                }
-                else if (ConfigForm.config.Troubadour && PL.AbilityAvailable("Troubadour") && songs_currently_up1 == 0)
-                {
-                    JobAbility_Wait("Troubadour", "Troubadour");
-                }
-                else if (ConfigForm.config.Nightingale && PL.AbilityAvailable("Nightingale") && songs_currently_up1 == 0)
-                {
-                    JobAbility_Wait("Nightingale", "Nightingale");
-                }
-
+                }                            
                 if (PL.Player.MP <= (int)ConfigForm.config.mpMinCastValue && PL.Player.MP != 0)
                 {
                     if (ConfigForm.config.lowMPcheckBox && !islowmp && !ConfigForm.config.healLowMP)
@@ -3535,118 +3180,7 @@
                         {
                             CastSpell(Target.Me, Spells.Auspice);
                         }
-                        #endregion
-
-                        // ENTRUSTED INDI SPELL CASTING, WILL BE CAST SO LONG AS ENTRUST IS ACTIVE
-                        else if (ConfigForm.config.EnableGeoSpells && PL.HasStatus((StatusEffect)584) && PL.Player.Status != 33)
-                        {
-                            string SpellCheckedResult = ReturnGeoSpell(ConfigForm.config.EntrustedSpell_Spell, 1);
-                            if (SpellCheckedResult == "SpellError_Cancel")
-                            {
-                                ConfigForm.config.EnableGeoSpells = false;
-                                MessageBox.Show("An error has occurred with Entrusted INDI spell casting, please report what spell was active at the time.");
-                            }
-                            else if (SpellCheckedResult == "SpellRecast" || SpellCheckedResult == "SpellUnknown")
-                            {
-                            }
-                            else
-                            {
-                                if (string.IsNullOrEmpty(ConfigForm.config.EntrustedSpell_Target))
-                                {
-                                    CastSpell(Monitored.Player.Name, SpellCheckedResult);
-                                }
-                                else
-                                {
-                                    CastSpell(ConfigForm.config.EntrustedSpell_Target, SpellCheckedResult);
-                                }
-                            }
-                        }
-
-                        // CAST NON ENTRUSTED INDI SPELL
-                        else if (ConfigForm.config.EnableGeoSpells && !PL.HasStatus(612) && PL.Player.Status != 33 && (CheckEngagedStatus() == true || !ConfigForm.config.IndiWhenEngaged))
-                        {
-                            string SpellCheckedResult = ReturnGeoSpell(ConfigForm.config.IndiSpell_Spell, 1);
-
-                            if (SpellCheckedResult == "SpellError_Cancel")
-                            {
-                                ConfigForm.config.EnableGeoSpells = false;
-                                MessageBox.Show("An error has occurred with INDI spell casting, please report what spell was active at the time.");
-                            }
-                            else if (SpellCheckedResult == "SpellRecast" || SpellCheckedResult == "SpellUnknown")
-                            {
-                            }
-                            else
-                            {
-                                CastSpell(Target.Me, SpellCheckedResult);
-                            }
-
-                        }
-
-                        // GEO SPELL CASTING 
-                        else if (ConfigForm.config.EnableLuopanSpells && (PL.Player.Pet.HealthPercent < 1) && (CheckEngagedStatus() == true))
-                        {
-                            // Use BLAZE OF GLORY if ENABLED
-                            if (ConfigForm.config.BlazeOfGlory && PL.AbilityAvailable("Blaze of Glory") && CheckEngagedStatus() == true && GEO_EnemyCheck() == true)
-                            {
-                                JobAbility_Wait("Blaze of Glory", "Blaze of Glory");
-                            }
-
-                            // Grab GEO spell name
-                            string SpellCheckedResult = ReturnGeoSpell(ConfigForm.config.GeoSpell_Spell, 2);
-
-                            if (SpellCheckedResult == "SpellError_Cancel")
-                            {
-                                ConfigForm.config.EnableGeoSpells = false;
-                                MessageBox.Show("An error has occurred with GEO spell casting, please report what spell was active at the time.");
-                            }
-                            else if (SpellCheckedResult == "SpellRecast" || SpellCheckedResult == "SpellUnknown")
-                            {
-                                // Do nothing and continue on with the program
-                            }
-                            else
-                            {
-                                if (PL.Resources.GetSpell(SpellCheckedResult, 0).ValidTargets == 5)
-                                { // PLAYER CHARACTER TARGET
-                                    var target = string.IsNullOrEmpty(ConfigForm.config.LuopanSpell_Target) ? Monitored.Player.Name : ConfigForm.config.LuopanSpell_Target;
-
-                                    if (PL.HasStatus(516)) // IF ECLIPTIC IS UP THEN ACTIVATE THE BOOL
-                                    {
-                                        EclipticStillUp = true;
-                                    }
-
-                                    CastSpell(target, SpellCheckedResult);
-                                    
-                                }
-                                else
-                                { // ENEMY BASED TARGET NEED TO ASSURE PLAYER IS ENGAGED
-                                    if (CheckEngagedStatus() == true)
-                                    {
-
-                                        int GrabbedTargetID = GrabGEOTargetID();
-
-                                        if (GrabbedTargetID != 0)
-                                        {
-
-                                            PL.Target.SetTarget(GrabbedTargetID);
-                                            await Task.Delay(TimeSpan.FromSeconds(1));
-
-                                            if (PL.HasStatus(516)) // IF ECLIPTIC IS UP THEN ACTIVATE THE BOOL
-                                            {
-                                                EclipticStillUp = true;
-                                            }
-
-                                            CastSpell("<t>", SpellCheckedResult);
-                                            await Task.Delay(TimeSpan.FromSeconds(4));
-                                            if (ConfigForm.config.DisableTargettingCancel == false)
-                                            {
-                                                await Task.Delay(TimeSpan.FromSeconds((double)ConfigForm.config.TargetRemoval_Delay));
-                                                PL.Target.SetTarget(0);
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
+                        #endregion                      
 
                         else if (ConfigForm.config.autoTarget && PL.SpellAvailable(ConfigForm.config.autoTargetSpell))
                         {
@@ -3683,7 +3217,7 @@
 
                         // BARD SONGS
 
-                        else if (ConfigForm.config.enableSinging && !PL.HasStatus(StatusEffect.Silence) && (PL.Player.Status == 1 || PL.Player.Status == 0))
+                        else if (PL.Player.MainJob == (byte)Job.BRD && ConfigForm.config.enableSinging && !PL.HasStatus(StatusEffect.Silence) && (PL.Player.Status == 1 || PL.Player.Status == 0))
                         {
                             var songAction = SongEngine.Run();
 
@@ -3693,6 +3227,29 @@
                             }
                         }
 
+                        // GEO Stuff
+
+                        else if(PL.Player.MainJob == (byte)Job.GEO && ConfigForm.config.EnableGeoSpells && !PL.HasStatus(StatusEffect.Silence) && (PL.Player.Status == 1 || PL.Player.Status == 0))
+                        {
+                            var geoAction = GeoEngine.Run();
+
+                            // TODO: Abstract out this idea of error/ability/spell handling
+                            // as it will apply to all the engines.
+                            if(!string.IsNullOrEmpty(geoAction.Error))
+                            {
+                                showErrorMessage(geoAction.Error);
+                            }
+
+                            if(!string.IsNullOrEmpty(geoAction.JobAbility))
+                            {
+                                JobAbility_Wait(geoAction.JobAbility, geoAction.JobAbility);
+                            }
+
+                            if (!string.IsNullOrEmpty(geoAction.Spell))
+                            {
+                                CastSpell(geoAction.Target, geoAction.Spell);
+                            }
+                        }
 
                         // so PL job abilities are in order
                         if (PL.Player.Status == 1 || PL.Player.Status == 0)
@@ -3728,23 +3285,7 @@
                             else if (ConfigForm.config.DivineCaress && (ConfigForm.config.plDebuffEnabled || ConfigForm.config.monitoredDebuffEnabled || ConfigForm.config.enablePartyDebuffRemoval) && PL.AbilityAvailable(Ability.DivineCaress))
                             {
                                 JobAbility_Wait(Ability.DivineCaress, Ability.DivineCaress);
-                            }
-                            else if (ConfigForm.config.Entrust && !PL.HasStatus((StatusEffect)584) && CheckEngagedStatus() == true && PL.AbilityAvailable(Ability.Entrust))
-                            {
-                                JobAbility_Wait(Ability.Entrust, Ability.Entrust);
-                            }
-                            else if (ConfigForm.config.Dematerialize && CheckEngagedStatus() == true && PL.Player.Pet.HealthPercent >= 90  && PL.AbilityAvailable(Ability.Dematerialize))
-                            {
-                                JobAbility_Wait(Ability.Dematerialize, Ability.Dematerialize);
-                            }
-                            else if (ConfigForm.config.EclipticAttrition && CheckEngagedStatus() == true && PL.Player.Pet.HealthPercent >= 90  && PL.AbilityAvailable(Ability.EclipticAttrition) && !PL.HasStatus(516) && EclipticStillUp != true)
-                            {
-                                JobAbility_Wait(Ability.EclipticAttrition, Ability.EclipticAttrition);
-                            }
-                            else if (ConfigForm.config.LifeCycle && CheckEngagedStatus() == true && PL.Player.Pet.HealthPercent <= 30 && PL.Player.Pet.HealthPercent >= 5 && PL.Player.HPP >= 90  && PL.AbilityAvailable(Ability.LifeCycle))
-                            {
-                                JobAbility_Wait(Ability.LifeCycle, Ability.LifeCycle);
-                            }
+                            }                           
                             else if (ConfigForm.config.Devotion && PL.AbilityAvailable(Ability.Devotion) && PL.Player.HPP > 80 && (!ConfigForm.config.DevotionWhenEngaged || (Monitored.Player.Status == 1)))
                             {
                                 // Get all active members who are in the PLs party.
@@ -4099,43 +3640,7 @@
             {
                 return string.Empty;
             }
-        }       
-
-        private string ReturnGeoSpell(int GEOSpell_ID, int GeoSpell_Type)
-        {
-            // GRAB THE SPELL FROM THE CUSTOM LIST
-            GeoData GeoSpell = GeomancerInfo.Where(c => c.geo_position == GEOSpell_ID).FirstOrDefault();
-
-            if (GeoSpell_Type == 1)
-            {
-                var apiSpell = PL.Resources.GetSpell(GeoSpell.indi_spell, 0);
-                if (PL.SpellAvailable(apiSpell.Name[0]))
-                {
-                    return GeoSpell.indi_spell;
-                }
-                else
-                {
-                    return "SpellNA";
-                }
-            }
-            else if (GeoSpell_Type == 2)
-            {
-                var apiSpell = PL.Resources.GetSpell(GeoSpell.geo_spell, 0);
-
-                if (PL.SpellAvailable(apiSpell.Name[0]))
-                {
-                    return GeoSpell.geo_spell;
-                }
-                else
-                {
-                    return "SpellNA";
-                }
-            }
-            else
-            {
-                return "SpellError_Cancel";
-            }
-        }
+        }             
 
         private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -5086,33 +4591,6 @@
             // I believe that the party from EliteAPI always has our player at index 0.
             // So if the PL is in party 1, it's the same party as Monitored.
             return PLParty == 1;
-
-            //// Now generate the party
-            //IEnumerable<PartyMember> cParty = Monitored.Party.GetPartyMembers().Where(p => p.Active != 0 && p.Zone == PL.Player.ZoneId);
-
-            //// Make sure member number is not 0 (null) or 4 (void)
-            //if (PLParty > 0)
-            //{
-            //    // Run through Each party member as we're looking for either a specific name or if set
-            //    // otherwise anyone with the MP criteria in the current party.
-            //    foreach (PartyMember pData in cParty)
-            //    {
-            //        if (PLParty == 1 && pData.MemberNumber >= 0 && pData.MemberNumber <= 5 && pData.Name == Monitored.Player.Name)
-            //        {
-            //            return true;
-            //        }
-            //        else if (PLParty == 2 && pData.MemberNumber >= 6 && pData.MemberNumber <= 11 && pData.Name == Monitored.Player.Name)
-            //        {
-            //            return true;
-            //        }
-            //        else if (PLParty == 3 && pData.MemberNumber >= 12 && pData.MemberNumber <= 17 && pData.Name == Monitored.Player.Name)
-            //        {
-            //            return true;
-            //        }
-            //    }
-            //}
-
-            //return false;
         }
 
         public int PLPartyRelativeToMonitored()
@@ -5139,131 +4617,12 @@
             }
 
             return 0;
-        }             
-
-        private bool CheckEngagedStatus()
-        {
-            if (Monitored == null || PL == null) { return false; }
-
-
-            if (ConfigForm.config.GeoWhenEngaged == false)
-            {
-                return true;
-            }
-            else if (ConfigForm.config.specifiedEngageTarget == true && !string.IsNullOrEmpty(ConfigForm.config.LuopanSpell_Target))
-            {
-                for (int x = 0; x < 2048; x++)
-                {
-                    XiEntity z = PL.Entity.GetEntity(x);
-                    if (!string.IsNullOrEmpty(z.Name))
-                    {
-                        if (z.Name.ToLower() == ConfigForm.config.LuopanSpell_Target.ToLower()) // A match was located so use this entity as a check.
-                        {
-                            if (z.Status == 1)
-                            {
-                                return true;
-                            }
-                            else
-                            {
-                                return false;
-                            }
-                        }
-                    }
-                }
-                return false;
-            }
-            else
-            {
-                if (Monitored.Player.Status == 1)
-                {
-                    return true;
-
-
-                }
-                else
-                {
-                    return false;
-                }
-            }
-        }
-
-        private void EclipticTimer_Tick(object sender, EventArgs e)
-        {
-            if (Monitored == null || PL == null) { return; }
-
-            if (PL.Player.Pet.HealthPercent >= 1)
-            {
-                EclipticStillUp = true;
-            }
-            else
-            {
-                EclipticStillUp = false;
-            }
-        }
-
-        private bool GEO_EnemyCheck()
-        {
-            if (Monitored == null || PL == null) { return false; }
-
-            // Grab GEO spell name
-            string SpellCheckedResult = ReturnGeoSpell(ConfigForm.config.GeoSpell_Spell, 2);
-
-            if (SpellCheckedResult == "SpellError_Cancel" || SpellCheckedResult == "SpellRecast" || SpellCheckedResult == "SpellUnknown")
-            {
-                // Do nothing and continue on with the program
-                return true;
-            }
-            else
-            {
-                if (PL.Resources.GetSpell(SpellCheckedResult, 0).ValidTargets == 5)
-                {
-                    return true; // SPELL TARGET IS PLAYER THEREFORE ONLY THE DEFAULT CHECK IS REQUIRED SO JUST RETURN TRUE TO VOID THIS CHECK
-                }
-                else
-                {
-                    if (ConfigForm.config.specifiedEngageTarget == true && !string.IsNullOrEmpty(ConfigForm.config.LuopanSpell_Target))
-                    {
-                        for (int x = 0; x < 2048; x++)
-                        {
-                            XiEntity z = PL.Entity.GetEntity(x);
-                            if (!string.IsNullOrEmpty(z.Name))
-                            {
-                                if (z.Name.ToLower() == ConfigForm.config.LuopanSpell_Target.ToLower()) // A match was located so use this entity as a check.
-                                {
-                                    if (z.Status == 1)
-                                    {
-                                        return true;
-                                    }
-                                    else
-                                    {
-                                        return false;
-                                    }
-                                }
-                            }
-                        }
-                        return false;
-                    }
-                    else
-                    {
-                        if (Monitored.Player.Status == 1)
-                        {
-                            return true;
-                        }
-                        else
-                        {
-                            return false;
-                        }
-                    }
-                }
-            }
-        }
+        }                          
 
         private int CheckEngagedStatus_Hate()
         {
             if (ConfigForm.config.AssistSpecifiedTarget == true && !string.IsNullOrEmpty(ConfigForm.config.autoTarget_Target))
             {
-                IDFound = 0;
-
                 for (int x = 0; x < 2048; x++)
                 {
                     XiEntity z = PL.Entity.GetEntity(x);
@@ -5296,79 +4655,7 @@
                     return 0;
                 }
             }
-        }
-
-        private int GrabGEOTargetID()
-        {
-            if (ConfigForm.config.specifiedEngageTarget == true && !string.IsNullOrEmpty(ConfigForm.config.LuopanSpell_Target))
-            {
-                IDFound = 0;
-
-                for (int x = 0; x < 2048; x++)
-                {
-                    XiEntity z = PL.Entity.GetEntity(x);
-
-                    if (z.Name != null && z.Name.ToLower() == ConfigForm.config.LuopanSpell_Target.ToLower())
-                    {
-                        if (z.Status == 1)
-                        {
-                            return z.TargetingIndex;
-                        }
-                        else
-                        {
-                            return 0;
-                        }
-                    }
-                }
-                return 0;
-            }
-            else
-            {
-                if (Monitored.Player.Status == 1)
-                {
-                    TargetInfo target = Monitored.Target.GetTargetInfo();
-                    XiEntity entity = Monitored.Entity.GetEntity(Convert.ToInt32(target.TargetIndex));
-                    return Convert.ToInt32(entity.TargetID);
-
-                }
-                else
-                {
-                    return 0;
-                }
-            }
-        }
-
-        private int GrabDistance_GEO()
-        {
-            string checkedName = string.Empty;
-            string name1 = string.Empty;
-
-            if (ConfigForm.config.specifiedEngageTarget == true && !string.IsNullOrEmpty(ConfigForm.config.LuopanSpell_Target))
-            {
-                checkedName = ConfigForm.config.LuopanSpell_Target;
-            }
-            else
-            {
-                checkedName = Monitored.Player.Name;
-            }
-
-            for (int x = 0; x < 2048; x++)
-            {
-                XiEntity entityGEO = PL.Entity.GetEntity(x);
-
-                if (!string.IsNullOrEmpty(checkedName) && !string.IsNullOrEmpty(entityGEO.Name))
-                {
-                    name1 = entityGEO.Name;
-
-                    if (name1 == checkedName)
-                    {
-                        return (int)entityGEO.Distance;
-                    }
-                }
-            }
-
-            return 0;
-        }
+        }    
 
         private void updateInstances_Tick(object sender, EventArgs e)
         {
@@ -5886,72 +5173,7 @@
         private void AddonReader_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
         {
             AddonReader.RunWorkerAsync();
-        }
-
-
-        private void FullCircle_Timer_Tick(object sender, EventArgs e)
-        {
-
-            if (PL.Player.Pet.HealthPercent >= 1)
-            {
-                ushort PetsIndex = PL.Player.PetIndex;
-
-                if (ConfigForm.config.Fullcircle_GEOTarget == true && ConfigForm.config.LuopanSpell_Target != "")
-                {
-                    XiEntity PetsEntity = PL.Entity.GetEntity(PetsIndex);
-
-                    int FullCircle_CharID = 0;
-
-                    for (int x = 0; x < 2048; x++)
-                    {
-                        XiEntity entity = PL.Entity.GetEntity(x);
-
-                        if (entity.Name != null && entity.Name.ToLower().Equals(ConfigForm.config.LuopanSpell_Target.ToLower()))
-                        {
-                            FullCircle_CharID = Convert.ToInt32(entity.TargetID);
-                            break;
-                        }
-                    }
-
-                    if (FullCircle_CharID != 0)
-                    {
-                        XiEntity FullCircleEntity = PL.Entity.GetEntity(FullCircle_CharID);
-
-                        float fX = PetsEntity.X - FullCircleEntity.X;
-                        float fY = PetsEntity.Y - FullCircleEntity.Y;
-                        float fZ = PetsEntity.Z - FullCircleEntity.Z;
-
-                        float generatedDistance = (float)Math.Sqrt((fX * fX) + (fY * fY) + (fZ * fZ));
-
-                        if (generatedDistance >= 10)
-                        {
-                            PL.ThirdParty.SendString("/ja \"Full Circle\" <me>");
-                        }
-                    }
-
-                }
-                else if (ConfigForm.config.Fullcircle_GEOTarget == false && Monitored.Player.Status == 1)
-                {
-
-
-                    string SpellCheckedResult = ReturnGeoSpell(ConfigForm.config.GeoSpell_Spell, 2);
-
-
-
-                    if (ConfigForm.config.Fullcircle_DisableEnemy != true || (ConfigForm.config.Fullcircle_DisableEnemy == true && PL.Resources.GetSpell(SpellCheckedResult, 0).ValidTargets == 32))
-                    {
-                        XiEntity PetsEntity = Monitored.Entity.GetEntity(PetsIndex);
-
-                        if (PetsEntity.Distance >= 10 && PetsEntity.Distance != 0 && PL.AbilityAvailable(Ability.FullCircle))
-                        {
-                            PL.ThirdParty.SendString("/ja \"Full Circle\" <me>");
-                        }
-                    }
-                }
-            }
-
-            FullCircle_Timer.Enabled = false;
-        }
+        }       
 
         private void AddOnStatus_Click(object sender, EventArgs e)
         {
@@ -6007,23 +5229,6 @@
             CastingBackground_Check = false;
         }
 
-        private void JobAbility_Delay_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
-        {
-            Invoke((MethodInvoker)(() =>
-            {
-                JobAbilityLock_Check = true;
-                castingLockLabel.Text = "Casting is LOCKED for a JA.";
-                currentAction.Text = "Using a Job Ability: " + JobAbilityCMD;
-                // This is how long we want for Job Ability/JA to resolve.
-                // Since most of us are using JA0Wait, can be very short.
-                Thread.Sleep(TimeSpan.FromSeconds(2));
-                castingLockLabel.Text = "Casting is UNLOCKED";
-                currentAction.Text = string.Empty;
-                castingSpell = string.Empty;
-                //JobAbilityLock_Check = false;
-                JobAbilityCMD = string.Empty;
-            }));
-        }
 
         private void CustomCommand_Tracker_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {

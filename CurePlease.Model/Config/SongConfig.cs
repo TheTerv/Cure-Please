@@ -15,5 +15,9 @@ namespace CurePlease.Model.Config
 
         public decimal SongRecastMinutes { get; set; }
         public bool SingOnlyWhenNear { get; set; }
+
+        public bool TroubadourEnabled { get; set; }
+
+        public bool NightingaleEnabled { get; set; }
     }
 }
