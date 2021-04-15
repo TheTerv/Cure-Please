@@ -233,10 +233,8 @@ namespace CurePlease
             this.AboutButton = new System.Windows.Forms.Button();
             this.AddonReader = new System.ComponentModel.BackgroundWorker();
             this.JobAbilityDelay = new System.ComponentModel.BackgroundWorker();
-            this.FullCircle_Timer = new System.Windows.Forms.Timer(this.components);
             this.AddOnStatus = new System.Windows.Forms.Button();
             this.ProtectCasting = new System.ComponentModel.BackgroundWorker();
-            this.JobAbility_Delay = new System.ComponentModel.BackgroundWorker();
             this.EclipticTimer = new System.Windows.Forms.Timer(this.components);
             this.CustomCommand_Tracker = new System.ComponentModel.BackgroundWorker();
             this.party0.SuspendLayout();

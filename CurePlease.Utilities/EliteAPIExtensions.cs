@@ -49,7 +49,27 @@ namespace CurePlease.Utilities
 
             var apiSpell = api.Resources.GetSpell(spell, 0);
 
-            // Return true if we possess the spell AND spell is off cooldown.
+            var mainLevelReq = apiSpell.LevelRequired[api.Player.MainJob];
+            var subLevelReq = apiSpell.LevelRequired[api.Player.SubJob];
+
+            // First check for definite no.
+            // If our main either can't learn it, or isn't high enough, and similar for our sub.
+            if((mainLevelReq == -1 || mainLevelReq > api.Player.MainJobLevel) && (subLevelReq == -1 || subLevelReq > api.Player.SubJobLevel))
+            {
+                return false;
+            }
+
+            // Then check for special case where we need job points
+            if(mainLevelReq > 99)
+            {
+                var jobPointsTuple = Data.JobPointSpells[spell];
+                if (api.Player.MainJob != (byte)jobPointsTuple.Item1 || api.Player.GetJobPoints(api.Player.MainJob).SpentJobPoints < jobPointsTuple.Item2)
+                {
+                    return false;
+                }
+            }
+           
+            // If we get here, we qualify for the spell. So make sure we own it, and that it's off cooldown.
             return api.Player.HasSpell(apiSpell.ID) && (api.Recast.GetSpellRecast(apiSpell.Index) == 0);
         }
 

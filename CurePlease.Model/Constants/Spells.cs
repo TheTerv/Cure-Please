@@ -177,5 +177,13 @@ namespace CurePlease.Model.Constants
         public static string Enaero_II = "Enaero II";
         public static string Enblizzard_II = "Enblizzard II";
         public static string Enthunder_II = "Enthunder II";
+
+        public static string Distract = "Distract";
+        public static string Distract_II = "Distract II";
+        public static string Distract_III = "Distract III";
+
+        public static string Frazzle = "Frazzle";
+        public static string Frazzle_II = "Frazzle II";
+        public static string Frazzle_III = "Frazzle III";
     }
 }

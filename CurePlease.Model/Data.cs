@@ -1,5 +1,7 @@
 ﻿using CurePlease.Model.Constants;
+using CurePlease.Model.Enums;
 using EliteMMO.API;
+using System;
 using System.Collections.Generic;
 
 namespace CurePlease.Model
@@ -206,5 +208,24 @@ namespace CurePlease.Model
             { StatusEffect.Elegy, Spells.Erase }, 
             { StatusEffect.Threnody, Spells.Erase }
         };
+
+        public static Dictionary<string, Tuple<Job, int>> JobPointSpells = new Dictionary<string, Tuple<Job, int>>
+        {
+            { Spells.Temper_II, Tuple.Create(Job.RDM, 1200) },
+            { Spells.Refresh_III, Tuple.Create(Job.RDM, 1200) },
+            { Spells.Distract_III, Tuple.Create(Job.RDM, 550) },
+            { Spells.Frazzle_III, Tuple.Create(Job.RDM, 550) },
+            { Spells.Firestorm_II, Tuple.Create(Job.SCH, 100) },
+            { Spells.Hailstorm_II, Tuple.Create(Job.SCH, 100) },
+            { Spells.Windstorm_II, Tuple.Create(Job.SCH, 100) },
+            { Spells.Sandstorm_II, Tuple.Create(Job.SCH, 100) },
+            { Spells.Thunderstorm_II, Tuple.Create(Job.SCH, 100) },
+            { Spells.Rainstorm_II, Tuple.Create(Job.SCH, 100) },
+            { Spells.Aurorastorm_II, Tuple.Create(Job.SCH, 100) },
+            { Spells.Voidstorm_II, Tuple.Create(Job.SCH, 100) },
+            { Spells.Reraise_IV, Tuple.Create(Job.WHM, 100) },
+            { Spells.FullCure, Tuple.Create(Job.WHM, 1200) },
+        };
+
     }
 }

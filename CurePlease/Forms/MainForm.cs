@@ -1972,7 +1972,7 @@
                 if (debuffPriorityList.Any())
                 {
                     // Get the highest priority debuff we have the right spell off cooldown for.
-                    var targetDebuff = debuffPriorityList.First(status => Form2.DebuffEnabled[status] && PL.SpellAvailable(Data.DebuffPriorities[status]));
+                    var targetDebuff = debuffPriorityList.FirstOrDefault(status => Form2.DebuffEnabled.ContainsKey(status) && Form2.DebuffEnabled[status] && PL.SpellAvailable(Data.DebuffPriorities[status]));
 
                     if ((short)targetDebuff > 0)
                     {
@@ -1982,7 +1982,7 @@
             }
 
             // Next, we check monitored player
-            if (ConfigForm.config.monitoredDebuffEnabled && (PL.Entity.GetEntity((int)Monitored.Party.GetPartyMember(0).TargetIndex).Distance < 21) && (PL.Entity.GetEntity((int)Monitored.Party.GetPartyMember(0).TargetIndex).Distance > 0) && (Monitored.Player.HP > 0) && PL.Player.Status != 33)
+            if (ConfigForm.config.monitoredDebuffEnabled && (PL.Entity.GetEntity((int)Monitored.Party.GetPartyMember(0).TargetIndex).Distance < 21) && (Monitored.Player.HP > 0) && PL.Player.Status != 33)
             {
                 var debuffIds = Monitored.Player.Buffs.Where(id => Data.DebuffPriorities.Keys.Cast<short>().Contains(id));
                 var debuffPriorityList = debuffIds.Cast<StatusEffect>().OrderBy(status => Array.IndexOf(Data.DebuffPriorities.Keys.ToArray(), status));
@@ -1990,7 +1990,7 @@
                 if (debuffPriorityList.Any())
                 {
                     // Get the highest priority debuff we have the right spell off cooldown for.
-                    var targetDebuff = debuffPriorityList.First(status => Form2.DebuffEnabled[status] && PL.SpellAvailable(Data.DebuffPriorities[status]));
+                    var targetDebuff = debuffPriorityList.FirstOrDefault(status => Form2.DebuffEnabled[status] && PL.SpellAvailable(Data.DebuffPriorities[status]));
 
                     if ((short)targetDebuff > 0)
                     {
@@ -2710,6 +2710,7 @@
                     /////////////////////////// PL CURE //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
                     // TODO: Test this! Pretty sure your own character is always party member index 0.
+                    // TODO: Cure tiers selecing cures that don't exist!
                     if (PL.Player.HP > 0 && (PL.Player.HPP <= ConfigForm.config.monitoredCurePercentage) && ConfigForm.config.enableOutOfPartyHealing == true && PLInParty() == false)
                     {
                         var plAsPartyMember = PL.Party.GetPartyMember(0);
@@ -2718,67 +2719,70 @@
                     }
 
                     /////////////////////////// CURAGA //////////////////////////////////////////////////////////////////////////////////////////////////////////////////                                    
-
-                    int plParty = PLPartyRelativeToMonitored();
-
-                    // Order parties that qualify for AOE cures by average missing HP.
-                    var partyNeedsAoe = Monitored.PartyNeedsAoeCure((int)ConfigForm.config.curagaRequiredMembers, ConfigForm.config.curagaCurePercentage).OrderBy(partyNumber => Monitored.AverageHpLossForParty(partyNumber));
-
-                    // If PL is in same alliance, and there's at least 1 party that needs an AOE cure.
-                    // Parties are ordered by most average missing HP.
-                    if (plParty > 0 && partyNeedsAoe.Any())
+                    if (ConfigForm.config.curagaEnabled || ConfigForm.config.curaga2enabled || ConfigForm.config.curaga3enabled || ConfigForm.config.curaga4enabled || ConfigForm.config.curaga5enabled)
                     {
-                        int targetParty = 0;
-                        
-                        // We can accession if we have light arts/addendum white, and either we already have the status or we have the ability available,
-                        // and have the charges to use it.
-                        bool plCanAccession = (PL.HasStatus(StatusEffect.Light_Arts) || PL.HasStatus(StatusEffect.Addendum_White)) 
-                            && (PL.HasStatus(StatusEffect.Accession) || (PL.AbilityAvailable(Ability.Accession) && PL.CurrentSCHCharges() > 0));
-                                            
-                        foreach(int party in partyNeedsAoe)
+                        int plParty = PLPartyRelativeToMonitored();
+
+                        // Order parties that qualify for AOE cures by average missing HP.
+                        var partyNeedsAoe = Monitored.PartyNeedsAoeCure((int)ConfigForm.config.curagaRequiredMembers, ConfigForm.config.curagaCurePercentage).OrderBy(partyNumber => Monitored.AverageHpLossForParty(partyNumber));
+
+                        // If PL is in same alliance, and there's at least 1 party that needs an AOE cure.
+                        // Parties are ordered by most average missing HP.
+                        if (plParty > 0 && partyNeedsAoe.Any())
                         {
-                            // We check whether we can accession here, so that if we can't accession we don't skip a chance to curaga our own party.
-                            if(party != plParty && !plCanAccession) {
-                                continue;
+                            int targetParty = 0;
+
+                            // We can accession if we have light arts/addendum white, and either we already have the status or we have the ability available,
+                            // and have the charges to use it.
+                            bool plCanAccession = (PL.HasStatus(StatusEffect.Light_Arts) || PL.HasStatus(StatusEffect.Addendum_White))
+                                && (PL.HasStatus(StatusEffect.Accession) || (PL.AbilityAvailable(Ability.Accession) && PL.CurrentSCHCharges() > 0));
+
+                            foreach (int party in partyNeedsAoe)
+                            {
+                                // We check whether we can accession here, so that if we can't accession we don't skip a chance to curaga our own party.
+                                if (party != plParty && !plCanAccession)
+                                {
+                                    continue;
+                                }
+
+                                // We get the first party with at least 1 person who's in it and checked.
+                                // As well as 1 person who's both under the cure threshold AND in casting range.
+                                // This way we won't AOE parties we haven't got anyone checked in, and we won't attempt
+                                // to AOE a party where we can't reach any of the injured members.
+                                if (partyByHP.Count(pm => pm.InParty(party) && enabledBoxes[pm.MemberNumber].Checked) > 0)
+                                {
+                                    if (partyByHP.Count(pm => pm.InParty(party) && pm.CurrentHPP < ConfigForm.config.curagaCurePercentage && PL.CanCastOn(pm)) > 0)
+                                    {
+                                        targetParty = party;
+                                    }
+                                }
                             }
 
-                            // We get the first party with at least 1 person who's in it and checked.
-                            // As well as 1 person who's both under the cure threshold AND in casting range.
-                            // This way we won't AOE parties we haven't got anyone checked in, and we won't attempt
-                            // to AOE a party where we can't reach any of the injured members.
-                            if (partyByHP.Count(pm => pm.InParty(party) && enabledBoxes[pm.MemberNumber].Checked) > 0)
+                            if (targetParty > 0)
                             {
-                                if(partyByHP.Count(pm => pm.InParty(party) && pm.CurrentHPP < ConfigForm.config.curagaCurePercentage && PL.CanCastOn(pm)) > 0)
-                                {
-                                    targetParty = party;
-                                }
-                            }                         
-                        }
+                                // The target is the first person we can cast on, since they're already ordered by HPP.
+                                var target = partyByHP.FirstOrDefault(pm => pm.InParty(targetParty) && PL.CanCastOn(pm));
 
-                        if (targetParty > 0)
-                        {
-                            // The target is the first person we can cast on, since they're already ordered by HPP.
-                            var target = partyByHP.FirstOrDefault(pm => pm.InParty(targetParty) && PL.CanCastOn(pm));
-
-                            if (target != default)
-                            {
-                                // If same party as PL, curaga. Otherwise we try to accession cure.
-                                if (targetParty == plParty)
+                                if (target != default)
                                 {
-                                    // TODO: Don't do this if we have no curagas enabled, prevents curing!
-                                    CuragaCalculator(target);
-                                    return;
-                                }
-                                else
-                                {
-                                    // We've already determined we can accession, or already have the status.
-                                    if (!PL.HasStatus(StatusEffect.Accession))
+                                    // If same party as PL, curaga. Otherwise we try to accession cure.
+                                    if (targetParty == plParty)
                                     {
-                                        JobAbility_Wait("Accession AOE Cure", Ability.Accession);
+                                        // TODO: Don't do this if we have no curagas enabled, prevents curing!
+                                        CuragaCalculator(target);
+                                        return;
                                     }
+                                    else
+                                    {
+                                        // We've already determined we can accession, or already have the status.
+                                        if (!PL.HasStatus(StatusEffect.Accession))
+                                        {
+                                            JobAbility_Wait("Accession AOE Cure", Ability.Accession);
+                                        }
 
-                                    CureCalculator(target);
-                                    return;
+                                        CureCalculator(target);
+                                        return;
+                                    }
                                 }
                             }
                         }
@@ -3239,17 +3243,21 @@
                             {
                                 showErrorMessage(geoAction.Error);
                             }
-
-                            if(!string.IsNullOrEmpty(geoAction.JobAbility))
+                            else
                             {
-                                JobAbility_Wait(geoAction.JobAbility, geoAction.JobAbility);
-                            }
+                                if (!string.IsNullOrEmpty(geoAction.JobAbility))
+                                {
+                                    JobAbility_Wait(geoAction.JobAbility, geoAction.JobAbility);
+                                }
 
-                            if (!string.IsNullOrEmpty(geoAction.Spell))
-                            {
-                                CastSpell(geoAction.Target, geoAction.Spell);
-                            }
+                                if (!string.IsNullOrEmpty(geoAction.Spell))
+                                {
+                                    CastSpell(geoAction.Target, geoAction.Spell);
+                                }
+                            }                          
                         }
+
+                        int plParty = PLPartyRelativeToMonitored();
 
                         // so PL job abilities are in order
                         if (PL.Player.Status == 1 || PL.Player.Status == 0)
