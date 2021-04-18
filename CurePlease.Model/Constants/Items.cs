@@ -12,6 +12,8 @@ namespace CurePlease.Model.Constants
         public static string HolyWater = "Holy Water";
         public static string HallowedWater = "Hallowed Water";
 
+        public static string Shihei = "Shihei";
+
         public static string[] SilenceRemoval = { Catholicon, EchoDrops, Remedy, RemedyOintment, VicarsDrink };
         public static string[] DoomRemoval = { HolyWater, HallowedWater };
     }

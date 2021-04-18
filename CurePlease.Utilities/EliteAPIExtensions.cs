@@ -360,5 +360,41 @@ namespace CurePlease.Utilities
 
             return 0;
         }
+
+        public static int GetInventoryItemCount(this EliteAPI api, ushort itemid)
+        {
+            int count = 0;
+            for (int x = 0; x <= 80; x++)
+            {
+                InventoryItem item = api.Inventory.GetContainerItem(0, x);
+                if (item != null && item.Id == itemid)
+                {
+                    count += (int)item.Count;
+                }
+            }
+
+            return count;
+        }
+
+        public static int GetTempItemCount(this EliteAPI api, ushort itemid)
+        {
+            int count = 0;
+            for (int x = 0; x <= 80; x++)
+            {
+                InventoryItem item = api.Inventory.GetContainerItem(3, x);
+                if (item != null && item.Id == itemid)
+                {
+                    count += (int)item.Count;
+                }
+            }
+
+            return count;
+        }
+
+        public static ushort GetItemId(this EliteAPI api, string name)
+        {
+            IItem item = api.Resources.GetItem(name, 0);
+            return item != null ? (ushort)item.ItemID : (ushort)0;
+        }
     }
 }

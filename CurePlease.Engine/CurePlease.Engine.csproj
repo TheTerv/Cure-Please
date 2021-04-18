@@ -47,6 +47,7 @@
     <Compile Include="DebuffEngine.cs" />
     <Compile Include="BuffEngine.cs" />
     <Compile Include="GeoEngine.cs" />
+    <Compile Include="PLEngine.cs" />
     <Compile Include="SongEngine.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

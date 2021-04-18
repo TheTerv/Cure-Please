@@ -4,12 +4,8 @@ using CurePlease.Model.Config;
 using CurePlease.Model.Constants;
 using CurePlease.Utilities;
 using EliteMMO.API;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Sockets;
-using System.Text;
 using static EliteMMO.API.EliteAPI;
 
 namespace CurePlease.Engine

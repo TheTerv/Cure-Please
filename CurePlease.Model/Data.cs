@@ -46,6 +46,11 @@ namespace CurePlease.Model
         public static string[] RegenTiers = { Spells.Regen, Spells.Regen_II, Spells.Regen_III, Spells.Regen_IV, Spells.Regen_V };
         public static string[] RefreshTiers = { Spells.Refresh, Spells.Refresh_II, Spells.Refresh_III };
 
+        public static string[] HasteTiers = { Spells.Haste, Spells.Haste_II };
+        public static string[] TemperTiers = { Spells.Temper, Spells.Temper_II };
+
+        public static string[] SpikesSpells = { Spells.Blaze_Spikes, Spells.Ice_Spikes, Spells.Shock_Spikes };
+
         public static string[] GainBoostSpells = {
             Spells.Gain_STR,Spells.Gain_DEX, Spells.Gain_VIT, Spells.Gain_AGI, Spells.Gain_INT, Spells.Gain_MND, Spells.Gain_CHR,
             Spells.Boost_STR, Spells.Boost_DEX, Spells.Boost_VIT, Spells.Boost_AGI, Spells.Boost_INT, Spells.Boost_MND, Spells.Boost_CHR
@@ -170,6 +175,10 @@ namespace CurePlease.Model
             { Spells.Refresh_III, (short)StatusEffect.Refresh },
             { Spells.Phalanx, (short)StatusEffect.Phalanx },
             { Spells.Phalanx_II, (short)StatusEffect.Phalanx },
+            { Spells.Blaze_Spikes, (short)StatusEffect.Blaze_Spikes },
+            { Spells.Ice_Spikes, (short)StatusEffect.Ice_Spikes },
+            { Spells.Shock_Spikes, (short)StatusEffect.Shock_Spikes },
+
         };
 
         public static StatusEffect[] GainBoostEffects =

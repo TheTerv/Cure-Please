@@ -26,13 +26,11 @@
     public partial class MainForm : Form
     {
 
-        private static ConfigForm Form2 = new ConfigForm();
+        private static ConfigForm Config = new ConfigForm();
 
         private string debug_MSG_show = string.Empty;
 
-        private int lastCommand = 0;
-
-        private int lastKnownEstablisherTarget = 0;       
+        private int lastCommand = 0; 
 
         public bool CastingBackground_Check = false;
         public bool JobAbilityLock_Check = false;
@@ -41,43 +39,7 @@
 
         private bool curePlease_autofollow = false;
 
-        public string WindowerMode = "Windower";
-
-        private int GetInventoryItemCount(EliteAPI api, ushort itemid)
-        {
-            int count = 0;
-            for (int x = 0; x <= 80; x++)
-            {
-                InventoryItem item = api.Inventory.GetContainerItem(0, x);
-                if (item != null && item.Id == itemid)
-                {
-                    count += (int)item.Count;
-                }
-            }
-
-            return count;
-        }
-
-        private int GetTempItemCount(EliteAPI api, ushort itemid)
-        {
-            int count = 0;
-            for (int x = 0; x <= 80; x++)
-            {
-                InventoryItem item = api.Inventory.GetContainerItem(3, x);
-                if (item != null && item.Id == itemid)
-                {
-                    count += (int)item.Count;
-                }
-            }
-
-            return count;
-        }
-
-        private ushort GetItemId(string name)
-        {
-            IItem item = PL.Resources.GetItem(name, 0);
-            return item != null ? (ushort)item.ItemID : (ushort)0;
-        }
+        public string WindowerMode = "Windower";      
 
         public static EliteAPI PL;
 
@@ -91,13 +53,15 @@
 
         // TODO: Initialize these configs explicitly after we've hooked into the game
         // and/or loaded/saved our config form.
-        public SongEngine SongEngine = new SongEngine(PL, Monitored, Form2.GetSongConfig());
+        public SongEngine SongEngine = new SongEngine(PL, Monitored, Config.GetSongConfig());
 
-        public GeoEngine GeoEngine = new GeoEngine(PL, Monitored, Form2.GetGeoConfig());
+        public GeoEngine GeoEngine = new GeoEngine(PL, Monitored, Config.GetGeoConfig());
 
-        public BuffEngine BuffEngine = new BuffEngine(PL, Monitored, Form2.GetBuffConfig());
+        public BuffEngine BuffEngine = new BuffEngine(PL, Monitored, Config.GetBuffConfig());
 
-        public DebuffEngine DebuffEngine = new DebuffEngine(PL, Monitored, Form2.GetDebuffConfig());
+        public DebuffEngine DebuffEngine = new DebuffEngine(PL, Monitored, Config.GetDebuffConfig());
+
+        public PLEngine PLEngine = new PLEngine(PL, Monitored, Config.GetPLConfig());
 
         public double last_percent = 1;
 
@@ -302,8 +266,8 @@
 
                             reader.Close();
                             reader.Dispose();
-                            Form2.updateForm(config);
-                            Form2.button4_Click(sender, e);
+                            Config.updateForm(config);
+                            Config.button4_Click(sender, e);
                         }
                         else if (File.Exists(filename2))
                         {
@@ -316,8 +280,8 @@
 
                             reader.Close();
                             reader.Dispose();
-                            Form2.updateForm(config);
-                            Form2.button4_Click(sender, e);
+                            Config.updateForm(config);
+                            Config.button4_Click(sender, e);
                         }
                     }
                 }
@@ -1057,16 +1021,6 @@
 
         }
 
-        private bool monitoredStatusCheck(StatusEffect requestedStatus)
-        {
-            bool statusFound = false;
-            foreach (StatusEffect status in Monitored.Player.Buffs.Cast<StatusEffect>().Where(status => requestedStatus == status))
-            {
-                statusFound = true;
-            }
-            return statusFound;
-        }
-
         private void CastSpell(string partyMemberName, string spellName, [Optional] string OptionalExtras)
         {
             if(CastingBackground_Check)
@@ -1105,55 +1059,6 @@
             {
                 castingLockLabel.Text = "Casting is LOCKED";
                 if (!ProtectCasting.IsBusy) { ProtectCasting.RunWorkerAsync(); }
-            }
-        }
-
-        
-
-        private bool ActiveSpikes()
-        {
-            if ((ConfigForm.config.plSpikes_Spell == 0) && PL.HasStatus(StatusEffect.Blaze_Spikes))
-            {
-                return true;
-            }
-            else if ((ConfigForm.config.plSpikes_Spell == 1) && PL.HasStatus(StatusEffect.Ice_Spikes))
-            {
-                return true;
-            }
-            else if ((ConfigForm.config.plSpikes_Spell == 2) && PL.HasStatus(StatusEffect.Shock_Spikes))
-            {
-                return true;
-            }
-            return false;
-        }
-
-        private bool PLInParty()
-        {
-            // FALSE IS WANTED WHEN NOT IN PARTY
-
-            if (PL.Player.Name == Monitored.Player.Name) // MONITORED AND POL ARE BOTH THE SAME THEREFORE IN THE PARTY
-            {
-                return true;
-            }
-
-            var PARTYD = PL.Party.GetPartyMembers().Where(p => p.Active != 0 && p.Zone == PL.Player.ZoneId);
-
-            List<string> gen = new List<string>();
-            foreach (PartyMember pData in PARTYD)
-            {
-                if (pData != null && pData.Name != "")
-                {
-                    gen.Add(pData.Name);
-                }
-            }
-
-            if (gen.Contains(PL.Player.Name) && gen.Contains(Monitored.Player.Name))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
             }
         }
 
@@ -1247,76 +1152,7 @@
             if (JobAbilityLock_Check != true && CastingBackground_Check != true && !PL.HasStatus(StatusEffect.Terror) && !PL.HasStatus(StatusEffect.Petrification) && !PL.HasStatus(StatusEffect.Stun))
             {
 
-                // FIRST IF YOU ARE SILENCED OR DOOMED ATTEMPT REMOVAL NOW
-                if (PL.HasStatus(StatusEffect.Silence) && ConfigForm.config.plSilenceItemEnabled)
-                {
-                    var plSilenceItem = Items.SilenceRemoval[ConfigForm.config.plSilenceItem];
-                    
-                    // Check to make sure we have echo drops
-                    if (GetInventoryItemCount(PL, GetItemId(plSilenceItem)) > 0 || GetTempItemCount(PL, GetItemId(plSilenceItem)) > 0)
-                    {
-                        Item_Wait(plSilenceItem);
-                    }
-
-                }
-                else if (PL.HasStatus(StatusEffect.Doom) && ConfigForm.config.plDoomEnabled /* Add more options from UI HERE*/)
-                {
-                    var plDoomItem = Items.DoomRemoval[ConfigForm.config.plDoomitem];
-
-                    // Check to make sure we have holy water
-                    if (GetInventoryItemCount(PL, GetItemId(plDoomItem)) > 0 || GetTempItemCount(PL, GetItemId(plDoomItem)) > 0)
-                    {
-                        Item_Wait(plDoomItem);
-                    }
-                }
-
-                else if (ConfigForm.config.DivineSeal && PL.Player.MPP <= 11 && PL.AbilityAvailable(Ability.DivineSeal) && !PL.Player.Buffs.Contains((short)StatusEffect.Weakness))
-                {
-                    JobAbility_Wait(Ability.DivineSeal, Ability.DivineSeal);
-                }
-                else if (ConfigForm.config.Convert && (PL.Player.MP <= ConfigForm.config.convertMP) && PL.AbilityAvailable(Ability.Convert) && !PL.Player.Buffs.Contains((short)StatusEffect.Weakness))
-                {
-                    JobAbility_Wait(Ability.Convert, Ability.Convert);
-                    return;
-                }                            
-                if (PL.Player.MP <= (int)ConfigForm.config.mpMinCastValue && PL.Player.MP != 0)
-                {
-                    if (ConfigForm.config.lowMPcheckBox && !islowmp && !ConfigForm.config.healLowMP)
-                    {
-                        PL.ThirdParty.SendString("/tell " + Monitored.Player.Name + " MP is low!");
-                        islowmp = true;
-                        return;
-                    }
-                    islowmp = true;
-                    return;
-                }
-                if (PL.Player.MP > (int)ConfigForm.config.mpMinCastValue && PL.Player.MP != 0)
-                {
-                    if (ConfigForm.config.lowMPcheckBox && islowmp && !ConfigForm.config.healLowMP)
-                    {
-                        PL.ThirdParty.SendString("/tell " + Monitored.Player.Name + " MP OK!");
-                        islowmp = false;
-                    }
-                }
-
-                if (ConfigForm.config.healLowMP == true && PL.Player.MP <= ConfigForm.config.healWhenMPBelow && PL.Player.Status == 0)
-                {
-                    if (ConfigForm.config.lowMPcheckBox && !islowmp)
-                    {
-                        PL.ThirdParty.SendString("/tell " + Monitored.Player.Name + " MP is seriously low, /healing.");
-                        islowmp = true;
-                    }
-                    PL.ThirdParty.SendString("/heal");
-                }
-                else if (ConfigForm.config.standAtMP == true && PL.Player.MPP >= ConfigForm.config.standAtMP_Percentage && PL.Player.Status == 33)
-                {
-                    if (ConfigForm.config.lowMPcheckBox && !islowmp)
-                    {
-                        PL.ThirdParty.SendString("/tell " + Monitored.Player.Name + " MP has recovered.");
-                        islowmp = false;
-                    }
-                    PL.ThirdParty.SendString("/heal");
-                }
+                
 
                 // Only perform actions if PL is stationary PAUSE GOES HERE
                 if ((PL.Player.X == plX) && (PL.Player.Y == plY) && (PL.Player.Z == plZ) && (PL.Player.LoginStatus == (int)LoginStatus.LoggedIn) && JobAbilityLock_Check != true && CastingBackground_Check != true && curePlease_autofollow == false && ((PL.Player.Status == (uint)Status.Standing) || (PL.Player.Status == (uint)Status.Fighting)))
@@ -1362,7 +1198,7 @@
                     /////////////////////////// PL CURE //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
                     // TODO: Test this! Pretty sure your own character is always party member index 0.
-                    if (PL.Player.HP > 0 && (PL.Player.HPP <= ConfigForm.config.monitoredCurePercentage) && ConfigForm.config.enableOutOfPartyHealing == true && PLInParty() == false)
+                    if (PL.Player.HP > 0 && (PL.Player.HPP <= ConfigForm.config.monitoredCurePercentage) && ConfigForm.config.enableOutOfPartyHealing == true && !PL.SamePartyAs(Monitored))
                     {
                         var plAsPartyMember = PL.Party.GetPartyMember(0);
                         CureCalculator(plAsPartyMember);
@@ -1485,399 +1321,40 @@
                     }
 
                     // PL Auto Buffs
-
-                    string barSpell = ConfigForm.config.AOE_Barelemental ? Data.AoeBarSpells[ConfigForm.config.plBarElement_Spell] : Data.BarSpells[ConfigForm.config.plBarElement_Spell];
-
-                    string barStatus = ConfigForm.config.AOE_Barstatus ? Data.AoeBarStatus[ConfigForm.config.plBarStatus_Spell] : Data.BarStatus[ConfigForm.config.plBarStatus_Spell];
-
-                    string enspell = Data.Enspells[ConfigForm.config.plEnspell_Spell];
-                    string stormspell = Data.StormTiers[ConfigForm.config.plStormSpell_Spell];
-                    string gainBoostSpell = Data.GainBoostSpells[ConfigForm.config.plGainBoost_Spell];
-
                     if (PL.Player.LoginStatus == (int)LoginStatus.LoggedIn && JobAbilityLock_Check != true && CastingBackground_Check != true)
                     {
-                        if (ConfigForm.config.Composure && (!PL.HasStatus(StatusEffect.Composure)) && PL.AbilityAvailable(Ability.Composure))
+                        // PL AUTO BUFFS
+                        var plEngineResult = PLEngine.Run();
+                        if(plEngineResult != null)
                         {
-
-                            JobAbility_Wait(Ability.Composure, Ability.Composure);
-                        }
-                        else if (ConfigForm.config.LightArts && (!PL.HasStatus(StatusEffect.Light_Arts)) && (!PL.HasStatus(StatusEffect.Addendum_White)) && PL.AbilityAvailable(Ability.LightArts))
-                        {
-                            JobAbility_Wait(Ability.LightArts, Ability.LightArts);
-                        }
-                        else if (ConfigForm.config.AddendumWhite && (!PL.HasStatus(StatusEffect.Addendum_White)) && PL.HasStatus(StatusEffect.Light_Arts) && PL.CurrentSCHCharges() > 0)
-                        {
-                            JobAbility_Wait(Ability.AddendumWhite, Ability.AddendumWhite);
-                        }
-                        else if (ConfigForm.config.DarkArts && (!PL.HasStatus(StatusEffect.Dark_Arts)) && (!PL.HasStatus(StatusEffect.Addendum_Black)) && PL.AbilityAvailable(Ability.DarkArts))
-                        {
-                            JobAbility_Wait(Ability.DarkArts, Ability.DarkArts);
-                        }
-                        else if (ConfigForm.config.AddendumBlack && PL.HasStatus(StatusEffect.Dark_Arts) && (!PL.HasStatus(StatusEffect.Addendum_Black)) && PL.CurrentSCHCharges() > 0)
-                        {
-                            JobAbility_Wait(Ability.AddendumBlack, Ability.AddendumBlack);
-                        }
-                        else if (ConfigForm.config.plShellra && (!PL.HasStatus(StatusEffect.Shell)))
-                        {
-                            var shellraSpell = Data.ShellraTiers[(int)ConfigForm.config.plShellra_Level - 1];
-                            if (PL.SpellAvailable(shellraSpell))
+                            if(!string.IsNullOrEmpty(plEngineResult.Item))
                             {
-                                CastSpell(Target.Me, shellraSpell);
+                                Item_Wait(plEngineResult.Item);
                             }
-                        }
-                        else if (ConfigForm.config.plProtectra && (!PL.HasStatus(StatusEffect.Protect)))
-                        {
-                            var protectraSpell = Data.ProtectraTiers[(int)ConfigForm.config.plProtectra_Level - 1];
-                            if (PL.SpellAvailable(protectraSpell))
+                            
+                            if(!string.IsNullOrEmpty(plEngineResult.JobAbility))
                             {
-                                CastSpell(Target.Me, protectraSpell);
-                            }
-                        }
-                        else if (ConfigForm.config.plBarElement && !PL.HasStatus(Data.SpellEffects[barSpell]) && PL.SpellAvailable(barSpell))
-                        {
-                            if (ConfigForm.config.Accession && ConfigForm.config.barspellAccession && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Accession) && ConfigForm.config.AOE_Barelemental == false && !PL.HasStatus(StatusEffect.Accession))
-                            {
-                                JobAbility_Wait("Barspell, Accession", Ability.Accession);
-                                return;
-                            }
-
-                            if (ConfigForm.config.Perpetuance && ConfigForm.config.barspellPerpetuance && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Perpetuance) && !PL.HasStatus(StatusEffect.Perpetuance))
-                            {
-                                JobAbility_Wait("Barspell, Perpetuance", Ability.Perpetuance);
-                                return;
-                            }
-
-                            CastSpell(Target.Me, barSpell);
-                        }
-                        else if (ConfigForm.config.plBarStatus && !PL.HasStatus(Data.SpellEffects[barStatus]) && PL.SpellAvailable(barStatus))
-                        {
-                            if (ConfigForm.config.Accession && ConfigForm.config.barstatusAccession && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Accession) && ConfigForm.config.AOE_Barstatus == false && !PL.HasStatus(StatusEffect.Accession))
-                            {
-                                JobAbility_Wait("Barstatus, Accession", Ability.Accession);
-                                return;
-                            }
-
-                            if (ConfigForm.config.Perpetuance && ConfigForm.config.barstatusPerpetuance && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Perpetuance) && !PL.HasStatus(StatusEffect.Perpetuance))
-                            {
-                                JobAbility_Wait("Barstatus, Perpetuance", Ability.Perpetuance);
-                                return;
-                            }
-
-                            CastSpell(Target.Me, barStatus);
-                        }
-                        else if (ConfigForm.config.plGainBoost && !PL.HasStatus(Data.SpellEffects[gainBoostSpell]) && PL.SpellAvailable(gainBoostSpell))
-                        {
-                            CastSpell(Target.Me, gainBoostSpell);
-                        }
-                        else if (ConfigForm.config.plStormSpell && !PL.HasStatus(Data.SpellEffects[stormspell]) && PL.SpellAvailable(stormspell))
-                        {
-                            if (ConfigForm.config.Accession && ConfigForm.config.stormspellAccession && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Accession) && !PL.HasStatus(StatusEffect.Accession))
-                            {
-                                JobAbility_Wait("Stormspell, Accession", Ability.Accession);
-                                return;
-                            }
-
-                            if (ConfigForm.config.Perpetuance && ConfigForm.config.stormspellPerpetuance && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Perpetuance) && !PL.HasStatus(StatusEffect.Perpetuance))
-                            {
-                                JobAbility_Wait("Stormspell, Perpetuance", Ability.Perpetuance);
-                                return;
-                            }
-
-                            CastSpell(Target.Me, stormspell);
-                        }
-                        else if (ConfigForm.config.plProtect && (!PL.HasStatus(StatusEffect.Protect)))
-                        {
-                            string protectSpell = Data.ProtectTiers[ConfigForm.config.autoProtect_Spell];
-
-                            if (protectSpell != Spells.Unknown && PL.SpellAvailable(protectSpell))
-                            {
-                                if (ConfigForm.config.Accession && ConfigForm.config.accessionProShell && PL.Party.GetPartyMembers().Count() > 2 && PL.AbilityAvailable(Ability.Accession) && PL.CurrentSCHCharges() > 0)
+                                if(plEngineResult.JobAbility == Ability.Devotion)
                                 {
-                                    if (!PL.HasStatus(StatusEffect.Accession))
-                                    {
-                                        JobAbility_Wait("Protect, Accession", Ability.Accession);
-                                        return;
-                                    }
+                                    PL.ThirdParty.SendString($"/ja \"{Ability.Devotion}\" {plEngineResult.Target}");
                                 }
-
-                                CastSpell(Target.Me, protectSpell);
-                            }
-                        }
-                        else if (ConfigForm.config.plShell && (!PL.HasStatus(StatusEffect.Shell)))
-                        {
-                            string shellSpell = Data.ShellTiers[ConfigForm.config.autoShell_Spell];
-
-                            if (shellSpell != Spells.Unknown && PL.SpellAvailable(shellSpell))
-                            {
-                                if (ConfigForm.config.Accession && ConfigForm.config.accessionProShell && PL.Party.GetPartyMembers().Count() > 2 && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Accession))
+                                else
                                 {
-                                    if (!PL.HasStatus(StatusEffect.Accession))
-                                    {
-                                        JobAbility_Wait("Shell, Accession", Ability.Accession);
-                                        return;
-                                    }
-                                }
-
-                                CastSpell(Target.Me, shellSpell);
-                            }
-                        }
-                        else if (ConfigForm.config.plReraise && ConfigForm.config.EnlightenmentReraise && (!PL.HasStatus(StatusEffect.Reraise)) && !PL.HasStatus(StatusEffect.Addendum_White) && PL.AbilityAvailable(Ability.Enlightenment))
-                        {
-                            if (!PL.HasStatus(StatusEffect.Enlightenment) && PL.AbilityAvailable(Ability.Enlightenment))
-                            {
-                                JobAbility_Wait("Reraise, Enlightenment", Ability.Enlightenment);
-                                return;
+                                    JobAbility_Wait(plEngineResult.Message, plEngineResult.JobAbility);
+                                }                            
                             }
 
-                            var reraiseSpell = Data.ReraiseTiers[ConfigForm.config.plReraise_Level - 1];
-                            if (PL.HasMPFor(reraiseSpell) && PL.SpellAvailable(reraiseSpell))
+                            if(!string.IsNullOrEmpty(plEngineResult.Spell))
                             {
-                                CastSpell(Target.Me, reraiseSpell);
-                            }
-                        }
-                        else if (ConfigForm.config.plReraise && (!PL.HasStatus(StatusEffect.Reraise)))
-                        {
-                            var reraiseSpell = Data.ReraiseTiers[ConfigForm.config.plReraise_Level - 1];
-                            if (PL.HasMPFor(reraiseSpell) && PL.SpellAvailable(reraiseSpell))
-                            {
-                                CastSpell(Target.Me, reraiseSpell);
-                            }
-                        }
-                        else if (ConfigForm.config.plUtsusemi && PL.ShadowsRemaining() < 2)
-                        {
-                            if (PL.SpellAvailable(Spells.Utsusemi_Ni) && GetInventoryItemCount(PL, GetItemId("Shihei")) > 0)
-                            {
-                                CastSpell(Target.Me, Spells.Utsusemi_Ni);
-                            }
-                            else if (PL.SpellAvailable(Spells.Utsusemi_Ichi) && (PL.ShadowsRemaining() == 0) && GetInventoryItemCount(PL, GetItemId("Shihei")) > 0)
-                            {
-                                CastSpell(Target.Me, Spells.Utsusemi_Ichi);
+                                var target = string.IsNullOrEmpty(plEngineResult.Target) ? "<me>" : plEngineResult.Target;
+                                CastSpell(target, plEngineResult.Spell);
                             }
                         }
 
-                        else if (ConfigForm.config.plBlink && (!PL.HasStatus(StatusEffect.Blink)) && PL.SpellAvailable(Spells.Blink))
-                        {
-
-                            if (ConfigForm.config.Accession && ConfigForm.config.blinkAccession && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Accession) && !PL.HasStatus(StatusEffect.Accession))
-                            {
-                                JobAbility_Wait("Blink, Accession", Ability.Accession);
-                                return;
-                            }
-
-                            if (ConfigForm.config.Perpetuance && ConfigForm.config.blinkPerpetuance && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Perpetuance) && !PL.HasStatus(StatusEffect.Perpetuance))
-                            {
-                                JobAbility_Wait("Blink, Perpetuance", Ability.Perpetuance);
-                                return;
-                            }
-
-                            CastSpell(Target.Me, Spells.Blink);
-                        }
-                        else if (ConfigForm.config.plPhalanx && (!PL.HasStatus(StatusEffect.Phalanx)) && PL.SpellAvailable(Spells.Phalanx))
-                        {
-                            if (ConfigForm.config.Accession && ConfigForm.config.phalanxAccession && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Accession) && !PL.HasStatus(StatusEffect.Accession))
-                            {
-                                JobAbility_Wait("Phalanx, Accession", Ability.Accession);
-                                return;
-                            }
-
-                            if (ConfigForm.config.Perpetuance && ConfigForm.config.phalanxPerpetuance && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Perpetuance) && !PL.HasStatus(StatusEffect.Perpetuance))
-                            {
-                                JobAbility_Wait("Phalanx, Perpetuance", Ability.Perpetuance);
-                                return;
-                            }
-
-                            CastSpell(Target.Me, Spells.Phalanx);
-                        }
-                        else if (ConfigForm.config.plRefresh && (!PL.HasStatus(StatusEffect.Refresh)))
-                        {
-                            var refreshSpell = Data.RefreshTiers[ConfigForm.config.plRefresh_Level - 1];
-
-                            if (PL.SpellAvailable(Spells.Refresh))
-                            {
-                                if (ConfigForm.config.Accession && ConfigForm.config.refreshAccession && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Accession) && !PL.HasStatus(StatusEffect.Accession))
-                                {
-                                    JobAbility_Wait("Refresh, Accession", Ability.Accession);
-                                    return;
-                                }
-                                if (ConfigForm.config.Perpetuance && ConfigForm.config.refreshPerpetuance && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Perpetuance) && !PL.HasStatus(StatusEffect.Perpetuance))
-                                {
-                                    JobAbility_Wait("Refresh, Perpetuance", Ability.Perpetuance);
-                                    return;
-                                }
-
-                                CastSpell(Target.Me, refreshSpell);
-                            }
-                        }
-                        else if (ConfigForm.config.plRegen && (!PL.HasStatus(StatusEffect.Regen)))
-                        {
-                            if (ConfigForm.config.Accession && ConfigForm.config.regenAccession && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Accession) && !PL.HasStatus(StatusEffect.Accession))
-                            {
-                                JobAbility_Wait("Regen, Accession", Ability.Accession);
-                                return;
-                            }
-                            if (ConfigForm.config.Perpetuance && ConfigForm.config.regenPerpetuance && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Perpetuance) && !PL.HasStatus(StatusEffect.Perpetuance))
-                            {
-                                JobAbility_Wait("Regen, Perpetuance", Ability.Perpetuance);
-                                return;
-                            }
-
-                            var regenSpell = Data.RegenTiers[ConfigForm.config.plRegen_Level - 1];
-                            if (PL.HasMPFor(regenSpell) && PL.SpellAvailable(regenSpell))
-                            {
-                                CastSpell(Target.Me, regenSpell);
-                            }
-                        }
-                        else if (ConfigForm.config.plAdloquium && (!PL.HasStatus(StatusEffect.Regain)) && PL.SpellAvailable(Spells.Adloquium))
-                        {
-                            if (ConfigForm.config.Accession && ConfigForm.config.adloquiumAccession && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Accession) && !PL.HasStatus(StatusEffect.Accession))
-                            {
-                                JobAbility_Wait("Adloquium, Accession", Ability.Accession);
-                                return;
-                            }
-
-                            if (ConfigForm.config.Perpetuance && ConfigForm.config.adloquiumPerpetuance && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Perpetuance) && !PL.HasStatus(StatusEffect.Perpetuance))
-                            {
-                                JobAbility_Wait("Adloquium, Perpetuance", Ability.Perpetuance);
-                                return;
-                            }
-
-                            CastSpell(Target.Me, Spells.Adloquium);
-                        }
-                        else if (ConfigForm.config.plStoneskin && (!PL.HasStatus(StatusEffect.Stoneskin)) && PL.SpellAvailable(Spells.Stoneskin))
-                        {
-                            if (ConfigForm.config.Accession && ConfigForm.config.stoneskinAccession && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Accession) && !PL.HasStatus(StatusEffect.Accession))
-                            {
-                                JobAbility_Wait("Stoneskin, Accession", Ability.Accession);
-                                return;
-                            }
-
-                            if (ConfigForm.config.Perpetuance && ConfigForm.config.stoneskinPerpetuance && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Perpetuance) && !PL.HasStatus(StatusEffect.Perpetuance))
-                            {
-                                JobAbility_Wait("Stoneskin, Perpetuance", Ability.Perpetuance);
-                                return;
-                            }
-
-                            CastSpell(Target.Me, Spells.Stoneskin);
-                        }
-                        else if (ConfigForm.config.plAquaveil && (!PL.HasStatus(StatusEffect.Aquaveil)) && PL.SpellAvailable(Spells.Aquaveil))
-                        {
-                            if (ConfigForm.config.Accession && ConfigForm.config.aquaveilAccession && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Accession) && !PL.HasStatus(StatusEffect.Accession))
-                            {
-                                JobAbility_Wait("Aquaveil, Accession", Ability.Accession);
-                                return;
-                            }
-
-                            if (ConfigForm.config.Perpetuance && ConfigForm.config.aquaveilPerpetuance && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Perpetuance) && PL.HasStatus(StatusEffect.Perpetuance))
-                            {
-                                JobAbility_Wait("Aquaveil, Perpetuance", Ability.Perpetuance);
-                                return;
-                            }
-
-                            CastSpell(Target.Me, Spells.Aquaveil);
-                        }
-                        else if (ConfigForm.config.plKlimaform && !PL.HasStatus(StatusEffect.Klimaform))
-                        {
-                            if (PL.SpellAvailable(Spells.Klimaform))
-                            {
-                                CastSpell(Target.Me, Spells.Klimaform);
-                            }
-                        }
-                        else if (ConfigForm.config.plTemper && (!PL.HasStatus(StatusEffect.Multi_Strikes)))
-                        {
-                            if ((ConfigForm.config.plTemper_Level == 1) && PL.SpellAvailable(Spells.Temper))
-                            {
-                                CastSpell(Target.Me, Spells.Temper);
-                            }
-                            else if ((ConfigForm.config.plTemper_Level == 2) && PL.SpellAvailable(Spells.Temper_II))
-                            {
-                                CastSpell(Target.Me, Spells.Temper_II);
-                            }
-                        }
-                        else if (ConfigForm.config.plHaste && (!PL.HasStatus(StatusEffect.Haste)))
-                        {
-                            if ((ConfigForm.config.plHaste_Level == 1) && PL.SpellAvailable(Spells.Haste))
-                            {
-                                CastSpell(Target.Me, Spells.Haste);
-                            }
-                            else if ((ConfigForm.config.plHaste_Level == 2) && PL.SpellAvailable(Spells.Haste_II))
-                            {
-                                CastSpell(Target.Me, Spells.Haste_II);
-                            }
-                        }
-                        else if (ConfigForm.config.plSpikes && ActiveSpikes() == false)
-                        {
-                            if ((ConfigForm.config.plSpikes_Spell == 0) && PL.SpellAvailable(Spells.Blaze_Spikes))
-                            {
-                                CastSpell(Target.Me, Spells.Blaze_Spikes);
-                            }
-                            else if ((ConfigForm.config.plSpikes_Spell == 1) && PL.SpellAvailable(Spells.Ice_Spikes))
-                            {
-                                CastSpell(Target.Me, Spells.Ice_Spikes);
-                            }
-                            else if ((ConfigForm.config.plSpikes_Spell == 2) && PL.SpellAvailable(Spells.Shock_Spikes))
-                            {
-                                CastSpell(Target.Me, Spells.Shock_Spikes);
-                            }
-                        }
-                        else if (ConfigForm.config.plEnspell && !PL.HasStatus(Data.SpellEffects[enspell]) && PL.SpellAvailable(enspell))
-                        {
-                            // Only tries to accession for tier 1 enspells, not tier 2.
-                            if (ConfigForm.config.Accession && ConfigForm.config.enspellAccession && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Accession) && ConfigForm.config.plEnspell_Spell < 6 && !PL.HasStatus(StatusEffect.Accession))
-                            {
-                                JobAbility_Wait("Enspell, Accession", Ability.Accession);
-                                return;
-                            }
-
-                            if (ConfigForm.config.Perpetuance && ConfigForm.config.enspellPerpetuance && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Perpetuance) && ConfigForm.config.plEnspell_Spell < 6 && !PL.HasStatus(StatusEffect.Perpetuance))
-                            {
-                                JobAbility_Wait("Enspell, Perpetuance", Ability.Perpetuance);
-                                return;
-                            }
-
-                            CastSpell(Target.Me, enspell);
-                        }
-                        else if (ConfigForm.config.plAuspice && (!PL.HasStatus(StatusEffect.Auspice)) && PL.SpellAvailable(Spells.Auspice))
-                        {
-                            CastSpell(Target.Me, Spells.Auspice);
-                        }
-                        #endregion                      
-
-                        else if (ConfigForm.config.autoTarget && PL.SpellAvailable(ConfigForm.config.autoTargetSpell))
-                        {
-                            if (ConfigForm.config.Hate_SpellType == 1) // PARTY BASED HATE SPELL
-                            {
-                                int enemyID = CheckEngagedStatus_Hate();
-
-                                if (enemyID != 0 && enemyID != lastKnownEstablisherTarget)
-                                {
-                                    CastSpell(ConfigForm.config.autoTarget_Target, ConfigForm.config.autoTargetSpell);
-                                    lastKnownEstablisherTarget = enemyID;
-                                }
-                            }
-                            else // ENEMY BASED TARGET
-                            {
-                                int enemyID = CheckEngagedStatus_Hate();
-
-                                if (enemyID != 0 && enemyID != lastKnownEstablisherTarget)
-                                {
-                                    PL.Target.SetTarget(enemyID);
-                                    await Task.Delay(TimeSpan.FromMilliseconds(500));
-                                    CastSpell("<t>", ConfigForm.config.autoTargetSpell);
-                                    lastKnownEstablisherTarget = enemyID;
-                                    await Task.Delay(TimeSpan.FromMilliseconds(1000));
-
-                                    if (ConfigForm.config.DisableTargettingCancel == false)
-                                    {
-                                        await Task.Delay(TimeSpan.FromSeconds((double)ConfigForm.config.TargetRemoval_Delay));
-                                        PL.Target.SetTarget(0);
-                                    }
-                                }
-                            }
-                        }
 
                         // BARD SONGS
 
-                        else if (PL.Player.MainJob == (byte)Job.BRD && ConfigForm.config.enableSinging && !PL.HasStatus(StatusEffect.Silence) && (PL.Player.Status == 1 || PL.Player.Status == 0))
+                        if (PL.Player.MainJob == (byte)Job.BRD && ConfigForm.config.enableSinging && !PL.HasStatus(StatusEffect.Silence) && (PL.Player.Status == 1 || PL.Player.Status == 0))
                         {
                             var songAction = SongEngine.Run();
 
@@ -1911,66 +1388,7 @@
                                     CastSpell(geoAction.Target, geoAction.Spell);
                                 }
                             }
-                        }
-
-                        int plParty = PL.GetPartyRelativeTo(Monitored);
-
-                        // so PL job abilities are in order
-                        if (PL.Player.Status == 1 || PL.Player.Status == 0)
-                        {
-                            if (ConfigForm.config.AfflatusSolace && (!PL.HasStatus(StatusEffect.Afflatus_Solace)) && PL.AbilityAvailable(Ability.AfflatusSolace))
-                            {
-                                JobAbility_Wait(Ability.AfflatusSolace, Ability.AfflatusSolace);
-                            }
-                            else if (ConfigForm.config.AfflatusMisery && (!PL.HasStatus(StatusEffect.Afflatus_Misery)) && PL.AbilityAvailable(Ability.AfflatusMisery))
-                            {
-                                JobAbility_Wait(Ability.AfflatusMisery, Ability.AfflatusMisery);
-                            }
-                            else if (ConfigForm.config.Composure && (!PL.HasStatus(StatusEffect.Composure)) && PL.AbilityAvailable(Ability.Composure))
-                            {
-                                JobAbility_Wait("Composure #2", Ability.Composure);
-                            }
-                            else if (ConfigForm.config.LightArts && (!PL.HasStatus(StatusEffect.Light_Arts)) && (!PL.HasStatus(StatusEffect.Addendum_White)) && PL.AbilityAvailable(Ability.LightArts))
-                            {
-                                JobAbility_Wait("Light Arts #2", Ability.LightArts);
-                            }
-                            else if (ConfigForm.config.AddendumWhite && (!PL.HasStatus(StatusEffect.Addendum_White)) && PL.CurrentSCHCharges() > 0)
-                            {
-                                JobAbility_Wait(Ability.AddendumWhite, Ability.AddendumWhite);
-                            }
-                            else if (ConfigForm.config.Sublimation && (!PL.HasStatus(StatusEffect.Sublimation_Activated)) && (!PL.HasStatus(StatusEffect.Sublimation_Complete)) && (!PL.HasStatus(StatusEffect.Refresh)) && PL.AbilityAvailable(Ability.Sublimation))
-                            {
-                                JobAbility_Wait("Sublimation, Charging", Ability.Sublimation);
-                            }
-                            else if (ConfigForm.config.Sublimation && ((PL.Player.MPMax - PL.Player.MP) > ConfigForm.config.sublimationMP) && PL.HasStatus(StatusEffect.Sublimation_Complete) && PL.AbilityAvailable(Ability.Sublimation))
-                            {
-                                JobAbility_Wait("Sublimation, Recovery", Ability.Sublimation);
-                            }
-                            else if (ConfigForm.config.DivineCaress && (ConfigForm.config.plDebuffEnabled || ConfigForm.config.monitoredDebuffEnabled || ConfigForm.config.enablePartyDebuffRemoval) && PL.AbilityAvailable(Ability.DivineCaress))
-                            {
-                                JobAbility_Wait(Ability.DivineCaress, Ability.DivineCaress);
-                            }
-                            else if (ConfigForm.config.Devotion && PL.AbilityAvailable(Ability.Devotion) && PL.Player.HPP > 80 && (!ConfigForm.config.DevotionWhenEngaged || (Monitored.Player.Status == 1)))
-                            {
-                                // Get all active members who are in the PLs party.
-                                IEnumerable<PartyMember> cParty = Monitored.GetActivePartyMembers().Where(member => member.InParty(plParty) && member.Name != PL.Player.Name);
-
-                                // If we're set to only devotion a specific target, filter the list for that target.
-                                if (ConfigForm.config.DevotionTargetType == 0)
-                                {
-                                    cParty = cParty.Where(member => member.Name == ConfigForm.config.DevotionTargetName);
-                                }
-
-                                // Get the first member who's within range, and has enough missing MP to meet our config criteria.
-                                var devotionTarget = cParty.FirstOrDefault(member => member.CurrentMP <= ConfigForm.config.DevotionMP && PL.EntityWithin(10, member.TargetIndex));
-
-                                if (devotionTarget != default)
-                                {
-                                    PL.ThirdParty.SendString("/ja \"Devotion\" " + devotionTarget.Name);
-                                    Thread.Sleep(TimeSpan.FromSeconds(2));
-                                }
-                            }
-                        }
+                        }                    
 
                         var playerBuffOrder = Monitored.Party.GetPartyMembers().OrderBy(p => p.MemberNumber).OrderBy(p => p.Active == 0).Where(p => p.Active == 1);
 
@@ -1997,6 +1415,7 @@
                             }
                         }
                     }
+                    #endregion
                 }
             }
         }
@@ -2745,45 +2164,7 @@
             pauseButton.ForeColor = Color.Red;
             actionTimer.Enabled = false;
             MessageBox.Show(ErrorMessage);
-        }           
-
-        private int CheckEngagedStatus_Hate()
-        {
-            if (ConfigForm.config.AssistSpecifiedTarget == true && !string.IsNullOrEmpty(ConfigForm.config.autoTarget_Target))
-            {
-                for (int x = 0; x < 2048; x++)
-                {
-                    XiEntity z = PL.Entity.GetEntity(x);
-
-                    if (!string.IsNullOrEmpty(z.Name) && z.Name.ToLower() == ConfigForm.config.autoTarget_Target.ToLower())
-                    {
-                        if (z.Status == 1)
-                        {
-                            return z.TargetingIndex;
-                        }
-                        else
-                        {
-                            return 0;
-                        }
-                    }
-                }
-                return 0;
-            }
-            else
-            {
-                if (Monitored.Player.Status == 1)
-                {
-                    TargetInfo target = Monitored.Target.GetTargetInfo();
-                    XiEntity entity = Monitored.Entity.GetEntity(Convert.ToInt32(target.TargetIndex));
-                    return Convert.ToInt32(entity.TargetID);
-
-                }
-                else
-                {
-                    return 0;
-                }
-            }
-        }    
+        }                      
 
         private void updateInstances_Tick(object sender, EventArgs e)
         {
