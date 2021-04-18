@@ -10,6 +10,30 @@ namespace CurePlease.Utilities
 {
     public static class EliteAPIExtensions
     {
+        public static void UseJobAbility(this EliteAPI api, string ability)
+        {
+            api.ThirdParty.SendString("/ja \"" + ability + "\" <me>");
+        }
+
+        public static void CastSpell(this EliteAPI api, string spell, string target)
+        {
+            api.ThirdParty.SendString("/ma \"" + spell + "\" " + target);
+        }
+
+        public static void ExecuteAction(this EliteAPI api, EngineAction action)
+        {
+
+            if (!string.IsNullOrEmpty(action.JobAbility))
+            {
+                api.UseJobAbility(action.JobAbility);
+            }
+
+            if (!string.IsNullOrEmpty(action.Spell))
+            {
+                api.CastSpell(action.Spell, action.Target);
+            }
+        }
+
         public static bool EntityWithin(this EliteAPI api, int distance, uint targetIndex)
         {
             var entity = api.Entity.GetEntity((int)targetIndex);
@@ -20,7 +44,7 @@ namespace CurePlease.Utilities
         {
             // If they're in range, and alive, should be able to cast.
             // Since we include distance = 0, should work when target is the PL itself.
-            var entity = api.Entity.GetEntity((int)member.TargetIndex);
+            //var entity = api.Entity.GetEntity((int)member.TargetIndex);
 
             return api.EntityWithin(21, member.TargetIndex) && member.CurrentHP > 0;         
         }

@@ -95,6 +95,8 @@
 
         public GeoEngine GeoEngine = new GeoEngine(PL, Monitored, Form2.GetGeoConfig());
 
+        public BuffEngine BuffEngine = new BuffEngine(PL, Monitored, Form2.GetBuffConfig());
+
         public double last_percent = 1;
 
         public string castingSpell = string.Empty;
@@ -143,900 +145,7 @@
 
         public int LUA_Plugin_Loaded = 0;
 
-        public int firstTime_Pause = 0;
-
-        // SPELL CHECKER CODE: (PL.SpellAvailable("") == 0) && (PL.SpellAvailable(""))
-        // ABILITY CHECKER CODE: (GetAbilityRecast("") == 0) && (PL.AbilityAvailable(""))
-        // PIANISSIMO TIME FORMAT
-        // SONGNUMBER_SONGSET (Example: 1_2 = Song #1 in Set #2
-        private bool[] autoHasteEnabled = new bool[]
-      {
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false
-      };
-
-        private bool[] autoHaste_IIEnabled = new bool[]
-      {
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false
-      };
-
-        private bool[] autoFlurryEnabled = new bool[]
-      {
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false
-      };
-
-        private bool[] autoFlurry_IIEnabled = new bool[]
-      {
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false
-      };
-
-        private bool[] autoPhalanx_IIEnabled = new bool[]
-       {
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false
-       };
-
-        private bool[] autoRegen_Enabled = new bool[]
-      {
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false
-      };
-
-        private bool[] autoShell_Enabled = new bool[]
-      {
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false
-      };
-
-        private bool[] autoProtect_Enabled = new bool[]
-      {
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false
-      };
-
-        private bool[] autoSandstormEnabled = new bool[]
-{
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false
-};
-
-        private bool[] autoRainstormEnabled = new bool[]
-{
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false
-};
-
-        private bool[] autoWindstormEnabled = new bool[]
-{
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false
-};
-
-        private bool[] autoFirestormEnabled = new bool[]
-{
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false
-};
-
-        private bool[] autoHailstormEnabled = new bool[]
-{
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false
-};
-
-        private bool[] autoThunderstormEnabled = new bool[]
-{
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false
-};
-
-        private bool[] autoVoidstormEnabled = new bool[]
-{
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false
-};
-
-        private bool[] autoAurorastormEnabled = new bool[]
-{
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false
-};
-
-
-
-        private bool[] autoRefreshEnabled = new bool[]
-      {
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false
-      };
-
-        private bool[] autoAdloquium_Enabled = new bool[]
-      {
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false
-      };
-
-
-
-        private DateTime currentTime = DateTime.Now;
-
-        private DateTime[] playerHaste = new DateTime[]
-      {
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0)
-      };
-
-        private DateTime[] playerHaste_II = new DateTime[]
-      {
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0)
-      };
-
-        private DateTime[] playerStormspell = new DateTime[]
-      {
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0)
-      };
-
-        private DateTime[] playerFlurry = new DateTime[]
-      {
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0)
-      };
-
-        private DateTime[] playerFlurry_II = new DateTime[]
-      {
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0)
-      };
-
-        private DateTime[] playerShell = new DateTime[]
-      {
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0)
-      };
-
-        private DateTime[] playerProtect = new DateTime[]
-      {
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0)
-      };
-
-        private DateTime[] playerPhalanx_II = new DateTime[]
-      {
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0)
-      };
-
-        private DateTime[] playerRegen = new DateTime[]
-       {
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0)
-       };
-
-        private DateTime[] playerRefresh = new DateTime[]
-      {
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0)
-      };
-
-        private DateTime[] playerAdloquium = new DateTime[]
-      {
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0),
-            new DateTime(1970, 1, 1, 0, 0, 0)
-      };     
-
-        private TimeSpan[] playerHasteSpan = new TimeSpan[]
-      {
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan()
-      };
-
-        private TimeSpan[] playerStormspellSpan = new TimeSpan[]
-      {
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan()
-      };
-
-        private TimeSpan[] playerHaste_IISpan = new TimeSpan[]
-      {
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan()
-      };
-
-        private TimeSpan[] playerFlurrySpan = new TimeSpan[]
-      {
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan()
-      };
-
-        private TimeSpan[] playerFlurry_IISpan = new TimeSpan[]
-      {
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan()
-      };
-
-        private TimeSpan[] playerShell_Span = new TimeSpan[]
-      {
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan()
-      };
-
-        private TimeSpan[] playerProtect_Span = new TimeSpan[]
-      {
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan()
-      };
-
-        private TimeSpan[] playerPhalanx_IISpan = new TimeSpan[]
-      {
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan()
-      };
-
-        private TimeSpan[] playerRegen_Span = new TimeSpan[]
-      {
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan()
-      };
-
-        private TimeSpan[] playerRefresh_Span = new TimeSpan[]
-      {
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan()
-      };
-
-
-        private TimeSpan[] playerAdloquium_Span = new TimeSpan[]
-      {
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan(),
-            new TimeSpan()
-      };
-
-        
+        public int firstTime_Pause = 0;          
 
         private void PaintBorderlessGroupBox(object sender, PaintEventArgs e)
         {
@@ -2042,64 +1151,6 @@
                             }
                         }
                     }
-
-                    // Then reset any timers that need to be reset for buffs.
-                    foreach (PartyMember ptMember in PL.Party.GetPartyMembers())
-                    {
-                        if (ActiveBuffs.ContainsKey(ptMember.Name))
-                        {
-                            if (ActiveBuffs[ptMember.Name].Any())
-                            {
-                                var buffs = ActiveBuffs[ptMember.Name];
-
-                                // IF SLOW IS NOT ACTIVE, YET NEITHER IS HASTE / FLURRY DESPITE BEING ENABLED
-                                // RESET THE TIMER TO FORCE IT TO BE CAST
-                                if (!buffs.Contains((short)StatusEffect.Slow) && !buffs.Contains((short)StatusEffect.Haste) && !buffs.Contains((short)StatusEffect.Flurry) && !buffs.Contains((short)562))
-                                {
-                                    playerHaste[ptMember.MemberNumber] = new DateTime(1970, 1, 1, 0, 0, 0);
-                                    playerHaste_II[ptMember.MemberNumber] = new DateTime(1970, 1, 1, 0, 0, 0);
-                                    playerFlurry[ptMember.MemberNumber] = new DateTime(1970, 1, 1, 0, 0, 0);
-                                    playerFlurry_II[ptMember.MemberNumber] = new DateTime(1970, 1, 1, 0, 0, 0);                                
-                                }
-                                // IF SUBLIMATION IS NOT ACTIVE, YET NEITHER IS REFRESH DESPITE BEING
-                                // ENABLED RESET THE TIMER TO FORCE IT TO BE CAST
-                                if (!buffs.Contains((short)StatusEffect.Sublimation_Activated) && !buffs.Contains((short)StatusEffect.Sublimation_Complete) && !buffs.Contains((short)StatusEffect.Refresh))
-                                {
-                                    playerRefresh[ptMember.MemberNumber] = new DateTime(1970, 1, 1, 0, 0, 0);  // ERROR                                   
-                                }
-                                // IF REGEN IS NOT ACTIVE DESPITE BEING ENABLED RESET THE TIMER TO
-                                // FORCE IT TO BE CAST
-                                if (!buffs.Contains((short)StatusEffect.Regen))
-                                {
-                                    playerRegen[ptMember.MemberNumber] = new DateTime(1970, 1, 1, 0, 0, 0);                                  
-                                }
-                                // IF PROTECT IS NOT ACTIVE DESPITE BEING ENABLED RESET THE TIMER TO
-                                // FORCE IT TO BE CAST
-                                if (!buffs.Contains((short)StatusEffect.Protect))
-                                {
-                                    playerProtect[ptMember.MemberNumber] = new DateTime(1970, 1, 1, 0, 0, 0);                                  
-                                }
-
-                                // IF SHELL IS NOT ACTIVE DESPITE BEING ENABLED RESET THE TIMER TO
-                                // FORCE IT TO BE CAST
-                                if (!buffs.Contains((short)StatusEffect.Shell))
-                                {
-                                    playerShell[ptMember.MemberNumber] = new DateTime(1970, 1, 1, 0, 0, 0);
-                                }
-                                // IF PHALANX II IS NOT ACTIVE DESPITE BEING ENABLED RESET THE TIMER
-                                // TO FORCE IT TO BE CAST
-                                if (!buffs.Contains((short)StatusEffect.Phalanx))
-                                {
-                                    playerPhalanx_II[ptMember.MemberNumber] = new DateTime(1970, 1, 1, 0, 0, 0);                                 
-                                }
-                                // If there's no storm tier where our buffs contain it's effect.
-                                if(!Data.StormTiers.Any(tier => buffs.Contains(Data.SpellEffects[tier])))
-                                {
-                                    playerStormspell[ptMember.MemberNumber] = new DateTime(1970, 1, 1, 0, 0, 0);
-                                }                                                                                                  
-                            }
-                        }                 
-                    } 
                 }
             }
         }
@@ -2197,76 +1248,7 @@
             }
         }
 
-        private void hastePlayer(byte partyMemberId)
-        {
-            CastSpell(Monitored.Party.GetPartyMembers()[partyMemberId].Name, Spells.Haste);
-            playerHaste[partyMemberId] = DateTime.Now;
-        }
-
-        private void haste_IIPlayer(byte partyMemberId)
-        {
-            CastSpell(Monitored.Party.GetPartyMembers()[partyMemberId].Name, Spells.Haste_II);
-            playerHaste_II[partyMemberId] = DateTime.Now;
-        }
-
-        private void AdloquiumPlayer(byte partyMemberId)
-        {
-            CastSpell(Monitored.Party.GetPartyMembers()[partyMemberId].Name, Spells.Adloquium);
-            playerAdloquium[partyMemberId] = DateTime.Now;
-        }
-
-        private void FlurryPlayer(byte partyMemberId)
-        {
-            CastSpell(Monitored.Party.GetPartyMembers()[partyMemberId].Name, Spells.Flurry);
-            playerFlurry[partyMemberId] = DateTime.Now;
-        }
-
-        private void Flurry_IIPlayer(byte partyMemberId)
-        {
-            CastSpell(Monitored.Party.GetPartyMembers()[partyMemberId].Name, Spells.Flurry_II);
-            playerFlurry_II[partyMemberId] = DateTime.Now;
-        }
-
-        private void Phalanx_IIPlayer(byte partyMemberId)
-        {
-            CastSpell(Monitored.Party.GetPartyMembers()[partyMemberId].Name, Spells.Phalanx_II);
-            playerPhalanx_II[partyMemberId] = DateTime.Now;
-        }
-
-        private void StormSpellPlayer(byte partyMemberId, string spell)
-        {
-            CastSpell(Monitored.Party.GetPartyMembers()[partyMemberId].Name, spell);
-            playerStormspell[partyMemberId] = DateTime.Now;
-        }
-
-        private void Regen_Player(byte partyMemberId)
-        {
-            string[] regen_spells = { Spells.Regen, Spells.Regen_II, Spells.Regen_III, Spells.Regen_IV, Spells.Regen_V };
-            CastSpell(Monitored.Party.GetPartyMembers()[partyMemberId].Name, regen_spells[ConfigForm.config.autoRegen_Spell]);
-            playerRegen[partyMemberId] = DateTime.Now;
-        }
-
-        private void Refresh_Player(byte partyMemberId)
-        {
-            string[] refresh_spells = { Spells.Refresh, Spells.Refresh_II, Spells.Refresh_III };
-            CastSpell(Monitored.Party.GetPartyMembers()[partyMemberId].Name, refresh_spells[ConfigForm.config.autoRefresh_Spell]);
-            playerRefresh[partyMemberId] = DateTime.Now;
-        }
-
-        private void protectPlayer(byte partyMemberId)
-        {
-            string[] protect_spells = { Spells.Protect, Spells.Protect_II, Spells.Protect_III, Spells.Protect_IV, Spells.Protect_V };
-            CastSpell(Monitored.Party.GetPartyMembers()[partyMemberId].Name, protect_spells[ConfigForm.config.autoProtect_Spell]);
-            playerProtect[partyMemberId] = DateTime.Now;
-        }
-
-        private void shellPlayer(byte partyMemberId)
-        {
-            string[] shell_spells = { Spells.Shell, Spells.Shell_II, Spells.Shell_III, Spells.Shell_IV, Spells.Shell_V };
-
-            CastSpell(Monitored.Party.GetPartyMembers()[partyMemberId].Name, shell_spells[ConfigForm.config.autoShell_Spell]);
-            playerShell[partyMemberId] = DateTime.Now;
-        }
+        
 
         private bool ActiveSpikes()
         {
@@ -2328,193 +1310,7 @@
             if (PL.Player.LoginStatus != (int)LoginStatus.LoggedIn || Monitored.Player.LoginStatus != (int)LoginStatus.LoggedIn)
             {
                 return;
-            }
-
-            // Grab current time for calculations below
-
-            currentTime = DateTime.Now;
-            // Calculate time since haste was cast on particular player
-            playerHasteSpan[0] = currentTime.Subtract(playerHaste[0]);
-            playerHasteSpan[1] = currentTime.Subtract(playerHaste[1]);
-            playerHasteSpan[2] = currentTime.Subtract(playerHaste[2]);
-            playerHasteSpan[3] = currentTime.Subtract(playerHaste[3]);
-            playerHasteSpan[4] = currentTime.Subtract(playerHaste[4]);
-            playerHasteSpan[5] = currentTime.Subtract(playerHaste[5]);
-            playerHasteSpan[6] = currentTime.Subtract(playerHaste[6]);
-            playerHasteSpan[7] = currentTime.Subtract(playerHaste[7]);
-            playerHasteSpan[8] = currentTime.Subtract(playerHaste[8]);
-            playerHasteSpan[9] = currentTime.Subtract(playerHaste[9]);
-            playerHasteSpan[10] = currentTime.Subtract(playerHaste[10]);
-            playerHasteSpan[11] = currentTime.Subtract(playerHaste[11]);
-            playerHasteSpan[12] = currentTime.Subtract(playerHaste[12]);
-            playerHasteSpan[13] = currentTime.Subtract(playerHaste[13]);
-            playerHasteSpan[14] = currentTime.Subtract(playerHaste[14]);
-            playerHasteSpan[15] = currentTime.Subtract(playerHaste[15]);
-            playerHasteSpan[16] = currentTime.Subtract(playerHaste[16]);
-            playerHasteSpan[17] = currentTime.Subtract(playerHaste[17]);
-
-            playerHaste_IISpan[0] = currentTime.Subtract(playerHaste_II[0]);
-            playerHaste_IISpan[1] = currentTime.Subtract(playerHaste_II[1]);
-            playerHaste_IISpan[2] = currentTime.Subtract(playerHaste_II[2]);
-            playerHaste_IISpan[3] = currentTime.Subtract(playerHaste_II[3]);
-            playerHaste_IISpan[4] = currentTime.Subtract(playerHaste_II[4]);
-            playerHaste_IISpan[5] = currentTime.Subtract(playerHaste_II[5]);
-            playerHaste_IISpan[6] = currentTime.Subtract(playerHaste_II[6]);
-            playerHaste_IISpan[7] = currentTime.Subtract(playerHaste_II[7]);
-            playerHaste_IISpan[8] = currentTime.Subtract(playerHaste_II[8]);
-            playerHaste_IISpan[9] = currentTime.Subtract(playerHaste_II[9]);
-            playerHaste_IISpan[10] = currentTime.Subtract(playerHaste_II[10]);
-            playerHaste_IISpan[11] = currentTime.Subtract(playerHaste_II[11]);
-            playerHaste_IISpan[12] = currentTime.Subtract(playerHaste_II[12]);
-            playerHaste_IISpan[13] = currentTime.Subtract(playerHaste_II[13]);
-            playerHaste_IISpan[14] = currentTime.Subtract(playerHaste_II[14]);
-            playerHaste_IISpan[15] = currentTime.Subtract(playerHaste_II[15]);
-            playerHaste_IISpan[16] = currentTime.Subtract(playerHaste_II[16]);
-            playerHaste_IISpan[17] = currentTime.Subtract(playerHaste_II[17]);
-
-            playerFlurrySpan[0] = currentTime.Subtract(playerFlurry[0]);
-            playerFlurrySpan[1] = currentTime.Subtract(playerFlurry[1]);
-            playerFlurrySpan[2] = currentTime.Subtract(playerFlurry[2]);
-            playerFlurrySpan[3] = currentTime.Subtract(playerFlurry[3]);
-            playerFlurrySpan[4] = currentTime.Subtract(playerFlurry[4]);
-            playerFlurrySpan[5] = currentTime.Subtract(playerFlurry[5]);
-            playerFlurrySpan[6] = currentTime.Subtract(playerFlurry[6]);
-            playerFlurrySpan[7] = currentTime.Subtract(playerFlurry[7]);
-            playerFlurrySpan[8] = currentTime.Subtract(playerFlurry[8]);
-            playerFlurrySpan[9] = currentTime.Subtract(playerFlurry[9]);
-            playerFlurrySpan[10] = currentTime.Subtract(playerFlurry[10]);
-            playerFlurrySpan[11] = currentTime.Subtract(playerFlurry[11]);
-            playerFlurrySpan[12] = currentTime.Subtract(playerFlurry[12]);
-            playerFlurrySpan[13] = currentTime.Subtract(playerFlurry[13]);
-            playerFlurrySpan[14] = currentTime.Subtract(playerFlurry[14]);
-            playerFlurrySpan[15] = currentTime.Subtract(playerFlurry[15]);
-            playerFlurrySpan[16] = currentTime.Subtract(playerFlurry[16]);
-            playerFlurrySpan[17] = currentTime.Subtract(playerFlurry[17]);
-
-            playerFlurry_IISpan[0] = currentTime.Subtract(playerFlurry_II[0]);
-            playerFlurry_IISpan[1] = currentTime.Subtract(playerFlurry_II[1]);
-            playerFlurry_IISpan[2] = currentTime.Subtract(playerFlurry_II[2]);
-            playerFlurry_IISpan[3] = currentTime.Subtract(playerFlurry_II[3]);
-            playerFlurry_IISpan[4] = currentTime.Subtract(playerFlurry_II[4]);
-            playerFlurry_IISpan[5] = currentTime.Subtract(playerFlurry_II[5]);
-            playerFlurry_IISpan[6] = currentTime.Subtract(playerFlurry_II[6]);
-            playerFlurry_IISpan[7] = currentTime.Subtract(playerFlurry_II[7]);
-            playerFlurry_IISpan[8] = currentTime.Subtract(playerFlurry_II[8]);
-            playerFlurry_IISpan[9] = currentTime.Subtract(playerFlurry_II[9]);
-            playerFlurry_IISpan[10] = currentTime.Subtract(playerFlurry_II[10]);
-            playerFlurry_IISpan[11] = currentTime.Subtract(playerFlurry_II[11]);
-            playerFlurry_IISpan[12] = currentTime.Subtract(playerFlurry_II[12]);
-            playerFlurry_IISpan[13] = currentTime.Subtract(playerFlurry_II[13]);
-            playerFlurry_IISpan[14] = currentTime.Subtract(playerFlurry_II[14]);
-            playerFlurry_IISpan[15] = currentTime.Subtract(playerFlurry_II[15]);
-            playerFlurry_IISpan[16] = currentTime.Subtract(playerFlurry_II[16]);
-            playerFlurry_IISpan[17] = currentTime.Subtract(playerFlurry_II[17]);
-
-            // Calculate time since protect was cast on particular player
-            playerProtect_Span[0] = currentTime.Subtract(playerProtect[0]);
-            playerProtect_Span[1] = currentTime.Subtract(playerProtect[1]);
-            playerProtect_Span[2] = currentTime.Subtract(playerProtect[2]);
-            playerProtect_Span[3] = currentTime.Subtract(playerProtect[3]);
-            playerProtect_Span[4] = currentTime.Subtract(playerProtect[4]);
-            playerProtect_Span[5] = currentTime.Subtract(playerProtect[5]);
-            playerProtect_Span[6] = currentTime.Subtract(playerProtect[6]);
-            playerProtect_Span[7] = currentTime.Subtract(playerProtect[7]);
-            playerProtect_Span[8] = currentTime.Subtract(playerProtect[8]);
-            playerProtect_Span[9] = currentTime.Subtract(playerProtect[9]);
-            playerProtect_Span[10] = currentTime.Subtract(playerProtect[10]);
-            playerProtect_Span[11] = currentTime.Subtract(playerProtect[11]);
-            playerProtect_Span[12] = currentTime.Subtract(playerProtect[12]);
-            playerProtect_Span[13] = currentTime.Subtract(playerProtect[13]);
-            playerProtect_Span[14] = currentTime.Subtract(playerProtect[14]);
-            playerProtect_Span[15] = currentTime.Subtract(playerProtect[15]);
-            playerProtect_Span[16] = currentTime.Subtract(playerProtect[16]);
-            playerProtect_Span[17] = currentTime.Subtract(playerProtect[17]);
-
-            // Calculate time since Stormspell was cast on particular player
-            playerStormspellSpan[0] = currentTime.Subtract(playerStormspell[0]);
-            playerStormspellSpan[1] = currentTime.Subtract(playerStormspell[1]);
-            playerStormspellSpan[2] = currentTime.Subtract(playerStormspell[2]);
-            playerStormspellSpan[3] = currentTime.Subtract(playerStormspell[3]);
-            playerStormspellSpan[4] = currentTime.Subtract(playerStormspell[4]);
-            playerStormspellSpan[5] = currentTime.Subtract(playerStormspell[5]);
-            playerStormspellSpan[6] = currentTime.Subtract(playerStormspell[6]);
-            playerStormspellSpan[7] = currentTime.Subtract(playerStormspell[7]);
-            playerStormspellSpan[8] = currentTime.Subtract(playerStormspell[8]);
-            playerStormspellSpan[9] = currentTime.Subtract(playerStormspell[9]);
-            playerStormspellSpan[10] = currentTime.Subtract(playerStormspell[10]);
-            playerStormspellSpan[11] = currentTime.Subtract(playerStormspell[11]);
-            playerStormspellSpan[12] = currentTime.Subtract(playerStormspell[12]);
-            playerStormspellSpan[13] = currentTime.Subtract(playerStormspell[13]);
-            playerStormspellSpan[14] = currentTime.Subtract(playerStormspell[14]);
-            playerStormspellSpan[15] = currentTime.Subtract(playerStormspell[15]);
-            playerStormspellSpan[16] = currentTime.Subtract(playerStormspell[16]);
-            playerStormspellSpan[17] = currentTime.Subtract(playerStormspell[17]);
-
-            // Calculate time since shell was cast on particular player
-            playerShell_Span[0] = currentTime.Subtract(playerShell[0]);
-            playerShell_Span[1] = currentTime.Subtract(playerShell[1]);
-            playerShell_Span[2] = currentTime.Subtract(playerShell[2]);
-            playerShell_Span[3] = currentTime.Subtract(playerShell[3]);
-            playerShell_Span[4] = currentTime.Subtract(playerShell[4]);
-            playerShell_Span[5] = currentTime.Subtract(playerShell[5]);
-            playerShell_Span[6] = currentTime.Subtract(playerShell[6]);
-            playerShell_Span[7] = currentTime.Subtract(playerShell[7]);
-            playerShell_Span[8] = currentTime.Subtract(playerShell[8]);
-            playerShell_Span[9] = currentTime.Subtract(playerShell[9]);
-            playerShell_Span[10] = currentTime.Subtract(playerShell[10]);
-            playerShell_Span[11] = currentTime.Subtract(playerShell[11]);
-            playerShell_Span[12] = currentTime.Subtract(playerShell[12]);
-            playerShell_Span[13] = currentTime.Subtract(playerShell[13]);
-            playerShell_Span[14] = currentTime.Subtract(playerShell[14]);
-            playerShell_Span[15] = currentTime.Subtract(playerShell[15]);
-            playerShell_Span[16] = currentTime.Subtract(playerShell[16]);
-            playerShell_Span[17] = currentTime.Subtract(playerShell[17]);
-
-            // Calculate time since phalanx II was cast on particular player
-            playerPhalanx_IISpan[0] = currentTime.Subtract(playerPhalanx_II[0]);
-            playerPhalanx_IISpan[1] = currentTime.Subtract(playerPhalanx_II[1]);
-            playerPhalanx_IISpan[2] = currentTime.Subtract(playerPhalanx_II[2]);
-            playerPhalanx_IISpan[3] = currentTime.Subtract(playerPhalanx_II[3]);
-            playerPhalanx_IISpan[4] = currentTime.Subtract(playerPhalanx_II[4]);
-            playerPhalanx_IISpan[5] = currentTime.Subtract(playerPhalanx_II[5]);
-
-            // Calculate time since regen was cast on particular player
-            playerRegen_Span[0] = currentTime.Subtract(playerRegen[0]);
-            playerRegen_Span[1] = currentTime.Subtract(playerRegen[1]);
-            playerRegen_Span[2] = currentTime.Subtract(playerRegen[2]);
-            playerRegen_Span[3] = currentTime.Subtract(playerRegen[3]);
-            playerRegen_Span[4] = currentTime.Subtract(playerRegen[4]);
-            playerRegen_Span[5] = currentTime.Subtract(playerRegen[5]);
-
-            // Calculate time since Refresh was cast on particular player
-            playerRefresh_Span[0] = currentTime.Subtract(playerRefresh[0]);
-            playerRefresh_Span[1] = currentTime.Subtract(playerRefresh[1]);
-            playerRefresh_Span[2] = currentTime.Subtract(playerRefresh[2]);
-            playerRefresh_Span[3] = currentTime.Subtract(playerRefresh[3]);
-            playerRefresh_Span[4] = currentTime.Subtract(playerRefresh[4]);
-            playerRefresh_Span[5] = currentTime.Subtract(playerRefresh[5]);
-
-            
-
-            // Calculate time since Adloquium were cast on particular player
-            playerAdloquium_Span[0] = currentTime.Subtract(playerAdloquium[0]);
-            playerAdloquium_Span[1] = currentTime.Subtract(playerAdloquium[1]);
-            playerAdloquium_Span[2] = currentTime.Subtract(playerAdloquium[2]);
-            playerAdloquium_Span[3] = currentTime.Subtract(playerAdloquium[3]);
-            playerAdloquium_Span[4] = currentTime.Subtract(playerAdloquium[4]);
-            playerAdloquium_Span[5] = currentTime.Subtract(playerAdloquium[5]);
-            playerAdloquium_Span[6] = currentTime.Subtract(playerAdloquium[6]);
-            playerAdloquium_Span[7] = currentTime.Subtract(playerAdloquium[7]);
-            playerAdloquium_Span[8] = currentTime.Subtract(playerAdloquium[8]);
-            playerAdloquium_Span[9] = currentTime.Subtract(playerAdloquium[9]);
-            playerAdloquium_Span[10] = currentTime.Subtract(playerAdloquium[10]);
-            playerAdloquium_Span[11] = currentTime.Subtract(playerAdloquium[11]);
-            playerAdloquium_Span[12] = currentTime.Subtract(playerAdloquium[12]);
-            playerAdloquium_Span[13] = currentTime.Subtract(playerAdloquium[13]);
-            playerAdloquium_Span[14] = currentTime.Subtract(playerAdloquium[14]);
-            playerAdloquium_Span[15] = currentTime.Subtract(playerAdloquium[15]);
-            playerAdloquium_Span[16] = currentTime.Subtract(playerAdloquium[16]);
-            playerAdloquium_Span[17] = currentTime.Subtract(playerAdloquium[17]);            
+            }             
 
             // Set array values for GUI "Enabled" checkboxes
             CheckBox[] enabledBoxes = new CheckBox[18];
@@ -2973,7 +1769,7 @@
                                 return;
                             }
 
-                            var reraiseSpell = Data.ReraiseTiers[ConfigForm.config.plReraise_Level-1];
+                            var reraiseSpell = Data.ReraiseTiers[ConfigForm.config.plReraise_Level - 1];
                             if (PL.HasMPFor(reraiseSpell) && PL.SpellAvailable(reraiseSpell))
                             {
                                 CastSpell(Target.Me, reraiseSpell);
@@ -2981,11 +1777,11 @@
                         }
                         else if (ConfigForm.config.plReraise && (!PL.HasStatus(StatusEffect.Reraise)))
                         {
-                            var reraiseSpell = Data.ReraiseTiers[ConfigForm.config.plReraise_Level-1];
-                            if (PL.HasMPFor(reraiseSpell) && PL.SpellAvailable(reraiseSpell)) 
+                            var reraiseSpell = Data.ReraiseTiers[ConfigForm.config.plReraise_Level - 1];
+                            if (PL.HasMPFor(reraiseSpell) && PL.SpellAvailable(reraiseSpell))
                             {
                                 CastSpell(Target.Me, reraiseSpell);
-                            }                           
+                            }
                         }
                         else if (ConfigForm.config.plUtsusemi && PL.ShadowsRemaining() < 2)
                         {
@@ -2998,7 +1794,7 @@
                                 CastSpell(Target.Me, Spells.Utsusemi_Ichi);
                             }
                         }
-                        
+
                         else if (ConfigForm.config.plBlink && (!PL.HasStatus(StatusEffect.Blink)) && PL.SpellAvailable(Spells.Blink))
                         {
 
@@ -3050,7 +1846,7 @@
                                 }
 
                                 CastSpell(Target.Me, refreshSpell);
-                            }                         
+                            }
                         }
                         else if (ConfigForm.config.plRegen && (!PL.HasStatus(StatusEffect.Regen)))
                         {
@@ -3066,10 +1862,10 @@
                             }
 
                             var regenSpell = Data.RegenTiers[ConfigForm.config.plRegen_Level - 1];
-                            if(PL.HasMPFor(regenSpell) && PL.SpellAvailable(regenSpell))
+                            if (PL.HasMPFor(regenSpell) && PL.SpellAvailable(regenSpell))
                             {
                                 CastSpell(Target.Me, regenSpell);
-                            }                    
+                            }
                         }
                         else if (ConfigForm.config.plAdloquium && (!PL.HasStatus(StatusEffect.Regain)) && PL.SpellAvailable(Spells.Adloquium))
                         {
@@ -3118,7 +1914,7 @@
                             }
 
                             CastSpell(Target.Me, Spells.Aquaveil);
-                        }                       
+                        }
                         else if (ConfigForm.config.plKlimaform && !PL.HasStatus(StatusEffect.Klimaform))
                         {
                             if (PL.SpellAvailable(Spells.Klimaform))
@@ -3141,7 +1937,7 @@
                         {
                             if ((ConfigForm.config.plHaste_Level == 1) && PL.SpellAvailable(Spells.Haste))
                             {
-                                CastSpell(Target.Me,   Spells.Haste);
+                                CastSpell(Target.Me, Spells.Haste);
                             }
                             else if ((ConfigForm.config.plHaste_Level == 2) && PL.SpellAvailable(Spells.Haste_II))
                             {
@@ -3225,7 +2021,7 @@
                         {
                             var songAction = SongEngine.Run();
 
-                            if(!string.IsNullOrEmpty(songAction.Spell))
+                            if (!string.IsNullOrEmpty(songAction.Spell))
                             {
                                 CastSpell(songAction.Target, songAction.Spell);
                             }
@@ -3233,13 +2029,13 @@
 
                         // GEO Stuff
 
-                        else if(PL.Player.MainJob == (byte)Job.GEO && ConfigForm.config.EnableGeoSpells && !PL.HasStatus(StatusEffect.Silence) && (PL.Player.Status == 1 || PL.Player.Status == 0))
+                        else if (PL.Player.MainJob == (byte)Job.GEO && ConfigForm.config.EnableGeoSpells && !PL.HasStatus(StatusEffect.Silence) && (PL.Player.Status == 1 || PL.Player.Status == 0))
                         {
                             var geoAction = GeoEngine.Run();
 
                             // TODO: Abstract out this idea of error/ability/spell handling
                             // as it will apply to all the engines.
-                            if(!string.IsNullOrEmpty(geoAction.Error))
+                            if (!string.IsNullOrEmpty(geoAction.Error))
                             {
                                 showErrorMessage(geoAction.Error);
                             }
@@ -3254,7 +2050,7 @@
                                 {
                                     CastSpell(geoAction.Target, geoAction.Spell);
                                 }
-                            }                          
+                            }
                         }
 
                         int plParty = PLPartyRelativeToMonitored();
@@ -3293,14 +2089,14 @@
                             else if (ConfigForm.config.DivineCaress && (ConfigForm.config.plDebuffEnabled || ConfigForm.config.monitoredDebuffEnabled || ConfigForm.config.enablePartyDebuffRemoval) && PL.AbilityAvailable(Ability.DivineCaress))
                             {
                                 JobAbility_Wait(Ability.DivineCaress, Ability.DivineCaress);
-                            }                           
+                            }
                             else if (ConfigForm.config.Devotion && PL.AbilityAvailable(Ability.Devotion) && PL.Player.HPP > 80 && (!ConfigForm.config.DevotionWhenEngaged || (Monitored.Player.Status == 1)))
                             {
                                 // Get all active members who are in the PLs party.
                                 IEnumerable<PartyMember> cParty = Monitored.GetActivePartyMembers().Where(member => member.InParty(plParty) && member.Name != PL.Player.Name);
 
                                 // If we're set to only devotion a specific target, filter the list for that target.
-                                if(ConfigForm.config.DevotionTargetType == 0)
+                                if (ConfigForm.config.DevotionTargetType == 0)
                                 {
                                     cParty = cParty.Where(member => member.Name == ConfigForm.config.DevotionTargetName);
                                 }
@@ -3308,164 +2104,35 @@
                                 // Get the first member who's within range, and has enough missing MP to meet our config criteria.
                                 var devotionTarget = cParty.FirstOrDefault(member => member.CurrentMP <= ConfigForm.config.DevotionMP && PL.EntityWithin(10, member.TargetIndex));
 
-                                if(devotionTarget != default)
+                                if (devotionTarget != default)
                                 {
                                     PL.ThirdParty.SendString("/ja \"Devotion\" " + devotionTarget.Name);
                                     Thread.Sleep(TimeSpan.FromSeconds(2));
-                                }                          
+                                }
                             }
                         }
 
                         var playerBuffOrder = Monitored.Party.GetPartyMembers().OrderBy(p => p.MemberNumber).OrderBy(p => p.Active == 0).Where(p => p.Active == 1);
 
-                        // Auto Casting
-                        foreach (var charDATA in playerBuffOrder)
+                        // Auto Casting BUFF STUFF
+                        if (PL.Player.Status == 1 || PL.Player.Status == 0)
                         {
-                            // Grab the Storm string name to perform checks.
-                            string StormSpell_Enabled = CheckStormspell(charDATA.MemberNumber);
+                            var buffAction = BuffEngine.Run();
 
-                            // PL BASED BUFFS
-                            if (PL.Player.Name == charDATA.Name)
+                            if (!string.IsNullOrEmpty(buffAction.Error))
                             {
-
-                                if (autoHasteEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Haste) && PL.Player.MP > ConfigForm.config.mpMinCastValue && PL.CanCastOn(charDATA) && !PL.HasStatus(StatusEffect.Haste) && !PL.HasStatus(StatusEffect.Slow))
-                                {
-                                    hastePlayer(charDATA.MemberNumber);
-                                }
-                                if (autoHaste_IIEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Haste_II) && PL.Player.MP > ConfigForm.config.mpMinCastValue && PL.CanCastOn(charDATA) && !PL.HasStatus(StatusEffect.Haste) && !PL.HasStatus(StatusEffect.Slow))
-                                {
-                                    haste_IIPlayer(charDATA.MemberNumber);
-                                }
-                                if (autoAdloquium_Enabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Adloquium) && PL.Player.MP > ConfigForm.config.mpMinCastValue && PL.CanCastOn(charDATA) && !PL.HasStatus(StatusEffect.Regain))
-                                {
-                                    AdloquiumPlayer(charDATA.MemberNumber);
-                                }
-                                if (autoFlurryEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Flurry) && PL.Player.MP > ConfigForm.config.mpMinCastValue && PL.CanCastOn(charDATA) && !PL.HasStatus(581) && !PL.HasStatus(StatusEffect.Slow))
-                                {
-                                    FlurryPlayer(charDATA.MemberNumber);
-                                }
-                                if (autoFlurry_IIEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Flurry_II) && PL.Player.MP > ConfigForm.config.mpMinCastValue && PL.CanCastOn(charDATA) && !PL.HasStatus(581) && !PL.HasStatus(StatusEffect.Slow))
-                                {
-                                    Flurry_IIPlayer(charDATA.MemberNumber);
-                                }
-                                if (autoShell_Enabled[charDATA.MemberNumber] && PL.SpellAvailable(shell_spells[ConfigForm.config.autoShell_Spell]) && PL.Player.MP > ConfigForm.config.mpMinCastValue && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && !PL.HasStatus(StatusEffect.Shell))
-                                {
-                                    shellPlayer(charDATA.MemberNumber);
-                                }
-                                if (autoProtect_Enabled[charDATA.MemberNumber] && PL.SpellAvailable(protect_spells[ConfigForm.config.autoProtect_Spell]) && PL.Player.MP > ConfigForm.config.mpMinCastValue && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && !PL.HasStatus(StatusEffect.Protect))
-                                {
-                                    protectPlayer(charDATA.MemberNumber);
-                                }
-                                if (autoPhalanx_IIEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Phalanx_II) && (PL.Player.MP > ConfigForm.config.mpMinCastValue) && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && !PL.HasStatus(StatusEffect.Phalanx))
-                                {
-                                    Phalanx_IIPlayer(charDATA.MemberNumber);
-                                }
-                                if (autoRegen_Enabled[charDATA.MemberNumber] && PL.SpellAvailable(Data.RegenTiers[ConfigForm.config.autoRegen_Spell]) && (PL.Player.MP > ConfigForm.config.mpMinCastValue) && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && !PL.HasStatus(StatusEffect.Regen))
-                                {
-                                    Regen_Player(charDATA.MemberNumber);
-                                }
-                                if (autoRefreshEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Data.RefreshTiers[ConfigForm.config.autoRefresh_Spell]) && (PL.Player.MP > ConfigForm.config.mpMinCastValue) && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && !PL.HasStatus(StatusEffect.Refresh))
-                                {
-                                    Refresh_Player(charDATA.MemberNumber);
-                                }
-                                if (CheckIfAutoStormspellEnabled(charDATA.MemberNumber) && (PL.Player.MP > ConfigForm.config.mpMinCastValue) && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && !PL.HasStatus(Data.SpellEffects[StormSpell_Enabled]) && PL.SpellAvailable(StormSpell_Enabled))
-                                {
-                                    StormSpellPlayer(charDATA.MemberNumber, StormSpell_Enabled);
-                                }
-                            }
-                            // MONITORED PLAYER BASED BUFFS
-                            else if (Monitored.Player.Name == charDATA.Name)
-                            {
-                                if (autoHasteEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Haste) && PL.Player.MP > ConfigForm.config.mpMinCastValue && PL.CanCastOn(charDATA) && !monitoredStatusCheck(StatusEffect.Haste) && !monitoredStatusCheck(StatusEffect.Slow))
-                                {
-                                    hastePlayer(charDATA.MemberNumber);
-                                }
-                                if (autoHaste_IIEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Haste_II) && PL.Player.MP > ConfigForm.config.mpMinCastValue && PL.CanCastOn(charDATA) && !monitoredStatusCheck(StatusEffect.Haste) && !monitoredStatusCheck(StatusEffect.Slow))
-                                {
-                                    haste_IIPlayer(charDATA.MemberNumber);
-                                }
-                                if (autoAdloquium_Enabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Adloquium) && PL.Player.MP > ConfigForm.config.mpMinCastValue && PL.CanCastOn(charDATA) && !Monitored.HasStatus(StatusEffect.Regain))
-                                {
-                                    AdloquiumPlayer(charDATA.MemberNumber);
-                                }
-                                if (autoFlurryEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Flurry) && PL.Player.MP > ConfigForm.config.mpMinCastValue && PL.CanCastOn(charDATA) && !Monitored.HasStatus(581) && !monitoredStatusCheck(StatusEffect.Slow))
-                                {
-                                    FlurryPlayer(charDATA.MemberNumber);
-                                }
-                                if (autoFlurry_IIEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Flurry_II) && PL.Player.MP > ConfigForm.config.mpMinCastValue && PL.CanCastOn(charDATA) && !Monitored.HasStatus(581) && !monitoredStatusCheck(StatusEffect.Slow))
-                                {
-                                    Flurry_IIPlayer(charDATA.MemberNumber);
-                                }
-                                if (autoShell_Enabled[charDATA.MemberNumber] && PL.SpellAvailable(shell_spells[ConfigForm.config.autoShell_Spell]) && PL.Player.MP > ConfigForm.config.mpMinCastValue && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && !monitoredStatusCheck(StatusEffect.Shell))
-                                {
-                                    shellPlayer(charDATA.MemberNumber);
-                                }
-                                if (autoProtect_Enabled[charDATA.MemberNumber] && PL.SpellAvailable(protect_spells[ConfigForm.config.autoProtect_Spell]) && PL.Player.MP > ConfigForm.config.mpMinCastValue && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && !monitoredStatusCheck(StatusEffect.Protect))
-                                {
-                                    protectPlayer(charDATA.MemberNumber);
-                                }
-                                if (autoPhalanx_IIEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Phalanx_II) && (PL.Player.MP > ConfigForm.config.mpMinCastValue) && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && !monitoredStatusCheck(StatusEffect.Phalanx))
-                                {
-                                    Phalanx_IIPlayer(charDATA.MemberNumber);
-                                }
-                                if (autoRegen_Enabled[charDATA.MemberNumber] && PL.SpellAvailable(Data.RegenTiers[ConfigForm.config.autoRegen_Spell]) && (PL.Player.MP > ConfigForm.config.mpMinCastValue) && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && !monitoredStatusCheck(StatusEffect.Regen))
-                                {
-                                    Regen_Player(charDATA.MemberNumber);
-                                }
-                                if (autoRefreshEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Data.RefreshTiers[ConfigForm.config.autoRefresh_Spell]) && (PL.Player.MP > ConfigForm.config.mpMinCastValue) && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && !monitoredStatusCheck(StatusEffect.Refresh))
-                                {
-                                    Refresh_Player(charDATA.MemberNumber);
-                                }
-                                if (CheckIfAutoStormspellEnabled(charDATA.MemberNumber) && (PL.Player.MP > ConfigForm.config.mpMinCastValue) && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && !Monitored.HasStatus(Data.SpellEffects[StormSpell_Enabled]) && PL.SpellAvailable(StormSpell_Enabled))
-                                {
-                                    StormSpellPlayer(charDATA.MemberNumber, StormSpell_Enabled);
-                                }
+                                showErrorMessage(buffAction.Error);
                             }
                             else
                             {
-                                if (autoHasteEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Haste) && PL.Player.MP > ConfigForm.config.mpMinCastValue && PL.CanCastOn(charDATA) && playerHasteSpan[charDATA.MemberNumber].Minutes >= ConfigForm.config.autoHasteMinutes)
+                                if (!string.IsNullOrEmpty(buffAction.JobAbility))
                                 {
-                                    hastePlayer(charDATA.MemberNumber);
+                                    JobAbility_Wait(buffAction.JobAbility, buffAction.JobAbility);
                                 }
-                                if (autoHaste_IIEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Haste_II) && PL.Player.MP > ConfigForm.config.mpMinCastValue && PL.CanCastOn(charDATA) && playerHaste_IISpan[charDATA.MemberNumber].Minutes >= ConfigForm.config.autoHasteMinutes)
+
+                                if (!string.IsNullOrEmpty(buffAction.Spell))
                                 {
-                                    haste_IIPlayer(charDATA.MemberNumber);
-                                }
-                                if (autoAdloquium_Enabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Adloquium) && PL.Player.MP > ConfigForm.config.mpMinCastValue && PL.CanCastOn(charDATA) && playerAdloquium_Span[charDATA.MemberNumber].Minutes >= ConfigForm.config.autoAdloquiumMinutes)
-                                {
-                                    AdloquiumPlayer(charDATA.MemberNumber);
-                                }
-                                if (autoFlurryEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Flurry) && PL.Player.MP > ConfigForm.config.mpMinCastValue && PL.CanCastOn(charDATA) && playerFlurrySpan[charDATA.MemberNumber].Minutes >= ConfigForm.config.autoHasteMinutes)
-                                {
-                                    FlurryPlayer(charDATA.MemberNumber);
-                                }
-                                if (autoFlurry_IIEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Flurry_II) && PL.Player.MP > ConfigForm.config.mpMinCastValue && PL.CanCastOn(charDATA) && playerHasteSpan[charDATA.MemberNumber].Minutes >= ConfigForm.config.autoHasteMinutes)
-                                {
-                                    Flurry_IIPlayer(charDATA.MemberNumber);
-                                }
-                                if (autoShell_Enabled[charDATA.MemberNumber] && PL.SpellAvailable(shell_spells[ConfigForm.config.autoShell_Spell]) && PL.Player.MP > ConfigForm.config.mpMinCastValue && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && playerShell_Span[charDATA.MemberNumber].Minutes >= ConfigForm.config.autoShellMinutes)
-                                {
-                                    shellPlayer(charDATA.MemberNumber);
-                                }
-                                if (autoProtect_Enabled[charDATA.MemberNumber] && PL.SpellAvailable(protect_spells[ConfigForm.config.autoProtect_Spell]) && PL.Player.MP > ConfigForm.config.mpMinCastValue && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && playerProtect_Span[charDATA.MemberNumber].Minutes >= ConfigForm.config.autoProtect_Minutes)
-                                {
-                                    protectPlayer(charDATA.MemberNumber);
-                                }
-                                if (autoPhalanx_IIEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Spells.Phalanx_II) && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && playerPhalanx_IISpan[charDATA.MemberNumber].Minutes >= ConfigForm.config.autoPhalanxIIMinutes)
-                                {
-                                    Phalanx_IIPlayer(charDATA.MemberNumber);
-                                }
-                                if (autoRegen_Enabled[charDATA.MemberNumber] && PL.SpellAvailable(Data.RegenTiers[ConfigForm.config.autoRegen_Spell]) && (PL.Player.MP > ConfigForm.config.mpMinCastValue) && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && playerRegen_Span[charDATA.MemberNumber].Minutes >= ConfigForm.config.autoRegen_Minutes)
-                                {
-                                    Regen_Player(charDATA.MemberNumber);
-                                }
-                                if (autoRefreshEnabled[charDATA.MemberNumber] && PL.SpellAvailable(Data.RefreshTiers[ConfigForm.config.autoRefresh_Spell]) && (PL.Player.MP > ConfigForm.config.mpMinCastValue) && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && playerRefresh_Span[charDATA.MemberNumber].Minutes >= ConfigForm.config.autoRefresh_Minutes)
-                                {
-                                    Refresh_Player(charDATA.MemberNumber);
-                                }
-                                if (CheckIfAutoStormspellEnabled(charDATA.MemberNumber) && (PL.Player.MP > ConfigForm.config.mpMinCastValue) && PL.CanCastOn(charDATA) && PL.Player.Status != 33 && PL.SpellAvailable(StormSpell_Enabled) && playerStormspellSpan[charDATA.MemberNumber].Minutes >= ConfigForm.config.autoStormspellMinutes)
-                                {
-                                    StormSpellPlayer(charDATA.MemberNumber, StormSpell_Enabled);
+                                    CastSpell(buffAction.Target, buffAction.Spell);
                                 }
                             }
                         }
@@ -3474,583 +2141,230 @@
             }
         }
 
-
-        private bool CheckIfAutoStormspellEnabled(byte id)
-        {
-
-            if (ConfigForm.config.autoStorm_Spell == 0)
-            {
-                if (autoSandstormEnabled[id])
-                {
-                    return true;
-                }
-                else if (autoWindstormEnabled[id])
-                {
-                    return true;
-                }
-                else if (autoFirestormEnabled[id])
-                {
-                    return true;
-                }
-                else if (autoRainstormEnabled[id])
-                {
-                    return true;
-                }
-                else if (autoHailstormEnabled[id])
-                {
-                    return true;
-                }
-                else if (autoThunderstormEnabled[id])
-                {
-                    return true;
-                }
-                else if (autoVoidstormEnabled[id])
-                {
-                    return true;
-                }
-                else if (autoAurorastormEnabled[id])
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            else if (ConfigForm.config.autoStorm_Spell == 1)
-            {
-                if (autoSandstormEnabled[id])
-                {
-                    return true;
-                }
-                else if (autoWindstormEnabled[id])
-                {
-                    return true;
-                }
-                else if (autoFirestormEnabled[id])
-                {
-                    return true;
-                }
-                else if (autoRainstormEnabled[id])
-                {
-                    return true;
-                }
-                else if (autoHailstormEnabled[id])
-                {
-                    return true;
-                }
-                else if (autoThunderstormEnabled[id])
-                {
-                    return true;
-                }
-
-                else if (autoVoidstormEnabled[id])
-                {
-                    return true;
-                }
-                else if (autoAurorastormEnabled[id])
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        private string CheckStormspell(byte id)
-        {
-            if (ConfigForm.config.autoStorm_Spell == 0)
-            {
-                if (autoSandstormEnabled[id])
-                {
-                    return "Sandstorm";
-                }
-                else if (autoWindstormEnabled[id])
-                {
-                    return "Windstorm";
-                }
-                else if (autoFirestormEnabled[id])
-                {
-                    return "Firestorm";
-                }
-                else if (autoRainstormEnabled[id])
-                {
-                    return "Rainstorm";
-                }
-                else if (autoHailstormEnabled[id])
-                {
-                    return "Hailstorm";
-                }
-                else if (autoThunderstormEnabled[id])
-                {
-                    return "Thunderstorm";
-                }
-                else if (autoVoidstormEnabled[id])
-                {
-                    return "Voidstorm";
-                }
-                else if (autoAurorastormEnabled[id])
-                {
-                    return "Aurorastorm";
-                }
-                else
-                {
-                    return string.Empty;
-                }
-            }
-            else if (ConfigForm.config.autoStorm_Spell == 1)
-            {
-                if (autoSandstormEnabled[id])
-                {
-                    return "Sandstorm II";
-                }
-                else if (autoWindstormEnabled[id])
-                {
-                    return "Windstorm II";
-                }
-                else if (autoFirestormEnabled[id])
-                {
-                    return "Firestorm II";
-                }
-                else if (autoRainstormEnabled[id])
-                {
-                    return "Rainstorm II";
-                }
-                else if (autoHailstormEnabled[id])
-                {
-                    return "Hailstorm II";
-                }
-                else if (autoThunderstormEnabled[id])
-                {
-                    return "Thunderstorm II";
-                }
-
-                else if (autoVoidstormEnabled[id])
-                {
-                    return "Voidstorm II";
-                }
-                else if (autoAurorastormEnabled[id])
-                {
-                    return "Aurorastorm II";
-                }
-                else
-                {
-                    return string.Empty;
-                }
-            }
-            else
-            {
-                return string.Empty;
-            }
-        }             
-
         private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             ConfigForm settings = new ConfigForm();
             settings.Show();
         }
 
+        private void ShowPlayerOptionsFor(GroupBox party, byte ptIndex)
+        {
+            playerOptionsSelected = ptIndex;
+            var name = Monitored.Party.GetPartyMembers()[ptIndex].Name;
+
+            autoHasteToolStripMenuItem.Checked = BuffEngine.BuffEnabled(name, Data.SpellEffects[Spells.Haste]);
+            autoHasteIIToolStripMenuItem.Checked = BuffEngine.BuffEnabled(name, Data.SpellEffects[Spells.Haste_II]);
+            autoAdloquiumToolStripMenuItem.Checked = BuffEngine.BuffEnabled(name, Data.SpellEffects[Spells.Adloquium]);
+            autoFlurryToolStripMenuItem.Checked = BuffEngine.BuffEnabled(name, Data.SpellEffects[Spells.Flurry]);
+            autoFlurryIIToolStripMenuItem.Checked = BuffEngine.BuffEnabled(name, Data.SpellEffects[Spells.Flurry_II]);
+            autoProtectToolStripMenuItem.Checked = BuffEngine.BuffEnabled(name, Data.SpellEffects[Spells.Protect]);
+            autoShellToolStripMenuItem.Checked = BuffEngine.BuffEnabled(name, Data.SpellEffects[Spells.Shell]);
+
+            playerOptions.Show(party, new Point(0, 0));               
+        }
+
+        private void ShowPlayerBuffsFor(GroupBox party, byte ptIndex)
+        {
+            autoOptionsSelected = ptIndex;
+            var name = Monitored.Party.GetPartyMembers()[ptIndex].Name;
+
+            // TODO: Figure out tiers and stuff, don't play SCH so not tier-II storms probably busted.
+            if (party == party0)
+            {
+                autoPhalanxIIToolStripMenuItem1.Checked = BuffEngine.BuffEnabled(name, Data.SpellEffects[Spells.Phalanx_II]);
+                autoRegenVToolStripMenuItem.Checked = BuffEngine.BuffEnabled(name, Data.SpellEffects[Spells.Regen]);
+                autoRefreshIIToolStripMenuItem.Checked = BuffEngine.BuffEnabled(name, Data.SpellEffects[Spells.Refresh]);
+                SandstormToolStripMenuItem.Checked = BuffEngine.BuffEnabled(name, Data.SpellEffects[Spells.Sandstorm]);
+                RainstormToolStripMenuItem.Checked = BuffEngine.BuffEnabled(name, Data.SpellEffects[Spells.Rainstorm]);
+                WindstormToolStripMenuItem.Checked = BuffEngine.BuffEnabled(name, Data.SpellEffects[Spells.Windstorm]);
+                FirestormToolStripMenuItem.Checked = BuffEngine.BuffEnabled(name, Data.SpellEffects[Spells.Firestorm]);
+                HailstormToolStripMenuItem.Checked = BuffEngine.BuffEnabled(name, Data.SpellEffects[Spells.Hailstorm]);
+                ThunderstormToolStripMenuItem.Checked = BuffEngine.BuffEnabled(name, Data.SpellEffects[Spells.Thunderstorm]);
+                VoidstormToolStripMenuItem.Checked = BuffEngine.BuffEnabled(name, Data.SpellEffects[Spells.Voidstorm]);
+                AurorastormToolStripMenuItem.Checked = BuffEngine.BuffEnabled(name, Data.SpellEffects[Spells.Aurorastorm]);
+            }
+            
+            autoOptions.Show(party, new Point(0, 0));
+        }
+
         private void player0optionsButton_Click(object sender, EventArgs e)
         {
-            playerOptionsSelected = 0;
-            autoHasteToolStripMenuItem.Checked = autoHasteEnabled[0];
-            autoHasteIIToolStripMenuItem.Checked = autoHaste_IIEnabled[0];
-            autoAdloquiumToolStripMenuItem.Checked = autoAdloquium_Enabled[0];
-            autoFlurryToolStripMenuItem.Checked = autoFlurryEnabled[0];
-            autoFlurryIIToolStripMenuItem.Checked = autoFlurry_IIEnabled[0];
-            autoProtectToolStripMenuItem.Checked = autoProtect_Enabled[0];
-            autoShellToolStripMenuItem.Checked = autoShell_Enabled[0];
-
-            playerOptions.Show(party0, new Point(0, 0));
+            ShowPlayerOptionsFor(party0, 0);
         }
 
         private void player1optionsButton_Click(object sender, EventArgs e)
         {
-            playerOptionsSelected = 1;
-            autoHasteToolStripMenuItem.Checked = autoHasteEnabled[1];
-            autoHasteIIToolStripMenuItem.Checked = autoHaste_IIEnabled[1];
-            autoAdloquiumToolStripMenuItem.Checked = autoAdloquium_Enabled[1];
-            autoFlurryToolStripMenuItem.Checked = autoFlurryEnabled[1];
-            autoFlurryIIToolStripMenuItem.Checked = autoFlurry_IIEnabled[1];
-            autoProtectToolStripMenuItem.Checked = autoProtect_Enabled[1];
-            autoShellToolStripMenuItem.Checked = autoShell_Enabled[1];
-            playerOptions.Show(party0, new Point(0, 0));
+            ShowPlayerOptionsFor(party0, 1);
         }
 
         private void player2optionsButton_Click(object sender, EventArgs e)
         {
-            playerOptionsSelected = 2;
-            autoHasteToolStripMenuItem.Checked = autoHasteEnabled[2];
-            autoHasteIIToolStripMenuItem.Checked = autoHaste_IIEnabled[2];
-            autoAdloquiumToolStripMenuItem.Checked = autoAdloquium_Enabled[2];
-            autoFlurryToolStripMenuItem.Checked = autoFlurryEnabled[2];
-            autoFlurryIIToolStripMenuItem.Checked = autoFlurry_IIEnabled[2];
-            autoProtectToolStripMenuItem.Checked = autoProtect_Enabled[2];
-            autoShellToolStripMenuItem.Checked = autoShell_Enabled[2];
-            playerOptions.Show(party0, new Point(0, 0));
+            ShowPlayerOptionsFor(party0, 2);
         }
 
         private void player3optionsButton_Click(object sender, EventArgs e)
         {
-            playerOptionsSelected = 3;
-            autoHasteToolStripMenuItem.Checked = autoHasteEnabled[3];
-            autoHasteIIToolStripMenuItem.Checked = autoHaste_IIEnabled[3];
-            autoAdloquiumToolStripMenuItem.Checked = autoAdloquium_Enabled[3];
-            autoFlurryToolStripMenuItem.Checked = autoFlurryEnabled[3];
-            autoFlurryIIToolStripMenuItem.Checked = autoFlurry_IIEnabled[3];
-            autoProtectToolStripMenuItem.Checked = autoProtect_Enabled[3];
-            autoShellToolStripMenuItem.Checked = autoShell_Enabled[3];
-            playerOptions.Show(party0, new Point(0, 0));
+            ShowPlayerOptionsFor(party0, 3);
         }
 
         private void player4optionsButton_Click(object sender, EventArgs e)
         {
-            playerOptionsSelected = 4;
-            autoHasteToolStripMenuItem.Checked = autoHasteEnabled[4];
-            autoHasteIIToolStripMenuItem.Checked = autoHaste_IIEnabled[4];
-            autoAdloquiumToolStripMenuItem.Checked = autoAdloquium_Enabled[4];
-            autoFlurryToolStripMenuItem.Checked = autoFlurryEnabled[4];
-            autoFlurryIIToolStripMenuItem.Checked = autoFlurry_IIEnabled[4];
-            autoProtectToolStripMenuItem.Checked = autoProtect_Enabled[4];
-            autoShellToolStripMenuItem.Checked = autoShell_Enabled[4];
-            playerOptions.Show(party0, new Point(0, 0));
+            ShowPlayerOptionsFor(party0, 4);
         }
 
         private void player5optionsButton_Click(object sender, EventArgs e)
         {
-            playerOptionsSelected = 5;
-            autoHasteToolStripMenuItem.Checked = autoHasteEnabled[5];
-            autoHasteIIToolStripMenuItem.Checked = autoHaste_IIEnabled[5];
-            autoAdloquiumToolStripMenuItem.Checked = autoAdloquium_Enabled[5];
-            autoFlurryToolStripMenuItem.Checked = autoFlurryEnabled[5];
-            autoFlurryIIToolStripMenuItem.Checked = autoFlurry_IIEnabled[5];
-            autoProtectToolStripMenuItem.Checked = autoProtect_Enabled[5];
-            autoShellToolStripMenuItem.Checked = autoShell_Enabled[5];
-            playerOptions.Show(party0, new Point(0, 0));
+            ShowPlayerOptionsFor(party0, 5);
         }
 
         private void player6optionsButton_Click(object sender, EventArgs e)
         {
-            playerOptionsSelected = 6;
-            autoHasteToolStripMenuItem.Checked = autoHasteEnabled[6];
-            autoHasteIIToolStripMenuItem.Checked = autoHaste_IIEnabled[6];
-            autoFlurryToolStripMenuItem.Checked = autoFlurryEnabled[6];
-            autoFlurryIIToolStripMenuItem.Checked = autoFlurry_IIEnabled[6];
-            autoProtectToolStripMenuItem.Checked = autoProtect_Enabled[6];
-            autoShellToolStripMenuItem.Checked = autoShell_Enabled[6];
-            playerOptions.Show(party1, new Point(0, 0));
+            ShowPlayerOptionsFor(party1, 6);
         }
 
         private void player7optionsButton_Click(object sender, EventArgs e)
         {
-            playerOptionsSelected = 7;
-            autoHasteToolStripMenuItem.Checked = autoHasteEnabled[7];
-            autoHasteIIToolStripMenuItem.Checked = autoHaste_IIEnabled[7];
-            autoFlurryToolStripMenuItem.Checked = autoFlurryEnabled[7];
-            autoFlurryIIToolStripMenuItem.Checked = autoFlurry_IIEnabled[7];
-            autoProtectToolStripMenuItem.Checked = autoProtect_Enabled[7];
-            autoShellToolStripMenuItem.Checked = autoShell_Enabled[7];
-            playerOptions.Show(party1, new Point(0, 0));
+            ShowPlayerOptionsFor(party1, 7);
         }
 
         private void player8optionsButton_Click(object sender, EventArgs e)
         {
-            playerOptionsSelected = 8;
-            autoHasteToolStripMenuItem.Checked = autoHasteEnabled[8];
-            autoHasteIIToolStripMenuItem.Checked = autoHaste_IIEnabled[8];
-            autoFlurryToolStripMenuItem.Checked = autoFlurryEnabled[8];
-            autoFlurryIIToolStripMenuItem.Checked = autoFlurry_IIEnabled[8];
-            autoProtectToolStripMenuItem.Checked = autoProtect_Enabled[8];
-            autoShellToolStripMenuItem.Checked = autoShell_Enabled[8];
-            playerOptions.Show(party1, new Point(0, 0));
+            ShowPlayerOptionsFor(party1, 8);
         }
 
         private void player9optionsButton_Click(object sender, EventArgs e)
         {
-            playerOptionsSelected = 9;
-            autoHasteToolStripMenuItem.Checked = autoHasteEnabled[9];
-            autoHasteIIToolStripMenuItem.Checked = autoHaste_IIEnabled[9];
-            autoFlurryToolStripMenuItem.Checked = autoFlurryEnabled[9];
-            autoFlurryIIToolStripMenuItem.Checked = autoFlurry_IIEnabled[9];
-            autoProtectToolStripMenuItem.Checked = autoProtect_Enabled[9];
-            autoShellToolStripMenuItem.Checked = autoShell_Enabled[9];
-            playerOptions.Show(party1, new Point(0, 0));
+            ShowPlayerOptionsFor(party1, 9);
         }
 
         private void player10optionsButton_Click(object sender, EventArgs e)
         {
-            playerOptionsSelected = 10;
-            autoHasteToolStripMenuItem.Checked = autoHasteEnabled[10];
-            autoHasteIIToolStripMenuItem.Checked = autoHaste_IIEnabled[10];
-            autoFlurryToolStripMenuItem.Checked = autoFlurryEnabled[10];
-            autoFlurryIIToolStripMenuItem.Checked = autoFlurry_IIEnabled[10];
-            autoProtectToolStripMenuItem.Checked = autoProtect_Enabled[10];
-            autoShellToolStripMenuItem.Checked = autoShell_Enabled[10];
-            playerOptions.Show(party1, new Point(0, 0));
+            ShowPlayerOptionsFor(party1, 10);
         }
 
         private void player11optionsButton_Click(object sender, EventArgs e)
         {
-            playerOptionsSelected = 11;
-            autoHasteToolStripMenuItem.Checked = autoHasteEnabled[11];
-            autoHasteIIToolStripMenuItem.Checked = autoHaste_IIEnabled[11];
-            autoFlurryToolStripMenuItem.Checked = autoFlurryEnabled[11];
-            autoFlurryIIToolStripMenuItem.Checked = autoFlurry_IIEnabled[11];
-            autoProtectToolStripMenuItem.Checked = autoProtect_Enabled[11];
-            autoShellToolStripMenuItem.Checked = autoShell_Enabled[11];
-            playerOptions.Show(party1, new Point(0, 0));
+            ShowPlayerOptionsFor(party1, 11);
         }
 
         private void player12optionsButton_Click(object sender, EventArgs e)
         {
-            playerOptionsSelected = 12;
-            autoHasteToolStripMenuItem.Checked = autoHasteEnabled[12];
-            autoHasteIIToolStripMenuItem.Checked = autoHaste_IIEnabled[12];
-            autoFlurryToolStripMenuItem.Checked = autoFlurryEnabled[12];
-            autoFlurryIIToolStripMenuItem.Checked = autoFlurry_IIEnabled[12];
-            autoProtectToolStripMenuItem.Checked = autoProtect_Enabled[12];
-            autoShellToolStripMenuItem.Checked = autoShell_Enabled[12];
-            playerOptions.Show(party2, new Point(0, 0));
+            ShowPlayerOptionsFor(party2, 12);
         }
 
         private void player13optionsButton_Click(object sender, EventArgs e)
         {
-            playerOptionsSelected = 13;
-            autoHasteToolStripMenuItem.Checked = autoHasteEnabled[13];
-            autoHasteIIToolStripMenuItem.Checked = autoHaste_IIEnabled[13];
-            autoFlurryToolStripMenuItem.Checked = autoFlurryEnabled[13];
-            autoFlurryIIToolStripMenuItem.Checked = autoFlurry_IIEnabled[13];
-            autoProtectToolStripMenuItem.Checked = autoProtect_Enabled[13];
-            autoShellToolStripMenuItem.Checked = autoShell_Enabled[13];
-            playerOptions.Show(party2, new Point(0, 0));
+            ShowPlayerOptionsFor(party2, 13);
         }
 
         private void player14optionsButton_Click(object sender, EventArgs e)
         {
-            playerOptionsSelected = 14;
-            autoHasteToolStripMenuItem.Checked = autoHasteEnabled[14];
-            autoHasteIIToolStripMenuItem.Checked = autoHaste_IIEnabled[14];
-            autoFlurryToolStripMenuItem.Checked = autoFlurryEnabled[14];
-            autoFlurryIIToolStripMenuItem.Checked = autoFlurry_IIEnabled[14];
-            autoProtectToolStripMenuItem.Checked = autoProtect_Enabled[14];
-            autoShellToolStripMenuItem.Checked = autoShell_Enabled[14];
-            playerOptions.Show(party2, new Point(0, 0));
+            ShowPlayerOptionsFor(party2, 14);
         }
 
         private void player15optionsButton_Click(object sender, EventArgs e)
         {
-            playerOptionsSelected = 15;
-            autoHasteToolStripMenuItem.Checked = autoHasteEnabled[15];
-            autoHasteIIToolStripMenuItem.Checked = autoHaste_IIEnabled[15];
-            autoFlurryToolStripMenuItem.Checked = autoFlurryEnabled[15];
-            autoFlurryIIToolStripMenuItem.Checked = autoFlurry_IIEnabled[15];
-            autoProtectToolStripMenuItem.Checked = autoProtect_Enabled[15];
-            autoShellToolStripMenuItem.Checked = autoShell_Enabled[15];
-            playerOptions.Show(party2, new Point(0, 0));
+            ShowPlayerOptionsFor(party2, 15);
         }
 
         private void player16optionsButton_Click(object sender, EventArgs e)
         {
-            playerOptionsSelected = 16;
-            autoHasteToolStripMenuItem.Checked = autoHasteEnabled[16];
-            autoHasteIIToolStripMenuItem.Checked = autoHaste_IIEnabled[16];
-            autoFlurryToolStripMenuItem.Checked = autoFlurryEnabled[16];
-            autoFlurryIIToolStripMenuItem.Checked = autoFlurry_IIEnabled[16];
-            autoProtectToolStripMenuItem.Checked = autoProtect_Enabled[16];
-            autoShellToolStripMenuItem.Checked = autoShell_Enabled[16];
-            playerOptions.Show(party2, new Point(0, 0));
+            ShowPlayerOptionsFor(party2, 16);
         }
 
         private void player17optionsButton_Click(object sender, EventArgs e)
         {
-            playerOptionsSelected = 17;
-            autoHasteToolStripMenuItem.Checked = autoHasteEnabled[17];
-            autoHasteIIToolStripMenuItem.Checked = autoHaste_IIEnabled[17];
-            autoFlurryToolStripMenuItem.Checked = autoFlurryEnabled[17];
-            autoFlurryIIToolStripMenuItem.Checked = autoFlurry_IIEnabled[17];
-            autoProtectToolStripMenuItem.Checked = autoProtect_Enabled[17];
-            autoShellToolStripMenuItem.Checked = autoShell_Enabled[17];
-            playerOptions.Show(party2, new Point(0, 0));
+            ShowPlayerOptionsFor(party2, 17);
         }
 
         private void player0buffsButton_Click(object sender, EventArgs e)
         {
-            autoOptionsSelected = 0;
-            autoPhalanxIIToolStripMenuItem1.Checked = autoPhalanx_IIEnabled[0];
-            autoRegenVToolStripMenuItem.Checked = autoRegen_Enabled[0];
-            autoRefreshIIToolStripMenuItem.Checked = autoRefreshEnabled[0];
-            SandstormToolStripMenuItem.Checked = autoSandstormEnabled[0];
-            RainstormToolStripMenuItem.Checked = autoRainstormEnabled[0];
-            WindstormToolStripMenuItem.Checked = autoWindstormEnabled[0];
-            FirestormToolStripMenuItem.Checked = autoFirestormEnabled[0];
-            HailstormToolStripMenuItem.Checked = autoHailstormEnabled[0];
-            ThunderstormToolStripMenuItem.Checked = autoThunderstormEnabled[0];
-            VoidstormToolStripMenuItem.Checked = autoVoidstormEnabled[0];
-            AurorastormToolStripMenuItem.Checked = autoAurorastormEnabled[0];
-            autoOptions.Show(party0, new Point(0, 0));
+            ShowPlayerBuffsFor(party0, 0);
         }
 
         private void player1buffsButton_Click(object sender, EventArgs e)
         {
-            autoOptionsSelected = 1;
-            autoPhalanxIIToolStripMenuItem1.Checked = autoPhalanx_IIEnabled[1];
-            autoRegenVToolStripMenuItem.Checked = autoRegen_Enabled[1];
-            autoRefreshIIToolStripMenuItem.Checked = autoRefreshEnabled[1];
-            SandstormToolStripMenuItem.Checked = autoSandstormEnabled[1];
-            RainstormToolStripMenuItem.Checked = autoRainstormEnabled[1];
-            WindstormToolStripMenuItem.Checked = autoWindstormEnabled[1];
-            FirestormToolStripMenuItem.Checked = autoFirestormEnabled[1];
-            HailstormToolStripMenuItem.Checked = autoHailstormEnabled[1];
-            ThunderstormToolStripMenuItem.Checked = autoThunderstormEnabled[1];
-            VoidstormToolStripMenuItem.Checked = autoVoidstormEnabled[1];
-            AurorastormToolStripMenuItem.Checked = autoAurorastormEnabled[1];
-            autoOptions.Show(party0, new Point(0, 0));
+            ShowPlayerBuffsFor(party0, 1);
         }
 
         private void player2buffsButton_Click(object sender, EventArgs e)
         {
-            autoOptionsSelected = 2;
-            autoPhalanxIIToolStripMenuItem1.Checked = autoPhalanx_IIEnabled[2];
-            autoRegenVToolStripMenuItem.Checked = autoRegen_Enabled[2];
-            autoRefreshIIToolStripMenuItem.Checked = autoRefreshEnabled[2];
-            SandstormToolStripMenuItem.Checked = autoSandstormEnabled[2];
-            RainstormToolStripMenuItem.Checked = autoRainstormEnabled[2];
-            WindstormToolStripMenuItem.Checked = autoWindstormEnabled[2];
-            FirestormToolStripMenuItem.Checked = autoFirestormEnabled[2];
-            HailstormToolStripMenuItem.Checked = autoHailstormEnabled[2];
-            ThunderstormToolStripMenuItem.Checked = autoThunderstormEnabled[2];
-            VoidstormToolStripMenuItem.Checked = autoVoidstormEnabled[2];
-            AurorastormToolStripMenuItem.Checked = autoAurorastormEnabled[2];
-            autoOptions.Show(party0, new Point(0, 0));
+            ShowPlayerBuffsFor(party0, 2);
         }
 
         private void player3buffsButton_Click(object sender, EventArgs e)
         {
-            autoOptionsSelected = 3;
-            autoPhalanxIIToolStripMenuItem1.Checked = autoPhalanx_IIEnabled[3];
-            autoRegenVToolStripMenuItem.Checked = autoRegen_Enabled[3];
-            autoRefreshIIToolStripMenuItem.Checked = autoRefreshEnabled[3];
-            SandstormToolStripMenuItem.Checked = autoSandstormEnabled[3];
-            RainstormToolStripMenuItem.Checked = autoRainstormEnabled[3];
-            WindstormToolStripMenuItem.Checked = autoWindstormEnabled[3];
-            FirestormToolStripMenuItem.Checked = autoFirestormEnabled[3];
-            HailstormToolStripMenuItem.Checked = autoHailstormEnabled[3];
-            ThunderstormToolStripMenuItem.Checked = autoThunderstormEnabled[3];
-            VoidstormToolStripMenuItem.Checked = autoVoidstormEnabled[3];
-            AurorastormToolStripMenuItem.Checked = autoAurorastormEnabled[3];
-            autoOptions.Show(party0, new Point(0, 0));
+            ShowPlayerBuffsFor(party0, 3);
         }
 
         private void player4buffsButton_Click(object sender, EventArgs e)
         {
-            autoOptionsSelected = 4;
-            autoPhalanxIIToolStripMenuItem1.Checked = autoPhalanx_IIEnabled[4];
-            autoRegenVToolStripMenuItem.Checked = autoRegen_Enabled[4];
-            autoRefreshIIToolStripMenuItem.Checked = autoRefreshEnabled[4];
-            SandstormToolStripMenuItem.Checked = autoSandstormEnabled[4];
-            RainstormToolStripMenuItem.Checked = autoRainstormEnabled[4];
-            WindstormToolStripMenuItem.Checked = autoWindstormEnabled[4];
-            FirestormToolStripMenuItem.Checked = autoFirestormEnabled[4];
-            HailstormToolStripMenuItem.Checked = autoHailstormEnabled[4];
-            ThunderstormToolStripMenuItem.Checked = autoThunderstormEnabled[4];
-            VoidstormToolStripMenuItem.Checked = autoVoidstormEnabled[4];
-            AurorastormToolStripMenuItem.Checked = autoAurorastormEnabled[4];
-            autoOptions.Show(party0, new Point(0, 0));
+            ShowPlayerBuffsFor(party0, 4);
         }
 
         private void player5buffsButton_Click(object sender, EventArgs e)
         {
-            autoOptionsSelected = 5;
-            autoPhalanxIIToolStripMenuItem1.Checked = autoPhalanx_IIEnabled[5];
-            autoRegenVToolStripMenuItem.Checked = autoRegen_Enabled[5];
-            autoRefreshIIToolStripMenuItem.Checked = autoRefreshEnabled[5];
-            SandstormToolStripMenuItem.Checked = autoSandstormEnabled[5];
-            RainstormToolStripMenuItem.Checked = autoRainstormEnabled[5];
-            WindstormToolStripMenuItem.Checked = autoWindstormEnabled[5];
-            FirestormToolStripMenuItem.Checked = autoFirestormEnabled[5];
-            HailstormToolStripMenuItem.Checked = autoHailstormEnabled[5];
-            ThunderstormToolStripMenuItem.Checked = autoThunderstormEnabled[5];
-            VoidstormToolStripMenuItem.Checked = autoVoidstormEnabled[5];
-            AurorastormToolStripMenuItem.Checked = autoAurorastormEnabled[5];
-            autoOptions.Show(party0, new Point(0, 0));
+            ShowPlayerBuffsFor(party0, 5);
         }
 
         private void player6buffsButton_Click(object sender, EventArgs e)
         {
-            autoOptionsSelected = 6;
-            autoOptions.Show(party1, new Point(0, 0));
+            ShowPlayerBuffsFor(party1, 6);
         }
 
         private void player7buffsButton_Click(object sender, EventArgs e)
         {
-            autoOptionsSelected = 7;
-            autoOptions.Show(party1, new Point(0, 0));
+            ShowPlayerBuffsFor(party1, 7);
         }
 
         private void player8buffsButton_Click(object sender, EventArgs e)
         {
-            autoOptionsSelected = 8;
-            autoOptions.Show(party1, new Point(0, 0));
+            ShowPlayerBuffsFor(party1, 8);
         }
 
         private void player9buffsButton_Click(object sender, EventArgs e)
         {
-            autoOptionsSelected = 9;
-            autoOptions.Show(party1, new Point(0, 0));
+            ShowPlayerBuffsFor(party1, 9);
         }
 
         private void player10buffsButton_Click(object sender, EventArgs e)
         {
-            autoOptionsSelected = 10;
-            autoOptions.Show(party1, new Point(0, 0));
+            ShowPlayerBuffsFor(party1, 10);
         }
 
         private void player11buffsButton_Click(object sender, EventArgs e)
         {
-            autoOptionsSelected = 11;
-            autoOptions.Show(party1, new Point(0, 0));
+            ShowPlayerBuffsFor(party1, 11);
         }
 
         private void player12buffsButton_Click(object sender, EventArgs e)
         {
-            autoOptionsSelected = 12;
-            autoOptions.Show(party2, new Point(0, 0));
+            ShowPlayerBuffsFor(party2, 12);
         }
 
         private void player13buffsButton_Click(object sender, EventArgs e)
         {
-            autoOptionsSelected = 13;
-            autoOptions.Show(party2, new Point(0, 0));
+            ShowPlayerBuffsFor(party2, 13);
         }
 
         private void player14buffsButton_Click(object sender, EventArgs e)
         {
-            autoOptionsSelected = 14;
-            autoOptions.Show(party2, new Point(0, 0));
+            ShowPlayerBuffsFor(party2, 14);
         }
 
         private void player15buffsButton_Click(object sender, EventArgs e)
         {
-            autoOptionsSelected = 15;
-            autoOptions.Show(party2, new Point(0, 0));
+            ShowPlayerBuffsFor(party2, 15);
         }
 
         private void player16buffsButton_Click(object sender, EventArgs e)
         {
-            autoOptionsSelected = 16;
-            autoOptions.Show(party2, new Point(0, 0));
+            ShowPlayerBuffsFor(party2, 16);
         }
 
         private void player17buffsButton_Click(object sender, EventArgs e)
         {
-            autoOptionsSelected = 17;
-            autoOptions.Show(party2, new Point(0, 0));
+            ShowPlayerBuffsFor(party2, 17);
         }
 
         private void Item_Wait(string ItemName)
@@ -4093,83 +2407,81 @@
 
         private void autoHasteToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            autoHasteEnabled[playerOptionsSelected] = !autoHasteEnabled[playerOptionsSelected];
-            autoHaste_IIEnabled[playerOptionsSelected] = false;
-            autoFlurryEnabled[playerOptionsSelected] = false;
-            autoFlurry_IIEnabled[playerOptionsSelected] = false;
+            // TODO: Add in special logic to make sure we can't select more then
+            // ONE of haste/haste2/flurry/flurry2
+            var name = Monitored.Party.GetPartyMembers()[playerOptionsSelected].Name;
+            BuffEngine.ToggleAutoBuff(name, Data.SpellEffects[Spells.Haste]);
         }
 
         private void autoHasteIIToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            autoHaste_IIEnabled[playerOptionsSelected] = !autoHaste_IIEnabled[playerOptionsSelected];
-            autoHasteEnabled[playerOptionsSelected] = false;
-            autoFlurryEnabled[playerOptionsSelected] = false;
-            autoFlurry_IIEnabled[playerOptionsSelected] = false;
+            var name = Monitored.Party.GetPartyMembers()[playerOptionsSelected].Name;
+            BuffEngine.ToggleAutoBuff(name, Data.SpellEffects[Spells.Haste_II]);
         }
 
         private void autoAdloquiumToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            autoAdloquium_Enabled[playerOptionsSelected] = !autoAdloquium_Enabled[playerOptionsSelected];
+            var name = Monitored.Party.GetPartyMembers()[playerOptionsSelected].Name;
+            BuffEngine.ToggleAutoBuff(name, Data.SpellEffects[Spells.Adloquium]);
         }
 
         private void autoFlurryToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            autoFlurryEnabled[playerOptionsSelected] = !autoFlurryEnabled[playerOptionsSelected];
-            autoHasteEnabled[playerOptionsSelected] = false;
-            autoHaste_IIEnabled[playerOptionsSelected] = false;
-            autoFlurry_IIEnabled[playerOptionsSelected] = false;
+            var name = Monitored.Party.GetPartyMembers()[playerOptionsSelected].Name;
+            BuffEngine.ToggleAutoBuff(name, Data.SpellEffects[Spells.Flurry]);
         }
 
         private void autoFlurryIIToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            autoFlurry_IIEnabled[playerOptionsSelected] = !autoFlurry_IIEnabled[playerOptionsSelected];
-            autoHasteEnabled[playerOptionsSelected] = false;
-            autoFlurryEnabled[playerOptionsSelected] = false;
-            autoHaste_IIEnabled[playerOptionsSelected] = false;
+            var name = Monitored.Party.GetPartyMembers()[playerOptionsSelected].Name;
+            BuffEngine.ToggleAutoBuff(name, Data.SpellEffects[Spells.Flurry_II]);
         }
 
         private void autoProtectToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            autoProtect_Enabled[playerOptionsSelected] = !autoProtect_Enabled[playerOptionsSelected];
+            var name = Monitored.Party.GetPartyMembers()[playerOptionsSelected].Name;
+            BuffEngine.ToggleAutoBuff(name, Data.SpellEffects[Spells.Protect]);
         }
 
         private void enableDebuffRemovalToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            string generated_name = Monitored.Party.GetPartyMembers()[playerOptionsSelected].Name.ToLower();
+            string generated_name = Monitored.Party.GetPartyMembers()[playerOptionsSelected].Name;
             characterNames_naRemoval.Add(generated_name);
         }
 
         private void autoShellToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            autoShell_Enabled[playerOptionsSelected] = !autoShell_Enabled[playerOptionsSelected];
+            var name = Monitored.Party.GetPartyMembers()[playerOptionsSelected].Name;
+            BuffEngine.ToggleAutoBuff(name, Data.SpellEffects[Spells.Shell]);
         }
 
         private void autoHasteToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            autoHasteEnabled[autoOptionsSelected] = !autoHasteEnabled[autoOptionsSelected];
-            autoHaste_IIEnabled[playerOptionsSelected] = false;
-            autoFlurryEnabled[playerOptionsSelected] = false;
-            autoFlurry_IIEnabled[playerOptionsSelected] = false;
+            var name = Monitored.Party.GetPartyMembers()[autoOptionsSelected].Name;
+            BuffEngine.ToggleAutoBuff(name, Data.SpellEffects[Spells.Haste]);
         }
 
         private void autoPhalanxIIToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            autoPhalanx_IIEnabled[autoOptionsSelected] = !autoPhalanx_IIEnabled[autoOptionsSelected];
+            var name = Monitored.Party.GetPartyMembers()[autoOptionsSelected].Name;
+            BuffEngine.ToggleAutoBuff(name, Data.SpellEffects[Spells.Phalanx_II]);
         }
 
         private void autoRegenVToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            autoRegen_Enabled[autoOptionsSelected] = !autoRegen_Enabled[autoOptionsSelected];
+            var name = Monitored.Party.GetPartyMembers()[autoOptionsSelected].Name;
+            BuffEngine.ToggleAutoBuff(name, Data.SpellEffects[Spells.Regen]);
         }
 
         private void autoRefreshIIToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            autoRefreshEnabled[autoOptionsSelected] = !autoRefreshEnabled[autoOptionsSelected];
+            var name = Monitored.Party.GetPartyMembers()[autoOptionsSelected].Name;
+            BuffEngine.ToggleAutoBuff(name, Data.SpellEffects[Spells.Refresh]);
         }
 
         private void hasteToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            hastePlayer(playerOptionsSelected);
+            CastSpell(Monitored.Party.GetPartyMembers()[playerOptionsSelected].Name, Spells.Haste);
         }
 
         private void followToolStripMenuItem_Click(object sender, EventArgs e)
@@ -4290,96 +2602,76 @@
         private void virunaToolStripMenuItem_Click(object sender, EventArgs e)
         {
             CastSpell(Monitored.Party.GetPartyMembers()[playerOptionsSelected].Name, Spells.Viruna);
-        }
-
-        private void setAllStormsFalse(byte autoOptionsSelected)
-        {
-            // MessageBox.Show("SONG DATA: " + activeStorm + " " + autoOptionsSelected);
-
-            autoSandstormEnabled[autoOptionsSelected] = false;
-            autoRainstormEnabled[autoOptionsSelected] = false;
-            autoFirestormEnabled[autoOptionsSelected] = false;
-            autoWindstormEnabled[autoOptionsSelected] = false;
-            autoHailstormEnabled[autoOptionsSelected] = false;
-            autoThunderstormEnabled[autoOptionsSelected] = false;
-            autoVoidstormEnabled[autoOptionsSelected] = false;
-            autoAurorastormEnabled[autoOptionsSelected] = false;
-        }
+        }        
 
         private void SandstormToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            bool currentStatus = autoSandstormEnabled[autoOptionsSelected];
-            setAllStormsFalse(autoOptionsSelected);
-            autoSandstormEnabled[autoOptionsSelected] = !currentStatus;
+            // TODO: Similar to haste/flurry, etc. add logic to deal with storm
+            // tiers and only one at a time being selected.
+            var name = Monitored.Party.GetPartyMembers()[autoOptionsSelected].Name;
+            BuffEngine.ToggleAutoBuff(name, Data.SpellEffects[Spells.Sandstorm]);
         }
 
         private void RainstormToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            bool currentStatus = autoRainstormEnabled[autoOptionsSelected];
-            setAllStormsFalse(autoOptionsSelected);
-            autoRainstormEnabled[autoOptionsSelected] = !currentStatus;
+            var name = Monitored.Party.GetPartyMembers()[autoOptionsSelected].Name;
+            BuffEngine.ToggleAutoBuff(name, Data.SpellEffects[Spells.Rainstorm]);
         }
 
         private void WindstormToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            bool currentStatus = autoWindstormEnabled[autoOptionsSelected];
-            setAllStormsFalse(autoOptionsSelected);
-            autoWindstormEnabled[autoOptionsSelected] = !currentStatus;
+            var name = Monitored.Party.GetPartyMembers()[autoOptionsSelected].Name;
+            BuffEngine.ToggleAutoBuff(name, Data.SpellEffects[Spells.Windstorm]);
         }
 
         private void FirestormToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            bool currentStatus = autoFirestormEnabled[autoOptionsSelected];
-            setAllStormsFalse(autoOptionsSelected);
-            autoFirestormEnabled[autoOptionsSelected] = !currentStatus;
+            var name = Monitored.Party.GetPartyMembers()[autoOptionsSelected].Name;
+            BuffEngine.ToggleAutoBuff(name, Data.SpellEffects[Spells.Firestorm]);
         }
 
         private void HailstormToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            bool currentStatus = autoHailstormEnabled[autoOptionsSelected];
-            setAllStormsFalse(autoOptionsSelected);
-            autoHailstormEnabled[autoOptionsSelected] = !currentStatus;
+            var name = Monitored.Party.GetPartyMembers()[autoOptionsSelected].Name;
+            BuffEngine.ToggleAutoBuff(name, Data.SpellEffects[Spells.Hailstorm]);
         }
 
         private void ThunderstormToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            bool currentStatus = autoThunderstormEnabled[autoOptionsSelected];
-            setAllStormsFalse(autoOptionsSelected);
-            autoThunderstormEnabled[autoOptionsSelected] = !currentStatus;
+            var name = Monitored.Party.GetPartyMembers()[autoOptionsSelected].Name;
+            BuffEngine.ToggleAutoBuff(name, Data.SpellEffects[Spells.Thunderstorm]);
         }
 
         private void VoidstormToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            bool currentStatus = autoVoidstormEnabled[autoOptionsSelected];
-            setAllStormsFalse(autoOptionsSelected);
-            autoVoidstormEnabled[autoOptionsSelected] = !currentStatus;
+            var name = Monitored.Party.GetPartyMembers()[autoOptionsSelected].Name;
+            BuffEngine.ToggleAutoBuff(name, Data.SpellEffects[Spells.Voidstorm]);
         }
 
         private void AurorastormToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            bool currentStatus = autoAurorastormEnabled[autoOptionsSelected];
-            setAllStormsFalse(autoOptionsSelected);
-            autoAurorastormEnabled[autoOptionsSelected] = !currentStatus;
+            var name = Monitored.Party.GetPartyMembers()[autoOptionsSelected].Name;
+            BuffEngine.ToggleAutoBuff(name, Data.SpellEffects[Spells.Aurorastorm]);
         }
 
         private void protectIVToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            CastSpell(Monitored.Party.GetPartyMembers()[playerOptionsSelected].Name, "Protect IV");
+            CastSpell(Monitored.Party.GetPartyMembers()[playerOptionsSelected].Name, Spells.Protect_IV);
         }
 
         private void protectVToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            CastSpell(Monitored.Party.GetPartyMembers()[playerOptionsSelected].Name, "Protect V");
+            CastSpell(Monitored.Party.GetPartyMembers()[playerOptionsSelected].Name, Spells.Protect_V);
         }
 
         private void shellIVToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            CastSpell(Monitored.Party.GetPartyMembers()[playerOptionsSelected].Name, "Shell IV");
+            CastSpell(Monitored.Party.GetPartyMembers()[playerOptionsSelected].Name, Spells.Shell_IV);
         }
 
         private void shellVToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            CastSpell(Monitored.Party.GetPartyMembers()[playerOptionsSelected].Name, "Shell V");
+            CastSpell(Monitored.Party.GetPartyMembers()[playerOptionsSelected].Name, Spells.Shell_V);
         }
 
         private void button3_Click(object sender, EventArgs e)
@@ -5049,7 +3341,7 @@
 
         private void AddonReader_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
-            if (ConfigForm.config.EnableAddOn == true && pauseActions == false && Monitored != null && PL != null)
+            if (ConfigForm.config.EnableAddOn && !pauseActions && Monitored != null && PL != null)
             {
 
                 bool done = false;

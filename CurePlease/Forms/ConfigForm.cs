@@ -4467,5 +4467,14 @@
                 BlazeOfGloryEnabled = config.BlazeOfGlory
             };
         }
+
+        public BuffConfig GetBuffConfig()
+        {
+            return new BuffConfig()
+            {
+                AddonIP = config.ipAddress,
+                AddonPort = config.listeningPort
+            };
+        }
     }
 }

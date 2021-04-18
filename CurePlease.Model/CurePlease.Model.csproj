@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Config\BuffConfig.cs" />
     <Compile Include="Config\GeoConfig.cs" />
     <Compile Include="EngineAction.cs" />
     <Compile Include="Config\SongConfig.cs" />
