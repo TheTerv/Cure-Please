@@ -963,20 +963,6 @@
             plZ = PL.Player.Z;
         }
 
-        private void removeDebuff(string characterName, int debuffID)
-        {
-            lock (ActiveBuffs)
-            {
-                if(ActiveBuffs.ContainsKey(characterName))
-                {
-                    // Filter out the specific debuff ID
-                    var buffsFiltered = ActiveBuffs[characterName].Where(ab => ab != debuffID);                
-
-                    ActiveBuffs[characterName] = buffsFiltered;
-                }               
-            }
-        }
-
         private string PickCure(uint hpLoss)
         {
             if (ConfigForm.config.cure6enabled && hpLoss >= ConfigForm.config.cure6amount && PL.HasMPFor(Spells.Cure_VI))
@@ -2152,13 +2138,13 @@
             playerOptionsSelected = ptIndex;
             var name = Monitored.Party.GetPartyMembers()[ptIndex].Name;
 
-            autoHasteToolStripMenuItem.Checked = BuffEngine.BuffEnabled(name, Data.SpellEffects[Spells.Haste]);
-            autoHasteIIToolStripMenuItem.Checked = BuffEngine.BuffEnabled(name, Data.SpellEffects[Spells.Haste_II]);
-            autoAdloquiumToolStripMenuItem.Checked = BuffEngine.BuffEnabled(name, Data.SpellEffects[Spells.Adloquium]);
-            autoFlurryToolStripMenuItem.Checked = BuffEngine.BuffEnabled(name, Data.SpellEffects[Spells.Flurry]);
-            autoFlurryIIToolStripMenuItem.Checked = BuffEngine.BuffEnabled(name, Data.SpellEffects[Spells.Flurry_II]);
-            autoProtectToolStripMenuItem.Checked = BuffEngine.BuffEnabled(name, Data.SpellEffects[Spells.Protect]);
-            autoShellToolStripMenuItem.Checked = BuffEngine.BuffEnabled(name, Data.SpellEffects[Spells.Shell]);
+            autoHasteToolStripMenuItem.Checked = BuffEngine.BuffEnabled(name, Spells.Haste);
+            autoHasteIIToolStripMenuItem.Checked = BuffEngine.BuffEnabled(name, Spells.Haste_II);
+            autoAdloquiumToolStripMenuItem.Checked = BuffEngine.BuffEnabled(name, Spells.Adloquium);
+            autoFlurryToolStripMenuItem.Checked = BuffEngine.BuffEnabled(name, Spells.Flurry);
+            autoFlurryIIToolStripMenuItem.Checked = BuffEngine.BuffEnabled(name, Spells.Flurry_II);
+            autoProtectToolStripMenuItem.Checked = BuffEngine.BuffEnabled(name, Spells.Protect);
+            autoShellToolStripMenuItem.Checked = BuffEngine.BuffEnabled(name, Spells.Shell);
 
             playerOptions.Show(party, new Point(0, 0));               
         }
@@ -2171,17 +2157,17 @@
             // TODO: Figure out tiers and stuff, don't play SCH so not tier-II storms probably busted.
             if (party == party0)
             {
-                autoPhalanxIIToolStripMenuItem1.Checked = BuffEngine.BuffEnabled(name, Data.SpellEffects[Spells.Phalanx_II]);
-                autoRegenVToolStripMenuItem.Checked = BuffEngine.BuffEnabled(name, Data.SpellEffects[Spells.Regen]);
-                autoRefreshIIToolStripMenuItem.Checked = BuffEngine.BuffEnabled(name, Data.SpellEffects[Spells.Refresh]);
-                SandstormToolStripMenuItem.Checked = BuffEngine.BuffEnabled(name, Data.SpellEffects[Spells.Sandstorm]);
-                RainstormToolStripMenuItem.Checked = BuffEngine.BuffEnabled(name, Data.SpellEffects[Spells.Rainstorm]);
-                WindstormToolStripMenuItem.Checked = BuffEngine.BuffEnabled(name, Data.SpellEffects[Spells.Windstorm]);
-                FirestormToolStripMenuItem.Checked = BuffEngine.BuffEnabled(name, Data.SpellEffects[Spells.Firestorm]);
-                HailstormToolStripMenuItem.Checked = BuffEngine.BuffEnabled(name, Data.SpellEffects[Spells.Hailstorm]);
-                ThunderstormToolStripMenuItem.Checked = BuffEngine.BuffEnabled(name, Data.SpellEffects[Spells.Thunderstorm]);
-                VoidstormToolStripMenuItem.Checked = BuffEngine.BuffEnabled(name, Data.SpellEffects[Spells.Voidstorm]);
-                AurorastormToolStripMenuItem.Checked = BuffEngine.BuffEnabled(name, Data.SpellEffects[Spells.Aurorastorm]);
+                autoPhalanxIIToolStripMenuItem1.Checked = BuffEngine.BuffEnabled(name, Spells.Phalanx_II);
+                autoRegenVToolStripMenuItem.Checked = BuffEngine.BuffEnabled(name, Spells.Regen);
+                autoRefreshIIToolStripMenuItem.Checked = BuffEngine.BuffEnabled(name, Spells.Refresh);
+                SandstormToolStripMenuItem.Checked = BuffEngine.BuffEnabled(name, Spells.Sandstorm);
+                RainstormToolStripMenuItem.Checked = BuffEngine.BuffEnabled(name, Spells.Rainstorm);
+                WindstormToolStripMenuItem.Checked = BuffEngine.BuffEnabled(name, Spells.Windstorm);
+                FirestormToolStripMenuItem.Checked = BuffEngine.BuffEnabled(name, Spells.Firestorm);
+                HailstormToolStripMenuItem.Checked = BuffEngine.BuffEnabled(name, Spells.Hailstorm);
+                ThunderstormToolStripMenuItem.Checked = BuffEngine.BuffEnabled(name, Spells.Thunderstorm);
+                VoidstormToolStripMenuItem.Checked = BuffEngine.BuffEnabled(name, Spells.Voidstorm);
+                AurorastormToolStripMenuItem.Checked = BuffEngine.BuffEnabled(name, Spells.Aurorastorm);
             }
             
             autoOptions.Show(party, new Point(0, 0));
@@ -2410,37 +2396,37 @@
             // TODO: Add in special logic to make sure we can't select more then
             // ONE of haste/haste2/flurry/flurry2
             var name = Monitored.Party.GetPartyMembers()[playerOptionsSelected].Name;
-            BuffEngine.ToggleAutoBuff(name, Data.SpellEffects[Spells.Haste]);
+            BuffEngine.ToggleAutoBuff(name, Spells.Haste);
         }
 
         private void autoHasteIIToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var name = Monitored.Party.GetPartyMembers()[playerOptionsSelected].Name;
-            BuffEngine.ToggleAutoBuff(name, Data.SpellEffects[Spells.Haste_II]);
+            BuffEngine.ToggleAutoBuff(name, Spells.Haste_II);
         }
 
         private void autoAdloquiumToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var name = Monitored.Party.GetPartyMembers()[playerOptionsSelected].Name;
-            BuffEngine.ToggleAutoBuff(name, Data.SpellEffects[Spells.Adloquium]);
+            BuffEngine.ToggleAutoBuff(name, Spells.Adloquium);
         }
 
         private void autoFlurryToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var name = Monitored.Party.GetPartyMembers()[playerOptionsSelected].Name;
-            BuffEngine.ToggleAutoBuff(name, Data.SpellEffects[Spells.Flurry]);
+            BuffEngine.ToggleAutoBuff(name, Spells.Flurry);
         }
 
         private void autoFlurryIIToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var name = Monitored.Party.GetPartyMembers()[playerOptionsSelected].Name;
-            BuffEngine.ToggleAutoBuff(name, Data.SpellEffects[Spells.Flurry_II]);
+            BuffEngine.ToggleAutoBuff(name, Spells.Flurry_II);
         }
 
         private void autoProtectToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var name = Monitored.Party.GetPartyMembers()[playerOptionsSelected].Name;
-            BuffEngine.ToggleAutoBuff(name, Data.SpellEffects[Spells.Protect]);
+            BuffEngine.ToggleAutoBuff(name, Spells.Protect);
         }
 
         private void enableDebuffRemovalToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2452,31 +2438,31 @@
         private void autoShellToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var name = Monitored.Party.GetPartyMembers()[playerOptionsSelected].Name;
-            BuffEngine.ToggleAutoBuff(name, Data.SpellEffects[Spells.Shell]);
+            BuffEngine.ToggleAutoBuff(name, Spells.Shell);
         }
 
         private void autoHasteToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             var name = Monitored.Party.GetPartyMembers()[autoOptionsSelected].Name;
-            BuffEngine.ToggleAutoBuff(name, Data.SpellEffects[Spells.Haste]);
+            BuffEngine.ToggleAutoBuff(name, Spells.Haste);
         }
 
         private void autoPhalanxIIToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             var name = Monitored.Party.GetPartyMembers()[autoOptionsSelected].Name;
-            BuffEngine.ToggleAutoBuff(name, Data.SpellEffects[Spells.Phalanx_II]);
+            BuffEngine.ToggleAutoBuff(name, Spells.Phalanx_II);
         }
 
         private void autoRegenVToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var name = Monitored.Party.GetPartyMembers()[autoOptionsSelected].Name;
-            BuffEngine.ToggleAutoBuff(name, Data.SpellEffects[Spells.Regen]);
+            BuffEngine.ToggleAutoBuff(name, Spells.Regen);
         }
 
         private void autoRefreshIIToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var name = Monitored.Party.GetPartyMembers()[autoOptionsSelected].Name;
-            BuffEngine.ToggleAutoBuff(name, Data.SpellEffects[Spells.Refresh]);
+            BuffEngine.ToggleAutoBuff(name, Spells.Refresh);
         }
 
         private void hasteToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2609,49 +2595,49 @@
             // TODO: Similar to haste/flurry, etc. add logic to deal with storm
             // tiers and only one at a time being selected.
             var name = Monitored.Party.GetPartyMembers()[autoOptionsSelected].Name;
-            BuffEngine.ToggleAutoBuff(name, Data.SpellEffects[Spells.Sandstorm]);
+            BuffEngine.ToggleAutoBuff(name, Spells.Sandstorm);
         }
 
         private void RainstormToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var name = Monitored.Party.GetPartyMembers()[autoOptionsSelected].Name;
-            BuffEngine.ToggleAutoBuff(name, Data.SpellEffects[Spells.Rainstorm]);
+            BuffEngine.ToggleAutoBuff(name, Spells.Rainstorm);
         }
 
         private void WindstormToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var name = Monitored.Party.GetPartyMembers()[autoOptionsSelected].Name;
-            BuffEngine.ToggleAutoBuff(name, Data.SpellEffects[Spells.Windstorm]);
+            BuffEngine.ToggleAutoBuff(name, Spells.Windstorm);
         }
 
         private void FirestormToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var name = Monitored.Party.GetPartyMembers()[autoOptionsSelected].Name;
-            BuffEngine.ToggleAutoBuff(name, Data.SpellEffects[Spells.Firestorm]);
+            BuffEngine.ToggleAutoBuff(name, Spells.Firestorm);
         }
 
         private void HailstormToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var name = Monitored.Party.GetPartyMembers()[autoOptionsSelected].Name;
-            BuffEngine.ToggleAutoBuff(name, Data.SpellEffects[Spells.Hailstorm]);
+            BuffEngine.ToggleAutoBuff(name, Spells.Hailstorm);
         }
 
         private void ThunderstormToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var name = Monitored.Party.GetPartyMembers()[autoOptionsSelected].Name;
-            BuffEngine.ToggleAutoBuff(name, Data.SpellEffects[Spells.Thunderstorm]);
+            BuffEngine.ToggleAutoBuff(name, Spells.Thunderstorm);
         }
 
         private void VoidstormToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var name = Monitored.Party.GetPartyMembers()[autoOptionsSelected].Name;
-            BuffEngine.ToggleAutoBuff(name, Data.SpellEffects[Spells.Voidstorm]);
+            BuffEngine.ToggleAutoBuff(name, Spells.Voidstorm);
         }
 
         private void AurorastormToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var name = Monitored.Party.GetPartyMembers()[autoOptionsSelected].Name;
-            BuffEngine.ToggleAutoBuff(name, Data.SpellEffects[Spells.Aurorastorm]);
+            BuffEngine.ToggleAutoBuff(name, Spells.Aurorastorm);
         }
 
         private void protectIVToolStripMenuItem_Click(object sender, EventArgs e)

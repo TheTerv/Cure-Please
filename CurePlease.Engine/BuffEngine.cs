@@ -35,8 +35,7 @@ namespace CurePlease.Engine
 
         // TODO: Should this just be the exact spell we want to cast instead of the buff id?
         // Would probably be cleaner.
-        private Dictionary<string, IEnumerable<short>> AutoBuffs = new Dictionary<string, IEnumerable<short>>();
-        private Dictionary<short, string> BuffSpells = new Dictionary<short, string>();
+        private Dictionary<string, IEnumerable<string>> AutoBuffs = new Dictionary<string, IEnumerable<string>>();
 
         public BuffEngine(EliteAPI pl, EliteAPI mon, BuffConfig config)
         {
@@ -44,12 +43,6 @@ namespace CurePlease.Engine
 
             PL = pl;
             Monitored = mon;
-
-            // Need to initialize our mapping of buffs -> spells.
-            foreach(string spell in Data.SpellEffects.Keys)
-            {
-                BuffSpells.Add(Data.SpellEffects[spell], spell);
-            }
 
             // Initialize the socket on our port, and then begin receiving data.
             // This will continually call itself to receive the next packet in the background.
@@ -80,16 +73,16 @@ namespace CurePlease.Engine
                         // First check if they're ActiveBuffs are empty, and if so return first buff to cast.
                         if(!ActiveBuffs.ContainsKey(ptMember.Name) || !ActiveBuffs[ptMember.Name].Any())
                         {
-                            actionResult.Spell = BuffSpells[AutoBuffs[ptMember.Name].First()];
+                            actionResult.Spell = AutoBuffs[ptMember.Name].First();
                             actionResult.Target = ptMember.Name;
                             break;
                         }
                         else
                         {
-                            var missingBuff = AutoBuffs[ptMember.Name].FirstOrDefault(buff => !ActiveBuffs[ptMember.Name].Contains(buff));
-                            if(missingBuff != default)
+                            var missingBuffSpell = AutoBuffs[ptMember.Name].FirstOrDefault(buff => !ActiveBuffs[ptMember.Name].Contains(Data.SpellEffects[buff]));
+                            if(!string.IsNullOrEmpty(missingBuffSpell))
                             {
-                                actionResult.Spell = BuffSpells[missingBuff];
+                                actionResult.Spell = missingBuffSpell;
                                 actionResult.Target = ptMember.Name;
                                 break;
                             }
@@ -102,27 +95,27 @@ namespace CurePlease.Engine
             return actionResult;
         }
 
-        public void ToggleAutoBuff(string memberName, short buffId)
+        public void ToggleAutoBuff(string memberName, string spellName)
         {
             if(!AutoBuffs.ContainsKey(memberName))
             {
-                AutoBuffs.Add(memberName, new List<short>());
+                AutoBuffs.Add(memberName, new List<string>());
             }
 
-            if(AutoBuffs[memberName].Contains(buffId))
+            if(AutoBuffs[memberName].Contains(spellName))
             {
                 // If we already had the buff enabled, remove it.
-                AutoBuffs[memberName] = AutoBuffs[memberName].Where(id => id != buffId);
+                AutoBuffs[memberName] = AutoBuffs[memberName].Where(spell => spell != spellName);
             }
             else
             {
-                AutoBuffs[memberName].Prepend(buffId);
+                AutoBuffs[memberName].Prepend(spellName);
             }
         }
 
-        public bool BuffEnabled(string memberName, short buffId)
+        public bool BuffEnabled(string memberName, string spellName)
         {
-            return AutoBuffs.ContainsKey(memberName) && AutoBuffs[memberName].Any(id => id == buffId);
+            return AutoBuffs.ContainsKey(memberName) && AutoBuffs[memberName].Any(spell => spell == spellName);
         }
 
         private void OnBuffDataReceived(IAsyncResult result)
