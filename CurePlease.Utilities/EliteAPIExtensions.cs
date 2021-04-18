@@ -10,6 +10,39 @@ namespace CurePlease.Utilities
 {
     public static class EliteAPIExtensions
     {
+        public static bool SamePartyAs(this EliteAPI api, EliteAPI other)
+        {
+            int relativePartyIndex = api.GetPartyRelativeTo(other);
+
+            return relativePartyIndex == 1;
+        }
+
+        public static int GetPartyRelativeTo(this EliteAPI api, EliteAPI other)
+        {
+            // FIRST CHECK THAT BOTH THE PL AND MONITORED PLAYER ARE IN THE SAME PT/ALLIANCE
+            List<PartyMember> otherParty = other.Party.GetPartyMembers();
+
+            if (otherParty.Any(member => member.Name == api.Player.Name))
+            {
+                int plParty = otherParty.FirstOrDefault(p => p.Name == api.Player.Name).MemberNumber;
+
+                if (plParty <= 5)
+                {
+                    return 1;
+                }
+                else if (plParty <= 11 && plParty >= 6)
+                {
+                    return 2;
+                }
+                else if (plParty <= 17 && plParty >= 12)
+                {
+                    return 3;
+                }
+            }
+
+            return 0;
+        }
+
         public static void UseJobAbility(this EliteAPI api, string ability)
         {
             api.ThirdParty.SendString("/ja \"" + ability + "\" <me>");

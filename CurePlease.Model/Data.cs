@@ -252,5 +252,7 @@ namespace CurePlease.Model
             { Spells.FullCure, Tuple.Create(Job.WHM, 1200) },
         };
 
+        public static string[] WakeSleepSpells = { Spells.Cure, Spells.Cura, Spells.Curaga };
+
     }
 }

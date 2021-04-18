@@ -39,11 +39,7 @@
 
         public string JobAbilityCMD = string.Empty;
 
-        private DateTime DefaultTime = new DateTime(1970, 1, 1);
-
         private bool curePlease_autofollow = false;
-
-        private List<string> characterNames_naRemoval = new List<string>();    
 
         public string WindowerMode = "Windower";
 
@@ -91,11 +87,17 @@
 
         public ListBox activeprocessids = new ListBox();
 
+        public UdpClient AddonClient;
+
+        // TODO: Initialize these configs explicitly after we've hooked into the game
+        // and/or loaded/saved our config form.
         public SongEngine SongEngine = new SongEngine(PL, Monitored, Form2.GetSongConfig());
 
         public GeoEngine GeoEngine = new GeoEngine(PL, Monitored, Form2.GetGeoConfig());
 
         public BuffEngine BuffEngine = new BuffEngine(PL, Monitored, Form2.GetBuffConfig());
+
+        public DebuffEngine DebuffEngine = new DebuffEngine(PL, Monitored, Form2.GetDebuffConfig());
 
         public double last_percent = 1;
 
@@ -122,12 +124,6 @@
 
         public List<string> TemporaryItem_Zones = new List<string> { "Escha Ru'Aun", "Escha Zi'Tah", "Reisenjima", "Abyssea - La Theine", "Abyssea - Konschtat", "Abyssea - Tahrongi",
                                                                         "Abyssea - Attohwa", "Abyssea - Misareaux", "Abyssea - Vunkerl", "Abyssea - Altepa", "Abyssea - Uleguerand", "Abyssea - Grauberg", "Walk of Echoes" };
-
-        public string wakeSleepSpell = Spells.Cure;
-
-        public string plSilenceitemName = "Echo Drops";
-
-        public string plDoomItemName = "Holy Water";
 
         private float plX;
 
@@ -204,7 +200,7 @@
 
             currentAction.Text = string.Empty;
 
-            if (System.IO.File.Exists("debug"))
+            if (File.Exists("debug"))
             {
                 debug.Visible = true;
             }              
@@ -277,13 +273,12 @@
             if (firstTime_Pause == 0)
             {
                 Follow_BGW.RunWorkerAsync();
-                AddonReader.RunWorkerAsync();
                 firstTime_Pause = 1;
             }
 
             // LOAD AUTOMATIC SETTINGS
-            string path = System.IO.Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "Settings");
-            if (System.IO.File.Exists(path + "/loadSettings"))
+            string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Settings");
+            if (File.Exists(path + "/loadSettings"))
             {
                 if (PL.Player.MainJob != 0)
                 {
@@ -296,7 +291,7 @@
                         string filename2 = path + "\\" + mainJob.ToString() + "_" + subJob.ToString() + ".xml";
 
 
-                        if (System.IO.File.Exists(filename))
+                        if (File.Exists(filename))
                         {
                             ConfigForm.MySettings config = new ConfigForm.MySettings();
 
@@ -310,7 +305,7 @@
                             Form2.updateForm(config);
                             Form2.button4_Click(sender, e);
                         }
-                        else if (System.IO.File.Exists(filename2))
+                        else if (File.Exists(filename2))
                         {
                             ConfigForm.MySettings config = new ConfigForm.MySettings();
 
@@ -367,6 +362,9 @@
 
 
                 currentAction.Text = "LUA Addon loaded. ( " + ConfigForm.config.ipAddress + " - " + ConfigForm.config.listeningPort + " )";
+
+                AddonClient = new UdpClient(Convert.ToInt32(ConfigForm.config.listeningPort));
+                AddonClient.BeginReceive(new AsyncCallback(OnAddonDataReceived), AddonClient);
 
                 LUA_Plugin_Loaded = 1;
             }
@@ -463,8 +461,8 @@
         {
             int spellIndex = Array.IndexOf(tierList, cureSpell);
 
-            string overSpell = Spells.Unknown;
-            string underSpell = Spells.Unknown;
+            string overSpell;
+            string underSpell;
 
             // This will end up with a situation where Cure + Cure II on cooldown results in the "Undercure"
             // solution being Cure III. But I think it might not be possible to cast both fast enough
@@ -522,7 +520,7 @@
                 return;
             }
 
-            if (PL.Player.LoginStatus == (int)EliteMMO.API.LoginStatus.Loading || Monitored.Player.LoginStatus == (int)LoginStatus.Loading)
+            if (PL.Player.LoginStatus == (int)LoginStatus.Loading || Monitored.Player.LoginStatus == (int)LoginStatus.Loading)
             {
                 if (ConfigForm.config.pauseOnZoneBox == true)
                 {
@@ -1005,138 +1003,14 @@
                     // I consider cure/cure II to be low tier once cure III gets above 700 HP.
                     if (Array.IndexOf(Data.CureTiers, cureSpell) < 2 && ConfigForm.config.PrioritiseOverLowerTier == true)
                     {
-                        RunDebuffChecker();
+                        var debuffResult = DebuffEngine.Run();
+                        if(debuffResult != null && debuffResult.Spell != null) {
+                            CastSpell(debuffResult.Target, debuffResult.Spell);
+                            return;
+                        }                  
                     }
 
                     CastSpell(partyMember.Name, cureSpell);
-                }
-            }
-        }
-
-        private void RunDebuffChecker()
-        {
-            if (ConfigForm.config.plSilenceItem == 0)
-            {
-                plSilenceitemName = "Catholicon";
-            }
-            else if (ConfigForm.config.plSilenceItem == 1)
-            {
-                plSilenceitemName = "Echo Drops";
-            }
-            else if (ConfigForm.config.plSilenceItem == 2)
-            {
-                plSilenceitemName = "Remedy";
-            }
-            else if (ConfigForm.config.plSilenceItem == 3)
-            {
-                plSilenceitemName = "Remedy Ointment";
-            }
-            else if (ConfigForm.config.plSilenceItem == 4)
-            {
-                plSilenceitemName = "Vicar's Drink";
-            }
-
-            if (ConfigForm.config.plDoomitem == 0)
-            {
-                plDoomItemName = "Holy Water";
-            }
-            else if (ConfigForm.config.plDoomitem == 1)
-            {
-                plDoomItemName = "Hallowed Water";
-            }
-
-            if (ConfigForm.config.wakeSleepSpell == 0)
-            {
-                wakeSleepSpell = Spells.Cure;
-            }
-            else if (ConfigForm.config.wakeSleepSpell == 1)
-            {
-                wakeSleepSpell = Spells.Cura;
-            }
-            else if (ConfigForm.config.wakeSleepSpell == 2)
-            {
-                wakeSleepSpell = Spells.Curaga;
-            }
-
-            // PL and Monitored Player Debuff Removal Starting with PL
-            if (PL.Player.Status != 33 && ConfigForm.config.plDebuffEnabled)
-            {            
-                var debuffIds = PL.Player.Buffs.Where(id => Data.DebuffPriorities.Keys.Cast<short>().Contains(id));
-                var debuffPriorityList = debuffIds.Cast<StatusEffect>().OrderBy(status => Array.IndexOf(Data.DebuffPriorities.Keys.ToArray(), status));
-
-                if (debuffPriorityList.Any())
-                {
-                    // Get the highest priority debuff we have the right spell off cooldown for.
-                    var targetDebuff = debuffPriorityList.FirstOrDefault(status => Form2.DebuffEnabled.ContainsKey(status) && Form2.DebuffEnabled[status] && PL.SpellAvailable(Data.DebuffPriorities[status]));
-
-                    if ((short)targetDebuff > 0)
-                    {
-                        CastSpell(Target.Me, Data.DebuffPriorities[targetDebuff]);
-                    }
-                }
-            }
-
-            // Next, we check monitored player
-            if (ConfigForm.config.monitoredDebuffEnabled && (PL.Entity.GetEntity((int)Monitored.Party.GetPartyMember(0).TargetIndex).Distance < 21) && (Monitored.Player.HP > 0) && PL.Player.Status != 33)
-            {
-                var debuffIds = Monitored.Player.Buffs.Where(id => Data.DebuffPriorities.Keys.Cast<short>().Contains(id));
-                var debuffPriorityList = debuffIds.Cast<StatusEffect>().OrderBy(status => Array.IndexOf(Data.DebuffPriorities.Keys.ToArray(), status));
-
-                if (debuffPriorityList.Any())
-                {
-                    // Get the highest priority debuff we have the right spell off cooldown for.
-                    var targetDebuff = debuffPriorityList.FirstOrDefault(status => Form2.DebuffEnabled[status] && PL.SpellAvailable(Data.DebuffPriorities[status]));
-
-                    if ((short)targetDebuff > 0)
-                    {
-                        // Don't try and curaga outside our party.
-                        if ((targetDebuff == StatusEffect.Sleep || targetDebuff == StatusEffect.Sleep2) && !plMonitoredSameParty())
-                        {
-                            CastSpell(Monitored.Player.Name, Spells.Cure);
-                        }
-
-                        if (Data.DebuffPriorities[targetDebuff] != Spells.Erase || plMonitoredSameParty()) 
-                        { 
-                            CastSpell(Monitored.Player.Name, Data.DebuffPriorities[targetDebuff]);
-                        }
-                    }
-                 }
-            }
-
-            if (ConfigForm.config.EnableAddOn)
-            {
-                
-                lock (ActiveBuffs)
-                {
-                    // ==============================================================================================================================================================================
-                    // PARTY DEBUFF REMOVAL
-
-                    // First remove the highest priority debuff.
-                    var priorityMember = PL.GetHighestPriorityDebuff(ActiveBuffs);
-                    if(priorityMember != null && ActiveBuffs.ContainsKey(priorityMember.Name))
-                    {
-                        var name = priorityMember.Name;
-                        // Filter out non-debuffs, and convert to short IDs. Then calculate the priority order.
-                        var debuffIds = ActiveBuffs[name].Where(id => Data.DebuffPriorities.Keys.Cast<short>().Contains(id));
-                        var debuffPriorityList = debuffIds.Cast<StatusEffect>().OrderBy(status => Array.IndexOf(Data.DebuffPriorities.Keys.ToArray(), status));
-
-                        if (debuffPriorityList.Any() && ConfigForm.config.enablePartyDebuffRemoval && (characterNames_naRemoval.Contains(name) || ConfigForm.config.SpecifiednaSpellsenable == false))
-                        {
-                            // Get the highest priority debuff we have the right spell off cooldown for.
-                            var targetDebuff = debuffPriorityList.FirstOrDefault(status => Form2.DebuffEnabled[status] && PL.SpellAvailable(Data.DebuffPriorities[status]));
-
-                            if ((short)targetDebuff > 0)
-                            {
-                                // Don't try and curaga outside our party.
-                                if(!priorityMember.InParty(1) && (targetDebuff == StatusEffect.Sleep || targetDebuff == StatusEffect.Sleep2))
-                                {
-                                    CastSpell(name, Spells.Cure);
-                                }
-
-                                CastSpell(name, Data.DebuffPriorities[targetDebuff]);
-                            }
-                        }
-                    }
                 }
             }
         }
@@ -1352,6 +1226,7 @@
                 {
                     PL.AutoFollow.IsAutoFollowing = false;
                 }
+                return;
             }
 
             // IF YOU ARE DEAD BUT RERAISE IS AVAILABLE THEN ACCEPT RAISE
@@ -1375,20 +1250,23 @@
                 // FIRST IF YOU ARE SILENCED OR DOOMED ATTEMPT REMOVAL NOW
                 if (PL.HasStatus(StatusEffect.Silence) && ConfigForm.config.plSilenceItemEnabled)
                 {
+                    var plSilenceItem = Items.SilenceRemoval[ConfigForm.config.plSilenceItem];
+                    
                     // Check to make sure we have echo drops
-                    if (GetInventoryItemCount(PL, GetItemId(plSilenceitemName)) > 0 || GetTempItemCount(PL, GetItemId(plSilenceitemName)) > 0)
+                    if (GetInventoryItemCount(PL, GetItemId(plSilenceItem)) > 0 || GetTempItemCount(PL, GetItemId(plSilenceItem)) > 0)
                     {
-                        Item_Wait(plSilenceitemName);
+                        Item_Wait(plSilenceItem);
                     }
 
                 }
                 else if (PL.HasStatus(StatusEffect.Doom) && ConfigForm.config.plDoomEnabled /* Add more options from UI HERE*/)
                 {
+                    var plDoomItem = Items.DoomRemoval[ConfigForm.config.plDoomitem];
+
                     // Check to make sure we have holy water
-                    if (GetInventoryItemCount(PL, GetItemId(plDoomItemName)) > 0 || GetTempItemCount(PL, GetItemId(plDoomItemName)) > 0)
+                    if (GetInventoryItemCount(PL, GetItemId(plDoomItem)) > 0 || GetTempItemCount(PL, GetItemId(plDoomItem)) > 0)
                     {
-                        PL.ThirdParty.SendString(string.Format("/item \"{0}\" <me>", plDoomItemName));
-                        await Task.Delay(TimeSpan.FromSeconds(2));
+                        Item_Wait(plDoomItem);
                     }
                 }
 
@@ -1443,18 +1321,6 @@
                 // Only perform actions if PL is stationary PAUSE GOES HERE
                 if ((PL.Player.X == plX) && (PL.Player.Y == plY) && (PL.Player.Z == plZ) && (PL.Player.LoginStatus == (int)LoginStatus.LoggedIn) && JobAbilityLock_Check != true && CastingBackground_Check != true && curePlease_autofollow == false && ((PL.Player.Status == (uint)Status.Standing) || (PL.Player.Status == (uint)Status.Fighting)))
                 {
-                    plSilenceitemName = Items.SilenceRemoval[ConfigForm.config.plSilenceItem];
-
-                    if (PL.Player.Buffs.Contains((short)StatusEffect.Silence) && ConfigForm.config.plSilenceItemEnabled)
-                    {
-                        // Check to make sure we have echo drops
-                        if (GetInventoryItemCount(PL, GetItemId(plSilenceitemName)) > 0 || GetTempItemCount(PL, GetItemId(plSilenceitemName)) > 0)
-                        {
-                            PL.ThirdParty.SendString(string.Format("/item \"{0}\" <me>", plSilenceitemName));
-                            await Task.Delay(4000);
-                        }
-                    }
-
                     #region Primary Logic    
                     IEnumerable<PartyMember> partyByHP = Monitored.GetActivePartyMembers();
 
@@ -1485,14 +1351,17 @@
                     var doomedMembers = partyByHP.Count(pm => PL.CanCastOn(pm) && ActiveBuffs.ContainsKey(pm.Name) && (ActiveBuffs[pm.Name].Contains((short)StatusEffect.Doom) || ActiveBuffs[pm.Name].Contains((short)StatusEffect.Charm1) || ActiveBuffs[pm.Name].Contains((short)StatusEffect.Charm2)));
                     if(doomedMembers > 0)
                     {
-                        RunDebuffChecker();
-                        return;
+                        var doomCheckResult = DebuffEngine.Run();
+                        if (doomCheckResult != null && doomCheckResult.Spell != null)
+                        {
+                            CastSpell(doomCheckResult.Target, doomCheckResult.Spell);
+                            return;
+                        }
                     }
 
                     /////////////////////////// PL CURE //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
                     // TODO: Test this! Pretty sure your own character is always party member index 0.
-                    // TODO: Cure tiers selecing cures that don't exist!
                     if (PL.Player.HP > 0 && (PL.Player.HPP <= ConfigForm.config.monitoredCurePercentage) && ConfigForm.config.enableOutOfPartyHealing == true && PLInParty() == false)
                     {
                         var plAsPartyMember = PL.Party.GetPartyMember(0);
@@ -1503,7 +1372,7 @@
                     /////////////////////////// CURAGA //////////////////////////////////////////////////////////////////////////////////////////////////////////////////                                    
                     if (ConfigForm.config.curagaEnabled || ConfigForm.config.curaga2enabled || ConfigForm.config.curaga3enabled || ConfigForm.config.curaga4enabled || ConfigForm.config.curaga5enabled)
                     {
-                        int plParty = PLPartyRelativeToMonitored();
+                        int plParty = PL.GetPartyRelativeTo(Monitored);
 
                         // Order parties that qualify for AOE cures by average missing HP.
                         var partyNeedsAoe = Monitored.PartyNeedsAoeCure((int)ConfigForm.config.curagaRequiredMembers, ConfigForm.config.curagaCurePercentage).OrderBy(partyNumber => Monitored.AverageHpLossForParty(partyNumber));
@@ -1608,7 +1477,12 @@
                     }
 
                     // RUN DEBUFF REMOVAL - CONVERTED TO FUNCTION SO CAN BE RUN IN MULTIPLE AREAS
-                    RunDebuffChecker();
+                    var debuffResult = DebuffEngine.Run();
+                    if (debuffResult != null && debuffResult.Spell != null)
+                    {
+                        CastSpell(debuffResult.Target, debuffResult.Spell);
+                        return;
+                    }
 
                     // PL Auto Buffs
 
@@ -2039,7 +1913,7 @@
                             }
                         }
 
-                        int plParty = PLPartyRelativeToMonitored();
+                        int plParty = PL.GetPartyRelativeTo(Monitored);
 
                         // so PL job abilities are in order
                         if (PL.Player.Status == 1 || PL.Player.Status == 0)
@@ -2431,8 +2305,7 @@
 
         private void enableDebuffRemovalToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            string generated_name = Monitored.Party.GetPartyMembers()[playerOptionsSelected].Name;
-            characterNames_naRemoval.Add(generated_name);
+            DebuffEngine.ToggleSpecifiedMember(Monitored.Party.GetPartyMembers()[playerOptionsSelected].Name);
         }
 
         private void autoShellToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2837,6 +2710,9 @@
                     }
 
                 }
+
+                // Make sure we close the UDP connection for our addon client.
+                AddonClient.Close();
             }
 
         }
@@ -2869,41 +2745,7 @@
             pauseButton.ForeColor = Color.Red;
             actionTimer.Enabled = false;
             MessageBox.Show(ErrorMessage);
-        }
-
-        public bool plMonitoredSameParty()
-        {
-            int PLParty = PLPartyRelativeToMonitored();
-            // I believe that the party from EliteAPI always has our player at index 0.
-            // So if the PL is in party 1, it's the same party as Monitored.
-            return PLParty == 1;
-        }
-
-        public int PLPartyRelativeToMonitored()
-        {
-            // FIRST CHECK THAT BOTH THE PL AND MONITORED PLAYER ARE IN THE SAME PT/ALLIANCE
-            List<PartyMember> monitoredParty = Monitored.Party.GetPartyMembers();
-
-            if (monitoredParty.Any(member => member.Name == PL.Player.Name))
-            {
-                int plParty = monitoredParty.FirstOrDefault(p => p.Name == PL.Player.Name).MemberNumber;
-
-                if (plParty <= 5)
-                {
-                    return 1;
-                }
-                else if (plParty <= 11 && plParty >= 6)
-                {
-                    return 2;
-                }
-                else if (plParty <= 17 && plParty >= 12)
-                {
-                    return 3;
-                }
-            }
-
-            return 0;
-        }                          
+        }           
 
         private int CheckEngagedStatus_Hate()
         {
@@ -3325,141 +3167,131 @@
             new AboutForm().Show();
         }
 
-        private void AddonReader_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
+        private void OnAddonDataReceived(IAsyncResult result)
         {
+            UdpClient socket = result.AsyncState as UdpClient;
+
             if (ConfigForm.config.EnableAddOn && !pauseActions && Monitored != null && PL != null)
             {
-
-                bool done = false;
-
-                UdpClient listener = new UdpClient(Convert.ToInt32(ConfigForm.config.listeningPort));
                 IPEndPoint groupEP = new IPEndPoint(IPAddress.Parse(ConfigForm.config.ipAddress), Convert.ToInt32(ConfigForm.config.listeningPort));
-                string received_data;
-                byte[] receive_byte_array;
+
                 try
                 {
-                    while (!done)
+
+                    byte[] receive_byte_array = socket.EndReceive(result, ref groupEP);
+
+                    string received_data = Encoding.ASCII.GetString(receive_byte_array, 0, receive_byte_array.Length);
+
+                    string[] commands = received_data.Split('_');
+         
+                    // MessageBox.Show(commands[1] + " " + commands[2]);
+                    if (commands[1] == "casting" && commands.Count() == 3 && ConfigForm.config.trackCastingPackets == true)
                     {
-
-                        receive_byte_array = listener.Receive(ref groupEP);
-
-                        received_data = Encoding.ASCII.GetString(receive_byte_array, 0, receive_byte_array.Length);
-
-                        string[] commands = received_data.Split('_');
-
-                        // MessageBox.Show(commands[1] + " " + commands[2]);
-                        if (commands[1] == "casting" && commands.Count() == 3 && ConfigForm.config.trackCastingPackets == true)
+                        if (commands[2] == "blocked")
                         {
-                            if (commands[2] == "blocked")
+                            Invoke((MethodInvoker)(() =>
                             {
-                                Invoke((MethodInvoker)(() =>
-                                {
-                                    CastingBackground_Check = true;
-                                    castingLockLabel.Text = "PACKET: Casting is LOCKED";
-                                }));
+                                CastingBackground_Check = true;
+                                castingLockLabel.Text = "PACKET: Casting is LOCKED";
+                            }));
 
-                                if (!ProtectCasting.IsBusy) { ProtectCasting.RunWorkerAsync(); }
-                            }
-                            else if (commands[2] == "interrupted")
-                            {
-                                Invoke((MethodInvoker)(async () =>
-                                {
-                                    ProtectCasting.CancelAsync();
-                                    castingLockLabel.Text = "PACKET: Casting is INTERRUPTED";
-                                    await Task.Delay(TimeSpan.FromSeconds(2));
-                                    castingLockLabel.Text = "Casting is UNLOCKED";
-                                    CastingBackground_Check = false;
-                                }));
-                            }
-                            else if (commands[2] == "finished")
-                            {
-
-                                Invoke((MethodInvoker)(async () =>
-                                {
-                                    ProtectCasting.CancelAsync();
-                                    castingLockLabel.Text = "PACKET: Casting is soon to be AVAILABLE!";
-                                    await Task.Delay(TimeSpan.FromSeconds(3));
-                                    castingLockLabel.Text = "Casting is UNLOCKED";
-                                    currentAction.Text = string.Empty;
-                                    castingSpell = string.Empty;
-                                    CastingBackground_Check = false;
-                                }));
-                            }
+                            if (!ProtectCasting.IsBusy) { ProtectCasting.RunWorkerAsync(); }
                         }
-                        else if (commands[1] == "confirmed")
+                        else if (commands[2] == "interrupted")
                         {
-                            AddOnStatus.BackColor = Color.ForestGreen;
+                            Invoke((MethodInvoker)(async () =>
+                            {
+                                ProtectCasting.CancelAsync();
+                                castingLockLabel.Text = "PACKET: Casting is INTERRUPTED";
+                                await Task.Delay(TimeSpan.FromSeconds(2));
+                                castingLockLabel.Text = "Casting is UNLOCKED";
+                                CastingBackground_Check = false;
+                            }));
                         }
-                        else if (commands[1] == "command")
+                        else if (commands[2] == "finished")
                         {
-                            // MessageBox.Show(commands[2]);
-                            if (commands[2] == "start" || commands[2] == "unpause")
-                            {
-                                Invoke((MethodInvoker)(() =>
-                                {
-                                    pauseButton.Text = "Pause";
-                                    pauseButton.ForeColor = Color.Black;
-                                    actionTimer.Enabled = true;
-                                    pauseActions = false;
-                                }));
-                            }
-                            if (commands[2] == "stop" || commands[2] == "pause")
-                            {
-                                Invoke((MethodInvoker)(() =>
-                                {
 
-                                    pauseButton.Text = "Paused!";
-                                    pauseButton.ForeColor = Color.Red;
-                                    actionTimer.Enabled = false;
-                                    ActiveBuffs.Clear();
-                                    pauseActions = true;
-                                    if (ConfigForm.config.FFXIDefaultAutoFollow == false)
-                                    {
-                                        PL.AutoFollow.IsAutoFollowing = false;
-                                    }
-
-                                }));
-                            }
-                            if (commands[2] == "toggle")
+                            Invoke((MethodInvoker)(async () =>
                             {
-                                Invoke((MethodInvoker)(() =>
-                                {
-                                    pauseButton.PerformClick();
-                                }));
-                            }
-                        }
-                        else if (commands[1] == "buffs" && commands.Count() == 4)
-                        {
-                            lock (ActiveBuffs)
-                            {
-                                var memberName = commands[2];
-                                var memberBuffs = commands[3];
-                                
-                                if(!string.IsNullOrEmpty(memberBuffs))
-                                {
-                                    ActiveBuffs[memberName] = memberBuffs.Split(',').Select(str => short.Parse(str.Trim()));
-                                }                             
-                            }
-
+                                ProtectCasting.CancelAsync();
+                                castingLockLabel.Text = "PACKET: Casting is soon to be AVAILABLE!";
+                                await Task.Delay(TimeSpan.FromSeconds(3));
+                                castingLockLabel.Text = "Casting is UNLOCKED";
+                                currentAction.Text = string.Empty;
+                                castingSpell = string.Empty;
+                                CastingBackground_Check = false;
+                            }));
                         }
                     }
+                    else if (commands[1] == "confirmed")
+                    {
+                        AddOnStatus.BackColor = Color.ForestGreen;
+                    }
+                    else if (commands[1] == "command")
+                    {
+                        // MessageBox.Show(commands[2]);
+                        if (commands[2] == "start" || commands[2] == "unpause")
+                        {
+                            Invoke((MethodInvoker)(() =>
+                            {
+                                pauseButton.Text = "Pause";
+                                pauseButton.ForeColor = Color.Black;
+                                actionTimer.Enabled = true;
+                                pauseActions = false;
+                            }));
+                        }
+                        if (commands[2] == "stop" || commands[2] == "pause")
+                        {
+                            Invoke((MethodInvoker)(() =>
+                            {
+
+                                pauseButton.Text = "Paused!";
+                                pauseButton.ForeColor = Color.Red;
+                                actionTimer.Enabled = false;
+                                ActiveBuffs.Clear();
+                                pauseActions = true;
+                                if (ConfigForm.config.FFXIDefaultAutoFollow == false)
+                                {
+                                    PL.AutoFollow.IsAutoFollowing = false;
+                                }
+
+                            }));
+                        }
+                        if (commands[2] == "toggle")
+                        {
+                            Invoke((MethodInvoker)(() =>
+                            {
+                                pauseButton.PerformClick();
+                            }));
+                        }
+                    }
+                    else if (commands[1] == "buffs" && commands.Count() == 4)
+                    {
+                        lock (ActiveBuffs)
+                        {
+                            var memberName = commands[2];
+                            var memberBuffs = commands[3];
+                                
+                            if(!string.IsNullOrEmpty(memberBuffs))
+                            {
+                                var buffs = memberBuffs.Split(',').Select(str => short.Parse(str.Trim())).Where(buff => !Data.DebuffPriorities.Keys.Cast<short>().Contains(buff));
+                                var debuffs = memberBuffs.Split(',').Select(str => short.Parse(str.Trim())).Where(buff => Data.DebuffPriorities.Keys.Cast<short>().Contains(buff));
+
+                                BuffEngine.UpdateBuffs(memberName, buffs);
+                                DebuffEngine.UpdateDebuffs(memberName, debuffs);
+                            }                             
+                        }
+
+                    }                    
                 }
                 catch (Exception error1)
                 {
                     Console.WriteLine(error1.StackTrace);
-                }
-
-                listener.Close();
-
+                }              
             }
 
-            Thread.Sleep(TimeSpan.FromSeconds(0.2));
-        }
-
-        private void AddonReader_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
-        {
-            AddonReader.RunWorkerAsync();
-        }       
+            socket.BeginReceive(new AsyncCallback(OnAddonDataReceived), socket);
+        }   
 
         private void AddOnStatus_Click(object sender, EventArgs e)
         {

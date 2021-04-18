@@ -4476,5 +4476,30 @@
                 AddonPort = config.listeningPort
             };
         }
+
+        public DebuffConfig GetDebuffConfig()
+        {
+            return new DebuffConfig()
+            {
+                AddonIP = config.ipAddress,
+                AddonPort = config.listeningPort,
+                PLDebuffEnabled = config.plDebuffEnabled,
+                MonitoredDebuffEnabled = config.monitoredDebuffEnabled,
+                PartyDebuffEnabled = config.enablePartyDebuffRemoval,
+                OnlySpecificMembers = config.SpecifiednaSpellsenable,
+                DebuffEnabled = DebuffEnabled
+            };
+        }
+
+        public PLConfig GetPLConfig()
+        {
+            return new PLConfig()
+            {
+                PLSilenceItemEnabled = config.plSilenceItemEnabled,
+                PLSilenceItem = config.plSilenceItem,
+                PLDoomItemEnabled = config.plDoomEnabled,
+                PLDoomItem = config.plDoomitem
+            };
+        }
     }
 }

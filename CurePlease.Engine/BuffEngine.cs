@@ -23,15 +23,11 @@ namespace CurePlease.Engine
         // Auto Spells:
         // Haste, Haste II, Phalanx II, Regen, Shell, Protect, Sandstorm, Rainstorm, Windstorm, Firestorm, Hailstorm, Thunderstorm, Voidstorm, Aurorastorm, Refresh, Adloquium
              
-        private DateTime currentTime = DateTime.Now;    
-
         private BuffConfig Config { get; set; }
         private EliteAPI PL { get; set; }
         private EliteAPI Monitored { get; set; }
 
-        private bool AddonLoaded = false;
         private Dictionary<string, IEnumerable<short>> ActiveBuffs = new Dictionary<string, IEnumerable<short>>();
-        private UdpClient BuffSocket;
 
         // TODO: Should this just be the exact spell we want to cast instead of the buff id?
         // Would probably be cleaner.
@@ -42,26 +38,11 @@ namespace CurePlease.Engine
             Config = config;
 
             PL = pl;
-            Monitored = mon;
-
-            // Initialize the socket on our port, and then begin receiving data.
-            // This will continually call itself to receive the next packet in the background.
-            BuffSocket = new UdpClient(Convert.ToInt32(Config.AddonPort));
-            BuffSocket.BeginReceive(new AsyncCallback(OnBuffDataReceived), BuffSocket);
-            
+            Monitored = mon;                  
         }
 
-        // TODO: Setup buffs to be based on a priority system, and don't search whole party!
-        // Going to try making the addon mandatory, and making all the buff decisions based on
-        // what we're receiving from there instead of the timer mess.
-        // May have to go back to the old system later.
         public EngineAction Run()
         {
-            var actionResult = new EngineAction
-            {
-                Target = Target.Me
-            };
-
             lock (ActiveBuffs)
             {
                 // Want to find party members where they have an autobuff configured but it isn't in their list of buffs.
@@ -73,18 +54,23 @@ namespace CurePlease.Engine
                         // First check if they're ActiveBuffs are empty, and if so return first buff to cast.
                         if(!ActiveBuffs.ContainsKey(ptMember.Name) || !ActiveBuffs[ptMember.Name].Any())
                         {
-                            actionResult.Spell = AutoBuffs[ptMember.Name].First();
-                            actionResult.Target = ptMember.Name;
-                            break;
+                            return new EngineAction()
+                            {
+                                Spell = AutoBuffs[ptMember.Name].First(),
+                                Target = ptMember.Name
+                            };
+                           
                         }
                         else
                         {
                             var missingBuffSpell = AutoBuffs[ptMember.Name].FirstOrDefault(buff => !ActiveBuffs[ptMember.Name].Contains(Data.SpellEffects[buff]));
                             if(!string.IsNullOrEmpty(missingBuffSpell))
                             {
-                                actionResult.Spell = missingBuffSpell;
-                                actionResult.Target = ptMember.Name;
-                                break;
+                                return new EngineAction()
+                                {
+                                    Spell = missingBuffSpell,
+                                    Target = ptMember.Name
+                                };
                             }
                         }
                             
@@ -92,7 +78,7 @@ namespace CurePlease.Engine
                 }
             }        
 
-            return actionResult;
+            return null;
         }
 
         public void ToggleAutoBuff(string memberName, string spellName)
@@ -118,53 +104,22 @@ namespace CurePlease.Engine
             return AutoBuffs.ContainsKey(memberName) && AutoBuffs[memberName].Any(spell => spell == spellName);
         }
 
-        private void OnBuffDataReceived(IAsyncResult result)
+        // Since we can only have one socket for the addon, we let the main form
+        // explicitly manage our buff list instead of doing it internally.
+        public void UpdateBuffs(string memberName, IEnumerable<short> buffs)
         {
-            if(!AddonLoaded)
+            lock(ActiveBuffs)
             {
-                return;
-            }
-
-            // The only thing passed in through the async state is the client itself.
-            // So that when we're done, we can tell it to receive the next packet.
-            UdpClient socket = result.AsyncState as UdpClient;
-            IPEndPoint groupEP = new IPEndPoint(IPAddress.Parse(Config.AddonIP), Convert.ToInt32(Config.AddonPort));
-
-            try
-            {
-                byte[] receive_byte_array = socket.EndReceive(result, ref groupEP);
-
-                string received_data = Encoding.ASCII.GetString(receive_byte_array, 0, receive_byte_array.Length);
-
-                string[] commands = received_data.Split('_');
-
-                
-                if (commands[1] == "buffs" && commands.Count() == 4)
+                if(buffs.Any())
                 {
-                    
-                    var memberName = commands[2];
-                    var memberBuffs = commands[3];
-
-                    if (!string.IsNullOrEmpty(memberBuffs))
-                    {
-                        // Filter out the debuffs.
-                        var buffs = memberBuffs.Split(',').Select(str => short.Parse(str.Trim())).Where(buff => !Data.DebuffPriorities.Keys.Cast<short>().Contains(buff));
-                        if (buffs.Any())
-                        {
-                            lock (ActiveBuffs)
-                            {
-                                ActiveBuffs[memberName] = buffs;
-                            }
-                        }                 
-                    }               
-                }           
+                    ActiveBuffs[memberName] = buffs;
+                }
+                else if(ActiveBuffs.ContainsKey(memberName))
+                {
+                    ActiveBuffs.Remove(memberName);
+                }
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.StackTrace);
-            }
-
-            socket.BeginReceive(new AsyncCallback(OnBuffDataReceived), socket);
         }
+
     }
 }

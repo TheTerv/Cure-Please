@@ -113,7 +113,6 @@
     <Compile Include="Forms\ChatlogForm.Designer.cs">
       <DependentUpon>ChatlogForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Forms\PartyBuffs.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -231,7 +231,6 @@ namespace CurePlease
             this.ChatLogButton = new System.Windows.Forms.Button();
             this.PartyBuffsButton = new System.Windows.Forms.Button();
             this.AboutButton = new System.Windows.Forms.Button();
-            this.AddonReader = new System.ComponentModel.BackgroundWorker();
             this.JobAbilityDelay = new System.ComponentModel.BackgroundWorker();
             this.AddOnStatus = new System.Windows.Forms.Button();
             this.ProtectCasting = new System.ComponentModel.BackgroundWorker();
@@ -2328,11 +2327,7 @@ namespace CurePlease
             this.AboutButton.Text = "About";
             this.AboutButton.UseVisualStyleBackColor = false;
             this.AboutButton.Click += new System.EventHandler(this.AboutButton_Click);
-            // 
-            // AddonReader
-            // 
-            this.AddonReader.DoWork += new System.ComponentModel.DoWorkEventHandler(this.AddonReader_DoWork);
-            this.AddonReader.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.AddonReader_RunWorkerCompleted);
+
             // 
             // AddOnStatus
             // 
@@ -2609,7 +2604,6 @@ namespace CurePlease
         private Button ChatLogButton;
         private Button PartyBuffsButton;
         private Button AboutButton;
-        private System.ComponentModel.BackgroundWorker AddonReader;
         private System.ComponentModel.BackgroundWorker JobAbilityDelay;
         private ToolStripSeparator toolStripSeparator1;
         private ToolStripMenuItem SandstormToolStripMenuItem;

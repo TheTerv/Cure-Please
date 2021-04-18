@@ -47,7 +47,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Config\BuffConfig.cs" />
+    <Compile Include="Config\DebuffConfig.cs" />
     <Compile Include="Config\GeoConfig.cs" />
+    <Compile Include="Config\PLConfig.cs" />
     <Compile Include="EngineAction.cs" />
     <Compile Include="Config\SongConfig.cs" />
     <Compile Include="Constants\Ability.cs" />
