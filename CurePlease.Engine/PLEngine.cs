@@ -127,58 +127,67 @@ namespace CurePlease.Engine
             {
                 return new EngineAction { JobAbility = Ability.AfflatusSolace };
             }
-            else if (Config.AfflatusMiseryEnabled && (!PL.HasStatus(StatusEffect.Afflatus_Misery)) && PL.AbilityAvailable(Ability.AfflatusMisery))
+            
+            if (Config.AfflatusMiseryEnabled && (!PL.HasStatus(StatusEffect.Afflatus_Misery)) && PL.AbilityAvailable(Ability.AfflatusMisery))
             {
                 return new EngineAction { JobAbility = Ability.AfflatusMisery };
-            }       
-            else if (Config.Composure && (!PL.HasStatus(StatusEffect.Composure)) && PL.AbilityAvailable(Ability.Composure))
+            }                          
+            
+            if (Config.Composure && (!PL.HasStatus(StatusEffect.Composure)) && PL.AbilityAvailable(Ability.Composure))
             {
                 return new EngineAction
                 {
                     JobAbility = Ability.Composure
                 };
             }
-            else if (Config.LightArts && (!PL.HasStatus(StatusEffect.Light_Arts)) && (!PL.HasStatus(StatusEffect.Addendum_White)) && PL.AbilityAvailable(Ability.LightArts))
+            
+            if (Config.LightArts && (!PL.HasStatus(StatusEffect.Light_Arts)) && (!PL.HasStatus(StatusEffect.Addendum_White)) && PL.AbilityAvailable(Ability.LightArts))
             {
                 return new EngineAction
                 {
                     JobAbility = Ability.LightArts
                 };
             }
-            else if (Config.AddendumWhite && (!PL.HasStatus(StatusEffect.Addendum_White)) && PL.HasStatus(StatusEffect.Light_Arts) && PL.CurrentSCHCharges() > 0)
+            
+            if (Config.AddendumWhite && (!PL.HasStatus(StatusEffect.Addendum_White)) && PL.HasStatus(StatusEffect.Light_Arts) && PL.CurrentSCHCharges() > 0)
             {
                 return new EngineAction
                 {
                     JobAbility = Ability.AddendumWhite
                 };
             }
-            else if (Config.DarkArts && (!PL.HasStatus(StatusEffect.Dark_Arts)) && (!PL.HasStatus(StatusEffect.Addendum_Black)) && PL.AbilityAvailable(Ability.DarkArts))
+
+            if (Config.DarkArts && (!PL.HasStatus(StatusEffect.Dark_Arts)) && (!PL.HasStatus(StatusEffect.Addendum_Black)) && PL.AbilityAvailable(Ability.DarkArts))
             {
                 return new EngineAction
                 {
                     JobAbility = Ability.DarkArts
                 };
             }
-            else if (Config.AddendumBlack && PL.HasStatus(StatusEffect.Dark_Arts) && (!PL.HasStatus(StatusEffect.Addendum_Black)) && PL.CurrentSCHCharges() > 0)
+
+            if (Config.AddendumBlack && PL.HasStatus(StatusEffect.Dark_Arts) && (!PL.HasStatus(StatusEffect.Addendum_Black)) && PL.CurrentSCHCharges() > 0)
             {
                 return new EngineAction
                 {
                     JobAbility = Ability.AddendumBlack
                 };
             }
-            else if (Config.SublimationEnabled && (!PL.HasStatus(StatusEffect.Sublimation_Activated)) && (!PL.HasStatus(StatusEffect.Sublimation_Complete)) && (!PL.HasStatus(StatusEffect.Refresh)) && PL.AbilityAvailable(Ability.Sublimation))
+            if (Config.SublimationEnabled && (!PL.HasStatus(StatusEffect.Sublimation_Activated)) && (!PL.HasStatus(StatusEffect.Sublimation_Complete)) && (!PL.HasStatus(StatusEffect.Refresh)) && PL.AbilityAvailable(Ability.Sublimation))
             {
                 return new EngineAction { JobAbility = Ability.Sublimation };
             }
-            else if (Config.SublimationEnabled && ((PL.Player.MPMax - PL.Player.MP) > Config.SublimationMPLossThreshold) && PL.HasStatus(StatusEffect.Sublimation_Complete) && PL.AbilityAvailable(Ability.Sublimation))
+
+            if (Config.SublimationEnabled && ((PL.Player.MPMax - PL.Player.MP) > Config.SublimationMPLossThreshold) && PL.HasStatus(StatusEffect.Sublimation_Complete) && PL.AbilityAvailable(Ability.Sublimation))
             {
                 return new EngineAction { JobAbility = Ability.Sublimation };
             }
-            else if (Config.DivineCaressEnabled && Config.DebuffsEnabled && PL.AbilityAvailable(Ability.DivineCaress))
+
+            if (Config.DivineCaressEnabled && Config.DebuffsEnabled && PL.AbilityAvailable(Ability.DivineCaress))
             {
                 return new EngineAction { JobAbility = Ability.DivineCaress };
             }
-            else if (Config.DevotionEnabled && PL.AbilityAvailable(Ability.Devotion) && PL.Player.HPP > 80 && (!Config.DevotionWhenEngaged || (Monitored.Player.Status == 1)))
+            
+            if (Config.DevotionEnabled && PL.AbilityAvailable(Ability.Devotion) && PL.Player.HPP > 80 && (!Config.DevotionWhenEngaged || (Monitored.Player.Status == 1)))
             {
                 int plParty = PL.GetPartyRelativeTo(Monitored);
 
@@ -203,7 +212,8 @@ namespace CurePlease.Engine
                     };
                 }
             }
-            else if (Config.ShellraEnabled && (!PL.HasStatus(StatusEffect.Shell)))
+            
+            if (Config.ShellraEnabled && (!PL.HasStatus(StatusEffect.Shell)))
             {
                 var shellraSpell = Data.ShellraTiers[Config.ShellraLevel - 1];
                 if (PL.SpellAvailable(shellraSpell))
@@ -214,7 +224,8 @@ namespace CurePlease.Engine
                     };
                 }
             }
-            else if (Config.ProtectraEnabled && (!PL.HasStatus(StatusEffect.Protect)))
+            
+            if (Config.ProtectraEnabled && (!PL.HasStatus(StatusEffect.Protect)))
             {
                 var protectraSpell = Data.ProtectraTiers[Config.ProtectraLevel - 1];
                 if (PL.SpellAvailable(protectraSpell))
@@ -222,7 +233,8 @@ namespace CurePlease.Engine
                     return new EngineAction { Spell = protectraSpell };
                 }
             }
-            else if (Config.BarElementEnabled && !PL.HasStatus(Data.SpellEffects[Config.BarElementSpell]) && PL.SpellAvailable(Config.BarElementSpell))
+            
+            if (Config.BarElementEnabled && !PL.HasStatus(Data.SpellEffects[Config.BarElementSpell]) && PL.SpellAvailable(Config.BarElementSpell))
             {
                 // TODO: Make this work properly, so it can figure out if there's 2 charges and return 
                 // an action that says: Do Accession + Perpetuance + Barspell.
@@ -242,7 +254,8 @@ namespace CurePlease.Engine
 
                 return result;
             }
-            else if (Config.BarStatusEnabled && !PL.HasStatus(Data.SpellEffects[Config.BarStatusSpell]) && PL.SpellAvailable(Config.BarStatusSpell))
+            
+            if (Config.BarStatusEnabled && !PL.HasStatus(Data.SpellEffects[Config.BarStatusSpell]) && PL.SpellAvailable(Config.BarStatusSpell))
             {
                 var result = new EngineAction
                 {
@@ -260,11 +273,13 @@ namespace CurePlease.Engine
 
                 return result;
             }
-            else if (Config.GainBoostSpellEnabled && !PL.HasStatus(Data.SpellEffects[Config.GainBoostSpell]) && PL.SpellAvailable(Config.GainBoostSpell))
+            
+            if (Config.GainBoostSpellEnabled && !PL.HasStatus(Data.SpellEffects[Config.GainBoostSpell]) && PL.SpellAvailable(Config.GainBoostSpell))
             {
                 return new EngineAction { Spell = Config.GainBoostSpell };
             }
-            else if (Config.StormSpellEnabled && !PL.HasStatus(Data.SpellEffects[Config.StormSpell]) && PL.SpellAvailable(Config.StormSpell))
+            
+            if (Config.StormSpellEnabled && !PL.HasStatus(Data.SpellEffects[Config.StormSpell]) && PL.SpellAvailable(Config.StormSpell))
             {
                 var result = new EngineAction { Spell = Config.StormSpell };
                 if (Config.AccessionEnabled && Config.StormspellAccession && PL.CurrentSCHCharges() > 0 && PL.AbilityAvailable(Ability.Accession) && !PL.HasStatus(StatusEffect.Accession))
@@ -278,7 +293,8 @@ namespace CurePlease.Engine
 
                 return result;
             }
-            else if (Config.ProtectEnabled && (!PL.HasStatus(StatusEffect.Protect)))
+            
+            if (Config.ProtectEnabled && (!PL.HasStatus(StatusEffect.Protect)))
             {
                 var result = new EngineAction { Spell = Config.ProtectSpell };
 
@@ -292,7 +308,8 @@ namespace CurePlease.Engine
 
                 return result;
             }
-            else if (Config.ShellEnabled && (!PL.HasStatus(StatusEffect.Shell)))
+            
+            if (Config.ShellEnabled && (!PL.HasStatus(StatusEffect.Shell)))
             {
                 var result = new EngineAction { Spell = Config.ShellSpell };
 
@@ -306,7 +323,8 @@ namespace CurePlease.Engine
 
                 return result;
             }
-            else if (Config.ReraiseEnabled && (!PL.HasStatus(StatusEffect.Reraise)))
+            
+            if (Config.ReraiseEnabled && (!PL.HasStatus(StatusEffect.Reraise)))
             {
                 var result = new EngineAction { Spell = Config.ReraiseSpell };
 
@@ -317,7 +335,8 @@ namespace CurePlease.Engine
 
                 return result;                
             }
-            else if (Config.UtsusemiEnabled && PL.ShadowsRemaining() < 2)
+            
+            if (Config.UtsusemiEnabled && PL.ShadowsRemaining() < 2)
             {
                 if(PL.GetInventoryItemCount(PL.GetItemId(Items.Shihei)) > 0)
                 {
@@ -331,7 +350,8 @@ namespace CurePlease.Engine
                     }
                 }             
             }
-            else if (Config.BlinkEnabled && (!PL.HasStatus(StatusEffect.Blink)) && PL.SpellAvailable(Spells.Blink))
+            
+            if (Config.BlinkEnabled && (!PL.HasStatus(StatusEffect.Blink)) && PL.SpellAvailable(Spells.Blink))
             {
                 var result = new EngineAction { Spell = Spells.Blink };
 
@@ -346,7 +366,8 @@ namespace CurePlease.Engine
 
                 return result;
             }
-            else if (Config.PhalanxEnabled && (!PL.HasStatus(StatusEffect.Phalanx)) && PL.SpellAvailable(Spells.Phalanx))
+            
+            if (Config.PhalanxEnabled && (!PL.HasStatus(StatusEffect.Phalanx)) && PL.SpellAvailable(Spells.Phalanx))
             {
                 var result = new EngineAction { Spell = Spells.Phalanx };
 
@@ -361,7 +382,8 @@ namespace CurePlease.Engine
 
                 return result;
             }
-            else if (Config.RefreshEnabled && (!PL.HasStatus(StatusEffect.Refresh)))
+            
+            if (Config.RefreshEnabled && (!PL.HasStatus(StatusEffect.Refresh)))
             {
                 var result = new EngineAction { Spell = Config.RefreshSpell };
 
@@ -376,7 +398,8 @@ namespace CurePlease.Engine
 
                 return result;              
             }
-            else if (Config.RegenEnabled && (!PL.HasStatus(StatusEffect.Regen)))
+            
+            if (Config.RegenEnabled && (!PL.HasStatus(StatusEffect.Regen)))
             {
                 var result = new EngineAction { Spell = Config.RegenSpell };
 
@@ -391,7 +414,8 @@ namespace CurePlease.Engine
 
                 return result;
             }
-            else if (Config.AdloquiumEnabled && (!PL.HasStatus(StatusEffect.Regain)) && PL.SpellAvailable(Spells.Adloquium))
+            
+            if (Config.AdloquiumEnabled && (!PL.HasStatus(StatusEffect.Regain)) && PL.SpellAvailable(Spells.Adloquium))
             {
                 var result = new EngineAction { Spell = Spells.Adloquium };
 
@@ -406,7 +430,8 @@ namespace CurePlease.Engine
 
                 return result;
             }
-            else if (Config.StoneskinEnabled && (!PL.HasStatus(StatusEffect.Stoneskin)) && PL.SpellAvailable(Spells.Stoneskin))
+            
+            if (Config.StoneskinEnabled && (!PL.HasStatus(StatusEffect.Stoneskin)) && PL.SpellAvailable(Spells.Stoneskin))
             {
                 var result = new EngineAction { Spell = Spells.Stoneskin };
 
@@ -421,7 +446,8 @@ namespace CurePlease.Engine
 
                 return result;
             }
-            else if (Config.AquaveilEnabled && (!PL.HasStatus(StatusEffect.Aquaveil)) && PL.SpellAvailable(Spells.Aquaveil))
+            
+            if (Config.AquaveilEnabled && (!PL.HasStatus(StatusEffect.Aquaveil)) && PL.SpellAvailable(Spells.Aquaveil))
             {
                 var result = new EngineAction { Spell = Spells.Aquaveil };
 
@@ -436,23 +462,28 @@ namespace CurePlease.Engine
 
                 return result;
             }
-            else if (Config.KlimaformEnabled && !PL.HasStatus(StatusEffect.Klimaform))
+            
+            if (Config.KlimaformEnabled && !PL.HasStatus(StatusEffect.Klimaform))
             {
                 return new EngineAction { Spell = Spells.Klimaform };
             }
-            else if (Config.TemperEnabled && (!PL.HasStatus(StatusEffect.Multi_Strikes)))
+            
+            if (Config.TemperEnabled && (!PL.HasStatus(StatusEffect.Multi_Strikes)))
             {
                 return new EngineAction { Spell = Config.TemperSpell };
             }
-            else if (Config.HasteEnabled && (!PL.HasStatus(StatusEffect.Haste)))
+            
+            if (Config.HasteEnabled && (!PL.HasStatus(StatusEffect.Haste)))
             {
                 return new EngineAction { Spell = Config.HasteSpell };
             }
-            else if (Config.SpikesEnabled && !PL.HasStatus(Data.SpellEffects[Config.SpikesSpell]))
+            
+            if (Config.SpikesEnabled && !PL.HasStatus(Data.SpellEffects[Config.SpikesSpell]))
             {
                 return new EngineAction { Spell = Config.SpikesSpell };
             }
-            else if (Config.EnSpellEnabled && !PL.HasStatus(Data.SpellEffects[Config.EnSpell]) && PL.SpellAvailable(Config.EnSpell))
+            
+            if (Config.EnSpellEnabled && !PL.HasStatus(Data.SpellEffects[Config.EnSpell]) && PL.SpellAvailable(Config.EnSpell))
             {
                 var result = new EngineAction { Spell = Config.EnSpell };
 
@@ -471,14 +502,16 @@ namespace CurePlease.Engine
 
                 return result;
             }
-            else if (Config.AuspiceEnabled && (!PL.HasStatus(StatusEffect.Auspice)) && PL.SpellAvailable(Spells.Auspice))
+            
+            if (Config.AuspiceEnabled && (!PL.HasStatus(StatusEffect.Auspice)) && PL.SpellAvailable(Spells.Auspice))
             {
                 return new EngineAction { Spell = Spells.Auspice };
             }
+
             // TODO: Rethink this whole logic.
             // Probably doesn't work at all right now, and need to figure out a better way
-            // to find entities than iterating 2048 things...
-            else if (Config.AutoTargetEnabled && PL.SpellAvailable(Config.AutoTargetSpell))
+            // to find entities than iterating 2048 things...           
+            if (Config.AutoTargetEnabled && PL.SpellAvailable(Config.AutoTargetSpell))
             {            
                 if (Config.PartyBasedHateSpell)
                 {

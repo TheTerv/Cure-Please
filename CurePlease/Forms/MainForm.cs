@@ -62,17 +62,17 @@ namespace CurePlease
 
         // TODO: Initialize these configs explicitly after we've hooked into the game
         // and/or loaded/saved our config form.
-        public SongEngine SongEngine = new SongEngine(PL, Monitored);
+        public SongEngine SongEngine;
 
-        public GeoEngine GeoEngine = new GeoEngine(PL, Monitored);
+        public GeoEngine GeoEngine;
 
-        public BuffEngine BuffEngine = new BuffEngine(PL, Monitored);
+        public BuffEngine BuffEngine;
 
-        public DebuffEngine DebuffEngine = new DebuffEngine(PL, Monitored);
+        public DebuffEngine DebuffEngine;
 
-        public PLEngine PLEngine = new PLEngine(PL, Monitored);
+        public PLEngine PLEngine;
 
-        public CureEngine CureEngine = new CureEngine(PL, Monitored);
+        public CureEngine CureEngine;
 
         public double last_percent = 1;
 
@@ -336,9 +336,6 @@ namespace CurePlease
 
                 currentAction.Text = "LUA Addon loaded. ( " + ConfigForm.config.ipAddress + " - " + ConfigForm.config.listeningPort + " )";
 
-                AddonClient = new UdpClient(Convert.ToInt32(ConfigForm.config.listeningPort));
-                AddonClient.BeginReceive(new AsyncCallback(OnAddonDataReceived), AddonClient);
-
                 LUA_Plugin_Loaded = 1;
             }
         }
@@ -419,6 +416,17 @@ namespace CurePlease
 
                 lastCommand = Monitored.ThirdParty.ConsoleIsNewCommand();
             }
+
+            AddonClient = new UdpClient(Convert.ToInt32(ConfigForm.config.listeningPort));
+            AddonClient.BeginReceive(new AsyncCallback(OnAddonDataReceived), AddonClient);
+
+            // TODO: Solve this hack for intializing these after both selected.
+            SongEngine = new SongEngine(PL, Monitored);
+            GeoEngine = new GeoEngine(PL, Monitored);
+            BuffEngine = new BuffEngine(PL, Monitored);
+            DebuffEngine = new DebuffEngine(PL, Monitored);
+            PLEngine = new PLEngine(PL, Monitored);
+            CureEngine = new CureEngine(PL, Monitored);
         }
 
         private bool CheckForDLLFiles()
@@ -1160,22 +1168,25 @@ namespace CurePlease
             // Auto Casting BUFF STUFF                    
             var buffAction = BuffEngine.Run(Config.GetBuffConfig());
 
-            if (!string.IsNullOrEmpty(buffAction.Error))
+            if (buffAction != null)
             {
-                showErrorMessage(buffAction.Error);
-            }
-            else
-            {
-                if (!string.IsNullOrEmpty(buffAction.JobAbility))
+                if (!string.IsNullOrEmpty(buffAction.Error))
                 {
-                    JobAbility_Wait(buffAction.JobAbility, buffAction.JobAbility);
+                    showErrorMessage(buffAction.Error);
                 }
+                else
+                {
+                    if (!string.IsNullOrEmpty(buffAction.JobAbility))
+                    {
+                        JobAbility_Wait(buffAction.JobAbility, buffAction.JobAbility);
+                    }
 
-                if (!string.IsNullOrEmpty(buffAction.Spell))
-                {
-                    CastSpell(buffAction.Target, buffAction.Spell);
+                    if (!string.IsNullOrEmpty(buffAction.Spell))
+                    {
+                        CastSpell(buffAction.Target, buffAction.Spell);
+                    }
                 }
-            }                                                 
+            }
         }
         #endregion
 
