@@ -26,7 +26,7 @@ namespace CurePlease.Engine
         {
             _config = Config;
 
-            IEnumerable<PartyMember> partyByHP = Monitored.GetActivePartyMembers();
+            IEnumerable<PartyMember> partyByHP = Monitored.GetActivePartyMembers().OrderBy(member => member.CurrentHPP);
 
             /////////////////////////// PL CURE //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

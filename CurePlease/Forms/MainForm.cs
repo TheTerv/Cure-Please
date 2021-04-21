@@ -1006,14 +1006,14 @@ namespace CurePlease
                 }
             }
     
-            IEnumerable<PartyMember> partyByHP = Monitored.GetActivePartyMembers();
+            IEnumerable<PartyMember> activeMembers = Monitored.GetActivePartyMembers();
 
             /////////////////////////// Charmed CHECK /////////////////////////////////////
             // TODO: Charm logic is messy because it's not configurable currently. Clean this up when adding auto-sleep options.
             if (PL.Player.MainJob == (byte)Job.BRD)
             {
                 // Get the list of anyone who's charmed and in range.
-                var charmedMembers = partyByHP.Where(pm => PL.CanCastOn(pm) && ActiveBuffs.ContainsKey(pm.Name) && (ActiveBuffs[pm.Name].Contains((short)StatusEffect.Charm1) || ActiveBuffs[pm.Name].Contains((short)StatusEffect.Charm2)));
+                var charmedMembers = activeMembers.Where(pm => PL.CanCastOn(pm) && ActiveBuffs.ContainsKey(pm.Name) && (ActiveBuffs[pm.Name].Contains((short)StatusEffect.Charm1) || ActiveBuffs[pm.Name].Contains((short)StatusEffect.Charm2)));
                         
                 if (charmedMembers.Any())
                 {
@@ -1032,7 +1032,7 @@ namespace CurePlease
             }
 
             /////////////////////////// DOOM CHECK /////////////////////////////////////
-            var doomedMembers = partyByHP.Count(pm => PL.CanCastOn(pm) && ActiveBuffs.ContainsKey(pm.Name) && ActiveBuffs[pm.Name].Contains((short)StatusEffect.Doom));
+            var doomedMembers = activeMembers.Count(pm => PL.CanCastOn(pm) && ActiveBuffs.ContainsKey(pm.Name) && ActiveBuffs[pm.Name].Contains((short)StatusEffect.Doom));
             if(doomedMembers > 0)
             {
                 var doomCheckResult = DebuffEngine.Run(Config.GetDebuffConfig());
@@ -1157,9 +1157,7 @@ namespace CurePlease
                 }
             }
 
-            // Auto Casting BUFF STUFF
-            var playerBuffOrder = Monitored.Party.GetPartyMembers().OrderBy(p => p.MemberNumber).OrderBy(p => p.Active == 0).Where(p => p.Active == 1);
-                    
+            // Auto Casting BUFF STUFF                    
             var buffAction = BuffEngine.Run(Config.GetBuffConfig());
 
             if (!string.IsNullOrEmpty(buffAction.Error))
