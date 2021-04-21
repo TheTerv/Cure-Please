@@ -1,4 +1,13 @@
-﻿namespace CurePlease
+﻿/// <summary>
+/// TODO:
+/// - EngineInterface
+/// - Async Engine List in form
+/// - Engine Priorities.
+/// - Move Charm/Doom logic into debuff engine with priority 0
+/// - CONFIGS (don't calculate them every tick).
+/// - ???
+/// </summary>
+namespace CurePlease
 {
     using CurePlease.Engine;
     using CurePlease.Model;
@@ -53,15 +62,17 @@
 
         // TODO: Initialize these configs explicitly after we've hooked into the game
         // and/or loaded/saved our config form.
-        public SongEngine SongEngine = new SongEngine(PL, Monitored, Config.GetSongConfig());
+        public SongEngine SongEngine = new SongEngine(PL, Monitored);
 
-        public GeoEngine GeoEngine = new GeoEngine(PL, Monitored, Config.GetGeoConfig());
+        public GeoEngine GeoEngine = new GeoEngine(PL, Monitored);
 
-        public BuffEngine BuffEngine = new BuffEngine(PL, Monitored, Config.GetBuffConfig());
+        public BuffEngine BuffEngine = new BuffEngine(PL, Monitored);
 
-        public DebuffEngine DebuffEngine = new DebuffEngine(PL, Monitored, Config.GetDebuffConfig());
+        public DebuffEngine DebuffEngine = new DebuffEngine(PL, Monitored);
 
-        public PLEngine PLEngine = new PLEngine(PL, Monitored, Config.GetPLConfig());
+        public PLEngine PLEngine = new PLEngine(PL, Monitored);
+
+        public CureEngine CureEngine = new CureEngine(PL, Monitored);
 
         public double last_percent = 1;
 
@@ -100,8 +111,6 @@
         private byte autoOptionsSelected;
 
         private bool pauseActions;
-
-        private bool islowmp;
 
         public int LUA_Plugin_Loaded = 0;
 
@@ -419,49 +428,7 @@
                 return false;
             }
             return true;
-        }
-
-        private string PickCureTier(string cureSpell, string[] tierList)
-        {
-            int spellIndex = Array.IndexOf(tierList, cureSpell);
-
-            string overSpell;
-            string underSpell;
-
-            // This will end up with a situation where Cure + Cure II on cooldown results in the "Undercure"
-            // solution being Cure III. But I think it might not be possible to cast both fast enough
-            // to make that a concern?
-            if(cureSpell == tierList.Last())
-            {
-                overSpell = tierList[tierList.Length-2];
-                underSpell = tierList[tierList.Length-3];
-            }
-            else if(cureSpell == tierList.First())
-            {
-                overSpell = tierList[1];
-                underSpell = tierList[2];
-            }
-            else
-            {
-                overSpell = tierList[spellIndex + 1];
-                underSpell = tierList[spellIndex - 1];
-            }
-
-            if(PL.SpellAvailable(cureSpell) && PL.HasMPFor(cureSpell))
-            {
-                return cureSpell;
-            }
-            else if(ConfigForm.config.Overcure && PL.SpellAvailable(overSpell) && PL.HasMPFor(overSpell))
-            {
-                return overSpell;
-            }
-            else if(ConfigForm.config.Undercure && PL.SpellAvailable(underSpell) && PL.HasMPFor(underSpell))
-            {
-                return underSpell;
-            }
-
-            return Spells.Unknown;
-        }
+        }       
 
         private bool partyMemberUpdateMethod(byte partyMemberId)
         {
@@ -923,103 +890,7 @@
             plX = PL.Player.X;
             plY = PL.Player.Y;
             plZ = PL.Player.Z;
-        }
-
-        private string PickCure(uint hpLoss)
-        {
-            if (ConfigForm.config.cure6enabled && hpLoss >= ConfigForm.config.cure6amount && PL.HasMPFor(Spells.Cure_VI))
-            {
-                return PickCureTier(Spells.Cure_VI, Data.CureTiers);
-            }
-            else if (ConfigForm.config.cure5enabled && hpLoss >= ConfigForm.config.cure5amount && PL.HasMPFor(Spells.Cure_V))
-            {
-                return PickCureTier(Spells.Cure_V, Data.CureTiers);
-            }
-            else if (ConfigForm.config.cure4enabled && hpLoss >= ConfigForm.config.cure4amount && PL.HasMPFor(Spells.Cure_IV))
-            {
-                return PickCureTier(Spells.Cure_IV, Data.CureTiers);
-            }
-            else if (ConfigForm.config.cure3enabled && hpLoss >= ConfigForm.config.cure3amount && PL.HasMPFor(Spells.Cure_III))
-            {
-                return PickCureTier(Spells.Cure_III, Data.CureTiers);
-            }
-            else if (ConfigForm.config.cure2enabled && hpLoss >= ConfigForm.config.cure2amount && PL.HasMPFor(Spells.Cure_II))
-            {
-                return PickCureTier(Spells.Cure_II, Data.CureTiers);
-            }
-            else if (ConfigForm.config.cure1enabled && hpLoss >= ConfigForm.config.cure1amount && PL.HasMPFor(Spells.Cure))
-            {
-                return PickCureTier(Spells.Cure, Data.CureTiers);
-            }
-
-            return Spells.Unknown;
-        }    
-
-        private void CureCalculator(PartyMember partyMember)
-        {
-            // Only do this is party member is alive.
-            if (partyMember.CurrentHP > 0)
-            {
-                string cureSpell = PickCure(partyMember.HPLoss());                       
-
-                if (cureSpell != Spells.Unknown)
-                {
-                    // I consider cure/cure II to be low tier once cure III gets above 700 HP.
-                    if (Array.IndexOf(Data.CureTiers, cureSpell) < 2 && ConfigForm.config.PrioritiseOverLowerTier == true)
-                    {
-                        var debuffResult = DebuffEngine.Run();
-                        if(debuffResult != null && debuffResult.Spell != null) {
-                            CastSpell(debuffResult.Target, debuffResult.Spell);
-                            return;
-                        }                  
-                    }
-
-                    CastSpell(partyMember.Name, cureSpell);
-                }
-            }
-        }
-
-        private void CuragaCalculator(PartyMember member)
-        {
-            uint hpLoss = member.HPLoss();
-            string cureSpell = Spells.Unknown;
-  
-            if (ConfigForm.config.curaga5enabled && (hpLoss >= ConfigForm.config.curaga5Amount))
-            {
-                cureSpell = Spells.Curaga_V;          
-            }
-            else if (ConfigForm.config.curaga4enabled && (hpLoss >= ConfigForm.config.curaga4Amount))
-            {
-                cureSpell = Spells.Curaga_IV;           
-            }
-            else if (ConfigForm.config.curaga3enabled && (hpLoss >= ConfigForm.config.curaga3Amount))
-            {
-                cureSpell = Spells.Curaga_III;
-            }
-            else if (ConfigForm.config.curaga2enabled && (hpLoss >= ConfigForm.config.curaga2Amount))
-            {
-                cureSpell = Spells.Curaga_II;
-            }
-            else if (ConfigForm.config.curagaEnabled && (hpLoss >= ConfigForm.config.curagaAmount))
-            {
-                cureSpell = Spells.Curaga;
-            }
-
-            if (cureSpell != Spells.Unknown)
-            {
-                // Check if we need to over/under cure.
-                var curagaTier = PickCureTier(cureSpell, Data.CuragaTiers);
-                if (ConfigForm.config.curagaTargetType == 0)
-                {
-                    CastSpell(member.Name, curagaTier);
-                }
-                else
-                {
-                    CastSpell(ConfigForm.config.curagaTargetName, curagaTier);
-                }
-            }
-
-        }
+        }      
 
         private void CastSpell(string partyMemberName, string spellName, [Optional] string OptionalExtras)
         {
@@ -1062,62 +933,50 @@
             }
         }
 
+        #region Primary Logic
+        // This is the timer that does our decision loop.
+        // All the main action related stuff happens in here.
         private async void actionTimer_TickAsync(object sender, EventArgs e)
         {
-            string[] shell_spells = { "Shell", "Shell II", "Shell III", "Shell IV", "Shell V" };
-            string[] protect_spells = { "Protect", "Protect II", "Protect III", "Protect IV", "Protect V" };
-
+            // Skip if we aren't hooked into the game.
             if (PL == null || Monitored == null)
             {
                 return;
             }
 
+            // Skip if we aren't logged in.
             if (PL.Player.LoginStatus != (int)LoginStatus.LoggedIn || Monitored.Player.LoginStatus != (int)LoginStatus.LoggedIn)
             {
                 return;
-            }             
+            }
+
+            // Skip if we're busy or immobilized.
+            if (JobAbilityLock_Check || CastingBackground_Check  || PL.HasStatus(StatusEffect.Terror) || PL.HasStatus(StatusEffect.Petrification) || PL.HasStatus(StatusEffect.Stun))
+            {
+                return;
+            }
+
+            // Skip if we're moving, or not standing/fighting.
+            if ((PL.Player.X != plX) || (PL.Player.Y != plY) || (PL.Player.Z != plZ) || ((PL.Player.Status != (uint)Status.Standing) && (PL.Player.Status != (uint)Status.Fighting)))
+            {
+                return;
+            }
 
             // Set array values for GUI "Enabled" checkboxes
-            CheckBox[] enabledBoxes = new CheckBox[18];
-            enabledBoxes[0] = player0enabled;
-            enabledBoxes[1] = player1enabled;
-            enabledBoxes[2] = player2enabled;
-            enabledBoxes[3] = player3enabled;
-            enabledBoxes[4] = player4enabled;
-            enabledBoxes[5] = player5enabled;
-            enabledBoxes[6] = player6enabled;
-            enabledBoxes[7] = player7enabled;
-            enabledBoxes[8] = player8enabled;
-            enabledBoxes[9] = player9enabled;
-            enabledBoxes[10] = player10enabled;
-            enabledBoxes[11] = player11enabled;
-            enabledBoxes[12] = player12enabled;
-            enabledBoxes[13] = player13enabled;
-            enabledBoxes[14] = player14enabled;
-            enabledBoxes[15] = player15enabled;
-            enabledBoxes[16] = player16enabled;
-            enabledBoxes[17] = player17enabled;
+            bool[] enabledBoxes = new bool[] {
+                player0enabled.Checked, player1enabled.Checked, player2enabled.Checked, player3enabled.Checked, player4enabled.Checked, player5enabled.Checked,
+                player6enabled.Checked, player7enabled.Checked, player8enabled.Checked, player9enabled.Checked, player10enabled.Checked, player11enabled.Checked,
+                player12enabled.Checked, player13enabled.Checked, player14enabled.Checked, player15enabled.Checked, player16enabled.Checked, player17enabled.Checked
+            };
+
 
             // Set array values for GUI "High Priority" checkboxes
-            CheckBox[] highPriorityBoxes = new CheckBox[18];
-            highPriorityBoxes[0] = player0priority;
-            highPriorityBoxes[1] = player1priority;
-            highPriorityBoxes[2] = player2priority;
-            highPriorityBoxes[3] = player3priority;
-            highPriorityBoxes[4] = player4priority;
-            highPriorityBoxes[5] = player5priority;
-            highPriorityBoxes[6] = player6priority;
-            highPriorityBoxes[7] = player7priority;
-            highPriorityBoxes[8] = player8priority;
-            highPriorityBoxes[9] = player9priority;
-            highPriorityBoxes[10] = player10priority;
-            highPriorityBoxes[11] = player11priority;
-            highPriorityBoxes[12] = player12priority;
-            highPriorityBoxes[13] = player13priority;
-            highPriorityBoxes[14] = player14priority;
-            highPriorityBoxes[15] = player15priority;
-            highPriorityBoxes[16] = player16priority;
-            highPriorityBoxes[17] = player17priority;
+            bool[] highPriorityBoxes = new bool[] {
+                player0priority.Checked, player1priority.Checked, player2priority.Checked, player3priority.Checked, player4priority.Checked, player5priority.Checked,
+                player6priority.Checked, player7priority.Checked, player8priority.Checked, player9priority.Checked, player10priority.Checked, player11priority.Checked,
+                player12priority.Checked, player13priority.Checked, player14priority.Checked, player15priority.Checked, player16priority.Checked, player17priority.Checked
+            };
+            
          
             // IF ENABLED PAUSE ON KO
             if (ConfigForm.config.pauseOnKO && (PL.Player.Status == 2 || PL.Player.Status == 3))
@@ -1146,279 +1005,181 @@
                     currentAction.Text = string.Empty;
                 }
             }
+    
+            IEnumerable<PartyMember> partyByHP = Monitored.GetActivePartyMembers();
 
-
-            // If CastingLock is not FALSE and you're not Terrorized, Petrified, or Stunned run the actions
-            if (JobAbilityLock_Check != true && CastingBackground_Check != true && !PL.HasStatus(StatusEffect.Terror) && !PL.HasStatus(StatusEffect.Petrification) && !PL.HasStatus(StatusEffect.Stun))
+            /////////////////////////// Charmed CHECK /////////////////////////////////////
+            // TODO: Charm logic is messy because it's not configurable currently. Clean this up when adding auto-sleep options.
+            if (PL.Player.MainJob == (byte)Job.BRD)
             {
-
-                
-
-                // Only perform actions if PL is stationary PAUSE GOES HERE
-                if ((PL.Player.X == plX) && (PL.Player.Y == plY) && (PL.Player.Z == plZ) && (PL.Player.LoginStatus == (int)LoginStatus.LoggedIn) && JobAbilityLock_Check != true && CastingBackground_Check != true && curePlease_autofollow == false && ((PL.Player.Status == (uint)Status.Standing) || (PL.Player.Status == (uint)Status.Fighting)))
-                {
-                    #region Primary Logic    
-                    IEnumerable<PartyMember> partyByHP = Monitored.GetActivePartyMembers();
-
-                    /////////////////////////// Charmed CHECK /////////////////////////////////////
-                    // TODO: Charm logic is messy because it's not configurable currently. Clean this up when adding auto-sleep options.
-                    if (PL.Player.MainJob == (byte)Job.BRD)
-                    {
-                        // Get the list of anyone who's charmed and in range.
-                        var charmedMembers = partyByHP.Where(pm => PL.CanCastOn(pm) && ActiveBuffs.ContainsKey(pm.Name) && (ActiveBuffs[pm.Name].Contains((short)StatusEffect.Charm1) || ActiveBuffs[pm.Name].Contains((short)StatusEffect.Charm2)));
+                // Get the list of anyone who's charmed and in range.
+                var charmedMembers = partyByHP.Where(pm => PL.CanCastOn(pm) && ActiveBuffs.ContainsKey(pm.Name) && (ActiveBuffs[pm.Name].Contains((short)StatusEffect.Charm1) || ActiveBuffs[pm.Name].Contains((short)StatusEffect.Charm2)));
                         
-                        if (charmedMembers.Any())
-                        {
-                            // We target the first charmed member who's not already asleep.
-                            var sleepTarget = charmedMembers.FirstOrDefault(member => !(ActiveBuffs[member.Name].Contains((short)StatusEffect.Sleep) || ActiveBuffs[member.Name].Contains((short)StatusEffect.Sleep2)));
+                if (charmedMembers.Any())
+                {
+                    // We target the first charmed member who's not already asleep.
+                    var sleepTarget = charmedMembers.FirstOrDefault(member => !(ActiveBuffs[member.Name].Contains((short)StatusEffect.Sleep) || ActiveBuffs[member.Name].Contains((short)StatusEffect.Sleep2)));
 
-                            if (sleepTarget != default)
-                            {
-                                // For now add some redundancy in case the first cast is resisted.
-                                var sleepSong = PL.SpellAvailable(Spells.Foe_Lullaby_II) ? Spells.Foe_Lullaby_II : Spells.Foe_Lullaby;
+                    if (sleepTarget != default)
+                    {
+                        // For now add some redundancy in case the first cast is resisted.
+                        var sleepSong = PL.SpellAvailable(Spells.Foe_Lullaby_II) ? Spells.Foe_Lullaby_II : Spells.Foe_Lullaby;
                                 
-                                CastSpell(sleepTarget.Name, sleepSong);
-                                return;
-                            }
-                        }
-                    }
-
-                    /////////////////////////// DOOM CHECK /////////////////////////////////////
-                    var doomedMembers = partyByHP.Count(pm => PL.CanCastOn(pm) && ActiveBuffs.ContainsKey(pm.Name) && (ActiveBuffs[pm.Name].Contains((short)StatusEffect.Doom) || ActiveBuffs[pm.Name].Contains((short)StatusEffect.Charm1) || ActiveBuffs[pm.Name].Contains((short)StatusEffect.Charm2)));
-                    if(doomedMembers > 0)
-                    {
-                        var doomCheckResult = DebuffEngine.Run();
-                        if (doomCheckResult != null && doomCheckResult.Spell != null)
-                        {
-                            CastSpell(doomCheckResult.Target, doomCheckResult.Spell);
-                            return;
-                        }
-                    }
-
-                    /////////////////////////// PL CURE //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-                    // TODO: Test this! Pretty sure your own character is always party member index 0.
-                    if (PL.Player.HP > 0 && (PL.Player.HPP <= ConfigForm.config.monitoredCurePercentage) && ConfigForm.config.enableOutOfPartyHealing == true && !PL.SamePartyAs(Monitored))
-                    {
-                        var plAsPartyMember = PL.Party.GetPartyMember(0);
-                        CureCalculator(plAsPartyMember);
+                        CastSpell(sleepTarget.Name, sleepSong);
                         return;
                     }
+                }
+            }
 
-                    /////////////////////////// CURAGA //////////////////////////////////////////////////////////////////////////////////////////////////////////////////                                    
-                    if (ConfigForm.config.curagaEnabled || ConfigForm.config.curaga2enabled || ConfigForm.config.curaga3enabled || ConfigForm.config.curaga4enabled || ConfigForm.config.curaga5enabled)
+            /////////////////////////// DOOM CHECK /////////////////////////////////////
+            var doomedMembers = partyByHP.Count(pm => PL.CanCastOn(pm) && ActiveBuffs.ContainsKey(pm.Name) && ActiveBuffs[pm.Name].Contains((short)StatusEffect.Doom));
+            if(doomedMembers > 0)
+            {
+                var doomCheckResult = DebuffEngine.Run(Config.GetDebuffConfig());
+                if (doomCheckResult != null && doomCheckResult.Spell != null)
+                {
+                    CastSpell(doomCheckResult.Target, doomCheckResult.Spell);
+                    return;
+                }
+            }
+
+            // For now we run these before deciding what to do, in case we need
+            // to skip a low priority cure.
+            // CURE ENGINE
+            var cureResult = CureEngine.Run(Config.GetCureConfig(), enabledBoxes, highPriorityBoxes);
+            // RUN DEBUFF REMOVAL - CONVERTED TO FUNCTION SO CAN BE RUN IN MULTIPLE AREAS
+            var debuffResult = DebuffEngine.Run(Config.GetDebuffConfig());
+
+            if(cureResult != null)
+            {             
+                if (!string.IsNullOrEmpty(cureResult.Spell))
+                {
+                    bool lowPriority = Array.IndexOf(Data.CureTiers, cureResult.Spell) < 2;
+
+                    // Only cast the spell/JA if we don't need to skip debuffs based on
+                    // config and low priority.
+                    if(!lowPriority || !ConfigForm.config.PrioritiseOverLowerTier || debuffResult == null)
                     {
-                        int plParty = PL.GetPartyRelativeTo(Monitored);
-
-                        // Order parties that qualify for AOE cures by average missing HP.
-                        var partyNeedsAoe = Monitored.PartyNeedsAoeCure((int)ConfigForm.config.curagaRequiredMembers, ConfigForm.config.curagaCurePercentage).OrderBy(partyNumber => Monitored.AverageHpLossForParty(partyNumber));
-
-                        // If PL is in same alliance, and there's at least 1 party that needs an AOE cure.
-                        // Parties are ordered by most average missing HP.
-                        if (plParty > 0 && partyNeedsAoe.Any())
+                        if (!string.IsNullOrEmpty(cureResult.JobAbility))
                         {
-                            int targetParty = 0;
-
-                            // We can accession if we have light arts/addendum white, and either we already have the status or we have the ability available,
-                            // and have the charges to use it.
-                            bool plCanAccession = (PL.HasStatus(StatusEffect.Light_Arts) || PL.HasStatus(StatusEffect.Addendum_White))
-                                && (PL.HasStatus(StatusEffect.Accession) || (PL.AbilityAvailable(Ability.Accession) && PL.CurrentSCHCharges() > 0));
-
-                            foreach (int party in partyNeedsAoe)
-                            {
-                                // We check whether we can accession here, so that if we can't accession we don't skip a chance to curaga our own party.
-                                if (party != plParty && !plCanAccession)
-                                {
-                                    continue;
-                                }
-
-                                // We get the first party with at least 1 person who's in it and checked.
-                                // As well as 1 person who's both under the cure threshold AND in casting range.
-                                // This way we won't AOE parties we haven't got anyone checked in, and we won't attempt
-                                // to AOE a party where we can't reach any of the injured members.
-                                if (partyByHP.Count(pm => pm.InParty(party) && enabledBoxes[pm.MemberNumber].Checked) > 0)
-                                {
-                                    if (partyByHP.Count(pm => pm.InParty(party) && pm.CurrentHPP < ConfigForm.config.curagaCurePercentage && PL.CanCastOn(pm)) > 0)
-                                    {
-                                        targetParty = party;
-                                    }
-                                }
-                            }
-
-                            if (targetParty > 0)
-                            {
-                                // The target is the first person we can cast on, since they're already ordered by HPP.
-                                var target = partyByHP.FirstOrDefault(pm => pm.InParty(targetParty) && PL.CanCastOn(pm));
-
-                                if (target != default)
-                                {
-                                    // If same party as PL, curaga. Otherwise we try to accession cure.
-                                    if (targetParty == plParty)
-                                    {
-                                        // TODO: Don't do this if we have no curagas enabled, prevents curing!
-                                        CuragaCalculator(target);
-                                        return;
-                                    }
-                                    else
-                                    {
-                                        // We've already determined we can accession, or already have the status.
-                                        if (!PL.HasStatus(StatusEffect.Accession))
-                                        {
-                                            JobAbility_Wait("Accession AOE Cure", Ability.Accession);
-                                        }
-
-                                        CureCalculator(target);
-                                        return;
-                                    }
-                                }
-                            }
+                            JobAbility_Wait(cureResult.Message, cureResult.JobAbility);
                         }
-                    }
 
-                    /////////////////////////// CURE //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-                    // First run a check on the monitored target
-                    if (ConfigForm.config.enableMonitoredPriority && Monitored.Player.HP > 0 && (Monitored.Player.HPP <= ConfigForm.config.monitoredCurePercentage))
-                    {
-                        // Need to get monitored player as a PartyMember
-                        PartyMember monitoredPlayer = partyByHP.FirstOrDefault(p => p.Name == Monitored.Player.Name);
-                        if(monitoredPlayer != default)
-                        {
-                            CureCalculator(monitoredPlayer);
-                        }
-                          
+                        CastSpell(cureResult.Target, cureResult.Spell);
                         return;
+                    }                   
+                }
+            }
+
+            if (debuffResult != null)
+            {
+                CastSpell(debuffResult.Target, debuffResult.Spell);
+                return;
+            }
+
+            // TODO: Need to run cure AND debuff engine then decide which to execute.
+            // I consider cure/cure II to be low tier once cure III gets above 700 HP.
+            //if (Array.IndexOf(Data.CureTiers, cureSpell) < 2 && ConfigForm.config.PrioritiseOverLowerTier == true)
+            //{
+            //    var debuffResult = DebuffEngine.Run();
+            //    if (debuffResult != null && debuffResult.Spell != null)
+            //    {
+            //        CastSpell(debuffResult.Target, debuffResult.Spell);
+            //        return;
+            //    }
+            //}
+
+
+            // PL AUTO BUFFS
+            var plEngineResult = PLEngine.Run(Config.GetPLConfig());
+            if(plEngineResult != null)
+            {
+                if(!string.IsNullOrEmpty(plEngineResult.Item))
+                {
+                    Item_Wait(plEngineResult.Item);
+                }
+                            
+                if(!string.IsNullOrEmpty(plEngineResult.JobAbility))
+                {
+                    if(plEngineResult.JobAbility == Ability.Devotion)
+                    {
+                        PL.ThirdParty.SendString($"/ja \"{Ability.Devotion}\" {plEngineResult.Target}");
                     }
                     else
                     {
-                        // Calculate who needs a cure, and is a valid target.
-                        // Anyone who's: Enabled + Active + Alive + Under cure threshold
-                        var validCures = partyByHP.Where(pm => enabledBoxes[pm.MemberNumber].Checked && (pm.CurrentHPP <= ConfigForm.config.curePercentage) && PL.CanCastOn(pm));
+                        JobAbility_Wait(plEngineResult.Message, plEngineResult.JobAbility);
+                    }                            
+                }
 
-                        // Now run a scan to check all targets in the High Priority Threshold
-                        if (validCures != null && validCures.Any()) {
-                            var highPriorityCures = validCures.Where(pm => highPriorityBoxes[pm.MemberNumber].Checked);
-
-                            if(highPriorityCures != null && highPriorityCures.Any())
-                            {
-                                CureCalculator(highPriorityCures.First());
-                                return;
-                            }
-                            else
-                            {
-                                CureCalculator(validCures.First());
-                                return;
-                            }
-                        }                     
-                    }
-
-                    // RUN DEBUFF REMOVAL - CONVERTED TO FUNCTION SO CAN BE RUN IN MULTIPLE AREAS
-                    var debuffResult = DebuffEngine.Run();
-                    if (debuffResult != null && debuffResult.Spell != null)
-                    {
-                        CastSpell(debuffResult.Target, debuffResult.Spell);
-                        return;
-                    }
-
-                    // PL Auto Buffs
-                    if (PL.Player.LoginStatus == (int)LoginStatus.LoggedIn && JobAbilityLock_Check != true && CastingBackground_Check != true)
-                    {
-                        // PL AUTO BUFFS
-                        var plEngineResult = PLEngine.Run();
-                        if(plEngineResult != null)
-                        {
-                            if(!string.IsNullOrEmpty(plEngineResult.Item))
-                            {
-                                Item_Wait(plEngineResult.Item);
-                            }
-                            
-                            if(!string.IsNullOrEmpty(plEngineResult.JobAbility))
-                            {
-                                if(plEngineResult.JobAbility == Ability.Devotion)
-                                {
-                                    PL.ThirdParty.SendString($"/ja \"{Ability.Devotion}\" {plEngineResult.Target}");
-                                }
-                                else
-                                {
-                                    JobAbility_Wait(plEngineResult.Message, plEngineResult.JobAbility);
-                                }                            
-                            }
-
-                            if(!string.IsNullOrEmpty(plEngineResult.Spell))
-                            {
-                                var target = string.IsNullOrEmpty(plEngineResult.Target) ? "<me>" : plEngineResult.Target;
-                                CastSpell(target, plEngineResult.Spell);
-                            }
-                        }
-
-
-                        // BARD SONGS
-
-                        if (PL.Player.MainJob == (byte)Job.BRD && ConfigForm.config.enableSinging && !PL.HasStatus(StatusEffect.Silence) && (PL.Player.Status == 1 || PL.Player.Status == 0))
-                        {
-                            var songAction = SongEngine.Run();
-
-                            if (!string.IsNullOrEmpty(songAction.Spell))
-                            {
-                                CastSpell(songAction.Target, songAction.Spell);
-                            }
-                        }
-
-                        // GEO Stuff
-
-                        else if (PL.Player.MainJob == (byte)Job.GEO && ConfigForm.config.EnableGeoSpells && !PL.HasStatus(StatusEffect.Silence) && (PL.Player.Status == 1 || PL.Player.Status == 0))
-                        {
-                            var geoAction = GeoEngine.Run();
-
-                            // TODO: Abstract out this idea of error/ability/spell handling
-                            // as it will apply to all the engines.
-                            if (!string.IsNullOrEmpty(geoAction.Error))
-                            {
-                                showErrorMessage(geoAction.Error);
-                            }
-                            else
-                            {
-                                if (!string.IsNullOrEmpty(geoAction.JobAbility))
-                                {
-                                    JobAbility_Wait(geoAction.JobAbility, geoAction.JobAbility);
-                                }
-
-                                if (!string.IsNullOrEmpty(geoAction.Spell))
-                                {
-                                    CastSpell(geoAction.Target, geoAction.Spell);
-                                }
-                            }
-                        }                    
-
-                        var playerBuffOrder = Monitored.Party.GetPartyMembers().OrderBy(p => p.MemberNumber).OrderBy(p => p.Active == 0).Where(p => p.Active == 1);
-
-                        // Auto Casting BUFF STUFF
-                        if (PL.Player.Status == 1 || PL.Player.Status == 0)
-                        {
-                            var buffAction = BuffEngine.Run();
-
-                            if (!string.IsNullOrEmpty(buffAction.Error))
-                            {
-                                showErrorMessage(buffAction.Error);
-                            }
-                            else
-                            {
-                                if (!string.IsNullOrEmpty(buffAction.JobAbility))
-                                {
-                                    JobAbility_Wait(buffAction.JobAbility, buffAction.JobAbility);
-                                }
-
-                                if (!string.IsNullOrEmpty(buffAction.Spell))
-                                {
-                                    CastSpell(buffAction.Target, buffAction.Spell);
-                                }
-                            }
-                        }
-                    }
-                    #endregion
+                if(!string.IsNullOrEmpty(plEngineResult.Spell))
+                {
+                    var target = string.IsNullOrEmpty(plEngineResult.Target) ? "<me>" : plEngineResult.Target;
+                    CastSpell(target, plEngineResult.Spell);
                 }
             }
+
+
+            // BARD SONGS
+
+            if (PL.Player.MainJob == (byte)Job.BRD && ConfigForm.config.enableSinging && !PL.HasStatus(StatusEffect.Silence) && (PL.Player.Status == 1 || PL.Player.Status == 0))
+            {
+                var songAction = SongEngine.Run(Config.GetSongConfig());
+
+                if (!string.IsNullOrEmpty(songAction.Spell))
+                {
+                    CastSpell(songAction.Target, songAction.Spell);
+                }
+            }
+
+            // GEO Stuff
+
+            else if (PL.Player.MainJob == (byte)Job.GEO && ConfigForm.config.EnableGeoSpells && !PL.HasStatus(StatusEffect.Silence) && (PL.Player.Status == 1 || PL.Player.Status == 0))
+            {
+                var geoAction = GeoEngine.Run(Config.GetGeoConfig());
+
+                // TODO: Abstract out this idea of error/ability/spell handling
+                // as it will apply to all the engines.
+                if (!string.IsNullOrEmpty(geoAction.Error))
+                {
+                    showErrorMessage(geoAction.Error);
+                }
+                else
+                {
+                    if (!string.IsNullOrEmpty(geoAction.JobAbility))
+                    {
+                        JobAbility_Wait(geoAction.JobAbility, geoAction.JobAbility);
+                    }
+
+                    if (!string.IsNullOrEmpty(geoAction.Spell))
+                    {
+                        CastSpell(geoAction.Target, geoAction.Spell);
+                    }
+                }
+            }
+
+            // Auto Casting BUFF STUFF
+            var playerBuffOrder = Monitored.Party.GetPartyMembers().OrderBy(p => p.MemberNumber).OrderBy(p => p.Active == 0).Where(p => p.Active == 1);
+                    
+            var buffAction = BuffEngine.Run(Config.GetBuffConfig());
+
+            if (!string.IsNullOrEmpty(buffAction.Error))
+            {
+                showErrorMessage(buffAction.Error);
+            }
+            else
+            {
+                if (!string.IsNullOrEmpty(buffAction.JobAbility))
+                {
+                    JobAbility_Wait(buffAction.JobAbility, buffAction.JobAbility);
+                }
+
+                if (!string.IsNullOrEmpty(buffAction.Spell))
+                {
+                    CastSpell(buffAction.Target, buffAction.Spell);
+                }
+            }                                                 
         }
+        #endregion
 
         private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
         {

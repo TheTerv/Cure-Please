@@ -6,14 +6,12 @@ using EliteMMO.API;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using static EliteMMO.API.EliteAPI;
 
 namespace CurePlease.Engine
 {
     public class PLEngine
     {
-        private PLConfig Config { get; set; }
         private EliteAPI PL { get; set; }
         private EliteAPI Monitored { get; set; }
 
@@ -21,15 +19,13 @@ namespace CurePlease.Engine
 
         private int lastKnownEstablisherTarget = 0;
 
-        public PLEngine(EliteAPI pl, EliteAPI mon, PLConfig config)
+        public PLEngine(EliteAPI pl, EliteAPI mon)
         {
-            Config = config;
-
             PL = pl;
             Monitored = mon;
         }
 
-        public EngineAction Run()
+        public EngineAction Run(PLConfig Config)
         {
             // FIRST IF YOU ARE SILENCED OR DOOMED ATTEMPT REMOVAL NOW
             if (PL.HasStatus(StatusEffect.Silence) && Config.PLSilenceItemEnabled)
@@ -487,7 +483,7 @@ namespace CurePlease.Engine
                 if (Config.PartyBasedHateSpell)
                 {
                     // PARTY BASED HATE SPELL
-                    int enemyID = CheckEngagedStatus_Hate();
+                    int enemyID = CheckEngagedStatus_Hate(Config);
 
                     if (enemyID != 0 && enemyID != lastKnownEstablisherTarget)
                     {
@@ -503,7 +499,7 @@ namespace CurePlease.Engine
                 else
                 {
                     // ENEMY BASED TARGET
-                    int enemyID = CheckEngagedStatus_Hate();
+                    int enemyID = CheckEngagedStatus_Hate(Config);
 
                     if (enemyID != 0 && enemyID != lastKnownEstablisherTarget)
                     {
@@ -529,7 +525,7 @@ namespace CurePlease.Engine
             return null;
         }
 
-        private int CheckEngagedStatus_Hate()
+        private int CheckEngagedStatus_Hate(PLConfig Config)
         {
             if (Config.AssistSpecifiedTarget == true && !string.IsNullOrEmpty(Config.AutoTargetTarget))
             {

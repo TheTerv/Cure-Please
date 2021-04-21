@@ -19,7 +19,6 @@ namespace CurePlease.Engine
         // Auto Spells:
         // Haste, Haste II, Phalanx II, Regen, Shell, Protect, Sandstorm, Rainstorm, Windstorm, Firestorm, Hailstorm, Thunderstorm, Voidstorm, Aurorastorm, Refresh, Adloquium
              
-        private BuffConfig Config { get; set; }
         private EliteAPI PL { get; set; }
         private EliteAPI Monitored { get; set; }
 
@@ -29,15 +28,13 @@ namespace CurePlease.Engine
         // Would probably be cleaner.
         private Dictionary<string, IEnumerable<string>> AutoBuffs = new Dictionary<string, IEnumerable<string>>();
 
-        public BuffEngine(EliteAPI pl, EliteAPI mon, BuffConfig config)
+        public BuffEngine(EliteAPI pl, EliteAPI mon)
         {
-            Config = config;
-
             PL = pl;
             Monitored = mon;                  
         }
 
-        public EngineAction Run()
+        public EngineAction Run(BuffConfig Config)
         {
             lock (ActiveBuffs)
             {

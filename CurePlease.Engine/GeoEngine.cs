@@ -21,7 +21,8 @@ namespace CurePlease.Engine
     }
 
     public class GeoEngine
-    {   
+    {
+        private GeoConfig _config;
 
         // GEO ENGAGED CHECK
         public bool targetEngaged = false;
@@ -29,17 +30,14 @@ namespace CurePlease.Engine
 
         public List<GeoData> GeomancerInfo = new List<GeoData>();
 
-        private GeoConfig Config;
         private EliteAPI PL;
         private EliteAPI Monitored;
 
         private Timer FullCircleTimer = new Timer();
         private Timer EclipticTimer = new Timer();
 
-        public GeoEngine(EliteAPI pl, EliteAPI mon, GeoConfig config)
+        public GeoEngine(EliteAPI pl, EliteAPI mon)
         {
-            Config = config;
-
             PL = pl;
             Monitored = mon;
 
@@ -52,8 +50,10 @@ namespace CurePlease.Engine
             EclipticTimer.Elapsed += EclipticTimer_Tick;
         }
 
-        public EngineAction Run()
+        public EngineAction Run(GeoConfig Config)
         {
+            _config = Config;
+
             EngineAction actionResult = new EngineAction
             {
                 Target = Target.Me
@@ -542,7 +542,7 @@ namespace CurePlease.Engine
             if (Monitored == null || PL == null) { return false; }
 
             // Grab GEO spell name
-            string SpellCheckedResult = ReturnGeoSpell(Config.GeoSpell, 2);
+            string SpellCheckedResult = ReturnGeoSpell(_config.GeoSpell, 2);
 
             if (SpellCheckedResult == "SpellError_Cancel" || SpellCheckedResult == "SpellRecast" || SpellCheckedResult == "SpellUnknown")
             {
@@ -557,14 +557,14 @@ namespace CurePlease.Engine
                 }
                 else
                 {
-                    if (Config.SpecifiedEngageTarget && !string.IsNullOrEmpty(Config.LuopanSpellTarget))
+                    if (_config.SpecifiedEngageTarget && !string.IsNullOrEmpty(_config.LuopanSpellTarget))
                     {
                         for (int x = 0; x < 2048; x++)
                         {
                             XiEntity z = PL.Entity.GetEntity(x);
                             if (!string.IsNullOrEmpty(z.Name))
                             {
-                                if (z.Name.ToLower() == Config.LuopanSpellTarget.ToLower()) // A match was located so use this entity as a check.
+                                if (z.Name.ToLower() == _config.LuopanSpellTarget.ToLower()) // A match was located so use this entity as a check.
                                 {
                                     if (z.Status == 1)
                                     {
@@ -599,18 +599,18 @@ namespace CurePlease.Engine
             if (Monitored == null || PL == null) { return false; }
 
 
-            if (!Config.GeoWhenEngaged)
+            if (!_config.GeoWhenEngaged)
             {
                 return true;
             }
-            else if (Config.SpecifiedEngageTarget && !string.IsNullOrEmpty(Config.LuopanSpellTarget))
+            else if (_config.SpecifiedEngageTarget && !string.IsNullOrEmpty(_config.LuopanSpellTarget))
             {
                 for (int x = 0; x < 2048; x++)
                 {
                     XiEntity z = PL.Entity.GetEntity(x);
                     if (!string.IsNullOrEmpty(z.Name))
                     {
-                        if (z.Name.ToLower() == Config.LuopanSpellTarget.ToLower()) // A match was located so use this entity as a check.
+                        if (z.Name.ToLower() == _config.LuopanSpellTarget.ToLower()) // A match was located so use this entity as a check.
                         {
                             if (z.Status == 1)
                             {
@@ -642,13 +642,13 @@ namespace CurePlease.Engine
 
         private int GrabGEOTargetID()
         {
-            if (Config.SpecifiedEngageTarget && !string.IsNullOrEmpty(Config.LuopanSpellTarget))
+            if (_config.SpecifiedEngageTarget && !string.IsNullOrEmpty(_config.LuopanSpellTarget))
             {
                 for (int x = 0; x < 2048; x++)
                 {
                     XiEntity z = PL.Entity.GetEntity(x);
 
-                    if (z.Name != null && z.Name.ToLower() == Config.LuopanSpellTarget.ToLower())
+                    if (z.Name != null && z.Name.ToLower() == _config.LuopanSpellTarget.ToLower())
                     {
                         if (z.Status == 1)
                         {
@@ -683,9 +683,9 @@ namespace CurePlease.Engine
             string checkedName = string.Empty;
             string name1 = string.Empty;
 
-            if (Config.SpecifiedEngageTarget && !string.IsNullOrEmpty(Config.LuopanSpellTarget))
+            if (_config.SpecifiedEngageTarget && !string.IsNullOrEmpty(_config.LuopanSpellTarget))
             {
-                checkedName = Config.LuopanSpellTarget;
+                checkedName = _config.LuopanSpellTarget;
             }
             else
             {
@@ -717,7 +717,7 @@ namespace CurePlease.Engine
             {
                 ushort PetsIndex = PL.Player.PetIndex;
 
-                if (Config.FullCircleGeoTarget && !string.IsNullOrEmpty(Config.LuopanSpellTarget))
+                if (_config.FullCircleGeoTarget && !string.IsNullOrEmpty(_config.LuopanSpellTarget))
                 {
                     XiEntity PetsEntity = PL.Entity.GetEntity(PetsIndex);
 
@@ -727,7 +727,7 @@ namespace CurePlease.Engine
                     {
                         XiEntity entity = PL.Entity.GetEntity(x);
 
-                        if (entity.Name != null && entity.Name.ToLower().Equals(Config.LuopanSpellTarget.ToLower()))
+                        if (entity.Name != null && entity.Name.ToLower().Equals(_config.LuopanSpellTarget.ToLower()))
                         {
                             FullCircle_CharID = Convert.ToInt32(entity.TargetID);
                             break;
@@ -751,15 +751,15 @@ namespace CurePlease.Engine
                     }
 
                 }
-                else if (!Config.FullCircleGeoTarget && Monitored.Player.Status == 1)
+                else if (!_config.FullCircleGeoTarget && Monitored.Player.Status == 1)
                 {
 
 
-                    string SpellCheckedResult = ReturnGeoSpell(Config.GeoSpell, 2);
+                    string SpellCheckedResult = ReturnGeoSpell(_config.GeoSpell, 2);
 
 
 
-                    if (!Config.FullCircleDisableEnemy || (Config.FullCircleDisableEnemy && PL.Resources.GetSpell(SpellCheckedResult, 0).ValidTargets == 32))
+                    if (!_config.FullCircleDisableEnemy || (_config.FullCircleDisableEnemy && PL.Resources.GetSpell(SpellCheckedResult, 0).ValidTargets == 32))
                     {
                         XiEntity PetsEntity = Monitored.Entity.GetEntity(PetsIndex);
 

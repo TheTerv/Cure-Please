@@ -15,7 +15,6 @@ namespace CurePlease.Engine
 {
     public class DebuffEngine
     {                
-        private DebuffConfig Config { get; set; }
         private EliteAPI PL { get; set; }
         private EliteAPI Monitored { get; set; }
 
@@ -23,15 +22,13 @@ namespace CurePlease.Engine
 
         private IEnumerable<string> SpecifiedPartyMembers = new List<string>();
 
-        public DebuffEngine(EliteAPI pl, EliteAPI mon, DebuffConfig config)
+        public DebuffEngine(EliteAPI pl, EliteAPI mon)
         {
-            Config = config;
-
             PL = pl;
             Monitored = mon;           
         }
 
-        public EngineAction Run()
+        public EngineAction Run(DebuffConfig Config)
         {
             var wakeSleepSpell = Data.WakeSleepSpells[Config.WakeSleepSpell];
 

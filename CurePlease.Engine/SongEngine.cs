@@ -24,7 +24,6 @@ namespace CurePlease.Engine
 
     public class SongEngine
     {
-        private SongConfig Config { get; set; }
         private EliteAPI PL { get; set; }
         private EliteAPI Monitored { get; set; }
 
@@ -173,10 +172,8 @@ namespace CurePlease.Engine
 
         private Timer resetSongTimer = new Timer();
 
-        public SongEngine(EliteAPI pl, EliteAPI mon, SongConfig config)
+        public SongEngine(EliteAPI pl, EliteAPI mon)
         {
-            Config = config;
-
             PL = pl;
             Monitored = mon;
 
@@ -850,7 +847,7 @@ namespace CurePlease.Engine
             });
         }
 
-        public EngineAction Run()
+        public EngineAction Run(SongConfig Config)
         {
             EngineAction actionResult = new EngineAction() {
                 Target = Target.Me

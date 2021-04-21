@@ -4488,7 +4488,8 @@
                 MonitoredDebuffEnabled = config.monitoredDebuffEnabled,
                 PartyDebuffEnabled = config.enablePartyDebuffRemoval,
                 OnlySpecificMembers = config.SpecifiednaSpellsenable,
-                DebuffEnabled = DebuffEnabled
+                DebuffEnabled = DebuffEnabled,
+                PrioritizeOverLowerCures = config.PrioritiseOverLowerTier
             };
         }
 
@@ -4596,6 +4597,27 @@
                 DevotionMPThreshold = config.DevotionMP,
                 DevotionSpecifiedTarget = config.DevotionTargetType == 0,
                 DevotionTargetName = config.DevotionTargetName
+            };
+        }
+
+        public CureConfig GetCureConfig()
+        {
+            return new CureConfig()
+            {
+                EnabledCureTiers = new bool[] { config.cure1enabled, config.cure2enabled, config.cure3enabled, config.cure4enabled, config.cure5enabled, config.cure6enabled },
+                CureTierThresholds = new int[] { config.cure1amount, config.cure2amount, config.cure3amount, config.cure4amount, config.cure5amount, config.cure6amount },
+                EnabledCuragaTiers = new bool[] { config.curagaEnabled, config.curaga2enabled, config.curaga3enabled, config.curaga4enabled, config.curaga5enabled },
+                CuragaTierThresholds = new int[] { config.curagaAmount, config.curaga2Amount, config.curaga3Amount, config.curaga4Amount, config.curaga5Amount },
+                EnableOutOfPartyHealing = config.enableOutOfPartyHealing,
+                MonitoredCurePercentage = config.monitoredCurePercentage,
+                CuragaMinPlayers = (int)config.curagaRequiredMembers,
+                CuragaHealthPercent = curagaCurePercentage.Value,
+                CureHealthPercent = curePercentage.Value,
+                MonitoredPriorityEnabled = config.enableMonitoredPriority,
+                OverCureEnabled = config.Overcure,
+                UnderCureEnabled = config.Undercure,
+                CuragaSpecifiedEnabled = config.curagaTargetType != 0,
+                CuragaSpecifiedName = config.curagaTargetName
             };
         }
     }
