@@ -94,14 +94,16 @@ namespace CurePlease.Engine
             {             
                 // First remove the highest priority debuff.
                 var priorityMember = Monitored.GetHighestPriorityDebuff(ActiveDebuffs);
-                if (priorityMember != null && ActiveDebuffs.ContainsKey(priorityMember.Name))
-                {
-                    var name = priorityMember.Name;
-                    // Filter out non-debuffs, and convert to short IDs. Then calculate the priority order.
-                    var debuffPriorityList = ActiveDebuffs.Cast<StatusEffect>().OrderBy(status => Array.IndexOf(Data.DebuffPriorities.Keys.ToArray(), status));
+                var name = priorityMember.Name;
 
-                    if (debuffPriorityList.Any() && Config.PartyDebuffEnabled && (!Config.OnlySpecificMembers || SpecifiedPartyMembers.Contains(name)))
-                    {
+                if (Config.PartyDebuffEnabled && (!Config.OnlySpecificMembers || SpecifiedPartyMembers.Contains(name)))
+                {
+                    if (priorityMember != null && ActiveDebuffs.ContainsKey(name) && ActiveDebuffs[name].Any())
+                    {                  
+                        // Filter out non-debuffs, and convert to short IDs. Then calculate the priority order.
+                        var debuffPriorityList = ActiveDebuffs[name].Cast<StatusEffect>().OrderBy(status => Array.IndexOf(Data.DebuffPriorities.Keys.ToArray(), status));
+
+                    
                         // Get the highest priority debuff we have the right spell off cooldown for.
                         var targetDebuff = debuffPriorityList.FirstOrDefault(status => Config.DebuffEnabled[status] && PL.SpellAvailable(Data.DebuffPriorities[status]));
 

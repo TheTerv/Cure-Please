@@ -119,27 +119,26 @@ namespace CurePlease.Engine
                     return CureCalculator(monitoredPlayer);
                 }
             }
-            else
+
+            // Calculate who needs a cure, and is a valid target.
+            // Anyone who's: Enabled + Active + Alive + Under cure threshold
+            var validCures = partyByHP.Where(pm => enabledMembers[pm.MemberNumber] && (pm.CurrentHPP <= Config.CureHealthPercent) && PL.CanCastOn(pm));
+
+            // Now run a scan to check all targets in the High Priority Threshold
+            if (validCures != null && validCures.Any())
             {
-                // Calculate who needs a cure, and is a valid target.
-                // Anyone who's: Enabled + Active + Alive + Under cure threshold
-                var validCures = partyByHP.Where(pm => enabledMembers[pm.MemberNumber] && (pm.CurrentHPP <= Config.CureHealthPercent) && PL.CanCastOn(pm));
+                var highPriorityCures = validCures.Where(pm => highPriorityMembers[pm.MemberNumber]);
 
-                // Now run a scan to check all targets in the High Priority Threshold
-                if (validCures != null && validCures.Any())
+                if (highPriorityCures != null && highPriorityCures.Any())
                 {
-                    var highPriorityCures = validCures.Where(pm => highPriorityMembers[pm.MemberNumber]);
-
-                    if (highPriorityCures != null && highPriorityCures.Any())
-                    {
-                        return CureCalculator(highPriorityCures.First());
-                    }
-                    else
-                    {
-                        return CureCalculator(validCures.First());
-                    }
+                    return CureCalculator(highPriorityCures.First());
+                }
+                else
+                {
+                    return CureCalculator(validCures.First());
                 }
             }
+            
 
             return null;
         }
