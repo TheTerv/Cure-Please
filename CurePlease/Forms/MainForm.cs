@@ -2215,8 +2215,15 @@ namespace CurePlease
                 }              
             }
 
-            if (socket.Client != null)
-             socket.BeginReceive(new AsyncCallback(OnAddonDataReceived), socket);
+            try
+            {
+                if (socket.Client != null)
+                    socket.BeginReceive(new AsyncCallback(OnAddonDataReceived), socket);
+            }
+            catch (ObjectDisposedException) 
+            { 
+                // haven't found a way to check if a socket is disposed yet and this will happen if you attach twice. Just ignoring.
+            }
         }   
 
         private void AddOnStatus_Click(object sender, EventArgs e)

@@ -15,6 +15,18 @@ namespace CurePlease.Engine
 
         public MySettings _Config { get; set; }
 
+        private static int? _FollowerId { get; set; }
+
+        private bool _Running { get; set; }
+
+        private int _StuckCount { get; set; }
+
+        private bool _StuckWarning { get; set; }
+
+        private int _ToFarToFollowWarning { get; set; }
+
+        private Coordinates _LastPLCoordinates = new Coordinates(0, 0, 0);
+
         public FollowEngine() { }
 
         public void Setup(EliteAPI pl, EliteAPI monitored, MySettings config)
@@ -22,20 +34,19 @@ namespace CurePlease.Engine
             _PL = pl;
             _Monitored = monitored;
             _Config = config;
-        }
+        }        
 
         public static void ClearFollowing()
         {
-            FollowerId = null;
+            _FollowerId = null;
         }
-        
-        private static int? FollowerId { get; set; }
-
-        private bool _Running { get; set; }
 
         public void Stop()
         {
             _Running = false;
+
+            // This id will change when zoning, etc
+            _FollowerId = null;
 
             Reset();
         }
@@ -44,12 +55,6 @@ namespace CurePlease.Engine
         {
             _Running = true;
         }
-
-        private int _StuckCount { get; set; }
-        private bool _StuckWarning { get; set; }
-        private int _ToFarToFollowWarning { get; set; }
-
-        private Coordinates _LastPLCoordinates = new Coordinates(0, 0, 0);
 
         private void Reset()
         {
@@ -169,9 +174,9 @@ namespace CurePlease.Engine
         {
             if (!string.IsNullOrEmpty(playerName))
             {
-                if (FollowerId != null)
+                if (_FollowerId != null)
                 {
-                    return FollowerId.Value;
+                    return _FollowerId.Value;
                 }
 
                 for (int x = 0; x < 2048; x++)
@@ -180,8 +185,8 @@ namespace CurePlease.Engine
 
                     if (entity.Name != null && entity.Name.ToLower().Equals(playerName))
                     {
-                        FollowerId = Convert.ToInt32(entity.TargetID);
-                        return FollowerId.Value;
+                        _FollowerId = Convert.ToInt32(entity.TargetID);
+                        return _FollowerId.Value;
                     }
                 }
             }
@@ -195,10 +200,11 @@ namespace CurePlease.Engine
             float Target_Y;
             float Target_Z;
 
-            _PL.AutoFollow.IsAutoFollowing = true;
-
             while (Math.Truncate(followTarget.Distance) >= (int)_Config.autoFollowDistance)
             {
+                // It appears this can be toggled to false when getting stuck, so we need it within the loop
+                _PL.AutoFollow.IsAutoFollowing = true;
+
                 float Player_X = _PL.Player.X;
                 float Player_Y = _PL.Player.Y;
                 float Player_Z = _PL.Player.Z;
