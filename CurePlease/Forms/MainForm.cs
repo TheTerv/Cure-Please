@@ -29,7 +29,6 @@ namespace CurePlease
     using System.Threading;
     using System.Threading.Tasks;
     using System.Windows.Forms;
-    using System.Xml.Serialization;
     using static EliteMMO.API.EliteAPI;
 
     public partial class MainForm : Form
@@ -39,16 +38,14 @@ namespace CurePlease
 
         private string debug_MSG_show = string.Empty;
 
-        private int lastCommand = 0; 
+        private int lastCommand = 0;
 
         public bool CastingBackground_Check = false;
         public bool JobAbilityLock_Check = false;
 
         public string JobAbilityCMD = string.Empty;
 
-        private bool curePlease_autofollow = false;
-
-        public string WindowerMode = "Windower";      
+        public string WindowerMode = "Windower";
 
         public static EliteAPI PL;
 
@@ -250,51 +247,7 @@ namespace CurePlease
             }
 
             // LOAD AUTOMATIC SETTINGS
-            string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Settings");
-            if (File.Exists(path + "/loadSettings"))
-            {
-                if (PL.Player.MainJob != 0)
-                {
-                    if (PL.Player.SubJob != 0)
-                    {
-                        Job mainJob = (Job)PL.Player.MainJob;
-                        Job subJob = (Job)PL.Player.SubJob;
-
-                        string filename = path + "\\" + PL.Player.Name + "_" + mainJob.ToString() + "_" + subJob.ToString() + ".xml";
-                        string filename2 = path + "\\" + mainJob.ToString() + "_" + subJob.ToString() + ".xml";
-
-
-                        if (File.Exists(filename))
-                        {
-                            ConfigForm.MySettings config = new ConfigForm.MySettings();
-
-                            XmlSerializer mySerializer = new XmlSerializer(typeof(ConfigForm.MySettings));
-
-                            StreamReader reader = new StreamReader(filename);
-                            config = (ConfigForm.MySettings)mySerializer.Deserialize(reader);
-
-                            reader.Close();
-                            reader.Dispose();
-                            Config.updateForm(config);
-                            Config.button4_Click(sender, e);
-                        }
-                        else if (File.Exists(filename2))
-                        {
-                            ConfigForm.MySettings config = new ConfigForm.MySettings();
-
-                            XmlSerializer mySerializer = new XmlSerializer(typeof(ConfigForm.MySettings));
-
-                            StreamReader reader = new StreamReader(filename2);
-                            config = (ConfigForm.MySettings)mySerializer.Deserialize(reader);
-
-                            reader.Close();
-                            reader.Dispose();
-                            Config.updateForm(config);
-                            Config.button4_Click(sender, e);
-                        }
-                    }
-                }
-            }
+            ConfigForm.LoadConfiguration();
 
             if (LUA_Plugin_Loaded == 0 && !ConfigForm.config.pauseOnStartBox && Monitored != null)
             {

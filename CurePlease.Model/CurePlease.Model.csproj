@@ -50,6 +50,7 @@
     <Compile Include="Config\CureConfig.cs" />
     <Compile Include="Config\DebuffConfig.cs" />
     <Compile Include="Config\GeoConfig.cs" />
+    <Compile Include="Config\MySettings.cs" />
     <Compile Include="Config\PLConfig.cs" />
     <Compile Include="EngineAction.cs" />
     <Compile Include="Config\SongConfig.cs" />
@@ -59,6 +60,7 @@
     <Compile Include="Constants\Target.cs" />
     <Compile Include="Enums\Job.cs" />
     <Compile Include="Enums\Status.cs" />
+    <Compile Include="JobUtils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

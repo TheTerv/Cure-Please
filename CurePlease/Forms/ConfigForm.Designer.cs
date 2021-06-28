@@ -119,7 +119,6 @@ namespace CurePlease
             this.FFXIDefaultAutoFollow = new System.Windows.Forms.CheckBox();
             this.saveAsButton = new System.Windows.Forms.Button();
             this.loadButton = new System.Windows.Forms.Button();
-            this.loadJobSettings = new System.Windows.Forms.CheckBox();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.tabPage7 = new System.Windows.Forms.TabPage();
@@ -665,7 +664,7 @@ namespace CurePlease
             this.tabControl1.SuspendLayout();
             this.SuspendLayout();
             // 
-            // button4
+            // Save All Settings
             // 
             this.button4.Location = new System.Drawing.Point(661, 597);
             this.button4.Name = "button4";
@@ -674,7 +673,7 @@ namespace CurePlease
             this.button4.Text = "Save All Settings";
             this.toolTip1.SetToolTip(this.button4, "Click here or Close to Save Settings!");
             this.button4.UseVisualStyleBackColor = true;
-            this.button4.Click += new System.EventHandler(this.button4_Click);
+            this.button4.Click += new System.EventHandler(this.SaveAllSettings_Click);
             // 
             // recastSongs_monitored
             // 
@@ -1679,16 +1678,6 @@ namespace CurePlease
             this.loadButton.Text = "Load from...";
             this.loadButton.UseVisualStyleBackColor = true;
             this.loadButton.Click += new System.EventHandler(this.loadButton_Click);
-            // 
-            // loadJobSettings
-            // 
-            this.loadJobSettings.AutoSize = true;
-            this.loadJobSettings.Location = new System.Drawing.Point(286, 601);
-            this.loadJobSettings.Name = "loadJobSettings";
-            this.loadJobSettings.Size = new System.Drawing.Size(207, 17);
-            this.loadJobSettings.TabIndex = 5;
-            this.loadJobSettings.Text = "Automatically load Job_SubJob.xml file";
-            this.loadJobSettings.UseVisualStyleBackColor = true;
             // 
             // openFileDialog1
             // 
@@ -8068,7 +8057,6 @@ namespace CurePlease
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ActiveBorder;
             this.ClientSize = new System.Drawing.Size(821, 632);
-            this.Controls.Add(this.loadJobSettings);
             this.Controls.Add(this.loadButton);
             this.Controls.Add(this.saveAsButton);
             this.Controls.Add(this.button4);
@@ -8252,7 +8240,6 @@ namespace CurePlease
         private System.Windows.Forms.ToolTip toolTip1;
         private System.Windows.Forms.Button saveAsButton;
         private System.Windows.Forms.Button loadButton;
-        private System.Windows.Forms.CheckBox loadJobSettings;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.TabPage tabPage7;
