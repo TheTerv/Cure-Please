@@ -21,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -29,10 +30,11 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="EliteMMO.API">
-      <HintPath>..\CurePlease\bin\Debug\EliteMMO.API.dll</HintPath>
+      <HintPath>..\EliteMMO.API.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -47,6 +49,7 @@
     <Compile Include="CureEngine.cs" />
     <Compile Include="DebuffEngine.cs" />
     <Compile Include="BuffEngine.cs" />
+    <Compile Include="FollowEngine.cs" />
     <Compile Include="GeoEngine.cs" />
     <Compile Include="PLEngine.cs" />
     <Compile Include="SongEngine.cs" />

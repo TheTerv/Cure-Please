@@ -94,6 +94,12 @@ namespace CurePlease.Engine
             {             
                 // First remove the highest priority debuff.
                 var priorityMember = Monitored.GetHighestPriorityDebuff(ActiveDebuffs);
+
+                if (priorityMember == null)
+                {
+                    return null;
+                }
+
                 var name = priorityMember.Name;
 
                 if (Config.PartyDebuffEnabled && (!Config.OnlySpecificMembers || SpecifiedPartyMembers.Contains(name)))

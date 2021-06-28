@@ -1993,7 +1993,6 @@ namespace CurePlease
             // pauseButton
             // 
             this.pauseButton.BackColor = System.Drawing.SystemColors.Menu;
-            this.pauseButton.Enabled = false;
             this.pauseButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.pauseButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.25F, System.Drawing.FontStyle.Bold);
             this.pauseButton.ForeColor = System.Drawing.SystemColors.MenuText;
@@ -2261,7 +2260,7 @@ namespace CurePlease
             // 
             // Follow_BGW
             // 
-            this.Follow_BGW.DoWork += new System.ComponentModel.DoWorkEventHandler(this.Follow_BGW_DoWork);
+            this.Follow_BGW.DoWork += new System.ComponentModel.DoWorkEventHandler(_FollowEngine.Follow_BGW_DoWork);
             this.Follow_BGW.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.Follow_BGW_RunWorkerCompleted);
             // 
             // OptionsButton
