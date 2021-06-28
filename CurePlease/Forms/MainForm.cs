@@ -417,6 +417,11 @@ namespace CurePlease
                 lastCommand = Monitored.ThirdParty.ConsoleIsNewCommand();
             }
 
+            if (AddonClient != null)
+            {
+                AddonClient.Close();
+            }
+
             AddonClient = new UdpClient(Convert.ToInt32(ConfigForm.config.listeningPort));
             AddonClient.BeginReceive(new AsyncCallback(OnAddonDataReceived), AddonClient);
 
@@ -898,11 +903,11 @@ namespace CurePlease
             plX = PL.Player.X;
             plY = PL.Player.Y;
             plZ = PL.Player.Z;
-        }      
+        }
 
         private void CastSpell(string partyMemberName, string spellName, [Optional] string OptionalExtras)
         {
-            if(CastingBackground_Check)
+            if (CastingBackground_Check)
             {
                 return;
             }
@@ -915,6 +920,12 @@ namespace CurePlease
 
         private void CastSpell(string partyMemberName, ISpell magic, [Optional] string OptionalExtras)
         {
+            if (magic == null)
+            {
+                currentAction.Text = "Tried to cast a a spell but magic was NULL!!!";
+                return;
+            }
+
             castingSpell = magic.Name[0];
 
             PL.ThirdParty.SendString("/ma \"" + castingSpell + "\" " + partyMemberName);
@@ -959,7 +970,7 @@ namespace CurePlease
             }
 
             // Skip if we're busy or immobilized.
-            if (JobAbilityLock_Check || CastingBackground_Check  || PL.HasStatus(StatusEffect.Terror) || PL.HasStatus(StatusEffect.Petrification) || PL.HasStatus(StatusEffect.Stun))
+            if (JobAbilityLock_Check || CastingBackground_Check || PL.HasStatus(StatusEffect.Terror) || PL.HasStatus(StatusEffect.Petrification) || PL.HasStatus(StatusEffect.Stun))
             {
                 return;
             }
@@ -1013,7 +1024,7 @@ namespace CurePlease
                     currentAction.Text = string.Empty;
                 }
             }
-    
+
             IEnumerable<PartyMember> activeMembers = Monitored.GetActivePartyMembers();
 
             /////////////////////////// Charmed CHECK /////////////////////////////////////
@@ -1022,7 +1033,7 @@ namespace CurePlease
             {
                 // Get the list of anyone who's charmed and in range.
                 var charmedMembers = activeMembers.Where(pm => PL.CanCastOn(pm) && ActiveBuffs.ContainsKey(pm.Name) && (ActiveBuffs[pm.Name].Contains((short)StatusEffect.Charm1) || ActiveBuffs[pm.Name].Contains((short)StatusEffect.Charm2)));
-                        
+
                 if (charmedMembers.Any())
                 {
                     // We target the first charmed member who's not already asleep.
@@ -1032,7 +1043,7 @@ namespace CurePlease
                     {
                         // For now add some redundancy in case the first cast is resisted.
                         var sleepSong = PL.SpellAvailable(Spells.Foe_Lullaby_II) ? Spells.Foe_Lullaby_II : Spells.Foe_Lullaby;
-                                
+
                         CastSpell(sleepTarget.Name, sleepSong);
                         return;
                     }
@@ -1041,7 +1052,7 @@ namespace CurePlease
 
             /////////////////////////// DOOM CHECK /////////////////////////////////////
             var doomedMembers = activeMembers.Count(pm => PL.CanCastOn(pm) && ActiveBuffs.ContainsKey(pm.Name) && ActiveBuffs[pm.Name].Contains((short)StatusEffect.Doom));
-            if(doomedMembers > 0)
+            if (doomedMembers > 0)
             {
                 var doomCheckResult = DebuffEngine.Run(Config.GetDebuffConfig());
                 if (doomCheckResult != null && doomCheckResult.Spell != null)
@@ -1055,18 +1066,19 @@ namespace CurePlease
             // to skip a low priority cure.
             // CURE ENGINE
             var cureResult = CureEngine.Run(Config.GetCureConfig(), enabledBoxes, highPriorityBoxes);
-            // RUN DEBUFF REMOVAL - CONVERTED TO FUNCTION SO CAN BE RUN IN MULTIPLE AREAS
-            var debuffResult = DebuffEngine.Run(Config.GetDebuffConfig());
 
-            if(cureResult != null)
-            {             
+            if (cureResult != null)
+            {
+                // RUN DEBUFF REMOVAL - CONVERTED TO FUNCTION SO CAN BE RUN IN MULTIPLE AREAS
+                var debuffResult = DebuffEngine.Run(Config.GetDebuffConfig());
+
                 if (!string.IsNullOrEmpty(cureResult.Spell))
                 {
                     bool lowPriority = Array.IndexOf(Data.CureTiers, cureResult.Spell) < 2;
 
                     // Only cast the spell/JA if we don't need to skip debuffs based on
                     // config and low priority.
-                    if(!lowPriority || !ConfigForm.config.PrioritiseOverLowerTier || debuffResult == null)
+                    if (!lowPriority || !ConfigForm.config.PrioritiseOverLowerTier || debuffResult == null)
                     {
                         if (!string.IsNullOrEmpty(cureResult.JobAbility))
                         {
@@ -1075,51 +1087,50 @@ namespace CurePlease
 
                         CastSpell(cureResult.Target, cureResult.Spell);
                         return;
-                    }                   
+                    }
                 }
+
+                if (debuffResult != null)
+                {
+                    CastSpell(debuffResult.Target, debuffResult.Spell);
+                    return;
+                }
+
+                // TODO: Need to run cure AND debuff engine then decide which to execute.
+                // I consider cure/cure II to be low tier once cure III gets above 700 HP.
+                //if (Array.IndexOf(Data.CureTiers, cureSpell) < 2 && ConfigForm.config.PrioritiseOverLowerTier == true)
+                //{
+                //    var debuffResult = DebuffEngine.Run();
+                //    if (debuffResult != null && debuffResult.Spell != null)
+                //    {
+                //        CastSpell(debuffResult.Target, debuffResult.Spell);
+                //        return;
+                //    }
+                //}
             }
-
-            if (debuffResult != null)
-            {
-                CastSpell(debuffResult.Target, debuffResult.Spell);
-                return;
-            }
-
-            // TODO: Need to run cure AND debuff engine then decide which to execute.
-            // I consider cure/cure II to be low tier once cure III gets above 700 HP.
-            //if (Array.IndexOf(Data.CureTiers, cureSpell) < 2 && ConfigForm.config.PrioritiseOverLowerTier == true)
-            //{
-            //    var debuffResult = DebuffEngine.Run();
-            //    if (debuffResult != null && debuffResult.Spell != null)
-            //    {
-            //        CastSpell(debuffResult.Target, debuffResult.Spell);
-            //        return;
-            //    }
-            //}
-
 
             // PL AUTO BUFFS
             var plEngineResult = PLEngine.Run(Config.GetPLConfig());
-            if(plEngineResult != null)
+            if (plEngineResult != null)
             {
-                if(!string.IsNullOrEmpty(plEngineResult.Item))
+                if (!string.IsNullOrEmpty(plEngineResult.Item))
                 {
                     Item_Wait(plEngineResult.Item);
                 }
-                            
-                if(!string.IsNullOrEmpty(plEngineResult.JobAbility))
+
+                if (!string.IsNullOrEmpty(plEngineResult.JobAbility))
                 {
-                    if(plEngineResult.JobAbility == Ability.Devotion)
+                    if (plEngineResult.JobAbility == Ability.Devotion)
                     {
                         PL.ThirdParty.SendString($"/ja \"{Ability.Devotion}\" {plEngineResult.Target}");
                     }
                     else
                     {
                         JobAbility_Wait(plEngineResult.Message, plEngineResult.JobAbility);
-                    }                            
+                    }
                 }
 
-                if(!string.IsNullOrEmpty(plEngineResult.Spell))
+                if (!string.IsNullOrEmpty(plEngineResult.Spell))
                 {
                     var target = string.IsNullOrEmpty(plEngineResult.Target) ? "<me>" : plEngineResult.Target;
                     CastSpell(target, plEngineResult.Spell);
@@ -1209,7 +1220,7 @@ namespace CurePlease
             autoProtectToolStripMenuItem.Checked = BuffEngine.BuffEnabled(name, Spells.Protect);
             autoShellToolStripMenuItem.Checked = BuffEngine.BuffEnabled(name, Spells.Shell);
 
-            playerOptions.Show(party, new Point(0, 0));               
+            playerOptions.Show(party, new Point(0, 0));
         }
 
         private void ShowPlayerBuffsFor(GroupBox party, byte ptIndex)
@@ -1232,7 +1243,7 @@ namespace CurePlease
                 VoidstormToolStripMenuItem.Checked = BuffEngine.BuffEnabled(name, Spells.Voidstorm);
                 AurorastormToolStripMenuItem.Checked = BuffEngine.BuffEnabled(name, Spells.Aurorastorm);
             }
-            
+
             autoOptions.Show(party, new Point(0, 0));
         }
 
@@ -1650,7 +1661,7 @@ namespace CurePlease
         private void virunaToolStripMenuItem_Click(object sender, EventArgs e)
         {
             CastSpell(Monitored.Party.GetPartyMembers()[playerOptionsSelected].Name, Spells.Viruna);
-        }        
+        }
 
         private void SandstormToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -2441,7 +2452,8 @@ namespace CurePlease
                 }              
             }
 
-            socket.BeginReceive(new AsyncCallback(OnAddonDataReceived), socket);
+            if (socket.Client != null)
+             socket.BeginReceive(new AsyncCallback(OnAddonDataReceived), socket);
         }   
 
         private void AddOnStatus_Click(object sender, EventArgs e)

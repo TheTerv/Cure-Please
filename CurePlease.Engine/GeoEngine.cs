@@ -98,7 +98,7 @@ namespace CurePlease.Engine
 
                 actionResult.Spell = ReturnGeoSpell(Config.RadialArcanaSpell, 2);
             }
-            else if (Config.FullCircleEnabled)
+            else if (Config.FullCircleEnabled && PL.Player.Pet.HealthPercent != 0)
             {
                 // When out of range Distance is 59 Yalms regardless, Must be within 15 yalms to gain
                 // the effect
@@ -157,6 +157,7 @@ namespace CurePlease.Engine
                 }
             }
             // ENTRUSTED INDI SPELL CASTING, WILL BE CAST SO LONG AS ENTRUST IS ACTIVE
+            // StatusEffect 584 == Entrust
             else if (Config.GeoSpellsEnabled && PL.HasStatus((StatusEffect)584) && PL.Player.Status != 33)
             {
                 string SpellCheckedResult = ReturnGeoSpell(Config.EntrustSpell, 1);
@@ -179,7 +180,7 @@ namespace CurePlease.Engine
             {
                 string SpellCheckedResult = ReturnGeoSpell(Config.IndiSpell, 1);
 
-                if (SpellCheckedResult == "SpellError_Cancel")
+                if (SpellCheckedResult == "SpellError_Cancel" || SpellCheckedResult == "SpellNA")
                 {
                     Config.GeoSpellsEnabled = false;
                     actionResult.Error = "An error has occurred with INDI spell casting, please report what spell was active at the time.";
@@ -211,7 +212,7 @@ namespace CurePlease.Engine
                     Config.GeoSpellsEnabled = false;
                     actionResult.Error = "An error has occurred with GEO spell casting, please report what spell was active at the time.";
                 }
-                else if (SpellCheckedResult == "SpellRecast" || SpellCheckedResult == "SpellUnknown")
+                else if (SpellCheckedResult == "SpellRecast" || SpellCheckedResult == "SpellUnknown" || SpellCheckedResult == "SpellNA")
                 {
                     // Do nothing and continue on with the program
                 }

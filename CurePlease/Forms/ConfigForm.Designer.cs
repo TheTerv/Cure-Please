@@ -4214,9 +4214,9 @@ namespace CurePlease
             "Indi-Vex",
             "Indi-Frailty",
             "Indi-Wilt",
-            " Indi-Malaise",
+            "Indi-Malaise",
             "Indi-Gravity",
-            " Indi-Fade"});
+            "Indi-Fade"});
             this.entrustINDISpell.Location = new System.Drawing.Point(6, 19);
             this.entrustINDISpell.Name = "entrustINDISpell";
             this.entrustINDISpell.Size = new System.Drawing.Size(259, 424);
@@ -4329,9 +4329,9 @@ namespace CurePlease
             "Indi-Vex",
             "Indi-Frailty",
             "Indi-Wilt",
-            " Indi-Malaise",
+            "Indi-Malaise",
             "Indi-Gravity",
-            " Indi-Fade"});
+            "Indi-Fade"});
             this.INDISpell.Location = new System.Drawing.Point(6, 19);
             this.INDISpell.Name = "INDISpell";
             this.INDISpell.Size = new System.Drawing.Size(224, 454);
