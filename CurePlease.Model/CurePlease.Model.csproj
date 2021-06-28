@@ -52,6 +52,7 @@
     <Compile Include="Config\GeoConfig.cs" />
     <Compile Include="Config\MySettings.cs" />
     <Compile Include="Config\PLConfig.cs" />
+    <Compile Include="Coordinates.cs" />
     <Compile Include="EngineAction.cs" />
     <Compile Include="Config\SongConfig.cs" />
     <Compile Include="Constants\Ability.cs" />

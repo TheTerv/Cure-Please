@@ -1,4 +1,4 @@
-_addon.name = 'CurePlease_addon'
+_addon.name = 'CurePlease'
 _addon.author = 'Daniel_H'
 _addon.version = '1.2 Windower'
 _addon_description = 'Allows for PARTY DEBUFF Checking and Casting Data'

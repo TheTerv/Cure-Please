@@ -71,6 +71,8 @@ namespace CurePlease
 
         public CureEngine CureEngine;
 
+        public FollowEngine _FollowEngine { get; set; }
+
         public double last_percent = 1;
 
         public string castingSpell = string.Empty;
@@ -80,19 +82,11 @@ namespace CurePlease
 
         public int geo_step = 0;
 
-        public int followWarning = 0;
-
-        public bool stuckWarning = false;
-        public int stuckCount = 0;
-
         public int protectionCount = 0;
 
-        public float lastZ;
-        public float lastX;
-        public float lastY;
 
         // Stores the previously-colored button, if any
-        public Dictionary<string, IEnumerable<short>> ActiveBuffs = new Dictionary<string, IEnumerable<short>>();     
+        public Dictionary<string, IEnumerable<short>> ActiveBuffs = new Dictionary<string, IEnumerable<short>>();
 
         public List<string> TemporaryItem_Zones = new List<string> { "Escha Ru'Aun", "Escha Zi'Tah", "Reisenjima", "Abyssea - La Theine", "Abyssea - Konschtat", "Abyssea - Tahrongi",
                                                                         "Abyssea - Attohwa", "Abyssea - Misareaux", "Abyssea - Vunkerl", "Abyssea - Altepa", "Abyssea - Uleguerand", "Abyssea - Grauberg", "Walk of Echoes" };
@@ -111,7 +105,7 @@ namespace CurePlease
 
         public int LUA_Plugin_Loaded = 0;
 
-        public int firstTime_Pause = 0;          
+        public int firstTime_Pause = 0;
 
         private void PaintBorderlessGroupBox(object sender, PaintEventArgs e)
         {
@@ -162,8 +156,7 @@ namespace CurePlease
 
         public MainForm()
         {
-
-
+            _FollowEngine = new FollowEngine();
             StartPosition = FormStartPosition.CenterScreen;
 
             InitializeComponent();
@@ -173,7 +166,7 @@ namespace CurePlease
             if (File.Exists("debug"))
             {
                 debug.Visible = true;
-            }              
+            }
 
             IEnumerable<Process> pol = Process.GetProcessesByName("pol").Union(Process.GetProcessesByName("xiloader")).Union(Process.GetProcessesByName("edenxi"));
 
@@ -256,7 +249,7 @@ namespace CurePlease
 
                 if (WindowerMode == "Windower")
                 {
-                    PL.ThirdParty.SendString("//lua load CurePlease_addon");
+                    PL.ThirdParty.SendString("///lua load CurePlease");
                     Thread.Sleep(1500);
                     PL.ThirdParty.SendString("//cpaddon settings " + ConfigForm.config.ipAddress + " " + ConfigForm.config.listeningPort);
                     Thread.Sleep(100);
@@ -270,7 +263,7 @@ namespace CurePlease
                 }
                 else if (WindowerMode == "Ashita")
                 {
-                    PL.ThirdParty.SendString("/addon load CurePlease_addon");
+                    PL.ThirdParty.SendString("/addon load CurePlease");
                     Thread.Sleep(1500);
                     PL.ThirdParty.SendString("/cpaddon settings " + ConfigForm.config.ipAddress + " " + ConfigForm.config.listeningPort);
                     Thread.Sleep(100);
@@ -286,11 +279,13 @@ namespace CurePlease
 
                 AddOnStatus_Click(sender, e);
 
-
                 currentAction.Text = "LUA Addon loaded. ( " + ConfigForm.config.ipAddress + " - " + ConfigForm.config.listeningPort + " )";
 
                 LUA_Plugin_Loaded = 1;
             }
+
+            _FollowEngine.Setup(PL, Monitored, ConfigForm.config);
+            _FollowEngine.Start();
         }
 
         private void setinstance2_Click(object sender, EventArgs e)
@@ -318,6 +313,7 @@ namespace CurePlease
                 pauseButton.Text = "Loaded, Paused!";
                 pauseButton.ForeColor = Color.Red;
                 actionTimer.Enabled = false;
+                _FollowEngine.Stop();
             }
             else
             {
@@ -333,7 +329,7 @@ namespace CurePlease
                 Thread.Sleep(500);
                 if (WindowerMode == "Windower")
                 {
-                    PL.ThirdParty.SendString("//lua load CurePlease_addon");
+                    PL.ThirdParty.SendString("//lua load CurePlease");
                     Thread.Sleep(1500);
                     PL.ThirdParty.SendString("//cpaddon settings " + ConfigForm.config.ipAddress + " " + ConfigForm.config.listeningPort);
                     Thread.Sleep(100);
@@ -348,7 +344,7 @@ namespace CurePlease
                 }
                 else if (WindowerMode == "Ashita")
                 {
-                    PL.ThirdParty.SendString("/addon load CurePlease_addon");
+                    PL.ThirdParty.SendString("/addon load CurePlease");
                     Thread.Sleep(1500);
                     PL.ThirdParty.SendString("/cpaddon settings " + ConfigForm.config.ipAddress + " " + ConfigForm.config.listeningPort);
                     Thread.Sleep(100);
@@ -385,6 +381,7 @@ namespace CurePlease
             DebuffEngine = new DebuffEngine(PL, Monitored);
             PLEngine = new PLEngine(PL, Monitored);
             CureEngine = new CureEngine(PL, Monitored);
+            _FollowEngine.Setup(PL, Monitored, ConfigForm.config);
         }
 
         private bool CheckForDLLFiles()
@@ -394,7 +391,7 @@ namespace CurePlease
                 return false;
             }
             return true;
-        }       
+        }
 
         private bool partyMemberUpdateMethod(byte partyMemberId)
         {
@@ -423,10 +420,13 @@ namespace CurePlease
                 {
                     if (pauseActions != true)
                     {
-                        pauseButton.Text = "Zoned, paused.";
-                        pauseButton.ForeColor = Color.Red;
+                        PauseActions(true);
                         pauseActions = true;
                         actionTimer.Enabled = false;
+                        pauseButton.Text = "Zoned, paused.";
+                        pauseButton.ForeColor = Color.Red;
+                        _FollowEngine.Stop();
+
                     }
                 }
                 else
@@ -436,9 +436,11 @@ namespace CurePlease
                         pauseButton.Text = "Zoned, waiting.";
                         pauseButton.ForeColor = Color.Red;
                         await Task.Delay(100);
+                        _FollowEngine.Stop();
                         Thread.Sleep(17000);
                         pauseButton.Text = "Pause";
                         pauseButton.ForeColor = Color.Black;
+                        _FollowEngine.Start();
                     }
                 }
                 ActiveBuffs.Clear();
@@ -948,8 +950,8 @@ namespace CurePlease
                 player6priority.Checked, player7priority.Checked, player8priority.Checked, player9priority.Checked, player10priority.Checked, player11priority.Checked,
                 player12priority.Checked, player13priority.Checked, player14priority.Checked, player15priority.Checked, player16priority.Checked, player17priority.Checked
             };
-            
-         
+
+
             // IF ENABLED PAUSE ON KO
             if (ConfigForm.config.pauseOnKO && (PL.Player.Status == 2 || PL.Player.Status == 3))
             {
@@ -958,10 +960,7 @@ namespace CurePlease
                 actionTimer.Enabled = false;
                 ActiveBuffs.Clear();
                 pauseActions = true;
-                if (ConfigForm.config.FFXIDefaultAutoFollow == false)
-                {
-                    PL.AutoFollow.IsAutoFollowing = false;
-                }
+                _FollowEngine.Stop();
                 return;
             }
 
@@ -1695,11 +1694,8 @@ namespace CurePlease
                 pauseButton.ForeColor = Color.Red;
                 actionTimer.Enabled = false;
                 ActiveBuffs.Clear();
+                _FollowEngine.Stop();
                 pauseActions = true;
-                if (ConfigForm.config.FFXIDefaultAutoFollow == false)
-                {
-                    PL.AutoFollow.IsAutoFollowing = false;
-                }
             }
             else
             {
@@ -1707,6 +1703,7 @@ namespace CurePlease
                 pauseButton.ForeColor = Color.Black;
                 actionTimer.Enabled = true;
                 pauseActions = false;
+                _FollowEngine.Start();
 
                 if (ConfigForm.config.MinimiseonStart == true && WindowState != FormWindowState.Minimized)
                 {
@@ -1717,7 +1714,7 @@ namespace CurePlease
                 {
                     if (WindowerMode == "Windower")
                     {
-                        PL.ThirdParty.SendString("//lua load CurePlease_addon");
+                        PL.ThirdParty.SendString("//lua load CurePlease");
                         Thread.Sleep(1500);
                         PL.ThirdParty.SendString("//cpaddon settings " + ConfigForm.config.ipAddress + " " + ConfigForm.config.listeningPort);
                         Thread.Sleep(100);
@@ -1730,7 +1727,7 @@ namespace CurePlease
                     }
                     else if (WindowerMode == "Ashita")
                     {
-                        PL.ThirdParty.SendString("/addon load CurePlease_addon");
+                        PL.ThirdParty.SendString("/addon load CurePlease");
                         Thread.Sleep(1500);
                         PL.ThirdParty.SendString("/cpaddon settings " + ConfigForm.config.ipAddress + " " + ConfigForm.config.listeningPort);
                         Thread.Sleep(100);
@@ -1837,13 +1834,14 @@ namespace CurePlease
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
+            notifyIcon1.Icon = null;
             notifyIcon1.Dispose();
 
             if (PL != null)
             {
                 if (WindowerMode == "Ashita")
                 {
-                    PL.ThirdParty.SendString("/addon unload CurePlease_addon");
+                    PL.ThirdParty.SendString("/addon unload CurePlease");
                     if (ConfigForm.config.enableHotKeys)
                     {
                         PL.ThirdParty.SendString("/unbind ^!F1");
@@ -1853,7 +1851,7 @@ namespace CurePlease
                 }
                 else if (WindowerMode == "Windower")
                 {
-                    PL.ThirdParty.SendString("//lua unload CurePlease_addon");
+                    PL.ThirdParty.SendString("//lua unload CurePlease");
 
                     if (ConfigForm.config.enableHotKeys)
                     {
@@ -1864,31 +1862,13 @@ namespace CurePlease
 
                 }
 
-                // Make sure we close the UDP connection for our addon client.
-                AddonClient.Close();
-            }
-
-        }
-
-        private int followID()
-        {
-            if ((setinstance2.Enabled == true) && !string.IsNullOrEmpty(ConfigForm.config.autoFollowName) && !pauseActions)
-            {
-                for (int x = 0; x < 2048; x++)
+                if (AddonClient != null)
                 {
-                    XiEntity entity = PL.Entity.GetEntity(x);
-
-                    if (entity.Name != null && entity.Name.ToLower().Equals(ConfigForm.config.autoFollowName.ToLower()))
-                    {
-                        return Convert.ToInt32(entity.TargetID);
-                    }
+                    // Make sure we close the UDP connection for our addon client.
+                    AddonClient.Close();
                 }
-                return -1;
             }
-            else
-            {
-                return -1;
-            }
+
         }
 
         private void showErrorMessage(string ErrorMessage)
@@ -1898,7 +1878,21 @@ namespace CurePlease
             pauseButton.ForeColor = Color.Red;
             actionTimer.Enabled = false;
             MessageBox.Show(ErrorMessage);
-        }                      
+        }
+
+        private void PauseActions(Boolean pause)
+        {
+            if (pause)
+            {
+                pauseActions = pause;
+                pauseActions = true;
+                actionTimer.Enabled = false;
+                pauseButton.Text = "Zoned, paused.";
+                pauseButton.ForeColor = Color.Red;
+                _FollowEngine.Stop();
+            }
+
+        }
 
         private void updateInstances_Tick(object sender, EventArgs e)
         {
@@ -1998,10 +1992,7 @@ namespace CurePlease
                                 actionTimer.Enabled = false;
                                 ActiveBuffs.Clear();
                                 pauseActions = true;
-                                if (ConfigForm.config.FFXIDefaultAutoFollow == false)
-                                {
-                                    PL.AutoFollow.IsAutoFollowing = false;
-                                }
+                                _FollowEngine.Stop();
                             }
                             else if ((Monitored.ThirdParty.ConsoleGetArg(1) == "unpause" || Monitored.ThirdParty.ConsoleGetArg(1) == "start") && PL.Player.Name.ToLower() == Monitored.ThirdParty.ConsoleGetArg(2).ToLower())
                             {
@@ -2009,6 +2000,7 @@ namespace CurePlease
                                 pauseButton.ForeColor = Color.Black;
                                 actionTimer.Enabled = true;
                                 pauseActions = false;
+                                _FollowEngine.Start();
                             }
                             else if ((Monitored.ThirdParty.ConsoleGetArg(1) == "toggle") && PL.Player.Name.ToLower() == Monitored.ThirdParty.ConsoleGetArg(2).ToLower())
                             {
@@ -2028,10 +2020,7 @@ namespace CurePlease
                                 actionTimer.Enabled = false;
                                 ActiveBuffs.Clear();
                                 pauseActions = true;
-                                if (ConfigForm.config.FFXIDefaultAutoFollow == false)
-                                {
-                                    PL.AutoFollow.IsAutoFollowing = false;
-                                }
+                                _FollowEngine.Stop();
                             }
                             else if (Monitored.ThirdParty.ConsoleGetArg(1) == "unpause" || Monitored.ThirdParty.ConsoleGetArg(1) == "start")
                             {
@@ -2039,6 +2028,7 @@ namespace CurePlease
                                 pauseButton.ForeColor = Color.Black;
                                 actionTimer.Enabled = true;
                                 pauseActions = false;
+                                _FollowEngine.Start();
                             }
                             else if (Monitored.ThirdParty.ConsoleGetArg(1) == "toggle")
                             {
@@ -2055,184 +2045,6 @@ namespace CurePlease
                     }
                 }
             }
-        }
-
-        private void Follow_BGW_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
-        {
-
-            // MAKE SURE BOTH ELITEAPI INSTANCES ARE ACTIVE, THE BOT ISN'T PAUSED, AND THERE IS AN AUTOFOLLOWTARGET NAMED
-            if (PL != null && Monitored != null && !string.IsNullOrEmpty(ConfigForm.config.autoFollowName) && !pauseActions)
-            {
-
-                if (ConfigForm.config.FFXIDefaultAutoFollow != true)
-                {
-                    // CANCEL ALL PREVIOUS FOLLOW ACTIONS
-                    PL.AutoFollow.IsAutoFollowing = false;
-                    curePlease_autofollow = false;
-                    stuckWarning = false;
-                    stuckCount = 0;
-                }
-
-                // RUN THE FUNCTION TO GRAB THE ID OF THE FOLLOW TARGET THIS ALSO MAKES SURE THEY ARE IN RANGE TO FOLLOW
-                int followersTargetID = followID();
-
-                // If the FOLLOWER'S ID is NOT -1 THEN THEY WERE LOCATED SO CONTINUE THE CHECKS
-                if (followersTargetID != -1)
-                {
-                    // GRAB THE FOLLOW TARGETS ENTITY TABLE TO CHECK DISTANCE ETC
-                    XiEntity followTarget = PL.Entity.GetEntity(followersTargetID);
-
-                    if (Math.Truncate(followTarget.Distance) >= (int)ConfigForm.config.autoFollowDistance && curePlease_autofollow == false)
-                    {
-                        // THE DISTANCE IS GREATER THAN REQUIRED SO IF AUTOFOLLOW IS NOT ACTIVE THEN DEPENDING ON THE TYPE, FOLLOW
-
-                        // SQUARE ENIX FINAL FANTASY XI DEFAULT AUTO FOLLOW
-                        if (ConfigForm.config.FFXIDefaultAutoFollow == true && PL.AutoFollow.IsAutoFollowing != true)
-                        {
-                            // IF THE CURRENT TARGET IS NOT THE FOLLOWERS TARGET ID THEN CHANGE THAT NOW
-                            if (PL.Target.GetTargetInfo().TargetIndex != followersTargetID)
-                            {
-                                // FIRST REMOVE THE CURRENT TARGET
-                                PL.Target.SetTarget(0);
-                                // NOW SET THE NEXT TARGET AFTER A WAIT
-                                Thread.Sleep(TimeSpan.FromSeconds(0.1));
-                                PL.Target.SetTarget(followersTargetID);
-                            }
-                            // IF THE TARGET IS CORRECT BUT YOU'RE NOT LOCKED ON THEN DO SO NOW
-                            else if (PL.Target.GetTargetInfo().TargetIndex == followersTargetID && !PL.Target.GetTargetInfo().LockedOn)
-                            {
-                                PL.ThirdParty.SendString("/lockon <t>");
-                            }
-                            // EVERYTHING SHOULD BE FINE SO FOLLOW THEM
-                            else
-                            {
-                                Thread.Sleep(TimeSpan.FromSeconds(0.1));
-                                PL.ThirdParty.SendString("/follow");
-                            }
-                        }
-                        // ELITEAPI'S IMPROVED AUTO FOLLOW
-                        else if (ConfigForm.config.FFXIDefaultAutoFollow != true && PL.AutoFollow.IsAutoFollowing != true)
-                        {
-                            // IF YOU ARE TOO FAR TO FOLLOW THEN STOP AND IF ENABLED WARN THE MONITORED PLAYER
-                            if (ConfigForm.config.autoFollow_Warning == true && Math.Truncate(followTarget.Distance) >= 40 && Monitored.Player.Name != PL.Player.Name && followWarning == 0)
-                            {
-                                string createdTell = "/tell " + Monitored.Player.Name + " " + "You're too far to follow.";
-                                PL.ThirdParty.SendString(createdTell);
-                                followWarning = 1;
-                                Thread.Sleep(TimeSpan.FromSeconds(0.3));
-                            }
-                            else if (Math.Truncate(followTarget.Distance) <= 40)
-                            {
-                                // ONLY TARGET AND BEGIN FOLLOW IF TARGET IS AT THE DEFINED DISTANCE
-                                if (Math.Truncate(followTarget.Distance) >= (int)ConfigForm.config.autoFollowDistance && Math.Truncate(followTarget.Distance) <= 48)
-                                {
-                                    followWarning = 0;
-
-                                    // Cancel current target this is to make sure the character is not locked
-                                    // on and therefore unable to move freely. Wait 5ms just to allow it to work
-
-                                    PL.Target.SetTarget(0);
-                                    Thread.Sleep(TimeSpan.FromSeconds(0.1));
-
-                                    float Target_X;
-                                    float Target_Y;
-                                    float Target_Z;
-
-                                    XiEntity FollowerTargetEntity = PL.Entity.GetEntity(followersTargetID);
-
-                                    if (!string.IsNullOrEmpty(FollowerTargetEntity.Name))
-                                    {
-                                        while (Math.Truncate(followTarget.Distance) >= (int)ConfigForm.config.autoFollowDistance)
-                                        {
-
-                                            float Player_X = PL.Player.X;
-                                            float Player_Y = PL.Player.Y;
-                                            float Player_Z = PL.Player.Z;
-
-
-                                            if (FollowerTargetEntity.Name == Monitored.Player.Name)
-                                            {
-                                                Target_X = Monitored.Player.X;
-                                                Target_Y = Monitored.Player.Y;
-                                                Target_Z = Monitored.Player.Z;
-                                                float dX = Target_X - Player_X;
-                                                float dY = Target_Y - Player_Y;
-                                                float dZ = Target_Z - Player_Z;
-
-                                                PL.AutoFollow.SetAutoFollowCoords(dX, dY, dZ);
-
-                                                PL.AutoFollow.IsAutoFollowing = true;
-                                                curePlease_autofollow = true;
-
-
-                                                lastX = PL.Player.X;
-                                                lastY = PL.Player.Y;
-                                                lastZ = PL.Player.Z;
-
-                                                Thread.Sleep(TimeSpan.FromSeconds(0.1));
-                                            }
-                                            else
-                                            {
-                                                Target_X = FollowerTargetEntity.X;
-                                                Target_Y = FollowerTargetEntity.Y;
-                                                Target_Z = FollowerTargetEntity.Z;
-
-                                                float dX = Target_X - Player_X;
-                                                float dY = Target_Y - Player_Y;
-                                                float dZ = Target_Z - Player_Z;
-
-
-                                                PL.AutoFollow.SetAutoFollowCoords(dX, dY, dZ);
-
-                                                PL.AutoFollow.IsAutoFollowing = true;
-                                                curePlease_autofollow = true;
-
-
-                                                lastX = PL.Player.X;
-                                                lastY = PL.Player.Y;
-                                                lastZ = PL.Player.Z;
-
-                                                Thread.Sleep(TimeSpan.FromSeconds(0.1));
-                                            }
-
-                                            // STUCK CHECKER
-                                            float genX = lastX - PL.Player.X;
-                                            float genY = lastY - PL.Player.Y;
-                                            float genZ = lastZ - PL.Player.Z;
-
-                                            double distance = Math.Sqrt(genX * genX + genY * genY + genZ * genZ);
-
-                                            if (distance < .1)
-                                            {
-                                                stuckCount = stuckCount + 1;
-                                                if (ConfigForm.config.autoFollow_Warning == true && stuckWarning != true && FollowerTargetEntity.Name == Monitored.Player.Name && stuckCount == 10)
-                                                {
-                                                    string createdTell = "/tell " + Monitored.Player.Name + " " + "I appear to be stuck.";
-                                                    PL.ThirdParty.SendString(createdTell);
-                                                    stuckWarning = true;
-                                                }
-                                            }
-                                        }
-
-                                        PL.AutoFollow.IsAutoFollowing = false;
-                                        curePlease_autofollow = false;
-                                        stuckWarning = false;
-                                        stuckCount = 0;
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                // YOU ARE NOT AT NOR FURTHER THAN THE DISTANCE REQUIRED SO CANCEL ELITEAPI AUTOFOLLOW
-                                curePlease_autofollow = false;
-                            }
-                        }
-                    }
-                }
-            }
-
-            Thread.Sleep(TimeSpan.FromSeconds(1));
-
         }
 
         private void Follow_BGW_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
@@ -2353,6 +2165,7 @@ namespace CurePlease
                                 pauseButton.ForeColor = Color.Black;
                                 actionTimer.Enabled = true;
                                 pauseActions = false;
+                                _FollowEngine.Start();
                             }));
                         }
                         if (commands[2] == "stop" || commands[2] == "pause")
@@ -2365,10 +2178,7 @@ namespace CurePlease
                                 actionTimer.Enabled = false;
                                 ActiveBuffs.Clear();
                                 pauseActions = true;
-                                if (ConfigForm.config.FFXIDefaultAutoFollow == false)
-                                {
-                                    PL.AutoFollow.IsAutoFollowing = false;
-                                }
+                                _FollowEngine.Stop();
 
                             }));
                         }
