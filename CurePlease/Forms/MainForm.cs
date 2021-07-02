@@ -297,6 +297,7 @@ namespace CurePlease
                     "Error");
                 return;
             }
+
             processids.SelectedIndex = POLID2.SelectedIndex;
             Monitored = new EliteAPI((int)processids.SelectedItem);
             monitoredLabel.Text = "Monitoring: " + Monitored.Player.Name;
@@ -308,12 +309,10 @@ namespace CurePlease
             hpUpdates.Enabled = true;
 
             if (ConfigForm.config.pauseOnStartBox)
-            {
-                pauseActions = true;
+            {                
                 pauseButton.Text = "Loaded, Paused!";
                 pauseButton.ForeColor = Color.Red;
-                actionTimer.Enabled = false;
-                _FollowEngine.Stop();
+                StopBot();
             }
             else
             {
@@ -390,6 +389,7 @@ namespace CurePlease
             {
                 return false;
             }
+
             return true;
         }
 
@@ -404,6 +404,7 @@ namespace CurePlease
 
                 return false;
             }
+
             return false;
         }
 
@@ -420,13 +421,9 @@ namespace CurePlease
                 {
                     if (pauseActions != true)
                     {
-                        PauseActions(true);
-                        pauseActions = true;
-                        actionTimer.Enabled = false;
                         pauseButton.Text = "Zoned, paused.";
                         pauseButton.ForeColor = Color.Red;
-                        _FollowEngine.Stop();
-
+                        StopBot();
                     }
                 }
                 else
@@ -437,12 +434,15 @@ namespace CurePlease
                         pauseButton.ForeColor = Color.Red;
                         await Task.Delay(100);
                         _FollowEngine.Stop();
+
                         Thread.Sleep(17000);
+
                         pauseButton.Text = "Pause";
                         pauseButton.ForeColor = Color.Black;
                         _FollowEngine.Start();
                     }
                 }
+
                 ActiveBuffs.Clear();
             }
 
@@ -450,6 +450,7 @@ namespace CurePlease
             {
                 return;
             }
+
             if (partyMemberUpdateMethod(0))
             {
                 player0.Text = Monitored.Party.GetPartyMember(0).Name;
@@ -843,23 +844,6 @@ namespace CurePlease
             }
         }
 
-        private void plPosition_Tick(object sender, EventArgs e)
-        {
-            if (PL == null || Monitored == null)
-            {
-                return;
-            }
-
-            if (PL.Player.LoginStatus != (int)LoginStatus.LoggedIn || Monitored.Player.LoginStatus != (int)LoginStatus.LoggedIn)
-            {
-                return;
-            }
-
-            plX = PL.Player.X;
-            plY = PL.Player.Y;
-            plZ = PL.Player.Z;
-        }
-
         private void CastSpell(string partyMemberName, string spellName, [Optional] string OptionalExtras)
         {
             if (CastingBackground_Check)
@@ -908,6 +892,7 @@ namespace CurePlease
         }
 
         #region Primary Logic
+
         // This is the timer that does our decision loop.
         // All the main action related stuff happens in here.
         private async void actionTimer_TickAsync(object sender, EventArgs e)
@@ -930,37 +915,22 @@ namespace CurePlease
                 return;
             }
 
-            // Skip if we're moving, or not standing/fighting.
-            if ((PL.Player.X != plX) || (PL.Player.Y != plY) || (PL.Player.Z != plZ) || ((PL.Player.Status != (uint)Status.Standing) && (PL.Player.Status != (uint)Status.Fighting)))
+            if (PL.Player.Status != (uint)Status.Standing && PL.Player.Status != (uint)Status.Fighting)
             {
                 return;
             }
 
-            // Set array values for GUI "Enabled" checkboxes
-            bool[] enabledBoxes = new bool[] {
-                player0enabled.Checked, player1enabled.Checked, player2enabled.Checked, player3enabled.Checked, player4enabled.Checked, player5enabled.Checked,
-                player6enabled.Checked, player7enabled.Checked, player8enabled.Checked, player9enabled.Checked, player10enabled.Checked, player11enabled.Checked,
-                player12enabled.Checked, player13enabled.Checked, player14enabled.Checked, player15enabled.Checked, player16enabled.Checked, player17enabled.Checked
-            };
-
-
-            // Set array values for GUI "High Priority" checkboxes
-            bool[] highPriorityBoxes = new bool[] {
-                player0priority.Checked, player1priority.Checked, player2priority.Checked, player3priority.Checked, player4priority.Checked, player5priority.Checked,
-                player6priority.Checked, player7priority.Checked, player8priority.Checked, player9priority.Checked, player10priority.Checked, player11priority.Checked,
-                player12priority.Checked, player13priority.Checked, player14priority.Checked, player15priority.Checked, player16priority.Checked, player17priority.Checked
-            };
-
+            if (_FollowEngine != null && _FollowEngine.IsMoving())
+            {
+                return;
+            }
 
             // IF ENABLED PAUSE ON KO
             if (ConfigForm.config.pauseOnKO && (PL.Player.Status == 2 || PL.Player.Status == 3))
             {
                 pauseButton.Text = "Paused!";
                 pauseButton.ForeColor = Color.Red;
-                actionTimer.Enabled = false;
-                ActiveBuffs.Clear();
-                pauseActions = true;
-                _FollowEngine.Stop();
+                StopBot();
                 return;
             }
 
@@ -1013,6 +983,21 @@ namespace CurePlease
                     return;
                 }
             }
+
+            // Set array values for GUI "Enabled" checkboxes
+            bool[] enabledBoxes = new bool[] {
+                player0enabled.Checked, player1enabled.Checked, player2enabled.Checked, player3enabled.Checked, player4enabled.Checked, player5enabled.Checked,
+                player6enabled.Checked, player7enabled.Checked, player8enabled.Checked, player9enabled.Checked, player10enabled.Checked, player11enabled.Checked,
+                player12enabled.Checked, player13enabled.Checked, player14enabled.Checked, player15enabled.Checked, player16enabled.Checked, player17enabled.Checked
+            };
+
+
+            // Set array values for GUI "High Priority" checkboxes
+            bool[] highPriorityBoxes = new bool[] {
+                player0priority.Checked, player1priority.Checked, player2priority.Checked, player3priority.Checked, player4priority.Checked, player5priority.Checked,
+                player6priority.Checked, player7priority.Checked, player8priority.Checked, player9priority.Checked, player10priority.Checked, player11priority.Checked,
+                player12priority.Checked, player13priority.Checked, player14priority.Checked, player15priority.Checked, player16priority.Checked, player17priority.Checked
+            };
 
             // For now we run these before deciding what to do, in case we need
             // to skip a low priority cure.
@@ -1151,6 +1136,7 @@ namespace CurePlease
                 }
             }
         }
+
         #endregion
 
         private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1692,10 +1678,7 @@ namespace CurePlease
             {
                 pauseButton.Text = "Paused!";
                 pauseButton.ForeColor = Color.Red;
-                actionTimer.Enabled = false;
-                ActiveBuffs.Clear();
-                _FollowEngine.Stop();
-                pauseActions = true;
+                StopBot();
             }
             else
             {
@@ -1880,20 +1863,6 @@ namespace CurePlease
             MessageBox.Show(ErrorMessage);
         }
 
-        private void PauseActions(Boolean pause)
-        {
-            if (pause)
-            {
-                pauseActions = pause;
-                pauseActions = true;
-                actionTimer.Enabled = false;
-                pauseButton.Text = "Zoned, paused.";
-                pauseButton.ForeColor = Color.Red;
-                _FollowEngine.Stop();
-            }
-
-        }
-
         private void updateInstances_Tick(object sender, EventArgs e)
         {
             if ((PL != null && PL.Player.LoginStatus == (int)LoginStatus.Loading) || (Monitored != null && Monitored.Player.LoginStatus == (int)LoginStatus.Loading))
@@ -1964,11 +1933,18 @@ namespace CurePlease
             WindowState = FormWindowState.Normal;
         }
 
+        private void StopBot()
+        {
+            pauseActions = true;
+            actionTimer.Enabled = false;
+            ActiveBuffs.Clear();
+            _FollowEngine.Stop();
+        }
+
         private void CheckCustomActions_TickAsync(object sender, EventArgs e)
         {
             if (PL != null && Monitored != null)
             {
-
                 int cmdTime = Monitored.ThirdParty.ConsoleIsNewCommand();
 
                 if (lastCommand != cmdTime)
@@ -1989,10 +1965,7 @@ namespace CurePlease
                             {
                                 pauseButton.Text = "Paused!";
                                 pauseButton.ForeColor = Color.Red;
-                                actionTimer.Enabled = false;
-                                ActiveBuffs.Clear();
-                                pauseActions = true;
-                                _FollowEngine.Stop();
+                                StopBot();
                             }
                             else if ((Monitored.ThirdParty.ConsoleGetArg(1) == "unpause" || Monitored.ThirdParty.ConsoleGetArg(1) == "start") && PL.Player.Name.ToLower() == Monitored.ThirdParty.ConsoleGetArg(2).ToLower())
                             {
@@ -2017,10 +1990,7 @@ namespace CurePlease
                             {
                                 pauseButton.Text = "Paused!";
                                 pauseButton.ForeColor = Color.Red;
-                                actionTimer.Enabled = false;
-                                ActiveBuffs.Clear();
-                                pauseActions = true;
-                                _FollowEngine.Stop();
+                                StopBot();
                             }
                             else if (Monitored.ThirdParty.ConsoleGetArg(1) == "unpause" || Monitored.ThirdParty.ConsoleGetArg(1) == "start")
                             {
@@ -2175,11 +2145,7 @@ namespace CurePlease
 
                                 pauseButton.Text = "Paused!";
                                 pauseButton.ForeColor = Color.Red;
-                                actionTimer.Enabled = false;
-                                ActiveBuffs.Clear();
-                                pauseActions = true;
-                                _FollowEngine.Stop();
-
+                                StopBot();
                             }));
                         }
                         if (commands[2] == "toggle")

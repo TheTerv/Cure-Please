@@ -1985,11 +1985,6 @@ namespace CurePlease
             this.hpUpdates.Interval = 500;
             this.hpUpdates.Tick += new System.EventHandler(this.hpUpdates_Tick);
             // 
-            // plPosition
-            // 
-            this.plPosition.Interval = 1000;
-            this.plPosition.Tick += new System.EventHandler(this.plPosition_Tick);
-            // 
             // pauseButton
             // 
             this.pauseButton.BackColor = System.Drawing.SystemColors.Menu;
@@ -2437,7 +2432,7 @@ namespace CurePlease
         private System.Windows.Forms.CheckBox player12enabled;
         private System.Windows.Forms.Label player17;
         private System.Windows.Forms.Label player16;
-        private System.Windows.Forms.Label player15;
+        private System.Windows.Forms.[ player15;
         private System.Windows.Forms.Label player14;
         private System.Windows.Forms.Label player13;
         private System.Windows.Forms.Label player12;

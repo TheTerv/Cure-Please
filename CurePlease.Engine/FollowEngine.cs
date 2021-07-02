@@ -56,6 +56,16 @@ namespace CurePlease.Engine
             _Running = true;
         }
 
+        public bool IsMoving()
+        {
+            if (_PL == null || _LastPLCoordinates == null)
+                return false;
+
+            return _PL.AutoFollow.IsAutoFollowing 
+                // in case we're using /follow
+                || 0.1 < _LastPLCoordinates.GetDistanceFrom(_PL.Player.X, _PL.Player.Y, _PL.Player.Z);
+        }
+
         private void Reset()
         {
             if (_Config != null && !_Config.FFXIDefaultAutoFollow)
@@ -134,6 +144,9 @@ namespace CurePlease.Engine
                 Thread.Sleep(TimeSpan.FromSeconds(1));
                 return;
             }
+
+            // We'll use this to detect if we're moving
+            _LastPLCoordinates.UpdateCoordinates(_PL.Player.X, _PL.Player.Y, _PL.Player.Z);
 
             // MAKE SURE BOTH ELITEAPI INSTANCES ARE ACTIVE, THE BOT ISN'T PAUSED, AND THERE IS AN AUTOFOLLOWTARGET NAMED
             if (!string.IsNullOrEmpty(_Config.autoFollowName))

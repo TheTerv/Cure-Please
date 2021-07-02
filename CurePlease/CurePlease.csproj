@@ -148,7 +148,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <None Include="Addons\Ashita\CurePlease\CurePlease_Addon.lua" />
+    <None Include="Addons\Ashita\CurePlease\CurePlease.lua" />
     <None Include="app.config" />
     <None Include="app.manifest">
       <SubType>Designer</SubType>

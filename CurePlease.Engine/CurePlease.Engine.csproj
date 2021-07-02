@@ -51,6 +51,7 @@
     <Compile Include="BuffEngine.cs" />
     <Compile Include="FollowEngine.cs" />
     <Compile Include="GeoEngine.cs" />
+    <Compile Include="PartyMonitorEngine.cs" />
     <Compile Include="PLEngine.cs" />
     <Compile Include="SongEngine.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
