@@ -2432,7 +2432,7 @@ namespace CurePlease
         private System.Windows.Forms.CheckBox player12enabled;
         private System.Windows.Forms.Label player17;
         private System.Windows.Forms.Label player16;
-        private System.Windows.Forms.[ player15;
+        private System.Windows.Forms.Label player15;
         private System.Windows.Forms.Label player14;
         private System.Windows.Forms.Label player13;
         private System.Windows.Forms.Label player12;
