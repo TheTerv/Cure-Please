@@ -664,7 +664,7 @@ namespace CurePlease
             this.tabControl1.SuspendLayout();
             this.SuspendLayout();
             // 
-            // Save All Settings
+            // button4
             // 
             this.button4.Location = new System.Drawing.Point(661, 597);
             this.button4.Name = "button4";
@@ -5181,22 +5181,22 @@ namespace CurePlease
             this.plStormSpell_Spell.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.plStormSpell_Spell.FormattingEnabled = true;
             this.plStormSpell_Spell.Items.AddRange(new object[] {
-            Spells.Firestorm,
-            Spells.Hailstorm,
-            Spells.Windstorm,
-            Spells.Sandstorm,
-            Spells.Thunderstorm,
-            Spells.Rainstorm,
-            Spells.Aurorastorm,
-            Spells.Voidstorm,
-            Spells.Firestorm_II,
-            Spells.Hailstorm_II,
-            Spells.Windstorm_II,
-            Spells.Sandstorm_II,
-            Spells.Thunderstorm_II,
-            Spells.Rainstorm_II,
-            Spells.Aurorastorm_II,
-            Spells.Voidstorm_II});
+            "Firestorm",
+            "Hailstorm",
+            "Windstorm",
+            "Sandstorm",
+            "Thunderstorm",
+            "Rainstorm",
+            "Aurorastorm",
+            "Voidstorm",
+            "Firestorm II",
+            "Hailstorm II",
+            "Windstorm II",
+            "Sandstorm II",
+            "Thunderstorm II",
+            "Rainstorm II",
+            "Aurorastorm II",
+            "Voidstorm II"});
             this.plStormSpell_Spell.Location = new System.Drawing.Point(85, 330);
             this.plStormSpell_Spell.Name = "plStormSpell_Spell";
             this.plStormSpell_Spell.Size = new System.Drawing.Size(174, 23);
@@ -8051,7 +8051,7 @@ namespace CurePlease
             this.tabControl1.Size = new System.Drawing.Size(814, 587);
             this.tabControl1.TabIndex = 0;
             // 
-            // Form2
+            // ConfigForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -8062,8 +8062,7 @@ namespace CurePlease
             this.Controls.Add(this.button4);
             this.Controls.Add(this.tabControl1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Name = "Form2";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+            this.Name = "ConfigForm";
             this.Text = " ";
             this.TopMost = true;
             ((System.ComponentModel.ISupportInitialize)(this.curagaCurePercentage)).EndInit();
@@ -8231,7 +8230,6 @@ namespace CurePlease
             ((System.ComponentModel.ISupportInitialize)(this.curePotency)).EndInit();
             this.tabControl1.ResumeLayout(false);
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 

@@ -22,14 +22,13 @@ namespace CurePlease.Engine
 
         private IEnumerable<string> SpecifiedPartyMembers = new List<string>();
 
-        public DebuffEngine(EliteAPI pl, EliteAPI mon)
+        public DebuffEngine() { }
+
+        public EngineAction Run(EliteAPI pl, EliteAPI monitored, DebuffConfig Config)
         {
             PL = pl;
-            Monitored = mon;           
-        }
+            Monitored = monitored;
 
-        public EngineAction Run(DebuffConfig Config)
-        {
             var wakeSleepSpell = Data.WakeSleepSpells[Config.WakeSleepSpell];
 
             // PL Specific debuff removal
@@ -55,7 +54,7 @@ namespace CurePlease.Engine
             }
 
             // Monitored specific debuff removal
-            if (Config.MonitoredDebuffEnabled && (PL.Entity.GetEntity((int)Monitored.Party.GetPartyMember(0).TargetIndex).Distance < 21) && (Monitored.Player.HP > 0) && PL.Player.Status != 33)
+            if (Config.MonitoredDebuffEnabled && Monitored != null && (PL.Entity.GetEntity((int)Monitored.Party.GetPartyMember(0).TargetIndex).Distance < 21) && (Monitored.Player.HP > 0) && PL.Player.Status != 33)
             {
                 var debuffIds = Monitored.Player.Buffs.Where(id => Data.DebuffPriorities.Keys.Cast<short>().Contains(id));
                 var debuffPriorityList = debuffIds.Cast<StatusEffect>().OrderBy(status => Array.IndexOf(Data.DebuffPriorities.Keys.ToArray(), status));
@@ -93,7 +92,7 @@ namespace CurePlease.Engine
             lock (ActiveDebuffs)
             {             
                 // First remove the highest priority debuff.
-                var priorityMember = Monitored.GetHighestPriorityDebuff(ActiveDebuffs);
+                var priorityMember = PL.GetHighestPriorityDebuff(ActiveDebuffs);
 
                 if (priorityMember == null)
                 {

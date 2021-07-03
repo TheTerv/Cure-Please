@@ -2,14 +2,14 @@
 using CurePlease.Model.Config;
 using EliteMMO.API;
 using System;
-using System.Threading;
+using System.Timers;
 using static EliteMMO.API.EliteAPI;
 
 namespace CurePlease.Engine
 {
     public class FollowEngine
     {
-        public EliteAPI _PL { get; set; }
+        public EliteAPI _PowerLeveler { get; set; }
 
         public EliteAPI _Monitored { get; set; }
 
@@ -25,13 +25,20 @@ namespace CurePlease.Engine
 
         private int _ToFarToFollowWarning { get; set; }
 
-        private Coordinates _LastPLCoordinates = new Coordinates(0, 0, 0);
+        private Coordinates _LastPLCoordinates;
 
-        public FollowEngine() { }
+        private Timer _FollowEngineTimer = new Timer();
+
+        public FollowEngine() 
+        {
+            _FollowEngineTimer.Elapsed += new ElapsedEventHandler(Follow_DoWork);
+            _FollowEngineTimer.Interval = 1000;
+            _FollowEngineTimer.Enabled = true;
+        }
 
         public void Setup(EliteAPI pl, EliteAPI monitored, MySettings config)
         {
-            _PL = pl;
+            _PowerLeveler = pl;
             _Monitored = monitored;
             _Config = config;
         }        
@@ -48,29 +55,33 @@ namespace CurePlease.Engine
             // This id will change when zoning, etc
             _FollowerId = null;
 
+            _LastPLCoordinates = null;
+
             Reset();
         }
 
         public void Start()
         {
             _Running = true;
+
+            _LastPLCoordinates = new Coordinates(_PowerLeveler.Player.X, _PowerLeveler.Player.Y, _PowerLeveler.Player.Z);
         }
 
         public bool IsMoving()
         {
-            if (_PL == null || _LastPLCoordinates == null)
+            if (_PowerLeveler == null || _LastPLCoordinates == null)
                 return false;
 
-            return _PL.AutoFollow.IsAutoFollowing 
+            return _PowerLeveler.AutoFollow.IsAutoFollowing 
                 // in case we're using /follow
-                || 0.1 < _LastPLCoordinates.GetDistanceFrom(_PL.Player.X, _PL.Player.Y, _PL.Player.Z);
+                || 0.1 < _LastPLCoordinates.GetDistanceFrom(_PowerLeveler.Player.X, _PowerLeveler.Player.Y, _PowerLeveler.Player.Z);
         }
 
         private void Reset()
         {
             if (_Config != null && !_Config.FFXIDefaultAutoFollow)
             {
-                _PL.AutoFollow.IsAutoFollowing = false;
+                _PowerLeveler.AutoFollow.IsAutoFollowing = false;
             }
 
             _StuckWarning = false;
@@ -80,32 +91,32 @@ namespace CurePlease.Engine
         private void FollowingUsingFFXICommand(int whoToFollowId)
         {
             // IF THE CURRENT TARGET IS NOT THE FOLLOWERS TARGET ID THEN CHANGE THAT NOW
-            if (_PL.Target.GetTargetInfo().TargetIndex != whoToFollowId)
+            if (_PowerLeveler.Target.GetTargetInfo().TargetIndex != whoToFollowId)
             {
                 // FIRST REMOVE THE CURRENT TARGET
-                _PL.Target.SetTarget(0);
+                _PowerLeveler.Target.SetTarget(0);
 
                 // NOW SET THE NEXT TARGET AFTER A WAIT
-                Thread.Sleep(TimeSpan.FromSeconds(0.1));
+                System.Threading.Thread.Sleep(TimeSpan.FromSeconds(0.1));
 
-                _PL.Target.SetTarget(whoToFollowId);
+                _PowerLeveler.Target.SetTarget(whoToFollowId);
             }
             // IF THE TARGET IS CORRECT BUT YOU'RE NOT LOCKED ON THEN DO SO NOW
-            else if (_PL.Target.GetTargetInfo().TargetIndex == whoToFollowId && !_PL.Target.GetTargetInfo().LockedOn)
+            else if (_PowerLeveler.Target.GetTargetInfo().TargetIndex == whoToFollowId && !_PowerLeveler.Target.GetTargetInfo().LockedOn)
             {
-                _PL.ThirdParty.SendString("/lockon <t>");
+                _PowerLeveler.ThirdParty.SendString("/lockon <t>");
             }
             // EVERYTHING SHOULD BE FINE SO FOLLOW THEM
             else
             {
-                _PL.ThirdParty.SendString("/follow");
+                _PowerLeveler.ThirdParty.SendString("/follow");
             }
         }
 
         private bool ShouldUpdateFollow(XiEntity whoToFollow)
         {
             // if we're moving
-            if (_PL.AutoFollow.IsAutoFollowing)
+            if (_PowerLeveler.AutoFollow.IsAutoFollowing)
                 return false;
 
             double currentTargetDistance = Math.Truncate(whoToFollow.Distance);
@@ -137,16 +148,18 @@ namespace CurePlease.Engine
             return tooFar;
         }
 
-        public void Follow_BGW_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
+        public void Follow_DoWork(object source, ElapsedEventArgs e)
         {
-            if (_PL == null || _Config == null || !_Running)
+            _FollowEngineTimer.Stop();
+
+            if (_PowerLeveler == null || _Config == null || !_Running)
             {
-                Thread.Sleep(TimeSpan.FromSeconds(1));
+                _FollowEngineTimer.Start();
                 return;
             }
 
             // We'll use this to detect if we're moving
-            _LastPLCoordinates.UpdateCoordinates(_PL.Player.X, _PL.Player.Y, _PL.Player.Z);
+            _LastPLCoordinates.UpdateCoordinates(_PowerLeveler.Player.X, _PowerLeveler.Player.Y, _PowerLeveler.Player.Z);
 
             // MAKE SURE BOTH ELITEAPI INSTANCES ARE ACTIVE, THE BOT ISN'T PAUSED, AND THERE IS AN AUTOFOLLOWTARGET NAMED
             if (!string.IsNullOrEmpty(_Config.autoFollowName))
@@ -158,7 +171,7 @@ namespace CurePlease.Engine
                 if (whoToFollowId != -1)
                 {
                     // GRAB THE FOLLOW TARGETS ENTITY TABLE TO CHECK DISTANCE ETC
-                    XiEntity followTarget = _PL.Entity.GetEntity(whoToFollowId);
+                    XiEntity followTarget = _PowerLeveler.Entity.GetEntity(whoToFollowId);
 
                     // We're being being able to follow, nothing to do
                     if (ShouldUpdateFollow(followTarget))
@@ -180,7 +193,7 @@ namespace CurePlease.Engine
                 }
             }
 
-            Thread.Sleep(TimeSpan.FromSeconds(1));
+            _FollowEngineTimer.Start();
         }
 
         private int GetFollowIDForPlayer(string playerName)
@@ -194,7 +207,7 @@ namespace CurePlease.Engine
 
                 for (int x = 0; x < 2048; x++)
                 {
-                    XiEntity entity = _PL.Entity.GetEntity(x);
+                    XiEntity entity = _PowerLeveler.Entity.GetEntity(x);
 
                     if (entity.Name != null && entity.Name.ToLower().Equals(playerName))
                     {
@@ -216,11 +229,11 @@ namespace CurePlease.Engine
             while (Math.Truncate(followTarget.Distance) >= (int)_Config.autoFollowDistance)
             {
                 // It appears this can be toggled to false when getting stuck, so we need it within the loop
-                _PL.AutoFollow.IsAutoFollowing = true;
+                _PowerLeveler.AutoFollow.IsAutoFollowing = true;
 
-                float Player_X = _PL.Player.X;
-                float Player_Y = _PL.Player.Y;
-                float Player_Z = _PL.Player.Z;
+                float Player_X = _PowerLeveler.Player.X;
+                float Player_Y = _PowerLeveler.Player.Y;
+                float Player_Z = _PowerLeveler.Player.Z;
 
                 Target_X = followTarget.X;
                 Target_Y = followTarget.Y;
@@ -230,14 +243,14 @@ namespace CurePlease.Engine
                 float dY = Target_Y - Player_Y;
                 float dZ = Target_Z - Player_Z;
 
-                _PL.AutoFollow.SetAutoFollowCoords(dX, dY, dZ);
+                _PowerLeveler.AutoFollow.SetAutoFollowCoords(dX, dY, dZ);
 
-                _LastPLCoordinates.UpdateCoordinates(_PL.Player.X, _PL.Player.Y, _PL.Player.Z);
+                _LastPLCoordinates.UpdateCoordinates(_PowerLeveler.Player.X, _PowerLeveler.Player.Y, _PowerLeveler.Player.Z);
 
-                Thread.Sleep(TimeSpan.FromSeconds(0.25));
+                System.Threading.Thread.Sleep(TimeSpan.FromSeconds(0.25));
 
                 // STUCK CHECKER
-                double distance = _LastPLCoordinates.GetDistanceFrom(_PL.Player.X, _PL.Player.Y, _PL.Player.Z);
+                double distance = _LastPLCoordinates.GetDistanceFrom(_PowerLeveler.Player.X, _PowerLeveler.Player.Y, _PowerLeveler.Player.Z);
 
                 if (distance < .1)
                 {
@@ -254,10 +267,10 @@ namespace CurePlease.Engine
 
         private void IssueMessage(string Message)
         {
-            if (_Monitored != null && _Monitored.Player.Name != _PL.Player.Name)
+            if (_Monitored != null && _Monitored.Player.Name != _PowerLeveler.Player.Name)
             {
                 string createdTell = "/tell " + _Monitored.Player.Name + " " + Message;
-                _PL.ThirdParty.SendString(createdTell);
+                _PowerLeveler.ThirdParty.SendString(createdTell);
                 _ToFarToFollowWarning = 1;
             }
         }

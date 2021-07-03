@@ -193,7 +193,6 @@ namespace CurePlease
             this.POLID2 = new System.Windows.Forms.ComboBox();
             this.setinstance2 = new System.Windows.Forms.Button();
             this.monitoredLabel = new System.Windows.Forms.Label();
-            this.hpUpdates = new System.Windows.Forms.Timer(this.components);
             this.plPosition = new System.Windows.Forms.Timer(this.components);
             this.pauseButton = new System.Windows.Forms.Button();
             this.toolTips = new System.Windows.Forms.ToolTip(this.components);
@@ -221,12 +220,10 @@ namespace CurePlease
             this.checkSCHCharges = new System.Windows.Forms.Timer(this.components);
             this.AutomaticChecks = new System.Windows.Forms.Timer(this.components);
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.debug = new System.Windows.Forms.Button();
             this.currentAction = new System.Windows.Forms.Label();
             this.updateInstances = new System.Windows.Forms.Timer(this.components);
             this.checkCustomActions = new System.Windows.Forms.Timer(this.components);
             this.castingLockLabel = new System.Windows.Forms.Label();
-            this.Follow_BGW = new System.ComponentModel.BackgroundWorker();
             this.OptionsButton = new System.Windows.Forms.Button();
             this.ChatLogButton = new System.Windows.Forms.Button();
             this.PartyBuffsButton = new System.Windows.Forms.Button();
@@ -236,6 +233,7 @@ namespace CurePlease
             this.ProtectCasting = new System.ComponentModel.BackgroundWorker();
             this.EclipticTimer = new System.Windows.Forms.Timer(this.components);
             this.CustomCommand_Tracker = new System.ComponentModel.BackgroundWorker();
+            this.actionlog_box = new System.Windows.Forms.RichTextBox();
             this.party0.SuspendLayout();
             this.playerOptions.SuspendLayout();
             this.party2.SuspendLayout();
@@ -1539,7 +1537,6 @@ namespace CurePlease
             // 
             // actionTimer
             // 
-            this.actionTimer.Interval = 100;
             this.actionTimer.Tick += new System.EventHandler(this.actionTimer_TickAsync);
             // 
             // player6
@@ -1980,11 +1977,6 @@ namespace CurePlease
             this.monitoredLabel.TabIndex = 5;
             this.monitoredLabel.Text = "Monitored Player: NONE";
             // 
-            // hpUpdates
-            // 
-            this.hpUpdates.Interval = 500;
-            this.hpUpdates.Tick += new System.EventHandler(this.hpUpdates_Tick);
-            // 
             // pauseButton
             // 
             this.pauseButton.BackColor = System.Drawing.SystemColors.Menu;
@@ -2192,12 +2184,10 @@ namespace CurePlease
             this.debugging_MSGBOX.Name = "debugging_MSGBOX";
             this.debugging_MSGBOX.Size = new System.Drawing.Size(0, 13);
             this.debugging_MSGBOX.TabIndex = 22;
-            
             // 
             // groupBox2
             // 
             this.groupBox2.BackColor = System.Drawing.Color.Transparent;
-            this.groupBox2.Controls.Add(this.debug);
             this.groupBox2.Controls.Add(this.currentAction);
             this.groupBox2.ForeColor = System.Drawing.SystemColors.GrayText;
             this.groupBox2.Location = new System.Drawing.Point(255, 334);
@@ -2207,21 +2197,6 @@ namespace CurePlease
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = " current action ";
             this.groupBox2.Paint += new System.Windows.Forms.PaintEventHandler(this.PaintBorderlessGroupBox);
-            // 
-            // debug
-            // 
-            this.debug.BackColor = System.Drawing.SystemColors.Menu;
-            this.debug.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.debug.ForeColor = System.Drawing.Color.Black;
-            this.debug.Location = new System.Drawing.Point(318, 6);
-            this.debug.Name = "debug";
-            this.debug.Size = new System.Drawing.Size(76, 25);
-            this.debug.TabIndex = 24;
-            this.debug.Text = "debug";
-            this.debug.UseVisualStyleBackColor = false;
-            this.debug.Visible = false;
-            this.debug.Click += new System.EventHandler(this.Debug_Click);
-            this.debug.Paint += new System.Windows.Forms.PaintEventHandler(this.PaintButton);
             // 
             // currentAction
             // 
@@ -2248,15 +2223,10 @@ namespace CurePlease
             // castingLockLabel
             // 
             this.castingLockLabel.AutoSize = true;
-            this.castingLockLabel.Location = new System.Drawing.Point(79, 16);
+            this.castingLockLabel.Location = new System.Drawing.Point(665, 16);
             this.castingLockLabel.Name = "castingLockLabel";
             this.castingLockLabel.Size = new System.Drawing.Size(0, 13);
             this.castingLockLabel.TabIndex = 28;
-            // 
-            // Follow_BGW
-            // 
-            this.Follow_BGW.DoWork += new System.ComponentModel.DoWorkEventHandler(_FollowEngine.Follow_BGW_DoWork);
-            this.Follow_BGW.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.Follow_BGW_RunWorkerCompleted);
             // 
             // OptionsButton
             // 
@@ -2321,7 +2291,6 @@ namespace CurePlease
             this.AboutButton.Text = "About";
             this.AboutButton.UseVisualStyleBackColor = false;
             this.AboutButton.Click += new System.EventHandler(this.AboutButton_Click);
-
             // 
             // AddOnStatus
             // 
@@ -2348,13 +2317,29 @@ namespace CurePlease
             this.CustomCommand_Tracker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.CustomCommand_Tracker_DoWork);
             this.CustomCommand_Tracker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.CustomCommand_Tracker_RunWorkerCompleted);
             // 
-            // Form1
+            // actionlog_box
+            // 
+            this.actionlog_box.BackColor = System.Drawing.Color.White;
+            this.actionlog_box.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.actionlog_box.Font = new System.Drawing.Font("Calibri", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.actionlog_box.ForeColor = System.Drawing.Color.Black;
+            this.actionlog_box.Location = new System.Drawing.Point(668, 43);
+            this.actionlog_box.Margin = new System.Windows.Forms.Padding(7);
+            this.actionlog_box.Name = "actionlog_box";
+            this.actionlog_box.ReadOnly = true;
+            this.actionlog_box.Size = new System.Drawing.Size(561, 320);
+            this.actionlog_box.TabIndex = 34;
+            this.actionlog_box.Text = "";
+            this.actionlog_box.TextChanged += new System.EventHandler(this.actionlog_box_TextChanged);
+            // 
+            // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.BackColor = System.Drawing.SystemColors.ActiveBorder;
-            this.ClientSize = new System.Drawing.Size(664, 382);
+            this.ClientSize = new System.Drawing.Size(1245, 382);
+            this.Controls.Add(this.actionlog_box);
             this.Controls.Add(this.AddOnStatus);
             this.Controls.Add(this.AboutButton);
             this.Controls.Add(this.PartyBuffsButton);
@@ -2376,7 +2361,7 @@ namespace CurePlease
             this.KeyPreview = true;
             this.Margin = new System.Windows.Forms.Padding(2, 4, 2, 4);
             this.MaximizeBox = false;
-            this.Name = "Form1";
+            this.Name = "MainForm";
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
             this.Text = "Cure Please v. 2.0.0.5";
             this.TransparencyKey = System.Drawing.Color.Silver;
@@ -2453,7 +2438,6 @@ namespace CurePlease
         private System.Windows.Forms.GroupBox party1;
         private System.Windows.Forms.ComboBox POLID2;
         private System.Windows.Forms.Label monitoredLabel;
-        private System.Windows.Forms.Timer hpUpdates;
         private System.Windows.Forms.CheckBox player5priority;
         private System.Windows.Forms.CheckBox player4priority;
         private System.Windows.Forms.CheckBox player3priority;
@@ -2569,7 +2553,6 @@ namespace CurePlease
         private Timer AutomaticChecks;
         private GroupBox groupBox2;
         private Label currentAction;
-        private Button debug;
         private Timer updateInstances;
         private Button player0optionsButton;
         private Timer checkCustomActions;
@@ -2593,7 +2576,6 @@ namespace CurePlease
         private ProgressBarEx player6HP;
         private TrackBar trackBar1;
         private Label castingLockLabel;
-        private System.ComponentModel.BackgroundWorker Follow_BGW;
         private Button OptionsButton;
         private Button ChatLogButton;
         private Button PartyBuffsButton;
@@ -2612,5 +2594,6 @@ namespace CurePlease
         private System.ComponentModel.BackgroundWorker ProtectCasting;
         private Timer EclipticTimer;
         private System.ComponentModel.BackgroundWorker CustomCommand_Tracker;
+        private RichTextBox actionlog_box;
     }
 }

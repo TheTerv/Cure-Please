@@ -116,6 +116,8 @@
     <Compile Include="Forms\PartyBuffs.Designer.cs">
       <DependentUpon>PartyBuffs.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\WinFormsExtensions.cs" />
+    <Compile Include="PartyUtils.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Components\ProgressBarEx.cs">
       <SubType>Component</SubType>
