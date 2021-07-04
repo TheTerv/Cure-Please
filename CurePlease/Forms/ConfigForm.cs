@@ -175,7 +175,7 @@
             config.EnlightenmentReraise = false;
 
             // GEOMANCER
-            config.EnableGeoSpells = false;
+            config.EnableIndiSpells = false;
             config.GeoWhenEngaged = false;
             config.GeoSpell_Spell = 0;
             config.LuopanSpell_Target = "";
@@ -216,7 +216,7 @@
             config.Rapture = false;
             config.EclipticAttrition = false;
             config.LifeCycle = false;
-            config.Entrust = false;
+            config.EntrustEnabled = false;
             config.Dematerialize = false;
             config.FullCircle = false;
             config.BlazeOfGlory = false;
@@ -685,8 +685,8 @@
             config.EnlightenmentReraise = EnlightenmentReraise.Checked;
 
             // GEOMANCER
-            config.EnableGeoSpells = EnableGeoSpells.Checked;
-            config.IndiWhenEngaged = GEO_engaged.Checked;
+            config.EnableIndiSpells = EnableIndiSpells.Checked;
+            config.EngagedOnly = EngagedOnly.Checked;
             config.EnableLuopanSpells = EnableLuopanSpells.Checked;
             config.GeoSpell_Spell = GEOSpell.SelectedIndex;
             config.LuopanSpell_Target = GEOSpell_target.Text;
@@ -735,7 +735,7 @@
             config.Devotion = DevotionBox.Checked;
             config.DivineCaress = DivineCaressBox.Checked;
 
-            config.Entrust = EntrustBox.Checked;
+            config.EntrustEnabled = EnableEntrust.Checked;
             config.Dematerialize = DematerializeBox.Checked;
             config.BlazeOfGlory = BlazeOfGloryBox.Checked;
 
@@ -1455,32 +1455,19 @@
 
         private void EnableGeoSpells_CheckedChanged ( object sender, EventArgs e )
         {
-            if ( EnableGeoSpells.Checked )
-            {
-                INDISpell.Enabled = true;
-                entrustINDISpell.Enabled = true;
-                entrustSpell_target.Enabled = true;
-            }
-            else if ( EnableGeoSpells.Checked == false )
-            {
-                INDISpell.Enabled = false;
-                entrustINDISpell.Enabled = false;
-                entrustSpell_target.Enabled = false;
-            }
+            INDISpell.Enabled = EnableIndiSpells.Checked;
         }
 
         private void EnableLuopanSpells_CheckedChanged ( object sender, EventArgs e )
         {
-            if ( EnableLuopanSpells.Checked )
-            {
-                GEOSpell.Enabled = true;
-                GEOSpell_target.Enabled = true;
-            }
-            else if ( EnableLuopanSpells.Checked == false )
-            {
-                GEOSpell.Enabled = false;
-                GEOSpell_target.Enabled = false;
-            }
+            GEOSpell.Enabled = EnableLuopanSpells.Checked;
+            GEOSpell_target.Enabled = EnableLuopanSpells.Checked;
+        }
+
+        private void EnableEntrust_CheckedChanged(object sender, EventArgs e)
+        {
+            entrustINDISpell.Enabled = EnableEntrust.Checked;
+            entrustSpell_target.Enabled = EnableEntrust.Checked;
         }
 
         #endregion "== Geomancy Check Boxes"
@@ -1697,7 +1684,7 @@
             plEnspell_spell.SelectedIndex = config.plEnspell_Spell;
             plGainBoost.Checked = config.plGainBoost;
             plGainBoost_spell.SelectedIndex = config.plGainBoost_Spell;
-            EntrustBox.Checked = config.Entrust;
+            EnableEntrust.Checked = config.EntrustEnabled;
             DematerializeBox.Checked = config.Dematerialize;
             plBarElement.Checked = config.plBarElement;
             if ( config.plBarElement_Spell > 5 )
@@ -1761,8 +1748,8 @@
             EnlightenmentReraise.Checked = config.EnlightenmentReraise;
 
             // GEOMANCER
-            EnableGeoSpells.Checked = config.EnableGeoSpells;
-            GEO_engaged.Checked = config.IndiWhenEngaged;
+            EnableIndiSpells.Checked = config.EnableIndiSpells;
+            EngagedOnly.Checked = config.EngagedOnly;
             GEOSpell.SelectedIndex = config.GeoSpell_Spell;
             GEOSpell_target.Text = config.LuopanSpell_Target;
             INDISpell.SelectedIndex = config.IndiSpell_Spell;
@@ -2566,7 +2553,7 @@
         {
             return new GeoConfig()
             {
-                GeoSpellsEnabled = config.EnableGeoSpells,
+                IndiSpellsEnabled = config.EnableIndiSpells,
                 GeoWhenEngaged = config.GeoWhenEngaged,
                 RadialArcanaEnabled = config.RadialArcana,
                 RadialArcanaMP = config.RadialArcanaMP,
@@ -2578,10 +2565,10 @@
                 LuopanSpellsEnabled = config.EnableLuopanSpells,
                 LuopanSpellTarget = config.LuopanSpell_Target,
                 SpecifiedEngageTarget = config.specifiedEngageTarget,
-                EntrustEnabled = config.Entrust,
+                EntrustEnabled = config.EntrustEnabled,
                 EntrustSpell = config.EntrustedSpell_Spell,
                 EntrustSpellTarget = config.EntrustedSpell_Target,
-                IndiWhenEngaged = config.IndiWhenEngaged,
+                IndiWhenEngaged = config.EngagedOnly,
                 DematerializeEnabled = config.Dematerialize,
                 EclipticAttritionEnabled = config.EclipticAttrition,
                 LifeCycleEnabled = config.LifeCycle,

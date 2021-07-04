@@ -35,13 +35,17 @@ namespace CurePlease
             this.button4 = new System.Windows.Forms.Button();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.recastSongs_monitored = new System.Windows.Forms.CheckBox();
-            this.GEO_engaged = new System.Windows.Forms.CheckBox();
+            this.EngagedOnly = new System.Windows.Forms.CheckBox();
             this.GeoAOE_Engaged = new System.Windows.Forms.CheckBox();
             this.label3 = new System.Windows.Forms.Label();
             this.naSpellsenable = new System.Windows.Forms.CheckBox();
             this.naErase = new System.Windows.Forms.CheckBox();
             this.Esuna = new System.Windows.Forms.CheckBox();
             this.EsunaOnlyAmnesia = new System.Windows.Forms.CheckBox();
+            this.enableOutOfPartyHealing = new System.Windows.Forms.CheckBox();
+            this.enableMonitoredPriority = new System.Windows.Forms.CheckBox();
+            this.Undercure = new System.Windows.Forms.CheckBox();
+            this.Overcure = new System.Windows.Forms.CheckBox();
             this.curagaPercentageValueLabel = new System.Windows.Forms.Label();
             this.curagaCurePercentage = new System.Windows.Forms.TrackBar();
             this.label30 = new System.Windows.Forms.Label();
@@ -84,27 +88,16 @@ namespace CurePlease
             this.entrustSpell_target = new System.Windows.Forms.TextBox();
             this.GEOSpell_target = new System.Windows.Forms.TextBox();
             this.marcato = new System.Windows.Forms.CheckBox();
-            this.FullCircleBox = new System.Windows.Forms.CheckBox();
-            this.DematerializeBox = new System.Windows.Forms.CheckBox();
-            this.EntrustBox = new System.Windows.Forms.CheckBox();
             this.convert = new System.Windows.Forms.CheckBox();
             this.divineSealBox = new System.Windows.Forms.CheckBox();
             this.groupBox16 = new CurePlease.GroupBoxEx();
             this.AssistSpecifiedTarget = new System.Windows.Forms.CheckBox();
-            this.label8 = new System.Windows.Forms.Label();
             this.autoTarget_target = new System.Windows.Forms.TextBox();
             this.label37 = new System.Windows.Forms.Label();
             this.label36 = new System.Windows.Forms.Label();
             this.Hate_SpellType = new System.Windows.Forms.ComboBox();
             this.autoTarget = new System.Windows.Forms.CheckBox();
             this.autoTargetSpell = new System.Windows.Forms.TextBox();
-            this.DevotionTargetName = new System.Windows.Forms.TextBox();
-            this.DevotionTargetType = new System.Windows.Forms.ComboBox();
-            this.label34 = new System.Windows.Forms.Label();
-            this.enableOutOfPartyHealing = new System.Windows.Forms.CheckBox();
-            this.enableMonitoredPriority = new System.Windows.Forms.CheckBox();
-            this.Undercure = new System.Windows.Forms.CheckBox();
-            this.Overcure = new System.Windows.Forms.CheckBox();
             this.healWhenMPBelow = new System.Windows.Forms.NumericUpDown();
             this.label9 = new System.Windows.Forms.Label();
             this.standAtMP_Percentage = new System.Windows.Forms.NumericUpDown();
@@ -117,11 +110,20 @@ namespace CurePlease
             this.ipAddress = new System.Windows.Forms.TextBox();
             this.label38 = new System.Windows.Forms.Label();
             this.FFXIDefaultAutoFollow = new System.Windows.Forms.CheckBox();
+            this.FullCircleBox = new System.Windows.Forms.CheckBox();
+            this.DematerializeBox = new System.Windows.Forms.CheckBox();
+            this.EnableEntrust = new System.Windows.Forms.CheckBox();
+            this.DevotionTargetName = new System.Windows.Forms.TextBox();
+            this.DevotionTargetType = new System.Windows.Forms.ComboBox();
+            this.label34 = new System.Windows.Forms.Label();
             this.saveAsButton = new System.Windows.Forms.Button();
             this.loadButton = new System.Windows.Forms.Button();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.tabPage7 = new System.Windows.Forms.TabPage();
+            this.groupBox33 = new CurePlease.GroupBoxEx();
+            this.label25 = new System.Windows.Forms.Label();
+            this.enableAddOn = new System.Windows.Forms.CheckBox();
             this.groupBoxEx1 = new CurePlease.GroupBoxEx();
             this.panel15 = new System.Windows.Forms.Panel();
             this.label67 = new System.Windows.Forms.Label();
@@ -152,31 +154,9 @@ namespace CurePlease
             this.TargetRemoval_Delay = new System.Windows.Forms.NumericUpDown();
             this.label58 = new System.Windows.Forms.Label();
             this.DisableTargettingCancel = new System.Windows.Forms.CheckBox();
-            this.groupBox36 = new CurePlease.GroupBoxEx();
-            this.label27 = new System.Windows.Forms.Label();
-            this.RadialArcanaSpell = new System.Windows.Forms.ComboBox();
-            this.label11 = new System.Windows.Forms.Label();
-            this.RadialArcanaMP = new System.Windows.Forms.NumericUpDown();
-            this.Fullcircle_GEOTarget = new System.Windows.Forms.CheckBox();
-            this.Fullcircle_DisableEnemy = new System.Windows.Forms.CheckBox();
-            this.groupBox15 = new CurePlease.GroupBoxEx();
-            this.DevotionWhenEngaged = new System.Windows.Forms.CheckBox();
-            this.label35 = new System.Windows.Forms.Label();
-            this.DevotionMP = new System.Windows.Forms.NumericUpDown();
             this.Raise = new CurePlease.GroupBoxEx();
             this.acceptRaiseOnlyWhenNotInCombat = new System.Windows.Forms.CheckBox();
             this.acceptRaise = new System.Windows.Forms.CheckBox();
-            this.groupBox33 = new CurePlease.GroupBoxEx();
-            this.label25 = new System.Windows.Forms.Label();
-            this.enableAddOn = new System.Windows.Forms.CheckBox();
-            this.groupBox32 = new CurePlease.GroupBoxEx();
-            this.OvercureOnHighPriority = new System.Windows.Forms.CheckBox();
-            this.groupBox29 = new CurePlease.GroupBoxEx();
-            this.label51 = new System.Windows.Forms.Label();
-            this.sublimationMP = new System.Windows.Forms.NumericUpDown();
-            this.groupBox11 = new CurePlease.GroupBoxEx();
-            this.label26 = new System.Windows.Forms.Label();
-            this.ConvertMP = new System.Windows.Forms.NumericUpDown();
             this.groupBox4 = new CurePlease.GroupBoxEx();
             this.lowMPcheckBox = new System.Windows.Forms.CheckBox();
             this.label4 = new System.Windows.Forms.Label();
@@ -186,14 +166,12 @@ namespace CurePlease
             this.troubadour = new System.Windows.Forms.CheckBox();
             this.nightingale = new System.Windows.Forms.CheckBox();
             this.pianissimo = new System.Windows.Forms.CheckBox();
-            this.groupBox8 = new CurePlease.GroupBoxEx();
-            this.LifeCycleBox = new System.Windows.Forms.CheckBox();
-            this.EclipticAttritionBox = new System.Windows.Forms.CheckBox();
-            this.RadialArcanaBox = new System.Windows.Forms.CheckBox();
-            this.BlazeOfGloryBox = new System.Windows.Forms.CheckBox();
             this.rdmJAgroup = new CurePlease.GroupBoxEx();
+            this.ConvertMP = new System.Windows.Forms.NumericUpDown();
             this.composure = new System.Windows.Forms.CheckBox();
             this.schJAgroup = new CurePlease.GroupBoxEx();
+            this.label51 = new System.Windows.Forms.Label();
+            this.sublimationMP = new System.Windows.Forms.NumericUpDown();
             this.addBlack = new System.Windows.Forms.CheckBox();
             this.darkArts = new System.Windows.Forms.CheckBox();
             this.sublimation = new System.Windows.Forms.CheckBox();
@@ -205,9 +183,12 @@ namespace CurePlease
             this.addWhite = new System.Windows.Forms.CheckBox();
             this.lightArts = new System.Windows.Forms.CheckBox();
             this.whmJAgroup = new CurePlease.GroupBoxEx();
+            this.DevotionWhenEngaged = new System.Windows.Forms.CheckBox();
             this.DivineCaressBox = new System.Windows.Forms.CheckBox();
             this.DevotionBox = new System.Windows.Forms.CheckBox();
             this.afflatusMisery = new System.Windows.Forms.CheckBox();
+            this.DevotionMP = new System.Windows.Forms.NumericUpDown();
+            this.label35 = new System.Windows.Forms.Label();
             this.afflatusSolace = new System.Windows.Forms.CheckBox();
             this.tabPage8 = new System.Windows.Forms.TabPage();
             this.SongsOnlyWhenNearEngaged = new System.Windows.Forms.CheckBox();
@@ -249,17 +230,29 @@ namespace CurePlease
             this.song1 = new System.Windows.Forms.ComboBox();
             this.label45 = new System.Windows.Forms.Label();
             this.tabPage6 = new System.Windows.Forms.TabPage();
+            this.groupBox8 = new CurePlease.GroupBoxEx();
+            this.LifeCycleBox = new System.Windows.Forms.CheckBox();
+            this.EclipticAttritionBox = new System.Windows.Forms.CheckBox();
+            this.RadialArcanaBox = new System.Windows.Forms.CheckBox();
+            this.BlazeOfGloryBox = new System.Windows.Forms.CheckBox();
+            this.groupBox36 = new CurePlease.GroupBoxEx();
+            this.label27 = new System.Windows.Forms.Label();
+            this.RadialArcanaSpell = new System.Windows.Forms.ComboBox();
+            this.label11 = new System.Windows.Forms.Label();
+            this.RadialArcanaMP = new System.Windows.Forms.NumericUpDown();
+            this.Fullcircle_GEOTarget = new System.Windows.Forms.CheckBox();
+            this.Fullcircle_DisableEnemy = new System.Windows.Forms.CheckBox();
             this.specifiedEngageTarget = new System.Windows.Forms.CheckBox();
-            this.EnableLuopanSpells = new System.Windows.Forms.CheckBox();
-            this.EnableGeoSpells = new System.Windows.Forms.CheckBox();
             this.groupBox7 = new CurePlease.GroupBoxEx();
             this.label7 = new System.Windows.Forms.Label();
             this.entrustINDISpell = new System.Windows.Forms.ListBox();
             this.groupBox6 = new CurePlease.GroupBoxEx();
             this.label6 = new System.Windows.Forms.Label();
             this.GEOSpell = new System.Windows.Forms.ListBox();
+            this.EnableLuopanSpells = new System.Windows.Forms.CheckBox();
             this.groupBox5 = new CurePlease.GroupBoxEx();
             this.INDISpell = new System.Windows.Forms.ListBox();
+            this.EnableIndiSpells = new System.Windows.Forms.CheckBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.tabControl2 = new System.Windows.Forms.TabControl();
             this.tabPage9 = new System.Windows.Forms.TabPage();
@@ -528,6 +521,8 @@ namespace CurePlease
             this.monitoredDebuffEnabled = new System.Windows.Forms.CheckBox();
             this.plDebuffEnabled = new System.Windows.Forms.CheckBox();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.groupBox32 = new CurePlease.GroupBoxEx();
+            this.OvercureOnHighPriority = new System.Windows.Forms.CheckBox();
             this.groupBox12 = new CurePlease.GroupBoxEx();
             this.requiredCuragaNumbers = new System.Windows.Forms.NumericUpDown();
             this.label31 = new System.Windows.Forms.Label();
@@ -574,6 +569,7 @@ namespace CurePlease
             ((System.ComponentModel.ISupportInitialize)(this.standAtMP_Percentage)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.mpMintempitemusage)).BeginInit();
             this.tabPage7.SuspendLayout();
+            this.groupBox33.SuspendLayout();
             this.groupBoxEx1.SuspendLayout();
             this.panel15.SuspendLayout();
             this.groupBox18.SuspendLayout();
@@ -585,25 +581,17 @@ namespace CurePlease
             this.tabPage5.SuspendLayout();
             this.groupBox10.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.TargetRemoval_Delay)).BeginInit();
-            this.groupBox36.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.RadialArcanaMP)).BeginInit();
-            this.groupBox15.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.DevotionMP)).BeginInit();
             this.Raise.SuspendLayout();
-            this.groupBox33.SuspendLayout();
-            this.groupBox32.SuspendLayout();
-            this.groupBox29.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.sublimationMP)).BeginInit();
-            this.groupBox11.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.ConvertMP)).BeginInit();
             this.groupBox4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.mpMinCastValue)).BeginInit();
             this.tabPage3.SuspendLayout();
             this.groupBox24.SuspendLayout();
-            this.groupBox8.SuspendLayout();
             this.rdmJAgroup.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.ConvertMP)).BeginInit();
             this.schJAgroup.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.sublimationMP)).BeginInit();
             this.whmJAgroup.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.DevotionMP)).BeginInit();
             this.tabPage8.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.recastSong)).BeginInit();
             this.panel7.SuspendLayout();
@@ -617,6 +605,9 @@ namespace CurePlease
             this.groupBox21.SuspendLayout();
             this.groupBox19.SuspendLayout();
             this.tabPage6.SuspendLayout();
+            this.groupBox8.SuspendLayout();
+            this.groupBox36.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.RadialArcanaMP)).BeginInit();
             this.groupBox7.SuspendLayout();
             this.groupBox6.SuspendLayout();
             this.groupBox5.SuspendLayout();
@@ -656,6 +647,7 @@ namespace CurePlease
             this.plDebuffWrapperPanel.SuspendLayout();
             this.plDebuffPanel.SuspendLayout();
             this.tabPage1.SuspendLayout();
+            this.groupBox32.SuspendLayout();
             this.groupBox12.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.requiredCuragaNumbers)).BeginInit();
             this.groupBox2.SuspendLayout();
@@ -689,25 +681,25 @@ namespace CurePlease
             this.recastSongs_monitored.UseVisualStyleBackColor = true;
             this.recastSongs_monitored.Visible = false;
             // 
-            // GEO_engaged
+            // EngagedOnly
             // 
-            this.GEO_engaged.AutoSize = true;
-            this.GEO_engaged.Location = new System.Drawing.Point(8, 39);
-            this.GEO_engaged.Name = "GEO_engaged";
-            this.GEO_engaged.Size = new System.Drawing.Size(188, 19);
-            this.GEO_engaged.TabIndex = 3;
-            this.GEO_engaged.Text = "Use INDI only when engaged.";
-            this.toolTip1.SetToolTip(this.GEO_engaged, "Geo- and Entrusted spells will only be used when in combat.");
-            this.GEO_engaged.UseVisualStyleBackColor = true;
+            this.EngagedOnly.AutoSize = true;
+            this.EngagedOnly.Location = new System.Drawing.Point(8, 16);
+            this.EngagedOnly.Name = "EngagedOnly";
+            this.EngagedOnly.Size = new System.Drawing.Size(103, 19);
+            this.EngagedOnly.TabIndex = 3;
+            this.EngagedOnly.Text = "Engaged Only";
+            this.toolTip1.SetToolTip(this.EngagedOnly, "Geo- and Entrusted spells will only be used when in combat.");
+            this.EngagedOnly.UseVisualStyleBackColor = true;
             // 
             // GeoAOE_Engaged
             // 
             this.GeoAOE_Engaged.AutoSize = true;
-            this.GeoAOE_Engaged.Location = new System.Drawing.Point(240, 40);
+            this.GeoAOE_Engaged.Location = new System.Drawing.Point(8, 58);
             this.GeoAOE_Engaged.Name = "GeoAOE_Engaged";
-            this.GeoAOE_Engaged.Size = new System.Drawing.Size(294, 19);
+            this.GeoAOE_Engaged.Size = new System.Drawing.Size(257, 19);
             this.GeoAOE_Engaged.TabIndex = 9;
-            this.GeoAOE_Engaged.Text = "Use Party based Geocolures only when engaged.";
+            this.GeoAOE_Engaged.Text = "Use Party based GEO only when engaged.";
             this.toolTip1.SetToolTip(this.GeoAOE_Engaged, "Geo- and Entrusted spells will only be used when in combat.");
             this.GeoAOE_Engaged.UseVisualStyleBackColor = true;
             // 
@@ -777,10 +769,57 @@ namespace CurePlease
             this.EsunaOnlyAmnesia.UseVisualStyleBackColor = true;
             this.EsunaOnlyAmnesia.Visible = false;
             // 
+            // enableOutOfPartyHealing
+            // 
+            this.enableOutOfPartyHealing.AutoSize = true;
+            this.enableOutOfPartyHealing.Location = new System.Drawing.Point(7, 122);
+            this.enableOutOfPartyHealing.Name = "enableOutOfPartyHealing";
+            this.enableOutOfPartyHealing.Size = new System.Drawing.Size(189, 19);
+            this.enableOutOfPartyHealing.TabIndex = 5;
+            this.enableOutOfPartyHealing.Text = "Enable Out Of Party PL Curing";
+            this.toolTip1.SetToolTip(this.enableOutOfPartyHealing, "When enabled this will enable an additional check for the PL to cure itself shoul" +
+        "d it\'s HP drop below specified Cure options. (Intended for when PL is not in the" +
+        " monitored players party)");
+            this.enableOutOfPartyHealing.UseVisualStyleBackColor = true;
+            // 
+            // enableMonitoredPriority
+            // 
+            this.enableMonitoredPriority.AutoSize = true;
+            this.enableMonitoredPriority.Location = new System.Drawing.Point(7, 98);
+            this.enableMonitoredPriority.Name = "enableMonitoredPriority";
+            this.enableMonitoredPriority.Size = new System.Drawing.Size(164, 19);
+            this.enableMonitoredPriority.TabIndex = 2;
+            this.enableMonitoredPriority.Text = "Enable Monitored Priority";
+            this.toolTip1.SetToolTip(this.enableMonitoredPriority, "When enabled this will place the minotired target at maximum priority over the HP" +
+        " and Normal PT members.");
+            this.enableMonitoredPriority.UseVisualStyleBackColor = true;
+            // 
+            // Undercure
+            // 
+            this.Undercure.AutoSize = true;
+            this.Undercure.Location = new System.Drawing.Point(7, 76);
+            this.Undercure.Name = "Undercure";
+            this.Undercure.Size = new System.Drawing.Size(146, 19);
+            this.Undercure.TabIndex = 1;
+            this.Undercure.Text = "Enable UNDERCURE";
+            this.toolTip1.SetToolTip(this.Undercure, resources.GetString("Undercure.ToolTip"));
+            this.Undercure.UseVisualStyleBackColor = true;
+            // 
+            // Overcure
+            // 
+            this.Overcure.AutoSize = true;
+            this.Overcure.Location = new System.Drawing.Point(7, 31);
+            this.Overcure.Name = "Overcure";
+            this.Overcure.Size = new System.Drawing.Size(135, 19);
+            this.Overcure.TabIndex = 0;
+            this.Overcure.Text = "Enable OVERCURE";
+            this.toolTip1.SetToolTip(this.Overcure, resources.GetString("Overcure.ToolTip"));
+            this.Overcure.UseVisualStyleBackColor = true;
+            // 
             // curagaPercentageValueLabel
             // 
             this.curagaPercentageValueLabel.AutoSize = true;
-            this.curagaPercentageValueLabel.Location = new System.Drawing.Point(554, 16);
+            this.curagaPercentageValueLabel.Location = new System.Drawing.Point(364, 29);
             this.curagaPercentageValueLabel.Name = "curagaPercentageValueLabel";
             this.curagaPercentageValueLabel.Size = new System.Drawing.Size(14, 15);
             this.curagaPercentageValueLabel.TabIndex = 9;
@@ -789,10 +828,10 @@ namespace CurePlease
             // 
             // curagaCurePercentage
             // 
-            this.curagaCurePercentage.Location = new System.Drawing.Point(405, 40);
+            this.curagaCurePercentage.Location = new System.Drawing.Point(182, 53);
             this.curagaCurePercentage.Maximum = 100;
             this.curagaCurePercentage.Name = "curagaCurePercentage";
-            this.curagaCurePercentage.Size = new System.Drawing.Size(323, 45);
+            this.curagaCurePercentage.Size = new System.Drawing.Size(273, 45);
             this.curagaCurePercentage.TabIndex = 8;
             this.toolTip1.SetToolTip(this.curagaCurePercentage, resources.GetString("curagaCurePercentage.ToolTip"));
             this.curagaCurePercentage.Value = 75;
@@ -801,7 +840,7 @@ namespace CurePlease
             // label30
             // 
             this.label30.AutoSize = true;
-            this.label30.Location = new System.Drawing.Point(369, 16);
+            this.label30.Location = new System.Drawing.Point(179, 29);
             this.label30.Name = "label30";
             this.label30.Size = new System.Drawing.Size(108, 15);
             this.label30.TabIndex = 8;
@@ -810,7 +849,7 @@ namespace CurePlease
             // 
             // curaga5Amount
             // 
-            this.curaga5Amount.Location = new System.Drawing.Point(88, 110);
+            this.curaga5Amount.Location = new System.Drawing.Point(88, 123);
             this.curaga5Amount.Maximum = new decimal(new int[] {
             99999,
             0,
@@ -823,7 +862,7 @@ namespace CurePlease
             // 
             // curaga4Amount
             // 
-            this.curaga4Amount.Location = new System.Drawing.Point(88, 87);
+            this.curaga4Amount.Location = new System.Drawing.Point(88, 100);
             this.curaga4Amount.Maximum = new decimal(new int[] {
             99999,
             0,
@@ -836,7 +875,7 @@ namespace CurePlease
             // 
             // curaga3Amount
             // 
-            this.curaga3Amount.Location = new System.Drawing.Point(88, 64);
+            this.curaga3Amount.Location = new System.Drawing.Point(88, 77);
             this.curaga3Amount.Maximum = new decimal(new int[] {
             99999,
             0,
@@ -849,7 +888,7 @@ namespace CurePlease
             // 
             // curaga2Amount
             // 
-            this.curaga2Amount.Location = new System.Drawing.Point(88, 41);
+            this.curaga2Amount.Location = new System.Drawing.Point(88, 54);
             this.curaga2Amount.Maximum = new decimal(new int[] {
             99999,
             0,
@@ -862,7 +901,7 @@ namespace CurePlease
             // 
             // curagaAmount
             // 
-            this.curagaAmount.Location = new System.Drawing.Point(88, 18);
+            this.curagaAmount.Location = new System.Drawing.Point(88, 31);
             this.curagaAmount.Maximum = new decimal(new int[] {
             99999,
             0,
@@ -1238,21 +1277,20 @@ namespace CurePlease
             // entrustSpell_target
             // 
             this.entrustSpell_target.Enabled = false;
-            this.entrustSpell_target.Location = new System.Drawing.Point(91, 449);
+            this.entrustSpell_target.Location = new System.Drawing.Point(6, 500);
             this.entrustSpell_target.Name = "entrustSpell_target";
-            this.entrustSpell_target.Size = new System.Drawing.Size(174, 21);
+            this.entrustSpell_target.Size = new System.Drawing.Size(154, 21);
             this.entrustSpell_target.TabIndex = 3;
-            this.toolTip1.SetToolTip(this.entrustSpell_target, "Input the name of the character you want the buff to be cast on, will only be use" +
-        "d in combat.");
+            this.toolTip1.SetToolTip(this.entrustSpell_target, "Empty for <P1>");
             // 
             // GEOSpell_target
             // 
             this.GEOSpell_target.Enabled = false;
-            this.GEOSpell_target.Location = new System.Drawing.Point(144, 449);
+            this.GEOSpell_target.Location = new System.Drawing.Point(9, 500);
             this.GEOSpell_target.Name = "GEOSpell_target";
-            this.GEOSpell_target.Size = new System.Drawing.Size(117, 21);
+            this.GEOSpell_target.Size = new System.Drawing.Size(151, 21);
             this.GEOSpell_target.TabIndex = 3;
-            this.toolTip1.SetToolTip(this.GEOSpell_target, "Input the name of the character you want GEO buffs to target");
+            this.toolTip1.SetToolTip(this.GEOSpell_target, "Blank for Monitored");
             // 
             // marcato
             // 
@@ -1266,49 +1304,15 @@ namespace CurePlease
         "he 1.5 potency.");
             this.marcato.UseVisualStyleBackColor = true;
             // 
-            // FullCircleBox
-            // 
-            this.FullCircleBox.AutoSize = true;
-            this.FullCircleBox.Location = new System.Drawing.Point(20, 48);
-            this.FullCircleBox.Name = "FullCircleBox";
-            this.FullCircleBox.Size = new System.Drawing.Size(80, 19);
-            this.FullCircleBox.TabIndex = 5;
-            this.FullCircleBox.Text = "Full Circle";
-            this.toolTip1.SetToolTip(this.FullCircleBox, "When Luopan is 6.8 yalms further than the Monitored player it will wait 3 seconds" +
-        " then Full Circle the GEO spell.");
-            this.FullCircleBox.UseVisualStyleBackColor = true;
-            // 
-            // DematerializeBox
-            // 
-            this.DematerializeBox.AutoSize = true;
-            this.DematerializeBox.Location = new System.Drawing.Point(20, 73);
-            this.DematerializeBox.Name = "DematerializeBox";
-            this.DematerializeBox.Size = new System.Drawing.Size(103, 19);
-            this.DematerializeBox.TabIndex = 4;
-            this.DematerializeBox.Text = "Dematerialize";
-            this.toolTip1.SetToolTip(this.DematerializeBox, "Used only when the GEO spell is monster targeted");
-            this.DematerializeBox.UseVisualStyleBackColor = true;
-            // 
-            // EntrustBox
-            // 
-            this.EntrustBox.AutoSize = true;
-            this.EntrustBox.Location = new System.Drawing.Point(20, 23);
-            this.EntrustBox.Name = "EntrustBox";
-            this.EntrustBox.Size = new System.Drawing.Size(64, 19);
-            this.EntrustBox.TabIndex = 3;
-            this.EntrustBox.Text = "Entrust";
-            this.toolTip1.SetToolTip(this.EntrustBox, "Set the spell and target to use on the Geomancy page.");
-            this.EntrustBox.UseVisualStyleBackColor = true;
-            // 
             // convert
             // 
             this.convert.AutoSize = true;
             this.convert.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.convert.Location = new System.Drawing.Point(6, 44);
             this.convert.Name = "convert";
-            this.convert.Size = new System.Drawing.Size(63, 17);
+            this.convert.Size = new System.Drawing.Size(146, 17);
             this.convert.TabIndex = 0;
-            this.convert.Text = "Convert";
+            this.convert.Text = "Convert when MP Below:";
             this.toolTip1.SetToolTip(this.convert, "Convert at 10% MP");
             this.convert.UseVisualStyleBackColor = true;
             // 
@@ -1327,16 +1331,15 @@ namespace CurePlease
             // 
             this.groupBox16.BorderColor = System.Drawing.Color.SlateGray;
             this.groupBox16.Controls.Add(this.AssistSpecifiedTarget);
-            this.groupBox16.Controls.Add(this.label8);
             this.groupBox16.Controls.Add(this.autoTarget_target);
             this.groupBox16.Controls.Add(this.label37);
             this.groupBox16.Controls.Add(this.label36);
             this.groupBox16.Controls.Add(this.Hate_SpellType);
             this.groupBox16.Controls.Add(this.autoTarget);
             this.groupBox16.Controls.Add(this.autoTargetSpell);
-            this.groupBox16.Location = new System.Drawing.Point(368, 351);
+            this.groupBox16.Location = new System.Drawing.Point(369, 6);
             this.groupBox16.Name = "groupBox16";
-            this.groupBox16.Size = new System.Drawing.Size(431, 124);
+            this.groupBox16.Size = new System.Drawing.Size(431, 105);
             this.groupBox16.TabIndex = 50;
             this.groupBox16.TabStop = false;
             this.groupBox16.Text = "Auto Casting Spells";
@@ -1346,26 +1349,17 @@ namespace CurePlease
             // AssistSpecifiedTarget
             // 
             this.AssistSpecifiedTarget.AutoSize = true;
-            this.AssistSpecifiedTarget.Location = new System.Drawing.Point(8, 101);
+            this.AssistSpecifiedTarget.Location = new System.Drawing.Point(6, 76);
             this.AssistSpecifiedTarget.Name = "AssistSpecifiedTarget";
-            this.AssistSpecifiedTarget.Size = new System.Drawing.Size(143, 19);
+            this.AssistSpecifiedTarget.Size = new System.Drawing.Size(135, 19);
             this.AssistSpecifiedTarget.TabIndex = 17;
-            this.AssistSpecifiedTarget.Text = "Assist specified target";
+            this.AssistSpecifiedTarget.Text = "Assist specific target";
             this.toolTip1.SetToolTip(this.AssistSpecifiedTarget, "Enter the name of the player to check in the SPELL TARGET textbox.");
             this.AssistSpecifiedTarget.UseVisualStyleBackColor = true;
             // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(212, 77);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(45, 15);
-            this.label8.TabIndex = 16;
-            this.label8.Text = "Target:";
-            // 
             // autoTarget_target
             // 
-            this.autoTarget_target.Location = new System.Drawing.Point(258, 74);
+            this.autoTarget_target.Location = new System.Drawing.Point(144, 74);
             this.autoTarget_target.Name = "autoTarget_target";
             this.autoTarget_target.Size = new System.Drawing.Size(135, 21);
             this.autoTarget_target.TabIndex = 15;
@@ -1373,7 +1367,7 @@ namespace CurePlease
             // label37
             // 
             this.label37.AutoSize = true;
-            this.label37.Location = new System.Drawing.Point(21, 77);
+            this.label37.Location = new System.Drawing.Point(238, 45);
             this.label37.Name = "label37";
             this.label37.Size = new System.Drawing.Size(75, 15);
             this.label37.TabIndex = 14;
@@ -1424,94 +1418,13 @@ namespace CurePlease
             // 
             // autoTargetSpell
             // 
-            this.autoTargetSpell.Location = new System.Drawing.Point(102, 74);
+            this.autoTargetSpell.Location = new System.Drawing.Point(319, 42);
             this.autoTargetSpell.Name = "autoTargetSpell";
             this.autoTargetSpell.Size = new System.Drawing.Size(100, 21);
             this.autoTargetSpell.TabIndex = 9;
             this.toolTip1.SetToolTip(this.autoTargetSpell, "ENEMY BASED: \r\nWill /assist the monitored player to get the target then cast the " +
         "defined spell.\r\n \r\nPARTY BASED:\r\nWill wait until the Monitored player engages th" +
         "en will cast the defined spell on them.");
-            // 
-            // DevotionTargetName
-            // 
-            this.DevotionTargetName.Location = new System.Drawing.Point(263, 45);
-            this.DevotionTargetName.Name = "DevotionTargetName";
-            this.DevotionTargetName.Size = new System.Drawing.Size(121, 21);
-            this.DevotionTargetName.TabIndex = 39;
-            this.toolTip1.SetToolTip(this.DevotionTargetName, "Will ONLY be used on members with a native MP above 700 unless a specified target" +
-        " is selected.");
-            // 
-            // DevotionTargetType
-            // 
-            this.DevotionTargetType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.DevotionTargetType.FormattingEnabled = true;
-            this.DevotionTargetType.Items.AddRange(new object[] {
-            "Specific Member",
-            "Lowest MP"});
-            this.DevotionTargetType.Location = new System.Drawing.Point(136, 44);
-            this.DevotionTargetType.Name = "DevotionTargetType";
-            this.DevotionTargetType.Size = new System.Drawing.Size(121, 23);
-            this.DevotionTargetType.TabIndex = 38;
-            this.toolTip1.SetToolTip(this.DevotionTargetType, "Will ONLY be used on members with a native MP above 700 unless a specified target" +
-        " is selected.");
-            // 
-            // label34
-            // 
-            this.label34.AutoSize = true;
-            this.label34.Location = new System.Drawing.Point(24, 48);
-            this.label34.Name = "label34";
-            this.label34.Size = new System.Drawing.Size(90, 15);
-            this.label34.TabIndex = 37;
-            this.label34.Text = "Target method:";
-            this.toolTip1.SetToolTip(this.label34, "Will ONLY be used on members with a native MP above 700 unless a specified target" +
-        " is selected.");
-            // 
-            // enableOutOfPartyHealing
-            // 
-            this.enableOutOfPartyHealing.AutoSize = true;
-            this.enableOutOfPartyHealing.Location = new System.Drawing.Point(7, 111);
-            this.enableOutOfPartyHealing.Name = "enableOutOfPartyHealing";
-            this.enableOutOfPartyHealing.Size = new System.Drawing.Size(189, 19);
-            this.enableOutOfPartyHealing.TabIndex = 5;
-            this.enableOutOfPartyHealing.Text = "Enable Out Of Party PL Curing";
-            this.toolTip1.SetToolTip(this.enableOutOfPartyHealing, "When enabled this will enable an additional check for the PL to cure itself shoul" +
-        "d it\'s HP drop below specified Cure options. (Intended for when PL is not in the" +
-        " monitored players party)");
-            this.enableOutOfPartyHealing.UseVisualStyleBackColor = true;
-            // 
-            // enableMonitoredPriority
-            // 
-            this.enableMonitoredPriority.AutoSize = true;
-            this.enableMonitoredPriority.Location = new System.Drawing.Point(7, 87);
-            this.enableMonitoredPriority.Name = "enableMonitoredPriority";
-            this.enableMonitoredPriority.Size = new System.Drawing.Size(164, 19);
-            this.enableMonitoredPriority.TabIndex = 2;
-            this.enableMonitoredPriority.Text = "Enable Monitored Priority";
-            this.toolTip1.SetToolTip(this.enableMonitoredPriority, "When enabled this will place the minotired target at maximum priority over the HP" +
-        " and Normal PT members.");
-            this.enableMonitoredPriority.UseVisualStyleBackColor = true;
-            // 
-            // Undercure
-            // 
-            this.Undercure.AutoSize = true;
-            this.Undercure.Location = new System.Drawing.Point(7, 65);
-            this.Undercure.Name = "Undercure";
-            this.Undercure.Size = new System.Drawing.Size(146, 19);
-            this.Undercure.TabIndex = 1;
-            this.Undercure.Text = "Enable UNDERCURE";
-            this.toolTip1.SetToolTip(this.Undercure, resources.GetString("Undercure.ToolTip"));
-            this.Undercure.UseVisualStyleBackColor = true;
-            // 
-            // Overcure
-            // 
-            this.Overcure.AutoSize = true;
-            this.Overcure.Location = new System.Drawing.Point(7, 20);
-            this.Overcure.Name = "Overcure";
-            this.Overcure.Size = new System.Drawing.Size(135, 19);
-            this.Overcure.TabIndex = 0;
-            this.Overcure.Text = "Enable OVERCURE";
-            this.toolTip1.SetToolTip(this.Overcure, resources.GetString("Overcure.ToolTip"));
-            this.Overcure.UseVisualStyleBackColor = true;
             // 
             // healWhenMPBelow
             // 
@@ -1659,6 +1572,75 @@ namespace CurePlease
         " yalms and no action is being performed.");
             this.FFXIDefaultAutoFollow.UseVisualStyleBackColor = true;
             // 
+            // FullCircleBox
+            // 
+            this.FullCircleBox.AutoSize = true;
+            this.FullCircleBox.Location = new System.Drawing.Point(7, 20);
+            this.FullCircleBox.Name = "FullCircleBox";
+            this.FullCircleBox.Size = new System.Drawing.Size(80, 19);
+            this.FullCircleBox.TabIndex = 5;
+            this.FullCircleBox.Text = "Full Circle";
+            this.toolTip1.SetToolTip(this.FullCircleBox, "When Luopan is 6.8 yalms further than the Monitored player it will wait 3 seconds" +
+        " then Full Circle the GEO spell.");
+            this.FullCircleBox.UseVisualStyleBackColor = true;
+            // 
+            // DematerializeBox
+            // 
+            this.DematerializeBox.AutoSize = true;
+            this.DematerializeBox.Location = new System.Drawing.Point(145, 46);
+            this.DematerializeBox.Name = "DematerializeBox";
+            this.DematerializeBox.Size = new System.Drawing.Size(103, 19);
+            this.DematerializeBox.TabIndex = 4;
+            this.DematerializeBox.Text = "Dematerialize";
+            this.toolTip1.SetToolTip(this.DematerializeBox, "Used only when the GEO spell is monster targeted");
+            this.DematerializeBox.UseVisualStyleBackColor = true;
+            // 
+            // EnableEntrust
+            // 
+            this.EnableEntrust.AutoSize = true;
+            this.EnableEntrust.Location = new System.Drawing.Point(6, 20);
+            this.EnableEntrust.Name = "EnableEntrust";
+            this.EnableEntrust.Size = new System.Drawing.Size(72, 19);
+            this.EnableEntrust.TabIndex = 3;
+            this.EnableEntrust.Text = "Enabled";
+            this.toolTip1.SetToolTip(this.EnableEntrust, "Set the spell and target to use on the Geomancy page.");
+            this.EnableEntrust.UseVisualStyleBackColor = true;
+            this.EnableEntrust.CheckedChanged += new System.EventHandler(this.EnableEntrust_CheckedChanged);
+            // 
+            // DevotionTargetName
+            // 
+            this.DevotionTargetName.Location = new System.Drawing.Point(121, 197);
+            this.DevotionTargetName.Name = "DevotionTargetName";
+            this.DevotionTargetName.Size = new System.Drawing.Size(96, 21);
+            this.DevotionTargetName.TabIndex = 45;
+            this.toolTip1.SetToolTip(this.DevotionTargetName, "Will ONLY be used on members with a native MP above 700 unless a specified target" +
+        " is selected.");
+            // 
+            // DevotionTargetType
+            // 
+            this.DevotionTargetType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.DevotionTargetType.FormattingEnabled = true;
+            this.DevotionTargetType.Items.AddRange(new object[] {
+            "Specific Member",
+            "Lowest MP"});
+            this.DevotionTargetType.Location = new System.Drawing.Point(28, 197);
+            this.DevotionTargetType.Name = "DevotionTargetType";
+            this.DevotionTargetType.Size = new System.Drawing.Size(87, 23);
+            this.DevotionTargetType.TabIndex = 44;
+            this.toolTip1.SetToolTip(this.DevotionTargetType, "Will ONLY be used on members with a native MP above 700 unless a specified target" +
+        " is selected.");
+            // 
+            // label34
+            // 
+            this.label34.AutoSize = true;
+            this.label34.Location = new System.Drawing.Point(25, 179);
+            this.label34.Name = "label34";
+            this.label34.Size = new System.Drawing.Size(90, 15);
+            this.label34.TabIndex = 43;
+            this.label34.Text = "Target method:";
+            this.toolTip1.SetToolTip(this.label34, "Will ONLY be used on members with a native MP above 700 unless a specified target" +
+        " is selected.");
+            // 
             // saveAsButton
             // 
             this.saveAsButton.Location = new System.Drawing.Point(580, 597);
@@ -1685,6 +1667,7 @@ namespace CurePlease
             // 
             // tabPage7
             // 
+            this.tabPage7.Controls.Add(this.groupBox33);
             this.tabPage7.Controls.Add(this.groupBoxEx1);
             this.tabPage7.Controls.Add(this.groupBox18);
             this.tabPage7.Controls.Add(this.groupBox17);
@@ -1697,6 +1680,39 @@ namespace CurePlease
             this.tabPage7.TabIndex = 6;
             this.tabPage7.Text = "Program Options";
             this.tabPage7.UseVisualStyleBackColor = true;
+            // 
+            // groupBox33
+            // 
+            this.groupBox33.BorderColor = System.Drawing.Color.SlateGray;
+            this.groupBox33.Controls.Add(this.label25);
+            this.groupBox33.Controls.Add(this.enableAddOn);
+            this.groupBox33.Location = new System.Drawing.Point(6, 7);
+            this.groupBox33.Name = "groupBox33";
+            this.groupBox33.Size = new System.Drawing.Size(393, 129);
+            this.groupBox33.TabIndex = 43;
+            this.groupBox33.TabStop = false;
+            this.groupBox33.Text = "Cure Please Add On";
+            // 
+            // label25
+            // 
+            this.label25.AutoSize = true;
+            this.label25.Location = new System.Drawing.Point(4, 48);
+            this.label25.Name = "label25";
+            this.label25.Size = new System.Drawing.Size(304, 75);
+            this.label25.TabIndex = 1;
+            this.label25.Text = "ADD ON REQUIRED FOR/GRANTS THE FOLLOWING:\r\n\r\n1. Required for party \'na removal\r\n2" +
+    ". Recast spells when the buff wears on PT members.\r\n3. Further casting time opti" +
+    "mization.";
+            // 
+            // enableAddOn
+            // 
+            this.enableAddOn.AutoSize = true;
+            this.enableAddOn.Location = new System.Drawing.Point(7, 21);
+            this.enableAddOn.Name = "enableAddOn";
+            this.enableAddOn.Size = new System.Drawing.Size(178, 19);
+            this.enableAddOn.TabIndex = 0;
+            this.enableAddOn.Text = "Enable Cure Please Add On";
+            this.enableAddOn.UseVisualStyleBackColor = true;
             // 
             // groupBoxEx1
             // 
@@ -1746,9 +1762,9 @@ namespace CurePlease
             this.groupBox18.Controls.Add(this.ipAddress);
             this.groupBox18.Controls.Add(this.label38);
             this.groupBox18.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox18.Location = new System.Drawing.Point(405, 6);
+            this.groupBox18.Location = new System.Drawing.Point(6, 421);
             this.groupBox18.Name = "groupBox18";
-            this.groupBox18.Size = new System.Drawing.Size(395, 80);
+            this.groupBox18.Size = new System.Drawing.Size(393, 130);
             this.groupBox18.TabIndex = 18;
             this.groupBox18.TabStop = false;
             this.groupBox18.Text = "CurePlease Addon Data";
@@ -1761,9 +1777,9 @@ namespace CurePlease
             this.groupBox17.Controls.Add(this.label24);
             this.groupBox17.Controls.Add(this.enableFastCast_Mode);
             this.groupBox17.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox17.Location = new System.Drawing.Point(6, 204);
+            this.groupBox17.Location = new System.Drawing.Point(6, 142);
             this.groupBox17.Name = "groupBox17";
-            this.groupBox17.Size = new System.Drawing.Size(393, 347);
+            this.groupBox17.Size = new System.Drawing.Size(393, 273);
             this.groupBox17.TabIndex = 17;
             this.groupBox17.TabStop = false;
             this.groupBox17.Text = "Casting Check mode";
@@ -1822,9 +1838,9 @@ namespace CurePlease
             this.groupBox14.Controls.Add(this.label33);
             this.groupBox14.Controls.Add(this.label32);
             this.groupBox14.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox14.Location = new System.Drawing.Point(405, 92);
+            this.groupBox14.Location = new System.Drawing.Point(405, 142);
             this.groupBox14.Name = "groupBox14";
-            this.groupBox14.Size = new System.Drawing.Size(395, 291);
+            this.groupBox14.Size = new System.Drawing.Size(395, 241);
             this.groupBox14.TabIndex = 16;
             this.groupBox14.TabStop = false;
             this.groupBox14.Text = "PL Follow Options";
@@ -1832,7 +1848,7 @@ namespace CurePlease
             // panel9
             // 
             this.panel9.Controls.Add(this.label56);
-            this.panel9.Location = new System.Drawing.Point(29, 194);
+            this.panel9.Location = new System.Drawing.Point(29, 163);
             this.panel9.Name = "panel9";
             this.panel9.Size = new System.Drawing.Size(334, 75);
             this.panel9.TabIndex = 19;
@@ -1840,7 +1856,7 @@ namespace CurePlease
             // label56
             // 
             this.label56.AutoSize = true;
-            this.label56.Location = new System.Drawing.Point(8, 3);
+            this.label56.Location = new System.Drawing.Point(3, 7);
             this.label56.Name = "label56";
             this.label56.Size = new System.Drawing.Size(292, 60);
             this.label56.TabIndex = 7;
@@ -1922,9 +1938,9 @@ namespace CurePlease
             this.groupBox13.Controls.Add(this.pauseOnStartBox);
             this.groupBox13.Controls.Add(this.pauseOnZoneBox);
             this.groupBox13.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox13.Location = new System.Drawing.Point(6, 6);
+            this.groupBox13.Location = new System.Drawing.Point(405, 6);
             this.groupBox13.Name = "groupBox13";
-            this.groupBox13.Size = new System.Drawing.Size(393, 192);
+            this.groupBox13.Size = new System.Drawing.Size(395, 130);
             this.groupBox13.TabIndex = 15;
             this.groupBox13.TabStop = false;
             this.groupBox13.Text = "Program Options";
@@ -1972,14 +1988,8 @@ namespace CurePlease
             // tabPage5
             // 
             this.tabPage5.Controls.Add(this.groupBox10);
-            this.tabPage5.Controls.Add(this.groupBox36);
             this.tabPage5.Controls.Add(this.groupBox16);
-            this.tabPage5.Controls.Add(this.groupBox15);
             this.tabPage5.Controls.Add(this.Raise);
-            this.tabPage5.Controls.Add(this.groupBox33);
-            this.tabPage5.Controls.Add(this.groupBox32);
-            this.tabPage5.Controls.Add(this.groupBox29);
-            this.tabPage5.Controls.Add(this.groupBox11);
             this.tabPage5.Controls.Add(this.groupBox4);
             this.tabPage5.Location = new System.Drawing.Point(4, 26);
             this.tabPage5.Name = "tabPage5";
@@ -1996,7 +2006,7 @@ namespace CurePlease
             this.groupBox10.Controls.Add(this.TargetRemoval_Delay);
             this.groupBox10.Controls.Add(this.label58);
             this.groupBox10.Controls.Add(this.DisableTargettingCancel);
-            this.groupBox10.Location = new System.Drawing.Point(368, 481);
+            this.groupBox10.Location = new System.Drawing.Point(369, 117);
             this.groupBox10.Name = "groupBox10";
             this.groupBox10.Size = new System.Drawing.Size(431, 73);
             this.groupBox10.TabIndex = 52;
@@ -2038,175 +2048,12 @@ namespace CurePlease
             this.DisableTargettingCancel.Text = "Disable auto target removal";
             this.DisableTargettingCancel.UseVisualStyleBackColor = true;
             // 
-            // groupBox36
-            // 
-            this.groupBox36.BorderColor = System.Drawing.Color.SlateGray;
-            this.groupBox36.Controls.Add(this.label27);
-            this.groupBox36.Controls.Add(this.RadialArcanaSpell);
-            this.groupBox36.Controls.Add(this.label11);
-            this.groupBox36.Controls.Add(this.RadialArcanaMP);
-            this.groupBox36.Controls.Add(this.Fullcircle_GEOTarget);
-            this.groupBox36.Controls.Add(this.Fullcircle_DisableEnemy);
-            this.groupBox36.Location = new System.Drawing.Point(368, 112);
-            this.groupBox36.Name = "groupBox36";
-            this.groupBox36.Size = new System.Drawing.Size(431, 123);
-            this.groupBox36.TabIndex = 51;
-            this.groupBox36.TabStop = false;
-            this.groupBox36.Text = "Full Circle / Radial Arcana Settings";
-            // 
-            // label27
-            // 
-            this.label27.AutoSize = true;
-            this.label27.Location = new System.Drawing.Point(6, 98);
-            this.label27.Name = "label27";
-            this.label27.Size = new System.Drawing.Size(233, 15);
-            this.label27.TabIndex = 41;
-            this.label27.Text = "Geomancy spell to cast for Radial Arcana.";
-            // 
-            // RadialArcanaSpell
-            // 
-            this.RadialArcanaSpell.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.RadialArcanaSpell.FormattingEnabled = true;
-            this.RadialArcanaSpell.Items.AddRange(new object[] {
-            "Geo-Voidance",
-            "Geo-Precision",
-            "Geo-Regen",
-            "Geo-Haste",
-            "Geo-Attunement",
-            "Geo-Focus",
-            "Geo-Barrier",
-            "Geo-Refresh",
-            "Geo-CHR",
-            "Geo-MND",
-            "Geo-Fury",
-            "Geo-INT",
-            "Geo-AGI",
-            "Geo-Fend",
-            "Geo-VIT",
-            "Geo-DEX",
-            "Geo-Acumen",
-            "Geo-STR",
-            "Geo-Poison",
-            "Geo-Slow",
-            "Geo-Torpor",
-            "Geo-Slip",
-            "Geo-Languor",
-            "Geo-Paralysis",
-            "Geo-Vex",
-            "Geo-Frailty",
-            "Geo-Wilt",
-            "Geo-Malaise",
-            "Geo-Gravity",
-            "Geo-Fade"});
-            this.RadialArcanaSpell.Location = new System.Drawing.Point(261, 93);
-            this.RadialArcanaSpell.Name = "RadialArcanaSpell";
-            this.RadialArcanaSpell.Size = new System.Drawing.Size(121, 23);
-            this.RadialArcanaSpell.TabIndex = 40;
-            // 
-            // label11
-            // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(6, 72);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(286, 15);
-            this.label11.TabIndex = 39;
-            this.label11.Text = "Begin Radial Arcana MP recovery when MP below: ";
-            // 
-            // RadialArcanaMP
-            // 
-            this.RadialArcanaMP.Increment = new decimal(new int[] {
-            25,
-            0,
-            0,
-            0});
-            this.RadialArcanaMP.Location = new System.Drawing.Point(298, 68);
-            this.RadialArcanaMP.Maximum = new decimal(new int[] {
-            5000,
-            0,
-            0,
-            0});
-            this.RadialArcanaMP.Name = "RadialArcanaMP";
-            this.RadialArcanaMP.Size = new System.Drawing.Size(84, 21);
-            this.RadialArcanaMP.TabIndex = 38;
-            // 
-            // Fullcircle_GEOTarget
-            // 
-            this.Fullcircle_GEOTarget.AutoSize = true;
-            this.Fullcircle_GEOTarget.Location = new System.Drawing.Point(7, 46);
-            this.Fullcircle_GEOTarget.Name = "Fullcircle_GEOTarget";
-            this.Fullcircle_GEOTarget.Size = new System.Drawing.Size(242, 19);
-            this.Fullcircle_GEOTarget.TabIndex = 1;
-            this.Fullcircle_GEOTarget.Text = "Use GEO-Spell target as distance target";
-            this.Fullcircle_GEOTarget.UseVisualStyleBackColor = true;
-            // 
-            // Fullcircle_DisableEnemy
-            // 
-            this.Fullcircle_DisableEnemy.AutoSize = true;
-            this.Fullcircle_DisableEnemy.Location = new System.Drawing.Point(7, 21);
-            this.Fullcircle_DisableEnemy.Name = "Fullcircle_DisableEnemy";
-            this.Fullcircle_DisableEnemy.Size = new System.Drawing.Size(311, 19);
-            this.Fullcircle_DisableEnemy.TabIndex = 0;
-            this.Fullcircle_DisableEnemy.Text = "Disable FULL CIRCLE for ENEMY based GEO spells";
-            this.Fullcircle_DisableEnemy.UseVisualStyleBackColor = true;
-            // 
-            // groupBox15
-            // 
-            this.groupBox15.BorderColor = System.Drawing.Color.SlateGray;
-            this.groupBox15.Controls.Add(this.DevotionWhenEngaged);
-            this.groupBox15.Controls.Add(this.DevotionTargetName);
-            this.groupBox15.Controls.Add(this.DevotionTargetType);
-            this.groupBox15.Controls.Add(this.label34);
-            this.groupBox15.Controls.Add(this.label35);
-            this.groupBox15.Controls.Add(this.DevotionMP);
-            this.groupBox15.Location = new System.Drawing.Point(368, 241);
-            this.groupBox15.Name = "groupBox15";
-            this.groupBox15.Size = new System.Drawing.Size(431, 105);
-            this.groupBox15.TabIndex = 49;
-            this.groupBox15.TabStop = false;
-            this.groupBox15.Text = "Devotion Settings";
-            // 
-            // DevotionWhenEngaged
-            // 
-            this.DevotionWhenEngaged.AutoSize = true;
-            this.DevotionWhenEngaged.Location = new System.Drawing.Point(6, 75);
-            this.DevotionWhenEngaged.Name = "DevotionWhenEngaged";
-            this.DevotionWhenEngaged.Size = new System.Drawing.Size(386, 19);
-            this.DevotionWhenEngaged.TabIndex = 40;
-            this.DevotionWhenEngaged.Text = "Use Devotion ONLY when monitored player is engaged in combat.";
-            this.DevotionWhenEngaged.UseVisualStyleBackColor = true;
-            // 
-            // label35
-            // 
-            this.label35.AutoSize = true;
-            this.label35.Location = new System.Drawing.Point(21, 21);
-            this.label35.Name = "label35";
-            this.label35.Size = new System.Drawing.Size(272, 15);
-            this.label35.TabIndex = 13;
-            this.label35.Text = "Use Devotion when Party Members MP is below:";
-            // 
-            // DevotionMP
-            // 
-            this.DevotionMP.Increment = new decimal(new int[] {
-            25,
-            0,
-            0,
-            0});
-            this.DevotionMP.Location = new System.Drawing.Point(299, 20);
-            this.DevotionMP.Maximum = new decimal(new int[] {
-            5000,
-            0,
-            0,
-            0});
-            this.DevotionMP.Name = "DevotionMP";
-            this.DevotionMP.Size = new System.Drawing.Size(84, 21);
-            this.DevotionMP.TabIndex = 12;
-            // 
             // Raise
             // 
             this.Raise.BorderColor = System.Drawing.Color.SlateGray;
             this.Raise.Controls.Add(this.acceptRaiseOnlyWhenNotInCombat);
             this.Raise.Controls.Add(this.acceptRaise);
-            this.Raise.Location = new System.Drawing.Point(6, 337);
+            this.Raise.Location = new System.Drawing.Point(6, 174);
             this.Raise.Name = "Raise";
             this.Raise.Size = new System.Drawing.Size(351, 76);
             this.Raise.TabIndex = 43;
@@ -2232,140 +2079,6 @@ namespace CurePlease
             this.acceptRaise.TabIndex = 0;
             this.acceptRaise.Text = "Accept Raise when available";
             this.acceptRaise.UseVisualStyleBackColor = true;
-            // 
-            // groupBox33
-            // 
-            this.groupBox33.BorderColor = System.Drawing.Color.SlateGray;
-            this.groupBox33.Controls.Add(this.label25);
-            this.groupBox33.Controls.Add(this.enableAddOn);
-            this.groupBox33.Location = new System.Drawing.Point(6, 419);
-            this.groupBox33.Name = "groupBox33";
-            this.groupBox33.Size = new System.Drawing.Size(351, 135);
-            this.groupBox33.TabIndex = 42;
-            this.groupBox33.TabStop = false;
-            this.groupBox33.Text = "Cure Please Add On";
-            // 
-            // label25
-            // 
-            this.label25.AutoSize = true;
-            this.label25.Location = new System.Drawing.Point(7, 50);
-            this.label25.Name = "label25";
-            this.label25.Size = new System.Drawing.Size(304, 75);
-            this.label25.TabIndex = 1;
-            this.label25.Text = "ADD ON REQUIRED FOR/GRANTS THE FOLLOWING:\r\n\r\n1. Required for party \'na removal\r\n2" +
-    ". Recast spells when the buff wears on PT members.\r\n3. Further casting time opti" +
-    "mization.";
-            // 
-            // enableAddOn
-            // 
-            this.enableAddOn.AutoSize = true;
-            this.enableAddOn.Location = new System.Drawing.Point(7, 21);
-            this.enableAddOn.Name = "enableAddOn";
-            this.enableAddOn.Size = new System.Drawing.Size(178, 19);
-            this.enableAddOn.TabIndex = 0;
-            this.enableAddOn.Text = "Enable Cure Please Add On";
-            this.enableAddOn.UseVisualStyleBackColor = true;
-            // 
-            // groupBox32
-            // 
-            this.groupBox32.BorderColor = System.Drawing.Color.SlateGray;
-            this.groupBox32.Controls.Add(this.enableOutOfPartyHealing);
-            this.groupBox32.Controls.Add(this.OvercureOnHighPriority);
-            this.groupBox32.Controls.Add(this.enableMonitoredPriority);
-            this.groupBox32.Controls.Add(this.Undercure);
-            this.groupBox32.Controls.Add(this.Overcure);
-            this.groupBox32.Location = new System.Drawing.Point(6, 174);
-            this.groupBox32.Name = "groupBox32";
-            this.groupBox32.Size = new System.Drawing.Size(351, 157);
-            this.groupBox32.TabIndex = 41;
-            this.groupBox32.TabStop = false;
-            this.groupBox32.Text = "Cure Settings";
-            // 
-            // OvercureOnHighPriority
-            // 
-            this.OvercureOnHighPriority.AutoSize = true;
-            this.OvercureOnHighPriority.Location = new System.Drawing.Point(7, 42);
-            this.OvercureOnHighPriority.Name = "OvercureOnHighPriority";
-            this.OvercureOnHighPriority.Size = new System.Drawing.Size(296, 19);
-            this.OvercureOnHighPriority.TabIndex = 3;
-            this.OvercureOnHighPriority.Text = "Enable OVERCURE on High Priority targets ONLY";
-            this.OvercureOnHighPriority.UseVisualStyleBackColor = true;
-            // 
-            // groupBox29
-            // 
-            this.groupBox29.BorderColor = System.Drawing.Color.SlateGray;
-            this.groupBox29.Controls.Add(this.label51);
-            this.groupBox29.Controls.Add(this.sublimationMP);
-            this.groupBox29.Location = new System.Drawing.Point(368, 62);
-            this.groupBox29.Name = "groupBox29";
-            this.groupBox29.Size = new System.Drawing.Size(432, 44);
-            this.groupBox29.TabIndex = 40;
-            this.groupBox29.TabStop = false;
-            this.groupBox29.Text = "Sublimation Settings";
-            // 
-            // label51
-            // 
-            this.label51.AutoSize = true;
-            this.label51.Location = new System.Drawing.Point(21, 17);
-            this.label51.Name = "label51";
-            this.label51.Size = new System.Drawing.Size(250, 15);
-            this.label51.TabIndex = 17;
-            this.label51.Text = "Use Sublimation when MP loss greater than:";
-            // 
-            // sublimationMP
-            // 
-            this.sublimationMP.Increment = new decimal(new int[] {
-            25,
-            0,
-            0,
-            0});
-            this.sublimationMP.Location = new System.Drawing.Point(277, 15);
-            this.sublimationMP.Maximum = new decimal(new int[] {
-            5000,
-            0,
-            0,
-            0});
-            this.sublimationMP.Name = "sublimationMP";
-            this.sublimationMP.Size = new System.Drawing.Size(84, 21);
-            this.sublimationMP.TabIndex = 16;
-            // 
-            // groupBox11
-            // 
-            this.groupBox11.BorderColor = System.Drawing.Color.SlateGray;
-            this.groupBox11.Controls.Add(this.label26);
-            this.groupBox11.Controls.Add(this.ConvertMP);
-            this.groupBox11.Location = new System.Drawing.Point(368, 6);
-            this.groupBox11.Name = "groupBox11";
-            this.groupBox11.Size = new System.Drawing.Size(432, 50);
-            this.groupBox11.TabIndex = 11;
-            this.groupBox11.TabStop = false;
-            this.groupBox11.Text = "Convert Settings";
-            // 
-            // label26
-            // 
-            this.label26.AutoSize = true;
-            this.label26.Location = new System.Drawing.Point(21, 18);
-            this.label26.Name = "label26";
-            this.label26.Size = new System.Drawing.Size(148, 15);
-            this.label26.TabIndex = 15;
-            this.label26.Text = "Convert when MP below:  ";
-            // 
-            // ConvertMP
-            // 
-            this.ConvertMP.Increment = new decimal(new int[] {
-            25,
-            0,
-            0,
-            0});
-            this.ConvertMP.Location = new System.Drawing.Point(175, 16);
-            this.ConvertMP.Maximum = new decimal(new int[] {
-            5000,
-            0,
-            0,
-            0});
-            this.ConvertMP.Name = "ConvertMP";
-            this.ConvertMP.Size = new System.Drawing.Size(84, 21);
-            this.ConvertMP.TabIndex = 14;
             // 
             // groupBox4
             // 
@@ -2422,7 +2135,6 @@ namespace CurePlease
             // tabPage3
             // 
             this.tabPage3.Controls.Add(this.groupBox24);
-            this.tabPage3.Controls.Add(this.groupBox8);
             this.tabPage3.Controls.Add(this.rdmJAgroup);
             this.tabPage3.Controls.Add(this.schJAgroup);
             this.tabPage3.Controls.Add(this.whmJAgroup);
@@ -2441,9 +2153,9 @@ namespace CurePlease
             this.groupBox24.Controls.Add(this.nightingale);
             this.groupBox24.Controls.Add(this.pianissimo);
             this.groupBox24.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox24.Location = new System.Drawing.Point(600, 5);
+            this.groupBox24.Location = new System.Drawing.Point(631, 5);
             this.groupBox24.Name = "groupBox24";
-            this.groupBox24.Size = new System.Drawing.Size(201, 549);
+            this.groupBox24.Size = new System.Drawing.Size(170, 273);
             this.groupBox24.TabIndex = 3;
             this.groupBox24.TabStop = false;
             this.groupBox24.Text = "Bard";
@@ -2479,76 +2191,36 @@ namespace CurePlease
             this.pianissimo.Text = "Pianissimo";
             this.pianissimo.UseVisualStyleBackColor = true;
             // 
-            // groupBox8
-            // 
-            this.groupBox8.BorderColor = System.Drawing.Color.SlateGray;
-            this.groupBox8.Controls.Add(this.LifeCycleBox);
-            this.groupBox8.Controls.Add(this.EclipticAttritionBox);
-            this.groupBox8.Controls.Add(this.FullCircleBox);
-            this.groupBox8.Controls.Add(this.RadialArcanaBox);
-            this.groupBox8.Controls.Add(this.BlazeOfGloryBox);
-            this.groupBox8.Controls.Add(this.DematerializeBox);
-            this.groupBox8.Controls.Add(this.EntrustBox);
-            this.groupBox8.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox8.Location = new System.Drawing.Point(240, 284);
-            this.groupBox8.Name = "groupBox8";
-            this.groupBox8.Size = new System.Drawing.Size(354, 270);
-            this.groupBox8.TabIndex = 2;
-            this.groupBox8.TabStop = false;
-            this.groupBox8.Text = "Geomancer";
-            // 
-            // LifeCycleBox
-            // 
-            this.LifeCycleBox.AutoSize = true;
-            this.LifeCycleBox.Location = new System.Drawing.Point(20, 173);
-            this.LifeCycleBox.Name = "LifeCycleBox";
-            this.LifeCycleBox.Size = new System.Drawing.Size(78, 19);
-            this.LifeCycleBox.TabIndex = 7;
-            this.LifeCycleBox.Text = "Life Cycle";
-            this.LifeCycleBox.UseVisualStyleBackColor = true;
-            // 
-            // EclipticAttritionBox
-            // 
-            this.EclipticAttritionBox.AutoSize = true;
-            this.EclipticAttritionBox.Location = new System.Drawing.Point(20, 148);
-            this.EclipticAttritionBox.Name = "EclipticAttritionBox";
-            this.EclipticAttritionBox.Size = new System.Drawing.Size(108, 19);
-            this.EclipticAttritionBox.TabIndex = 6;
-            this.EclipticAttritionBox.Text = "Ecliptic Attrition";
-            this.EclipticAttritionBox.UseVisualStyleBackColor = true;
-            // 
-            // RadialArcanaBox
-            // 
-            this.RadialArcanaBox.AutoSize = true;
-            this.RadialArcanaBox.Location = new System.Drawing.Point(20, 123);
-            this.RadialArcanaBox.Name = "RadialArcanaBox";
-            this.RadialArcanaBox.Size = new System.Drawing.Size(106, 19);
-            this.RadialArcanaBox.TabIndex = 1;
-            this.RadialArcanaBox.Text = "Radial Arcana ";
-            this.RadialArcanaBox.UseVisualStyleBackColor = true;
-            // 
-            // BlazeOfGloryBox
-            // 
-            this.BlazeOfGloryBox.AutoSize = true;
-            this.BlazeOfGloryBox.Location = new System.Drawing.Point(20, 98);
-            this.BlazeOfGloryBox.Name = "BlazeOfGloryBox";
-            this.BlazeOfGloryBox.Size = new System.Drawing.Size(103, 19);
-            this.BlazeOfGloryBox.TabIndex = 3;
-            this.BlazeOfGloryBox.Text = "Blaze Of Glory";
-            this.BlazeOfGloryBox.UseVisualStyleBackColor = true;
-            // 
             // rdmJAgroup
             // 
             this.rdmJAgroup.BorderColor = System.Drawing.Color.SlateGray;
+            this.rdmJAgroup.Controls.Add(this.ConvertMP);
             this.rdmJAgroup.Controls.Add(this.composure);
             this.rdmJAgroup.Controls.Add(this.convert);
             this.rdmJAgroup.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.rdmJAgroup.Location = new System.Drawing.Point(410, 5);
+            this.rdmJAgroup.Location = new System.Drawing.Point(469, 5);
             this.rdmJAgroup.Name = "rdmJAgroup";
-            this.rdmJAgroup.Size = new System.Drawing.Size(184, 273);
+            this.rdmJAgroup.Size = new System.Drawing.Size(156, 273);
             this.rdmJAgroup.TabIndex = 1;
             this.rdmJAgroup.TabStop = false;
             this.rdmJAgroup.Text = "Red Mage";
+            // 
+            // ConvertMP
+            // 
+            this.ConvertMP.Increment = new decimal(new int[] {
+            25,
+            0,
+            0,
+            0});
+            this.ConvertMP.Location = new System.Drawing.Point(25, 62);
+            this.ConvertMP.Maximum = new decimal(new int[] {
+            5000,
+            0,
+            0,
+            0});
+            this.ConvertMP.Name = "ConvertMP";
+            this.ConvertMP.Size = new System.Drawing.Size(84, 21);
+            this.ConvertMP.TabIndex = 16;
             // 
             // composure
             // 
@@ -2563,6 +2235,8 @@ namespace CurePlease
             // schJAgroup
             // 
             this.schJAgroup.BorderColor = System.Drawing.Color.SlateGray;
+            this.schJAgroup.Controls.Add(this.label51);
+            this.schJAgroup.Controls.Add(this.sublimationMP);
             this.schJAgroup.Controls.Add(this.addBlack);
             this.schJAgroup.Controls.Add(this.darkArts);
             this.schJAgroup.Controls.Add(this.sublimation);
@@ -2576,15 +2250,41 @@ namespace CurePlease
             this.schJAgroup.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.schJAgroup.Location = new System.Drawing.Point(3, 3);
             this.schJAgroup.Name = "schJAgroup";
-            this.schJAgroup.Size = new System.Drawing.Size(231, 551);
+            this.schJAgroup.Size = new System.Drawing.Size(231, 304);
             this.schJAgroup.TabIndex = 1;
             this.schJAgroup.TabStop = false;
             this.schJAgroup.Text = "Scholar";
             // 
+            // label51
+            // 
+            this.label51.AutoSize = true;
+            this.label51.Location = new System.Drawing.Point(34, 42);
+            this.label51.Name = "label51";
+            this.label51.Size = new System.Drawing.Size(181, 15);
+            this.label51.TabIndex = 19;
+            this.label51.Text = "Use when MP loss greater than:";
+            // 
+            // sublimationMP
+            // 
+            this.sublimationMP.Increment = new decimal(new int[] {
+            25,
+            0,
+            0,
+            0});
+            this.sublimationMP.Location = new System.Drawing.Point(37, 64);
+            this.sublimationMP.Maximum = new decimal(new int[] {
+            5000,
+            0,
+            0,
+            0});
+            this.sublimationMP.Name = "sublimationMP";
+            this.sublimationMP.Size = new System.Drawing.Size(84, 21);
+            this.sublimationMP.TabIndex = 18;
+            // 
             // addBlack
             // 
             this.addBlack.AutoSize = true;
-            this.addBlack.Location = new System.Drawing.Point(21, 236);
+            this.addBlack.Location = new System.Drawing.Point(21, 279);
             this.addBlack.Name = "addBlack";
             this.addBlack.Size = new System.Drawing.Size(122, 19);
             this.addBlack.TabIndex = 1;
@@ -2594,7 +2294,7 @@ namespace CurePlease
             // darkArts
             // 
             this.darkArts.AutoSize = true;
-            this.darkArts.Location = new System.Drawing.Point(6, 211);
+            this.darkArts.Location = new System.Drawing.Point(6, 254);
             this.darkArts.Name = "darkArts";
             this.darkArts.Size = new System.Drawing.Size(75, 19);
             this.darkArts.TabIndex = 2;
@@ -2615,7 +2315,7 @@ namespace CurePlease
             // 
             this.perpetuance.AutoSize = true;
             this.perpetuance.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.perpetuance.Location = new System.Drawing.Point(37, 142);
+            this.perpetuance.Location = new System.Drawing.Point(37, 185);
             this.perpetuance.Name = "perpetuance";
             this.perpetuance.Size = new System.Drawing.Size(142, 17);
             this.perpetuance.TabIndex = 0;
@@ -2627,7 +2327,7 @@ namespace CurePlease
             this.rapture.AutoSize = true;
             this.rapture.Enabled = false;
             this.rapture.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.rapture.Location = new System.Drawing.Point(37, 188);
+            this.rapture.Location = new System.Drawing.Point(37, 231);
             this.rapture.Name = "rapture";
             this.rapture.Size = new System.Drawing.Size(146, 17);
             this.rapture.TabIndex = 0;
@@ -2638,7 +2338,7 @@ namespace CurePlease
             // 
             this.accession.AutoSize = true;
             this.accession.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.accession.Location = new System.Drawing.Point(37, 119);
+            this.accession.Location = new System.Drawing.Point(37, 162);
             this.accession.Name = "accession";
             this.accession.Size = new System.Drawing.Size(106, 17);
             this.accession.TabIndex = 0;
@@ -2650,7 +2350,7 @@ namespace CurePlease
             this.celerity.AutoSize = true;
             this.celerity.Enabled = false;
             this.celerity.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.celerity.Location = new System.Drawing.Point(37, 96);
+            this.celerity.Location = new System.Drawing.Point(37, 139);
             this.celerity.Name = "celerity";
             this.celerity.Size = new System.Drawing.Size(148, 17);
             this.celerity.TabIndex = 0;
@@ -2662,7 +2362,7 @@ namespace CurePlease
             this.penury.AutoSize = true;
             this.penury.Enabled = false;
             this.penury.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.penury.Location = new System.Drawing.Point(37, 165);
+            this.penury.Location = new System.Drawing.Point(37, 208);
             this.penury.Name = "penury";
             this.penury.Size = new System.Drawing.Size(131, 17);
             this.penury.TabIndex = 0;
@@ -2672,7 +2372,7 @@ namespace CurePlease
             // addWhite
             // 
             this.addWhite.AutoSize = true;
-            this.addWhite.Location = new System.Drawing.Point(20, 71);
+            this.addWhite.Location = new System.Drawing.Point(20, 114);
             this.addWhite.Name = "addWhite";
             this.addWhite.Size = new System.Drawing.Size(123, 19);
             this.addWhite.TabIndex = 0;
@@ -2682,7 +2382,7 @@ namespace CurePlease
             // lightArts
             // 
             this.lightArts.AutoSize = true;
-            this.lightArts.Location = new System.Drawing.Point(6, 46);
+            this.lightArts.Location = new System.Drawing.Point(6, 89);
             this.lightArts.Name = "lightArts";
             this.lightArts.Size = new System.Drawing.Size(76, 19);
             this.lightArts.TabIndex = 0;
@@ -2692,23 +2392,39 @@ namespace CurePlease
             // whmJAgroup
             // 
             this.whmJAgroup.BorderColor = System.Drawing.Color.SlateGray;
+            this.whmJAgroup.Controls.Add(this.DevotionWhenEngaged);
             this.whmJAgroup.Controls.Add(this.DivineCaressBox);
+            this.whmJAgroup.Controls.Add(this.DevotionTargetName);
             this.whmJAgroup.Controls.Add(this.DevotionBox);
+            this.whmJAgroup.Controls.Add(this.DevotionTargetType);
             this.whmJAgroup.Controls.Add(this.divineSealBox);
+            this.whmJAgroup.Controls.Add(this.label34);
             this.whmJAgroup.Controls.Add(this.afflatusMisery);
+            this.whmJAgroup.Controls.Add(this.DevotionMP);
+            this.whmJAgroup.Controls.Add(this.label35);
             this.whmJAgroup.Controls.Add(this.afflatusSolace);
             this.whmJAgroup.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.whmJAgroup.Location = new System.Drawing.Point(240, 4);
             this.whmJAgroup.Name = "whmJAgroup";
-            this.whmJAgroup.Size = new System.Drawing.Size(164, 274);
+            this.whmJAgroup.Size = new System.Drawing.Size(223, 274);
             this.whmJAgroup.TabIndex = 0;
             this.whmJAgroup.TabStop = false;
             this.whmJAgroup.Text = "White Mage";
             // 
+            // DevotionWhenEngaged
+            // 
+            this.DevotionWhenEngaged.AutoSize = true;
+            this.DevotionWhenEngaged.Location = new System.Drawing.Point(28, 222);
+            this.DevotionWhenEngaged.Name = "DevotionWhenEngaged";
+            this.DevotionWhenEngaged.Size = new System.Drawing.Size(167, 49);
+            this.DevotionWhenEngaged.TabIndex = 46;
+            this.DevotionWhenEngaged.Text = "Use Devotion ONLY when\r\nmonitored player is\r\nengaged in combat.";
+            this.DevotionWhenEngaged.UseVisualStyleBackColor = true;
+            // 
             // DivineCaressBox
             // 
             this.DivineCaressBox.AutoSize = true;
-            this.DivineCaressBox.Location = new System.Drawing.Point(6, 119);
+            this.DivineCaressBox.Location = new System.Drawing.Point(6, 94);
             this.DivineCaressBox.Name = "DivineCaressBox";
             this.DivineCaressBox.Size = new System.Drawing.Size(101, 19);
             this.DivineCaressBox.TabIndex = 4;
@@ -2718,7 +2434,7 @@ namespace CurePlease
             // DevotionBox
             // 
             this.DevotionBox.AutoSize = true;
-            this.DevotionBox.Location = new System.Drawing.Point(6, 94);
+            this.DevotionBox.Location = new System.Drawing.Point(6, 119);
             this.DevotionBox.Name = "DevotionBox";
             this.DevotionBox.Size = new System.Drawing.Size(74, 19);
             this.DevotionBox.TabIndex = 3;
@@ -2734,6 +2450,32 @@ namespace CurePlease
             this.afflatusMisery.TabIndex = 1;
             this.afflatusMisery.Text = "Afflatus Misery";
             this.afflatusMisery.UseVisualStyleBackColor = true;
+            // 
+            // DevotionMP
+            // 
+            this.DevotionMP.Increment = new decimal(new int[] {
+            25,
+            0,
+            0,
+            0});
+            this.DevotionMP.Location = new System.Drawing.Point(28, 155);
+            this.DevotionMP.Maximum = new decimal(new int[] {
+            5000,
+            0,
+            0,
+            0});
+            this.DevotionMP.Name = "DevotionMP";
+            this.DevotionMP.Size = new System.Drawing.Size(84, 21);
+            this.DevotionMP.TabIndex = 41;
+            // 
+            // label35
+            // 
+            this.label35.AutoSize = true;
+            this.label35.Location = new System.Drawing.Point(24, 137);
+            this.label35.Name = "label35";
+            this.label35.Size = new System.Drawing.Size(153, 15);
+            this.label35.TabIndex = 42;
+            this.label35.Text = "Use when Party MP below:";
             // 
             // afflatusSolace
             // 
@@ -4100,11 +3842,11 @@ namespace CurePlease
             // 
             // tabPage6
             // 
+            this.tabPage6.Controls.Add(this.groupBox8);
+            this.tabPage6.Controls.Add(this.groupBox36);
+            this.tabPage6.Controls.Add(this.EngagedOnly);
             this.tabPage6.Controls.Add(this.specifiedEngageTarget);
             this.tabPage6.Controls.Add(this.GeoAOE_Engaged);
-            this.tabPage6.Controls.Add(this.EnableLuopanSpells);
-            this.tabPage6.Controls.Add(this.GEO_engaged);
-            this.tabPage6.Controls.Add(this.EnableGeoSpells);
             this.tabPage6.Controls.Add(this.groupBox7);
             this.tabPage6.Controls.Add(this.groupBox6);
             this.tabPage6.Controls.Add(this.groupBox5);
@@ -4116,37 +3858,183 @@ namespace CurePlease
             this.tabPage6.Text = "Geomancy";
             this.tabPage6.UseVisualStyleBackColor = true;
             // 
+            // groupBox8
+            // 
+            this.groupBox8.BorderColor = System.Drawing.Color.SlateGray;
+            this.groupBox8.Controls.Add(this.LifeCycleBox);
+            this.groupBox8.Controls.Add(this.EclipticAttritionBox);
+            this.groupBox8.Controls.Add(this.FullCircleBox);
+            this.groupBox8.Controls.Add(this.RadialArcanaBox);
+            this.groupBox8.Controls.Add(this.BlazeOfGloryBox);
+            this.groupBox8.Controls.Add(this.DematerializeBox);
+            this.groupBox8.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.groupBox8.Location = new System.Drawing.Point(8, 357);
+            this.groupBox8.Name = "groupBox8";
+            this.groupBox8.Size = new System.Drawing.Size(276, 194);
+            this.groupBox8.TabIndex = 53;
+            this.groupBox8.TabStop = false;
+            this.groupBox8.Text = "Job Abilities";
+            // 
+            // LifeCycleBox
+            // 
+            this.LifeCycleBox.AutoSize = true;
+            this.LifeCycleBox.Location = new System.Drawing.Point(7, 70);
+            this.LifeCycleBox.Name = "LifeCycleBox";
+            this.LifeCycleBox.Size = new System.Drawing.Size(78, 19);
+            this.LifeCycleBox.TabIndex = 7;
+            this.LifeCycleBox.Text = "Life Cycle";
+            this.LifeCycleBox.UseVisualStyleBackColor = true;
+            // 
+            // EclipticAttritionBox
+            // 
+            this.EclipticAttritionBox.AutoSize = true;
+            this.EclipticAttritionBox.Location = new System.Drawing.Point(145, 71);
+            this.EclipticAttritionBox.Name = "EclipticAttritionBox";
+            this.EclipticAttritionBox.Size = new System.Drawing.Size(108, 19);
+            this.EclipticAttritionBox.TabIndex = 6;
+            this.EclipticAttritionBox.Text = "Ecliptic Attrition";
+            this.EclipticAttritionBox.UseVisualStyleBackColor = true;
+            // 
+            // RadialArcanaBox
+            // 
+            this.RadialArcanaBox.AutoSize = true;
+            this.RadialArcanaBox.Location = new System.Drawing.Point(7, 45);
+            this.RadialArcanaBox.Name = "RadialArcanaBox";
+            this.RadialArcanaBox.Size = new System.Drawing.Size(106, 19);
+            this.RadialArcanaBox.TabIndex = 1;
+            this.RadialArcanaBox.Text = "Radial Arcana ";
+            this.RadialArcanaBox.UseVisualStyleBackColor = true;
+            // 
+            // BlazeOfGloryBox
+            // 
+            this.BlazeOfGloryBox.AutoSize = true;
+            this.BlazeOfGloryBox.Location = new System.Drawing.Point(146, 20);
+            this.BlazeOfGloryBox.Name = "BlazeOfGloryBox";
+            this.BlazeOfGloryBox.Size = new System.Drawing.Size(103, 19);
+            this.BlazeOfGloryBox.TabIndex = 3;
+            this.BlazeOfGloryBox.Text = "Blaze Of Glory";
+            this.BlazeOfGloryBox.UseVisualStyleBackColor = true;
+            // 
+            // groupBox36
+            // 
+            this.groupBox36.BorderColor = System.Drawing.Color.SlateGray;
+            this.groupBox36.Controls.Add(this.label27);
+            this.groupBox36.Controls.Add(this.RadialArcanaSpell);
+            this.groupBox36.Controls.Add(this.label11);
+            this.groupBox36.Controls.Add(this.RadialArcanaMP);
+            this.groupBox36.Controls.Add(this.Fullcircle_GEOTarget);
+            this.groupBox36.Controls.Add(this.Fullcircle_DisableEnemy);
+            this.groupBox36.Location = new System.Drawing.Point(8, 158);
+            this.groupBox36.Name = "groupBox36";
+            this.groupBox36.Size = new System.Drawing.Size(276, 193);
+            this.groupBox36.TabIndex = 52;
+            this.groupBox36.TabStop = false;
+            this.groupBox36.Text = "Full Circle / Radial Arcana Settings";
+            // 
+            // label27
+            // 
+            this.label27.AutoSize = true;
+            this.label27.Location = new System.Drawing.Point(3, 139);
+            this.label27.Name = "label27";
+            this.label27.Size = new System.Drawing.Size(233, 15);
+            this.label27.TabIndex = 41;
+            this.label27.Text = "Geomancy spell to cast for Radial Arcana.";
+            // 
+            // RadialArcanaSpell
+            // 
+            this.RadialArcanaSpell.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.RadialArcanaSpell.FormattingEnabled = true;
+            this.RadialArcanaSpell.Items.AddRange(new object[] {
+            "Geo-Voidance",
+            "Geo-Precision",
+            "Geo-Regen",
+            "Geo-Haste",
+            "Geo-Attunement",
+            "Geo-Focus",
+            "Geo-Barrier",
+            "Geo-Refresh",
+            "Geo-CHR",
+            "Geo-MND",
+            "Geo-Fury",
+            "Geo-INT",
+            "Geo-AGI",
+            "Geo-Fend",
+            "Geo-VIT",
+            "Geo-DEX",
+            "Geo-Acumen",
+            "Geo-STR",
+            "Geo-Poison",
+            "Geo-Slow",
+            "Geo-Torpor",
+            "Geo-Slip",
+            "Geo-Languor",
+            "Geo-Paralysis",
+            "Geo-Vex",
+            "Geo-Frailty",
+            "Geo-Wilt",
+            "Geo-Malaise",
+            "Geo-Gravity",
+            "Geo-Fade"});
+            this.RadialArcanaSpell.Location = new System.Drawing.Point(6, 157);
+            this.RadialArcanaSpell.Name = "RadialArcanaSpell";
+            this.RadialArcanaSpell.Size = new System.Drawing.Size(121, 23);
+            this.RadialArcanaSpell.TabIndex = 40;
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(3, 97);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(254, 15);
+            this.label11.TabIndex = 39;
+            this.label11.Text = "Use Radial Arcana recovery when MP below: ";
+            // 
+            // RadialArcanaMP
+            // 
+            this.RadialArcanaMP.Increment = new decimal(new int[] {
+            25,
+            0,
+            0,
+            0});
+            this.RadialArcanaMP.Location = new System.Drawing.Point(6, 115);
+            this.RadialArcanaMP.Maximum = new decimal(new int[] {
+            5000,
+            0,
+            0,
+            0});
+            this.RadialArcanaMP.Name = "RadialArcanaMP";
+            this.RadialArcanaMP.Size = new System.Drawing.Size(84, 21);
+            this.RadialArcanaMP.TabIndex = 38;
+            // 
+            // Fullcircle_GEOTarget
+            // 
+            this.Fullcircle_GEOTarget.AutoSize = true;
+            this.Fullcircle_GEOTarget.Location = new System.Drawing.Point(7, 61);
+            this.Fullcircle_GEOTarget.Name = "Fullcircle_GEOTarget";
+            this.Fullcircle_GEOTarget.Size = new System.Drawing.Size(242, 19);
+            this.Fullcircle_GEOTarget.TabIndex = 1;
+            this.Fullcircle_GEOTarget.Text = "Use GEO-Spell target as distance target";
+            this.Fullcircle_GEOTarget.UseVisualStyleBackColor = true;
+            // 
+            // Fullcircle_DisableEnemy
+            // 
+            this.Fullcircle_DisableEnemy.AutoSize = true;
+            this.Fullcircle_DisableEnemy.Location = new System.Drawing.Point(7, 21);
+            this.Fullcircle_DisableEnemy.Name = "Fullcircle_DisableEnemy";
+            this.Fullcircle_DisableEnemy.Size = new System.Drawing.Size(170, 34);
+            this.Fullcircle_DisableEnemy.TabIndex = 0;
+            this.Fullcircle_DisableEnemy.Text = "Disable FULL CIRCLE for\r\nENEMY based GEO spells";
+            this.Fullcircle_DisableEnemy.UseVisualStyleBackColor = true;
+            // 
             // specifiedEngageTarget
             // 
             this.specifiedEngageTarget.AutoSize = true;
-            this.specifiedEngageTarget.Location = new System.Drawing.Point(502, 16);
+            this.specifiedEngageTarget.Location = new System.Drawing.Point(8, 36);
             this.specifiedEngageTarget.Name = "specifiedEngageTarget";
             this.specifiedEngageTarget.Size = new System.Drawing.Size(245, 19);
             this.specifiedEngageTarget.TabIndex = 10;
             this.specifiedEngageTarget.Text = "Use GEO Spell target as engaged check";
             this.specifiedEngageTarget.UseVisualStyleBackColor = true;
-            // 
-            // EnableLuopanSpells
-            // 
-            this.EnableLuopanSpells.AutoSize = true;
-            this.EnableLuopanSpells.Location = new System.Drawing.Point(240, 17);
-            this.EnableLuopanSpells.Name = "EnableLuopanSpells";
-            this.EnableLuopanSpells.Size = new System.Drawing.Size(166, 19);
-            this.EnableLuopanSpells.TabIndex = 4;
-            this.EnableLuopanSpells.Text = "Enable GEO based spells";
-            this.EnableLuopanSpells.UseVisualStyleBackColor = true;
-            this.EnableLuopanSpells.CheckedChanged += new System.EventHandler(this.EnableLuopanSpells_CheckedChanged);
-            // 
-            // EnableGeoSpells
-            // 
-            this.EnableGeoSpells.AutoSize = true;
-            this.EnableGeoSpells.Location = new System.Drawing.Point(8, 16);
-            this.EnableGeoSpells.Name = "EnableGeoSpells";
-            this.EnableGeoSpells.Size = new System.Drawing.Size(166, 19);
-            this.EnableGeoSpells.TabIndex = 2;
-            this.EnableGeoSpells.Text = "Enable INDI based Spells";
-            this.EnableGeoSpells.UseVisualStyleBackColor = true;
-            this.EnableGeoSpells.CheckedChanged += new System.EventHandler(this.EnableGeoSpells_CheckedChanged);
             // 
             // groupBox7
             // 
@@ -4154,9 +4042,10 @@ namespace CurePlease
             this.groupBox7.Controls.Add(this.label7);
             this.groupBox7.Controls.Add(this.entrustSpell_target);
             this.groupBox7.Controls.Add(this.entrustINDISpell);
-            this.groupBox7.Location = new System.Drawing.Point(527, 58);
+            this.groupBox7.Controls.Add(this.EnableEntrust);
+            this.groupBox7.Location = new System.Drawing.Point(462, 16);
             this.groupBox7.Name = "groupBox7";
-            this.groupBox7.Size = new System.Drawing.Size(271, 476);
+            this.groupBox7.Size = new System.Drawing.Size(166, 535);
             this.groupBox7.TabIndex = 1;
             this.groupBox7.TabStop = false;
             this.groupBox7.Text = "Entrust";
@@ -4164,11 +4053,12 @@ namespace CurePlease
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(6, 453);
+            this.label7.Location = new System.Drawing.Point(0, 482);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(79, 15);
             this.label7.TabIndex = 4;
             this.label7.Text = " Spell Target:";
+            this.label7.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // entrustINDISpell
             // 
@@ -4206,9 +4096,9 @@ namespace CurePlease
             "Indi-Malaise",
             "Indi-Gravity",
             "Indi-Fade"});
-            this.entrustINDISpell.Location = new System.Drawing.Point(6, 19);
+            this.entrustINDISpell.Location = new System.Drawing.Point(6, 42);
             this.entrustINDISpell.Name = "entrustINDISpell";
-            this.entrustINDISpell.Size = new System.Drawing.Size(259, 424);
+            this.entrustINDISpell.Size = new System.Drawing.Size(154, 439);
             this.entrustINDISpell.TabIndex = 2;
             // 
             // groupBox6
@@ -4217,9 +4107,10 @@ namespace CurePlease
             this.groupBox6.Controls.Add(this.label6);
             this.groupBox6.Controls.Add(this.GEOSpell_target);
             this.groupBox6.Controls.Add(this.GEOSpell);
-            this.groupBox6.Location = new System.Drawing.Point(254, 61);
+            this.groupBox6.Controls.Add(this.EnableLuopanSpells);
+            this.groupBox6.Location = new System.Drawing.Point(634, 16);
             this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Size = new System.Drawing.Size(267, 476);
+            this.groupBox6.Size = new System.Drawing.Size(166, 535);
             this.groupBox6.TabIndex = 0;
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "GEO Spells";
@@ -4227,7 +4118,7 @@ namespace CurePlease
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(6, 452);
+            this.label6.Location = new System.Drawing.Point(6, 482);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(132, 15);
             this.label6.TabIndex = 4;
@@ -4269,18 +4160,30 @@ namespace CurePlease
             "Geo-Malaise",
             "Geo-Gravity",
             "Geo-Fade"});
-            this.GEOSpell.Location = new System.Drawing.Point(9, 19);
+            this.GEOSpell.Location = new System.Drawing.Point(9, 42);
             this.GEOSpell.Name = "GEOSpell";
-            this.GEOSpell.Size = new System.Drawing.Size(252, 424);
+            this.GEOSpell.Size = new System.Drawing.Size(151, 439);
             this.GEOSpell.TabIndex = 2;
+            // 
+            // EnableLuopanSpells
+            // 
+            this.EnableLuopanSpells.AutoSize = true;
+            this.EnableLuopanSpells.Location = new System.Drawing.Point(9, 20);
+            this.EnableLuopanSpells.Name = "EnableLuopanSpells";
+            this.EnableLuopanSpells.Size = new System.Drawing.Size(72, 19);
+            this.EnableLuopanSpells.TabIndex = 4;
+            this.EnableLuopanSpells.Text = "Enabled";
+            this.EnableLuopanSpells.UseVisualStyleBackColor = true;
+            this.EnableLuopanSpells.CheckedChanged += new System.EventHandler(this.EnableLuopanSpells_CheckedChanged);
             // 
             // groupBox5
             // 
             this.groupBox5.BorderColor = System.Drawing.Color.SlateGray;
             this.groupBox5.Controls.Add(this.INDISpell);
-            this.groupBox5.Location = new System.Drawing.Point(6, 59);
+            this.groupBox5.Controls.Add(this.EnableIndiSpells);
+            this.groupBox5.Location = new System.Drawing.Point(290, 16);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(236, 476);
+            this.groupBox5.Size = new System.Drawing.Size(166, 535);
             this.groupBox5.TabIndex = 0;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "INDI Spells";
@@ -4321,10 +4224,21 @@ namespace CurePlease
             "Indi-Malaise",
             "Indi-Gravity",
             "Indi-Fade"});
-            this.INDISpell.Location = new System.Drawing.Point(6, 19);
+            this.INDISpell.Location = new System.Drawing.Point(6, 42);
             this.INDISpell.Name = "INDISpell";
-            this.INDISpell.Size = new System.Drawing.Size(224, 454);
+            this.INDISpell.Size = new System.Drawing.Size(154, 484);
             this.INDISpell.TabIndex = 1;
+            // 
+            // EnableIndiSpells
+            // 
+            this.EnableIndiSpells.AutoSize = true;
+            this.EnableIndiSpells.Location = new System.Drawing.Point(6, 20);
+            this.EnableIndiSpells.Name = "EnableIndiSpells";
+            this.EnableIndiSpells.Size = new System.Drawing.Size(72, 19);
+            this.EnableIndiSpells.TabIndex = 2;
+            this.EnableIndiSpells.Text = "Enabled";
+            this.EnableIndiSpells.UseVisualStyleBackColor = true;
+            this.EnableIndiSpells.CheckedChanged += new System.EventHandler(this.EnableGeoSpells_CheckedChanged);
             // 
             // tabPage2
             // 
@@ -7724,6 +7638,7 @@ namespace CurePlease
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.groupBox32);
             this.tabPage1.Controls.Add(this.groupBox12);
             this.tabPage1.Controls.Add(this.groupBox2);
             this.tabPage1.Location = new System.Drawing.Point(4, 26);
@@ -7733,6 +7648,31 @@ namespace CurePlease
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = " Healing";
             this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // groupBox32
+            // 
+            this.groupBox32.BorderColor = System.Drawing.Color.SlateGray;
+            this.groupBox32.Controls.Add(this.enableOutOfPartyHealing);
+            this.groupBox32.Controls.Add(this.OvercureOnHighPriority);
+            this.groupBox32.Controls.Add(this.enableMonitoredPriority);
+            this.groupBox32.Controls.Add(this.Undercure);
+            this.groupBox32.Controls.Add(this.Overcure);
+            this.groupBox32.Location = new System.Drawing.Point(6, 307);
+            this.groupBox32.Name = "groupBox32";
+            this.groupBox32.Size = new System.Drawing.Size(314, 227);
+            this.groupBox32.TabIndex = 42;
+            this.groupBox32.TabStop = false;
+            this.groupBox32.Text = "Cure Settings";
+            // 
+            // OvercureOnHighPriority
+            // 
+            this.OvercureOnHighPriority.AutoSize = true;
+            this.OvercureOnHighPriority.Location = new System.Drawing.Point(7, 53);
+            this.OvercureOnHighPriority.Name = "OvercureOnHighPriority";
+            this.OvercureOnHighPriority.Size = new System.Drawing.Size(296, 19);
+            this.OvercureOnHighPriority.TabIndex = 3;
+            this.OvercureOnHighPriority.Text = "Enable OVERCURE on High Priority targets ONLY";
+            this.OvercureOnHighPriority.UseVisualStyleBackColor = true;
             // 
             // groupBox12
             // 
@@ -7756,18 +7696,18 @@ namespace CurePlease
             this.groupBox12.Controls.Add(this.curagaEnabled);
             this.groupBox12.Controls.Add(this.curaga2Enabled);
             this.groupBox12.Controls.Add(this.curaga3Enabled);
-            this.groupBox12.Location = new System.Drawing.Point(5, 306);
+            this.groupBox12.Location = new System.Drawing.Point(337, 306);
             this.groupBox12.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox12.Name = "groupBox12";
             this.groupBox12.Padding = new System.Windows.Forms.Padding(2);
-            this.groupBox12.Size = new System.Drawing.Size(799, 228);
+            this.groupBox12.Size = new System.Drawing.Size(467, 228);
             this.groupBox12.TabIndex = 8;
             this.groupBox12.TabStop = false;
             this.groupBox12.Text = "Area of Effect Healing";
             // 
             // requiredCuragaNumbers
             // 
-            this.requiredCuragaNumbers.Location = new System.Drawing.Point(678, 100);
+            this.requiredCuragaNumbers.Location = new System.Drawing.Point(387, 110);
             this.requiredCuragaNumbers.Maximum = new decimal(new int[] {
             6,
             0,
@@ -7790,7 +7730,7 @@ namespace CurePlease
             // label31
             // 
             this.label31.AutoSize = true;
-            this.label31.Location = new System.Drawing.Point(470, 103);
+            this.label31.Location = new System.Drawing.Point(179, 113);
             this.label31.Name = "label31";
             this.label31.Size = new System.Drawing.Size(202, 15);
             this.label31.TabIndex = 22;
@@ -7799,7 +7739,7 @@ namespace CurePlease
             // label29
             // 
             this.label29.AutoSize = true;
-            this.label29.Location = new System.Drawing.Point(323, 192);
+            this.label29.Location = new System.Drawing.Point(179, 192);
             this.label29.Name = "label29";
             this.label29.Size = new System.Drawing.Size(133, 15);
             this.label29.TabIndex = 21;
@@ -7807,9 +7747,9 @@ namespace CurePlease
             // 
             // curagaTargetName
             // 
-            this.curagaTargetName.Location = new System.Drawing.Point(462, 189);
+            this.curagaTargetName.Location = new System.Drawing.Point(318, 189);
             this.curagaTargetName.Name = "curagaTargetName";
-            this.curagaTargetName.Size = new System.Drawing.Size(187, 21);
+            this.curagaTargetName.Size = new System.Drawing.Size(137, 21);
             this.curagaTargetName.TabIndex = 20;
             // 
             // curagaTargetType
@@ -7819,15 +7759,15 @@ namespace CurePlease
             this.curagaTargetType.Items.AddRange(new object[] {
             "Lowest HP",
             "Specified Target"});
-            this.curagaTargetType.Location = new System.Drawing.Point(462, 150);
+            this.curagaTargetType.Location = new System.Drawing.Point(318, 150);
             this.curagaTargetType.Name = "curagaTargetType";
-            this.curagaTargetType.Size = new System.Drawing.Size(121, 23);
+            this.curagaTargetType.Size = new System.Drawing.Size(137, 23);
             this.curagaTargetType.TabIndex = 19;
             // 
             // label28
             // 
             this.label28.AutoSize = true;
-            this.label28.Location = new System.Drawing.Point(323, 153);
+            this.label28.Location = new System.Drawing.Point(179, 153);
             this.label28.Name = "label28";
             this.label28.Size = new System.Drawing.Size(133, 15);
             this.label28.TabIndex = 18;
@@ -7836,7 +7776,7 @@ namespace CurePlease
             // curaga5Enabled
             // 
             this.curaga5Enabled.AutoSize = true;
-            this.curaga5Enabled.Location = new System.Drawing.Point(7, 112);
+            this.curaga5Enabled.Location = new System.Drawing.Point(7, 125);
             this.curaga5Enabled.Margin = new System.Windows.Forms.Padding(2);
             this.curaga5Enabled.Name = "curaga5Enabled";
             this.curaga5Enabled.Size = new System.Drawing.Size(76, 19);
@@ -7847,7 +7787,7 @@ namespace CurePlease
             // curaga4Enabled
             // 
             this.curaga4Enabled.AutoSize = true;
-            this.curaga4Enabled.Location = new System.Drawing.Point(7, 89);
+            this.curaga4Enabled.Location = new System.Drawing.Point(7, 102);
             this.curaga4Enabled.Margin = new System.Windows.Forms.Padding(2);
             this.curaga4Enabled.Name = "curaga4Enabled";
             this.curaga4Enabled.Size = new System.Drawing.Size(79, 19);
@@ -7858,7 +7798,7 @@ namespace CurePlease
             // curagaEnabled
             // 
             this.curagaEnabled.AutoSize = true;
-            this.curagaEnabled.Location = new System.Drawing.Point(7, 19);
+            this.curagaEnabled.Location = new System.Drawing.Point(7, 32);
             this.curagaEnabled.Margin = new System.Windows.Forms.Padding(2);
             this.curagaEnabled.Name = "curagaEnabled";
             this.curagaEnabled.Size = new System.Drawing.Size(66, 19);
@@ -7869,7 +7809,7 @@ namespace CurePlease
             // curaga2Enabled
             // 
             this.curaga2Enabled.AutoSize = true;
-            this.curaga2Enabled.Location = new System.Drawing.Point(7, 42);
+            this.curaga2Enabled.Location = new System.Drawing.Point(7, 55);
             this.curaga2Enabled.Margin = new System.Windows.Forms.Padding(2);
             this.curaga2Enabled.Name = "curaga2Enabled";
             this.curaga2Enabled.Size = new System.Drawing.Size(75, 19);
@@ -7880,7 +7820,7 @@ namespace CurePlease
             // curaga3Enabled
             // 
             this.curaga3Enabled.AutoSize = true;
-            this.curaga3Enabled.Location = new System.Drawing.Point(7, 66);
+            this.curaga3Enabled.Location = new System.Drawing.Point(7, 79);
             this.curaga3Enabled.Margin = new System.Windows.Forms.Padding(2);
             this.curaga3Enabled.Name = "curaga3Enabled";
             this.curaga3Enabled.Size = new System.Drawing.Size(78, 19);
@@ -8087,6 +8027,8 @@ namespace CurePlease
             ((System.ComponentModel.ISupportInitialize)(this.standAtMP_Percentage)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.mpMintempitemusage)).EndInit();
             this.tabPage7.ResumeLayout(false);
+            this.groupBox33.ResumeLayout(false);
+            this.groupBox33.PerformLayout();
             this.groupBoxEx1.ResumeLayout(false);
             this.groupBoxEx1.PerformLayout();
             this.panel15.ResumeLayout(false);
@@ -8106,38 +8048,23 @@ namespace CurePlease
             this.groupBox10.ResumeLayout(false);
             this.groupBox10.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.TargetRemoval_Delay)).EndInit();
-            this.groupBox36.ResumeLayout(false);
-            this.groupBox36.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.RadialArcanaMP)).EndInit();
-            this.groupBox15.ResumeLayout(false);
-            this.groupBox15.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.DevotionMP)).EndInit();
             this.Raise.ResumeLayout(false);
             this.Raise.PerformLayout();
-            this.groupBox33.ResumeLayout(false);
-            this.groupBox33.PerformLayout();
-            this.groupBox32.ResumeLayout(false);
-            this.groupBox32.PerformLayout();
-            this.groupBox29.ResumeLayout(false);
-            this.groupBox29.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.sublimationMP)).EndInit();
-            this.groupBox11.ResumeLayout(false);
-            this.groupBox11.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.ConvertMP)).EndInit();
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.mpMinCastValue)).EndInit();
             this.tabPage3.ResumeLayout(false);
             this.groupBox24.ResumeLayout(false);
             this.groupBox24.PerformLayout();
-            this.groupBox8.ResumeLayout(false);
-            this.groupBox8.PerformLayout();
             this.rdmJAgroup.ResumeLayout(false);
             this.rdmJAgroup.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.ConvertMP)).EndInit();
             this.schJAgroup.ResumeLayout(false);
             this.schJAgroup.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.sublimationMP)).EndInit();
             this.whmJAgroup.ResumeLayout(false);
             this.whmJAgroup.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.DevotionMP)).EndInit();
             this.tabPage8.ResumeLayout(false);
             this.tabPage8.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.recastSong)).EndInit();
@@ -8161,11 +8088,17 @@ namespace CurePlease
             this.groupBox19.PerformLayout();
             this.tabPage6.ResumeLayout(false);
             this.tabPage6.PerformLayout();
+            this.groupBox8.ResumeLayout(false);
+            this.groupBox8.PerformLayout();
+            this.groupBox36.ResumeLayout(false);
+            this.groupBox36.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.RadialArcanaMP)).EndInit();
             this.groupBox7.ResumeLayout(false);
             this.groupBox7.PerformLayout();
             this.groupBox6.ResumeLayout(false);
             this.groupBox6.PerformLayout();
             this.groupBox5.ResumeLayout(false);
+            this.groupBox5.PerformLayout();
             this.tabPage2.ResumeLayout(false);
             this.tabControl2.ResumeLayout(false);
             this.tabPage9.ResumeLayout(false);
@@ -8220,6 +8153,8 @@ namespace CurePlease
             this.plDebuffPanel.ResumeLayout(false);
             this.plDebuffPanel.PerformLayout();
             this.tabPage1.ResumeLayout(false);
+            this.groupBox32.ResumeLayout(false);
+            this.groupBox32.PerformLayout();
             this.groupBox12.ResumeLayout(false);
             this.groupBox12.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.requiredCuragaNumbers)).EndInit();
@@ -8264,38 +8199,15 @@ namespace CurePlease
         private System.Windows.Forms.CheckBox pauseOnZoneBox;
         private System.Windows.Forms.TabPage tabPage5;
         private System.Windows.Forms.CheckBox DisableTargettingCancel;
-        private System.Windows.Forms.Label label27;
-        private System.Windows.Forms.ComboBox RadialArcanaSpell;
-        private System.Windows.Forms.Label label11;
-        private System.Windows.Forms.NumericUpDown RadialArcanaMP;
-        private System.Windows.Forms.CheckBox Fullcircle_GEOTarget;
-        private System.Windows.Forms.CheckBox Fullcircle_DisableEnemy;
         private System.Windows.Forms.CheckBox AssistSpecifiedTarget;
-        private System.Windows.Forms.Label label8;
         private System.Windows.Forms.TextBox autoTarget_target;
         private System.Windows.Forms.Label label37;
         private System.Windows.Forms.Label label36;
         private System.Windows.Forms.ComboBox Hate_SpellType;
         private System.Windows.Forms.CheckBox autoTarget;
         private System.Windows.Forms.TextBox autoTargetSpell;
-        private System.Windows.Forms.CheckBox DevotionWhenEngaged;
-        private System.Windows.Forms.TextBox DevotionTargetName;
-        private System.Windows.Forms.ComboBox DevotionTargetType;
-        private System.Windows.Forms.Label label34;
-        private System.Windows.Forms.Label label35;
-        private System.Windows.Forms.NumericUpDown DevotionMP;
         private System.Windows.Forms.CheckBox acceptRaiseOnlyWhenNotInCombat;
         private System.Windows.Forms.CheckBox acceptRaise;
-        private System.Windows.Forms.Label label25;
-        private System.Windows.Forms.CheckBox enableAddOn;
-        private System.Windows.Forms.CheckBox OvercureOnHighPriority;
-        private System.Windows.Forms.CheckBox enableMonitoredPriority;
-        private System.Windows.Forms.CheckBox Undercure;
-        private System.Windows.Forms.CheckBox Overcure;
-        private System.Windows.Forms.Label label51;
-        private System.Windows.Forms.NumericUpDown sublimationMP;
-        private System.Windows.Forms.Label label26;
-        private System.Windows.Forms.NumericUpDown ConvertMP;
         private System.Windows.Forms.NumericUpDown healWhenMPBelow;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.NumericUpDown standAtMP_Percentage;
@@ -8311,13 +8223,6 @@ namespace CurePlease
         private System.Windows.Forms.CheckBox troubadour;
         private System.Windows.Forms.CheckBox nightingale;
         private System.Windows.Forms.CheckBox pianissimo;
-        private System.Windows.Forms.CheckBox LifeCycleBox;
-        private System.Windows.Forms.CheckBox EclipticAttritionBox;
-        private System.Windows.Forms.CheckBox FullCircleBox;
-        private System.Windows.Forms.CheckBox RadialArcanaBox;
-        private System.Windows.Forms.CheckBox BlazeOfGloryBox;
-        private System.Windows.Forms.CheckBox DematerializeBox;
-        private System.Windows.Forms.CheckBox EntrustBox;
         private System.Windows.Forms.CheckBox composure;
         private System.Windows.Forms.CheckBox convert;
         private System.Windows.Forms.CheckBox addBlack;
@@ -8371,8 +8276,8 @@ namespace CurePlease
         private System.Windows.Forms.CheckBox specifiedEngageTarget;
         private System.Windows.Forms.CheckBox GeoAOE_Engaged;
         private System.Windows.Forms.CheckBox EnableLuopanSpells;
-        private System.Windows.Forms.CheckBox GEO_engaged;
-        private System.Windows.Forms.CheckBox EnableGeoSpells;
+        private System.Windows.Forms.CheckBox EngagedOnly;
+        private System.Windows.Forms.CheckBox EnableIndiSpells;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.TextBox entrustSpell_target;
         private System.Windows.Forms.ListBox entrustINDISpell;
@@ -8700,17 +8605,10 @@ namespace CurePlease
         private GroupBoxEx groupBox14;
         private GroupBoxEx groupBox13;
         private GroupBoxEx groupBox10;
-        private GroupBoxEx groupBox36;
         private GroupBoxEx groupBox16;
-        private GroupBoxEx groupBox15;
         private GroupBoxEx Raise;
-        private GroupBoxEx groupBox33;
-        private GroupBoxEx groupBox32;
-        private GroupBoxEx groupBox29;
-        private GroupBoxEx groupBox11;
         private GroupBoxEx groupBox4;
         private GroupBoxEx groupBox24;
-        private GroupBoxEx groupBox8;
         private GroupBoxEx rdmJAgroup;
         private GroupBoxEx schJAgroup;
         private GroupBoxEx whmJAgroup;
@@ -8741,7 +8639,6 @@ namespace CurePlease
         private System.Windows.Forms.CheckBox plHaste;
         private System.Windows.Forms.RadioButton plHasteLevel1;
         private System.Windows.Forms.RadioButton plHasteLevel2;
-        private System.Windows.Forms.CheckBox enableOutOfPartyHealing;
         private GroupBoxEx groupBoxEx1;
         private System.Windows.Forms.CheckBox enableHotKeys;
         private System.Windows.Forms.Panel panel15;
@@ -8755,5 +8652,38 @@ namespace CurePlease
         private System.Windows.Forms.CheckBox plAmnesia;
         private System.Windows.Forms.ComboBox plSpikes_Spell;
         private System.Windows.Forms.CheckBox plSpikes;
+        private GroupBoxEx groupBox32;
+        private System.Windows.Forms.CheckBox enableOutOfPartyHealing;
+        private System.Windows.Forms.CheckBox OvercureOnHighPriority;
+        private System.Windows.Forms.CheckBox enableMonitoredPriority;
+        private System.Windows.Forms.CheckBox Undercure;
+        private System.Windows.Forms.CheckBox Overcure;
+        private GroupBoxEx groupBox36;
+        private System.Windows.Forms.Label label27;
+        private System.Windows.Forms.ComboBox RadialArcanaSpell;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.NumericUpDown RadialArcanaMP;
+        private System.Windows.Forms.CheckBox Fullcircle_GEOTarget;
+        private System.Windows.Forms.CheckBox Fullcircle_DisableEnemy;
+        private GroupBoxEx groupBox33;
+        private System.Windows.Forms.Label label25;
+        private System.Windows.Forms.CheckBox enableAddOn;
+        private GroupBoxEx groupBox8;
+        private System.Windows.Forms.CheckBox LifeCycleBox;
+        private System.Windows.Forms.CheckBox EclipticAttritionBox;
+        private System.Windows.Forms.CheckBox FullCircleBox;
+        private System.Windows.Forms.CheckBox RadialArcanaBox;
+        private System.Windows.Forms.CheckBox BlazeOfGloryBox;
+        private System.Windows.Forms.CheckBox DematerializeBox;
+        private System.Windows.Forms.CheckBox EnableEntrust;
+        private System.Windows.Forms.CheckBox DevotionWhenEngaged;
+        private System.Windows.Forms.TextBox DevotionTargetName;
+        private System.Windows.Forms.ComboBox DevotionTargetType;
+        private System.Windows.Forms.Label label34;
+        private System.Windows.Forms.Label label35;
+        private System.Windows.Forms.NumericUpDown DevotionMP;
+        private System.Windows.Forms.NumericUpDown ConvertMP;
+        private System.Windows.Forms.Label label51;
+        private System.Windows.Forms.NumericUpDown sublimationMP;
     }
 }

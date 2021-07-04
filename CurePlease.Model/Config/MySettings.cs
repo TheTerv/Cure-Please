@@ -554,12 +554,12 @@ namespace CurePlease.Model.Config
         }
 
         // GEOMANCY MAGIC TAB
-        public bool EnableGeoSpells
+        public bool EnableIndiSpells
         {
             get; set;
         }
 
-        public bool IndiWhenEngaged
+        public bool EngagedOnly
         {
             get; set;
         }
@@ -745,7 +745,7 @@ namespace CurePlease.Model.Config
         }
 
         // GEO
-        public bool Entrust
+        public bool EntrustEnabled
         {
             get; set;
         }

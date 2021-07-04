@@ -638,7 +638,7 @@ namespace CurePlease
 
             // GEO Stuff
 
-            else if (PL.Player.MainJob == (byte)Job.GEO && ConfigForm.config.EnableGeoSpells && !PL.HasStatus(StatusEffect.Silence) && (PL.Player.Status == 1 || PL.Player.Status == 0))
+            else if (PL.Player.MainJob == (byte)Job.GEO && !PL.HasStatus(StatusEffect.Silence) && (PL.Player.Status == 1 || PL.Player.Status == 0))
             {
                 var geoAction = GeoEngine.Run(PL, Monitored, Config.GetGeoConfig());
 
@@ -1683,8 +1683,11 @@ namespace CurePlease
                             var buffs = memberBuffs.Split(',').Select(str => short.Parse(str.Trim())).Where(buff => !Data.DebuffPriorities.Keys.Cast<short>().Contains(buff));
                             var debuffs = memberBuffs.Split(',').Select(str => short.Parse(str.Trim())).Where(buff => Data.DebuffPriorities.Keys.Cast<short>().Contains(buff));
 
-                            BuffEngine.UpdateBuffs(memberName, buffs);
-                            DebuffEngine.UpdateDebuffs(memberName, debuffs);
+                            if (BuffEngine != null)
+                                BuffEngine.UpdateBuffs(memberName, buffs);
+
+                            if (DebuffEngine != null)
+                                DebuffEngine.UpdateDebuffs(memberName, debuffs);
                         }                             
                     }
 

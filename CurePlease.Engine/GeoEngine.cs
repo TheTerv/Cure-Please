@@ -107,31 +107,17 @@ namespace CurePlease.Engine
                 Target = Target.Me
             };
 
-            if(Config.EntrustEnabled && !PL.HasStatus((StatusEffect)584) && CheckEngagedStatus() && PL.AbilityAvailable(Ability.Entrust))
+            // ENTRUSTED INDI SPELL CASTING, WILL BE CAST SO LONG AS ENTRUST IS ACTIVE
+            // StatusEffect 584 == Entrust
+            if (PL.HasStatus((StatusEffect)584) && PL.Player.Status != 33)
             {
-                actionResult.JobAbility = Ability.Entrust;
-                return actionResult;
-            }
-            else if (Config.DematerializeEnabled && CheckEngagedStatus() == true && PL.Player.Pet.HealthPercent >= 90 && PL.AbilityAvailable(Ability.Dematerialize))
-            {
-                actionResult.JobAbility = Ability.Dematerialize;
-                return actionResult;
-            }
-            else if (Config.EclipticAttritionEnabled && CheckEngagedStatus() == true && PL.Player.Pet.HealthPercent >= 90 && PL.AbilityAvailable(Ability.EclipticAttrition) && !PL.HasStatus(516) && EclipticStillUp != true)
-            {
-                actionResult.JobAbility = Ability.EclipticAttrition;
-                return actionResult;
-            }
-            else if (Config.LifeCycleEnabled && CheckEngagedStatus() == true && PL.Player.Pet.HealthPercent <= 30 && PL.Player.Pet.HealthPercent >= 5 && PL.Player.HPP >= 90 && PL.AbilityAvailable(Ability.LifeCycle))
-            {
-                actionResult.JobAbility = Ability.LifeCycle;
-                return actionResult;
+                actionResult = GetEntrustSpell(Config);
             }
 
             // TODO: Fix up this logic, I think something was lost in the refactoring.
             // Need to see if there's a situation where both of these JA's would be activated for the cast.
             // For now the old logic seems to be use RA on it's own, or check for FC + Cast.
-            if (Config.RadialArcanaEnabled && (PL.Player.MP <= Config.RadialArcanaMP) && PL.AbilityAvailable(Ability.RadialArcana) && !PL.Player.Buffs.Contains((short)StatusEffect.Weakness))
+            else if (Config.RadialArcanaEnabled && (PL.Player.MP <= Config.RadialArcanaMP) && PL.AbilityAvailable(Ability.RadialArcana) && !PL.Player.Buffs.Contains((short)StatusEffect.Weakness))
             {
                 // Check if a pet is already active
                 if (PL.Player.Pet.HealthPercent >= 1 && PL.Player.Pet.Distance <= 9)
@@ -204,53 +190,26 @@ namespace CurePlease.Engine
                     }
                 }
             }
-            // ENTRUSTED INDI SPELL CASTING, WILL BE CAST SO LONG AS ENTRUST IS ACTIVE
-            // StatusEffect 584 == Entrust
-            else if (Config.GeoSpellsEnabled && PL.HasStatus((StatusEffect)584) && PL.Player.Status != 33)
-            {
-                string SpellCheckedResult = ReturnGeoSpell(Config.EntrustSpell, 1);
-
-                if (SpellCheckedResult == "SpellRecast" || SpellCheckedResult == "SpellUnknown")
-                    return actionResult;
-
-                if (SpellCheckedResult == "SpellError_Cancel")
-                {
-                    Config.GeoSpellsEnabled = false;
-                    actionResult.Error = "An error has occurred with Entrusted INDI spell casting, please report what spell was active at the time.";
-                }
-                else
-                {
-                    //TODO verify target is in party, and in range
-                    var entrustedTarget = PL.GetActivePartyMembers().FirstOrDefault(p => p.Name == Config.EntrustSpellTarget);
-
-                    if (entrustedTarget != null)
-                    {
-                        actionResult.Target = Config.EntrustSpellTarget;
-                        actionResult.Spell = SpellCheckedResult;
-                    }
-                }
-            }
+            
             // CAST NON ENTRUSTED INDI SPELL
-            else if (Config.GeoSpellsEnabled && !PL.HasStatus(612) && PL.Player.Status != 33 && (CheckEngagedStatus() == true || !Config.IndiWhenEngaged))
+            else if (Config.IndiSpellsEnabled && !PL.HasStatus(612) && PL.Player.Status != 33 && (CheckEngagedStatus() || !Config.IndiWhenEngaged))
             {
                 string SpellCheckedResult = ReturnGeoSpell(Config.IndiSpell, 1);
 
-                if (SpellCheckedResult == "SpellError_Cancel" || SpellCheckedResult == "SpellNA")
+                if (SpellCheckedResult == "SpellRecast")
+                    return null;
+
+                if (SpellCheckedResult == "SpellError_Cancel" || SpellCheckedResult == "SpellNA" || SpellCheckedResult == "SpellUnknown")
                 {
-                    Config.GeoSpellsEnabled = false;
+                    Config.IndiSpellsEnabled = false;
                     actionResult.Error = "An error has occurred with INDI spell casting, please report what spell was active at the time.";
-                }
-                else if (SpellCheckedResult == "SpellRecast" || SpellCheckedResult == "SpellUnknown")
-                {
-                }
-                else
-                {
-                    actionResult.Spell = SpellCheckedResult;
+                    return null;
                 }
 
+                actionResult.Spell = SpellCheckedResult;
             }
 
-            // GEO SPELL CASTING 
+            // GEO SPELL CASTING
             else if (Config.LuopanSpellsEnabled && (PL.Player.Pet.HealthPercent < 1) && CheckEngagedStatus())
             {
                 // Use BLAZE OF GLORY if ENABLED
@@ -268,7 +227,7 @@ namespace CurePlease.Engine
 
                 if (SpellCheckedResult == "SpellError_Cancel")
                 {
-                    Config.GeoSpellsEnabled = false;
+                    Config.IndiSpellsEnabled = false;
                     actionResult.Error = "An error has occurred with GEO spell casting, please report what spell was active at the time.";
                 }
 
@@ -309,7 +268,110 @@ namespace CurePlease.Engine
                 }
             }
 
+            // if we have no spells to cast, see if we can trigger a JA
+            if (string.IsNullOrWhiteSpace(actionResult.Spell))
+            {
+                actionResult = CheckForJobAbility(Config);
+            }
+
             return actionResult;
+        }
+
+        private EngineAction CheckForJobAbility(GeoConfig Config)
+        {
+            EngineAction actionResult = new EngineAction
+            {
+                Target = Target.Me
+            };
+
+            // If we're using Entrust, and it's available
+            if (Config.EntrustEnabled
+                && !PL.HasStatus((StatusEffect)584) //entrust
+                && CheckEngagedStatus()
+                && PL.AbilityAvailable(Ability.Entrust))
+            {
+                if (VerifyEntrustTarget(Config.EntrustSpellTarget) != null)
+                {
+                    actionResult.JobAbility = Ability.Entrust;
+                }
+
+                return actionResult;
+            }
+            else if (Config.DematerializeEnabled && CheckEngagedStatus() == true && PL.Player.Pet.HealthPercent >= 90 && PL.AbilityAvailable(Ability.Dematerialize))
+            {
+                actionResult.JobAbility = Ability.Dematerialize;
+            }
+            else if (Config.EclipticAttritionEnabled && CheckEngagedStatus() == true && PL.Player.Pet.HealthPercent >= 90 && PL.AbilityAvailable(Ability.EclipticAttrition) && !PL.HasStatus(516) && EclipticStillUp != true)
+            {
+                actionResult.JobAbility = Ability.EclipticAttrition;
+            }
+            else if (Config.LifeCycleEnabled && CheckEngagedStatus() == true && PL.Player.Pet.HealthPercent <= 30 && PL.Player.Pet.HealthPercent >= 5 && PL.Player.HPP >= 90 && PL.AbilityAvailable(Ability.LifeCycle))
+            {
+                actionResult.JobAbility = Ability.LifeCycle;
+            }
+
+            return actionResult;
+        }
+
+        private EngineAction GetEntrustSpell(GeoConfig Config)
+        {
+            EngineAction actionResult = new EngineAction();
+
+            string SpellCheckedResult = ReturnGeoSpell(Config.EntrustSpell, 1);
+
+            if (SpellCheckedResult == "SpellRecast" || SpellCheckedResult == "SpellUnknown")
+                return actionResult;
+
+            if (SpellCheckedResult == "SpellError_Cancel")
+            {
+                Config.IndiSpellsEnabled = false;
+                actionResult.Error = "An error has occurred with Entrusted INDI spell casting, please report what spell was active at the time.";
+            }
+            else
+            {
+                var target = Config.EntrustSpellTarget;
+
+                if (string.IsNullOrWhiteSpace(target))
+                {
+                    // use P1
+                    target = PL.GetActivePartyMembers().FirstOrDefault(p => p.Index == 1).Name;
+                }
+
+                if (TargetVerified(target))
+                {
+                    actionResult.Target = target;
+                    actionResult.Spell = SpellCheckedResult;
+                }
+            }
+
+            return actionResult;
+        }
+
+        private string VerifyEntrustTarget(string target)
+        {
+            if (string.IsNullOrWhiteSpace(target))
+            {
+                // nothing in config, so let's default to P1
+                target = PL.GetActivePartyMembers().FirstOrDefault(p => p.Index == 1)?.Name;
+            }
+
+            if (!string.IsNullOrEmpty(target))
+            {
+
+            }
+
+            return target;
+        }
+
+        private bool TargetVerified(string target)
+        {
+            // make sure target is in party
+
+            // make sure target is in range
+
+            // make sure target isn't dead
+
+            return true;
         }
 
         private void InitializeData()
