@@ -152,14 +152,15 @@ namespace CurePlease.Engine
         {
             _FollowEngineTimer.Stop();
 
-            if (_PowerLeveler == null || _PowerLeveler.Player == null || _LastPLCoordinates == null|| _Config == null || !_Running)
-            {
-                _FollowEngineTimer.Start();
-                return;
-            }
-
             try
             {
+                if (_PowerLeveler == null || _PowerLeveler.Player == null || _LastPLCoordinates == null|| _Config == null || !_Running)
+                {
+                    _FollowEngineTimer.Start();
+                    return;
+                }
+
+            
                 // We'll use this to detect if we're moving
                 // NOTE: This throws an occassional NULL exception but when debugging nothing is null.. wrapping in try/catch to try and recover
                 _LastPLCoordinates.UpdateCoordinates(_PowerLeveler.Player.X, _PowerLeveler.Player.Y, _PowerLeveler.Player.Z);
