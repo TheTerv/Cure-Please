@@ -179,7 +179,7 @@ namespace CurePlease
             {
                 if (WindowerMode == "Windower")
                 {
-                    PL.ThirdParty.SendString("///lua load CurePlease");
+                    PL.ThirdParty.SendString("//lua load CurePlease");
                     Thread.Sleep(1500);
                     PL.ThirdParty.SendString("//cpaddon settings " + ConfigForm.config.ipAddress + " " + ConfigForm.config.listeningPort);
                     Thread.Sleep(100);
