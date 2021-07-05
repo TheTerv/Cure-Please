@@ -47,7 +47,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EliteAPIExtensions.cs" />
+    <Compile Include="PartyMemberExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="XiEntityExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CurePlease.Model\CurePlease.Model.csproj">

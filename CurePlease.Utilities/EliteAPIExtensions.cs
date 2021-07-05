@@ -152,11 +152,6 @@ namespace CurePlease.Utilities
             return api.Player.HasAbility(apiAbility.ID) && api.GetAbilityRecast(ability) == 0;
         }
 
-        public static uint HPLoss( this PartyMember member)
-        {
-            return member.CurrentHP * 100 / member.CurrentHPP - member.CurrentHP;
-        }
-
         public static int CurrentSCHCharges(this EliteAPI api)
         {
             if (api != null)
@@ -273,21 +268,6 @@ namespace CurePlease.Utilities
         public static IEnumerable<PartyMember> GetActivePartyMembers(this EliteAPI api)
         {
             return api.Party.GetPartyMembers().Where(pm => pm.Active > 0 && pm.CurrentHP > 0).OrderBy(pm => pm.CurrentHPP);
-        }
-
-        public static bool InParty(this PartyMember member, int partyNumber)
-        {
-            switch (partyNumber)
-            {
-                case 1:
-                    return member.MemberNumber <= 5;
-                case 2:
-                    return member.MemberNumber > 5 && member.MemberNumber <= 11;
-                case 3:
-                    return member.MemberNumber > 11;
-            }
-
-            return false;
         }
 
         public static uint AverageHpLossForParty(this EliteAPI api, int partyNumber)

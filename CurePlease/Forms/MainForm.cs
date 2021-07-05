@@ -58,7 +58,7 @@ namespace CurePlease
 
         public GeoEngine GeoEngine = new GeoEngine();
 
-        public BuffEngine BuffEngine;
+        public BuffEngine BuffEngine = new BuffEngine();
 
         public DebuffEngine DebuffEngine = new DebuffEngine();
 
@@ -290,7 +290,6 @@ namespace CurePlease
             if (Monitored != null)
             {
                 SongEngine = new SongEngine(PL, Monitored);
-                BuffEngine = new BuffEngine(PL, Monitored);
                 PLEngine = new PLEngine(PL, Monitored);
             }
 
@@ -299,10 +298,12 @@ namespace CurePlease
 
         public void AddCurrentAction(string message)
         {
-            currentAction.Text = message;
-
             if (!string.IsNullOrWhiteSpace(message))
             {
+                var timestamp = DateTime.Now.ToString("[HH:mm:ss] ");
+                message = timestamp + message;
+
+                currentAction.Text = message;
                 actionlog_box.AppendText(message + Environment.NewLine);
             }
         }
@@ -666,7 +667,7 @@ namespace CurePlease
             }
 
             // Auto Casting BUFF STUFF                    
-            var buffAction = BuffEngine?.Run(Config.GetBuffConfig());
+            var buffAction = BuffEngine?.Run(Config.GetBuffConfig(), PL);
 
             if (buffAction != null)
             {

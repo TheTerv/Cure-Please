@@ -152,45 +152,55 @@ namespace CurePlease.Engine
         {
             _FollowEngineTimer.Stop();
 
-            if (_PowerLeveler == null || _Config == null || !_Running)
+            try
             {
-                _FollowEngineTimer.Start();
-                return;
-            }
-
-            // We'll use this to detect if we're moving
-            _LastPLCoordinates.UpdateCoordinates(_PowerLeveler.Player.X, _PowerLeveler.Player.Y, _PowerLeveler.Player.Z);
-
-            // MAKE SURE BOTH ELITEAPI INSTANCES ARE ACTIVE, THE BOT ISN'T PAUSED, AND THERE IS AN AUTOFOLLOWTARGET NAMED
-            if (!string.IsNullOrEmpty(_Config.autoFollowName))
-            {
-                // RUN THE FUNCTION TO GRAB THE ID OF THE FOLLOW TARGET THIS ALSO MAKES SURE THEY ARE IN RANGE TO FOLLOW
-                int whoToFollowId = GetFollowIDForPlayer(_Config.autoFollowName.ToLower());
-
-                // If the FOLLOWER'S ID is NOT -1 THEN THEY WERE LOCATED SO CONTINUE THE CHECKS
-                if (whoToFollowId != -1)
+                if (_PowerLeveler == null || _PowerLeveler.Player == null || _LastPLCoordinates == null|| _Config == null || !_Running)
                 {
-                    // GRAB THE FOLLOW TARGETS ENTITY TABLE TO CHECK DISTANCE ETC
-                    XiEntity followTarget = _PowerLeveler.Entity.GetEntity(whoToFollowId);
+                    _FollowEngineTimer.Start();
+                    return;
+                }
 
-                    // We're being being able to follow, nothing to do
-                    if (ShouldUpdateFollow(followTarget))
+            
+                // We'll use this to detect if we're moving
+                // NOTE: This throws an occassional NULL exception but when debugging nothing is null.. wrapping in try/catch to try and recover
+                _LastPLCoordinates.UpdateCoordinates(_PowerLeveler.Player.X, _PowerLeveler.Player.Y, _PowerLeveler.Player.Z);
+
+                // MAKE SURE BOTH ELITEAPI INSTANCES ARE ACTIVE, THE BOT ISN'T PAUSED, AND THERE IS AN AUTOFOLLOWTARGET NAMED
+                if (!string.IsNullOrEmpty(_Config.autoFollowName))
+                {
+                    // RUN THE FUNCTION TO GRAB THE ID OF THE FOLLOW TARGET THIS ALSO MAKES SURE THEY ARE IN RANGE TO FOLLOW
+                    int whoToFollowId = GetFollowIDForPlayer(_Config.autoFollowName.ToLower());
+
+                    // If the FOLLOWER'S ID is NOT -1 THEN THEY WERE LOCATED SO CONTINUE THE CHECKS
+                    if (whoToFollowId != -1)
                     {
-                        _ToFarToFollowWarning = 0;
+                        // GRAB THE FOLLOW TARGETS ENTITY TABLE TO CHECK DISTANCE ETC
+                        XiEntity followTarget = _PowerLeveler.Entity.GetEntity(whoToFollowId);
 
-                        // SQUARE ENIX FINAL FANTASY XI DEFAULT AUTO FOLLOW
-                        if (_Config.FFXIDefaultAutoFollow)
+                        // We're being being able to follow, nothing to do
+                        if (ShouldUpdateFollow(followTarget))
                         {
-                            FollowingUsingFFXICommand(whoToFollowId);
-                        }
-                        // ELITEAPI'S IMPROVED AUTO FOLLOW
-                        else
-                        {
-                            MoveToTarget(followTarget);
-                            Reset();
+                            _ToFarToFollowWarning = 0;
+
+                            // SQUARE ENIX FINAL FANTASY XI DEFAULT AUTO FOLLOW
+                            if (_Config.FFXIDefaultAutoFollow)
+                            {
+                                FollowingUsingFFXICommand(whoToFollowId);
+                            }
+                            // ELITEAPI'S IMPROVED AUTO FOLLOW
+                            else
+                            {
+                                MoveToTarget(followTarget);
+                                Reset();
+                            }
                         }
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                int i = 0;
+                // todo - add logging
             }
 
             _FollowEngineTimer.Start();
