@@ -4,7 +4,7 @@ namespace CurePlease.Model.Config
     public class GeoConfig
     {
         public bool LuopanSpellsEnabled { get; set; }
-        public bool GeoSpellsEnabled { get; set; }
+        public bool IndiSpellsEnabled { get; set; }
         public bool GeoWhenEngaged { get; set; }
         public bool EntrustEnabled { get; set; }
 

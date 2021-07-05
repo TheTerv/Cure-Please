@@ -1,5 +1,6 @@
 ﻿namespace CurePlease
 {
+    using CurePlease.Engine;
     using CurePlease.Model;
     using CurePlease.Model.Config;
     using EliteMMO.API;
@@ -10,2341 +11,464 @@
     using System.Linq;
     using System.Windows.Forms;
     using System.Xml.Serialization;
+    using static CurePlease.Model.JobUtils;
     using Keys = System.Windows.Forms.Keys;
 
     #region "== Form2"
 
     public partial class ConfigForm : Form
     {
-        #region "== Settings Class"
-        public class JobTitles : List<JobTitles>
-        {
-            public int job_number
-            {
-                get; set;
-            }
-
-            public string job_name
-            {
-                get; set;
-            }
-        }
-
-        [Serializable]
-        public class MySettings
-        {
-            // BASE NEEDED FOR CONFIRMATION
-            public bool settingsSet
-            {
-                get; set;
-            }
-
-            // HEALING SPELLS TAB
-            public bool cure1enabled
-            {
-                get; set;
-            }
-
-            public int cure1amount
-            {
-                get; set;
-            }
-
-            public bool cure2enabled
-            {
-                get; set;
-            }
-
-            public int cure2amount
-            {
-                get; set;
-            }
-
-            public bool cure3enabled
-            {
-                get; set;
-            }
-
-            public int cure3amount
-            {
-                get; set;
-            }
-
-            public bool cure4enabled
-            {
-                get; set;
-            }
-
-            public int cure4amount
-            {
-                get; set;
-            }
-
-            public bool cure5enabled
-            {
-                get; set;
-            }
-
-            public int cure5amount
-            {
-                get; set;
-            }
-
-            public bool cure6enabled
-            {
-                get; set;
-            }
-
-            public int cure6amount
-            {
-                get; set;
-            }
-
-            public bool curagaEnabled
-            {
-                get; set;
-            }
-
-            public int curagaAmount
-            {
-                get; set;
-            }
-
-            public bool curaga2enabled
-            {
-                get; set;
-            }
-
-            public int curaga2Amount
-            {
-                get; set;
-            }
-
-            public bool curaga3enabled
-            {
-                get; set;
-            }
-
-            public int curaga3Amount
-            {
-                get; set;
-            }
-
-            public bool curaga4enabled
-            {
-                get; set;
-            }
-
-            public int curaga4Amount
-            {
-                get; set;
-            }
-
-            public bool curaga5enabled
-            {
-                get; set;
-            }
-
-            public int curaga5Amount
-            {
-                get; set;
-            }
-
-            public int curePercentage
-            {
-                get; set;
-            }
-
-            public int priorityCurePercentage
-            {
-                get; set;
-            }
-
-            public int monitoredCurePercentage
-            {
-                get; set;
-            }
-
-            public int curagaCurePercentage
-            {
-                get; set;
-            }
-
-            public int curagaTargetType
-            {
-                get; set;
-            }
-
-            public string curagaTargetName
-            {
-                get; set;
-            }
-
-            public decimal curagaRequiredMembers
-            {
-                get; set;
-            }
-
-            // ENHANCING MAGIC TAB / BASIC
-            public decimal autoHasteMinutes
-            {
-                get; set;
-            }
-
-            public decimal autoAdloquiumMinutes
-            {
-                get; set;
-            }
-
-            public decimal autoPhalanxIIMinutes
-            {
-                get; set;
-            }
-
-            public decimal autoStormspellMinutes
-            {
-                get; set;
-            }
-
-            public decimal autoRefresh_Minutes
-            {
-                get; set;
-            }
-
-            public int autoRefresh_Spell
-            {
-                get; set;
-            }
-
-            public decimal autoRegen_Minutes
-            {
-                get; set;
-            }
-
-            public int autoRegen_Spell
-            {
-                get; set;
-            }
-
-            public decimal autoProtect_Minutes
-            {
-                get; set;
-            }
-
-            public int autoProtect_Spell
-            {
-                get; set;
-            }
-
-            public decimal autoShellMinutes
-            {
-                get; set;
-            }
-
-            public int autoShell_Spell
-            {
-                get; set;
-            }
-            public int autoStorm_Spell
-            {
-                get; set;
-            }
-
-            public bool plShellra
-            {
-                get; set;
-            }
-
-            public decimal plShellra_Level
-            {
-                get; set;
-            }
-
-            public bool plProtectra
-            {
-                get; set;
-            }
-
-            public decimal plProtectra_Level
-            {
-                get; set;
-            }
-
-            public bool plGainBoost
-            {
-                get; set;
-            }
-
-            public int plGainBoost_Spell
-            {
-                get; set;
-            }
-
-            public bool plBarElement
-            {
-                get; set;
-            }
-
-            public int plBarElement_Spell
-            {
-                get; set;
-            }
-
-            public bool AOE_Barelemental
-            {
-                get; set;
-            }
-
-            public bool plBarStatus
-            {
-                get; set;
-            }
-
-            public int plBarStatus_Spell
-            {
-                get; set;
-            }
-
-            public bool AOE_Barstatus
-            {
-                get; set;
-            }
-
-            public bool plAuspice
-            {
-                get; set;
-            }
-
-            public bool plRegen
-            {
-                get; set;
-            }
-
-            public int plRegen_Level
-            {
-                get; set;
-            }
-
-            public bool plReraise
-            {
-                get; set;
-            }
-
-            public int plReraise_Level
-            {
-                get; set;
-            }
-
-            public bool plRefresh
-            {
-                get; set;
-            }
-
-            public int plRefresh_Level
-            {
-                get; set;
-            }
-
-            public bool plProtect
-            {
-                get; set;
-            }
-
-            public bool plShell
-            {
-                get; set;
-            }
-
-            public bool plBlink
-            {
-                get; set;
-            }
-
-            public bool plPhalanx
-            {
-                get; set;
-            }
-
-            public bool plStoneskin
-            {
-                get; set;
-            }
-
-            public bool plTemper
-            {
-                get; set;
-            }
-
-            public int plTemper_Level
-            {
-                get; set;
-            }
-
-            public bool plEnspell
-            {
-                get; set;
-            }
-
-            public int plEnspell_Spell
-            {
-                get; set;
-            }
-
-            public bool plStormSpell
-            {
-                get; set;
-            }
-
-            public int plStormSpell_Spell
-            {
-                get; set;
-            }
-
-            public bool plAdloquium
-            {
-                get; set;
-            }
-
-            public bool plKlimaform
-            {
-                get; set;
-            }
-
-            public bool plAquaveil
-            {
-                get; set;
-            }
-
-            public bool plHaste
-            {
-                get; set;
-            }
-
-            public int plHaste_Level
-            {
-                get; set;
-            }
-
-            public bool plSpikes
-            {
-                get; set;
-            }
-
-            public int plSpikes_Spell
-            {
-                get; set;
-            }
-
-            public bool plUtsusemi
-            {
-                get; set;
-            }
-
-            // ENHANCING MAGIC TAB / SCHOLAR
-
-            public bool accessionCure
-            {
-                get; set;
-            }
-
-            public bool accessionProShell
-            {
-                get; set;
-            }
-
-            public bool AccessionRegen
-            {
-                get; set;
-            }
-
-            public bool PerpetuanceRegen
-            {
-                get; set;
-            }
-
-
-            public bool regenPerpetuance
-            {
-                get; set;
-            }
-
-            public bool regenAccession
-            {
-                get; set;
-            }
-
-
-
-
-            public bool refreshPerpetuance
-            {
-                get; set;
-            }
-
-            public bool refreshAccession
-            {
-                get; set;
-            }
-
-            public bool blinkPerpetuance
-            {
-                get; set;
-            }
-
-            public bool blinkAccession
-            {
-                get; set;
-            }
-
-            public bool phalanxPerpetuance
-            {
-                get; set;
-            }
-
-            public bool phalanxAccession
-            {
-                get; set;
-            }
-
-            public bool stoneskinPerpetuance
-            {
-                get; set;
-            }
-
-            public bool stoneskinAccession
-            {
-                get; set;
-            }
-
-            public bool enspellPerpetuance
-            {
-                get; set;
-            }
-
-            public bool enspellAccession
-            {
-                get; set;
-            }
-
-            public bool stormspellPerpetuance
-            {
-                get; set;
-            }
-
-            public bool stormspellAccession
-            {
-                get; set;
-            }
-
-            public bool adloquiumPerpetuance
-            {
-                get; set;
-            }
-
-            public bool adloquiumAccession
-            {
-                get; set;
-            }
-
-            public bool aquaveilPerpetuance
-            {
-                get; set;
-            }
-
-            public bool aquaveilAccession
-            {
-                get; set;
-            }
-
-            public bool barspellPerpetuance
-            {
-                get; set;
-            }
-
-            public bool barspellAccession
-            {
-                get; set;
-            }
-
-            public bool barstatusPerpetuance
-            {
-                get; set;
-            }
-
-            public bool barstatusAccession
-            {
-                get; set;
-            }
-
-            public bool EnlightenmentReraise
-            {
-                get; set;
-            }
-
-            // GEOMANCY MAGIC TAB
-            public bool EnableGeoSpells
-            {
-                get; set;
-            }
-
-            public bool IndiWhenEngaged
-            {
-                get; set;
-            }
-
-            public bool EnableLuopanSpells
-            {
-                get; set;
-            }
-
-            public bool GeoWhenEngaged
-            {
-                get; set;
-            }
-
-            public bool specifiedEngageTarget
-            {
-                get; set;
-            }
-
-            public int IndiSpell_Spell
-            {
-                get; set;
-            }
-
-            public int GeoSpell_Spell
-            {
-                get; set;
-            }
-
-            public int EntrustedSpell_Spell
-            {
-                get; set;
-            }
-
-            public string LuopanSpell_Target
-            {
-                get; set;
-            }
-
-            public string EntrustedSpell_Target
-            {
-                get; set;
-            }
-
-            // SINGING MAGIC TAB
-            public bool enableSinging
-            {
-                get; set;
-            }
-
-            public bool recastSongs_Monitored
-            {
-                get; set;
-            }
-
-            public bool SongsOnlyWhenNear
-            {
-                get; set;
-            }
-
-            public int song1
-            {
-                get; set;
-            }
-
-            public int song2
-            {
-                get; set;
-            }
-
-            public int song3
-            {
-                get; set;
-            }
-
-            public int song4
-            {
-                get; set;
-            }
-
-            public int dummy1
-            {
-                get; set;
-            }
-
-            public int dummy2
-            {
-                get; set;
-            }
-
-            public decimal recastSongTime
-            {
-                get; set;
-            }
-
-            // JOB ABILITIES
-
-            // SCH
-            public bool LightArts
-            {
-                get; set;
-            }
-
-            public bool Sublimation
-            {
-                get; set;
-            }
-
-            public bool AddendumWhite
-            {
-                get; set;
-            }
-
-            public bool Celerity
-            {
-                get; set;
-            }
-
-            public bool Accession
-            {
-                get; set;
-            }
-
-            public bool Perpetuance
-            {
-                get; set;
-            }
-
-            public bool Penury
-            {
-                get; set;
-            }
-
-            public bool Rapture
-            {
-                get; set;
-            }
-            public bool DarkArts
-            {
-                get; set;
-            }
-
-            public bool AddendumBlack
-            {
-                get; set;
-            }
-
-            // WHM
-            public bool AfflatusSolace
-            {
-                get; set;
-            }
-
-            public bool AfflatusMisery
-            {
-                get; set;
-            }
-
-            public bool DivineSeal
-            {
-                get; set;
-            }
-
-            public bool Devotion
-            {
-                get; set;
-            }
-
-            public bool DivineCaress
-            {
-                get; set;
-            }
-
-            // RDM
-            public bool Composure
-            {
-                get; set;
-            }
-
-            public bool Convert
-            {
-                get; set;
-            }
-
-            // GEO
-            public bool Entrust
-            {
-                get; set;
-            }
-
-            public bool FullCircle
-            {
-                get; set;
-            }
-
-            public bool Dematerialize
-            {
-                get; set;
-            }
-
-            public bool BlazeOfGlory
-            {
-                get; set;
-            }
-
-            public bool RadialArcana
-            {
-                get; set;
-            }
-
-            public bool EclipticAttrition
-            {
-                get; set;
-            }
-
-            public bool LifeCycle
-            {
-                get; set;
-            }
-
-            // BRD
-            public bool Pianissimo
-            {
-                get; set;
-            }
-
-            public bool Nightingale
-            {
-                get; set;
-            }
-
-            public bool Troubadour
-            {
-                get; set;
-            }
-
-            public bool Marcato
-            {
-                get; set;
-            }
-
-            // DEBUFF REMOVAL
-            public bool plDebuffEnabled
-            {
-                get; set;
-            }
-
-            public bool monitoredDebuffEnabled
-            {
-                get; set;
-            }
-
-            public bool enablePartyDebuffRemoval
-            {
-                get; set;
-            }
-
-            public bool SpecifiednaSpellsenable
-            {
-                get; set;
-            }
-
-            public bool PrioritiseOverLowerTier
-            {
-                get; set;
-            }
-
-            public bool plSilenceItemEnabled
-            {
-                get; set;
-            }
-
-            public int plSilenceItem
-            {
-                get; set;
-            }
-
-            public bool plDoomEnabled
-            {
-                get; set;
-            }
-
-            public int plDoomitem
-            {
-                get; set;
-            }
-
-            public bool wakeSleepEnabled
-            {
-                get; set;
-            }
-
-            public int wakeSleepSpell
-            {
-                get; set;
-            }
-
-            // PARTY DEBUFFS
-            public bool naBlindness
-            {
-                get; set;
-            }
-
-            public bool naCurse
-            {
-                get; set;
-            }
-
-            public bool naDisease
-            {
-                get; set;
-            }
-
-            public bool naParalysis
-            {
-                get; set;
-            }
-
-            public bool naPetrification
-            {
-                get; set;
-            }
-
-            public bool naPlague
-            {
-                get; set;
-            }
-
-            public bool naPoison
-            {
-                get; set;
-            }
-
-            public bool naSilence
-            {
-                get; set;
-            }
-
-            public bool naErase
-            {
-                get; set;
-            }
-
-            public bool Esuna
-            {
-                get;
-                set;
-            }
-
-            public bool EsunaOnlyAmnesia
-            {
-                get;
-                set;
-            }
-
-            // PL DEBUFFS
-            public bool plAgiDown
-            {
-                get; set;
-            }
-
-            public bool plAccuracyDown
-            {
-                get; set;
-            }
-
-            public bool plAddle
-            {
-                get; set;
-            }
-
-            public bool plAttackDown
-            {
-                get; set;
-            }
-
-            public bool plBane
-            {
-                get; set;
-            }
-
-            public bool plBind
-            {
-                get; set;
-            }
-
-            public bool plBio
-            {
-                get; set;
-            }
-
-            public bool plBlindness
-            {
-                get; set;
-            }
-
-            public bool plBurn
-            {
-                get; set;
-            }
-
-            public bool plChrDown
-            {
-                get; set;
-            }
-
-            public bool plChoke
-            {
-                get; set;
-            }
-
-            public bool plCurse
-            {
-                get; set;
-            }
-
-            public bool plCurse2
-            {
-                get; set;
-            }
-
-            public bool plDexDown
-            {
-                get; set;
-            }
-
-            public bool plDefenseDown
-            {
-                get; set;
-            }
-
-            public bool plDia
-            {
-                get; set;
-            }
-
-            public bool plDisease
-            {
-                get; set;
-            }
-
-            public bool plDoom
-            {
-                get; set;
-            }
-
-            public bool plDrown
-            {
-                get; set;
-            }
-
-            public bool plElegy
-            {
-                get; set;
-            }
-
-            public bool plEvasionDown
-            {
-                get; set;
-            }
-
-            public bool plFlash
-            {
-                get; set;
-            }
-
-            public bool plFrost
-            {
-                get; set;
-            }
-
-            public bool plHelix
-            {
-                get; set;
-            }
-
-            public bool plIntDown
-            {
-                get; set;
-            }
-
-            public bool plMndDown
-            {
-                get; set;
-            }
-
-            public bool plMagicAccDown
-            {
-                get; set;
-            }
-
-            public bool plMagicAtkDown
-            {
-                get; set;
-            }
-
-            public bool plMaxHpDown
-            {
-                get; set;
-            }
-
-            public bool plMaxMpDown
-            {
-                get; set;
-            }
-
-            public bool plMaxTpDown
-            {
-                get; set;
-            }
-
-            public bool plParalysis
-            {
-                get; set;
-            }
-
-            public bool plPlague
-            {
-                get; set;
-            }
-
-            public bool plPoison
-            {
-                get; set;
-            }
-
-            public bool plRasp
-            {
-                get; set;
-            }
-
-            public bool plRequiem
-            {
-                get; set;
-            }
-
-            public bool plStrDown
-            {
-                get; set;
-            }
-
-            public bool plShock
-            {
-                get; set;
-            }
-
-            public bool plSilence
-            {
-                get; set;
-            }
-
-            public bool plSlow
-            {
-                get; set;
-            }
-
-            public bool plThrenody
-            {
-                get; set;
-            }
-
-            public bool plVitDown
-            {
-                get; set;
-            }
-
-            public bool plWeight
-            {
-                get; set;
-            }
-
-            public bool plAmnesia
-            {
-                get;
-                set;
-            }
-
-            // MONITORED DEBUFFS
-            public bool monitoredAgiDown
-            {
-                get; set;
-            }
-
-            public bool monitoredAccuracyDown
-            {
-                get; set;
-            }
-
-            public bool monitoredAddle
-            {
-                get; set;
-            }
-
-            public bool monitoredAttackDown
-            {
-                get; set;
-            }
-
-            public bool monitoredBane
-            {
-                get; set;
-            }
-
-            public bool monitoredBind
-            {
-                get; set;
-            }
-
-            public bool monitoredBio
-            {
-                get; set;
-            }
-
-            public bool monitoredBlindness
-            {
-                get; set;
-            }
-
-            public bool monitoredBurn
-            {
-                get; set;
-            }
-
-            public bool monitoredChrDown
-            {
-                get; set;
-            }
-
-            public bool monitoredChoke
-            {
-                get; set;
-            }
-
-            public bool monitoredCurse
-            {
-                get; set;
-            }
-
-            public bool monitoredCurse2
-            {
-                get; set;
-            }
-
-            public bool monitoredDexDown
-            {
-                get; set;
-            }
-
-            public bool monitoredDefenseDown
-            {
-                get; set;
-            }
-
-            public bool monitoredDia
-            {
-                get; set;
-            }
-
-            public bool monitoredDisease
-            {
-                get; set;
-            }
-
-            public bool monitoredDoom
-            {
-                get; set;
-            }
-
-            public bool monitoredDrown
-            {
-                get; set;
-            }
-
-            public bool monitoredElegy
-            {
-                get; set;
-            }
-
-            public bool monitoredEvasionDown
-            {
-                get; set;
-            }
-
-            public bool monitoredFlash
-            {
-                get; set;
-            }
-
-            public bool monitoredFrost
-            {
-                get; set;
-            }
-
-            public bool monitoredHelix
-            {
-                get; set;
-            }
-
-            public bool monitoredIntDown
-            {
-                get; set;
-            }
-
-            public bool monitoredMndDown
-            {
-                get; set;
-            }
-
-            public bool monitoredMagicAccDown
-            {
-                get; set;
-            }
-
-            public bool monitoredMagicAtkDown
-            {
-                get; set;
-            }
-
-            public bool monitoredMaxHpDown
-            {
-                get; set;
-            }
-
-            public bool monitoredMaxMpDown
-            {
-                get; set;
-            }
-
-            public bool monitoredMaxTpDown
-            {
-                get; set;
-            }
-
-            public bool monitoredParalysis
-            {
-                get; set;
-            }
-
-            public bool monitoredPetrification
-            {
-                get; set;
-            }
-
-            public bool monitoredPlague
-            {
-                get; set;
-            }
-
-            public bool monitoredPoison
-            {
-                get; set;
-            }
-
-            public bool monitoredRasp
-            {
-                get; set;
-            }
-
-            public bool monitoredRequiem
-            {
-                get; set;
-            }
-
-            public bool monitoredStrDown
-            {
-                get; set;
-            }
-
-            public bool monitoredShock
-            {
-                get; set;
-            }
-
-            public bool monitoredSilence
-            {
-                get; set;
-            }
-
-            public bool monitoredSleep
-            {
-                get; set;
-            }
-
-            public bool monitoredSleep2
-            {
-                get; set;
-            }
-
-            public bool monitoredSlow
-            {
-                get; set;
-            }
-
-            public bool monitoredThrenody
-            {
-                get; set;
-            }
-
-            public bool monitoredVitDown
-            {
-                get; set;
-            }
-
-            public bool monitoredWeight
-            {
-                get; set;
-            }
-
-            public bool monitoredAmnesia
-            {
-                get;
-                set;
-            }
-
-            // NA SPECIFICATION CHECKBOXES
-
-            public bool na_Weight
-            {
-                get; set;
-            }
-
-            public bool na_VitDown
-            {
-                get; set;
-            }
-
-            public bool na_Threnody
-            {
-                get; set;
-            }
-
-            public bool na_Slow
-            {
-                get; set;
-            }
-
-            public bool na_Shock
-            {
-                get; set;
-            }
-
-            public bool na_StrDown
-            {
-                get; set;
-            }
-
-            public bool na_Requiem
-            {
-                get; set;
-            }
-
-            public bool na_Rasp
-            {
-                get; set;
-            }
-
-            public bool na_MaxTpDown
-            {
-                get; set;
-            }
-
-            public bool na_MaxMpDown
-            {
-                get; set;
-            }
-
-            public bool na_MaxHpDown
-            {
-                get; set;
-            }
-
-            public bool na_MagicAttackDown
-            {
-                get; set;
-            }
-
-            public bool na_MagicAccDown
-            {
-                get; set;
-            }
-
-            public bool na_MagicDefenseDown
-            {
-                get; set;
-            }
-
-            public bool na_MndDown
-            {
-                get; set;
-            }
-
-            public bool na_IntDown
-            {
-                get; set;
-            }
-
-            public bool na_Helix
-            {
-                get; set;
-            }
-
-            public bool na_Frost
-            {
-                get; set;
-            }
-
-            public bool na_EvasionDown
-            {
-                get; set;
-            }
-
-            public bool na_Elegy
-            {
-                get; set;
-            }
-
-            public bool na_Drown
-            {
-                get; set;
-            }
-
-            public bool na_Dia
-            {
-                get; set;
-            }
-
-            public bool na_DefenseDown
-            {
-                get; set;
-            }
-
-            public bool na_DexDown
-            {
-                get; set;
-            }
-
-            public bool na_Choke
-            {
-                get; set;
-            }
-
-            public bool na_ChrDown
-            {
-                get; set;
-            }
-
-            public bool na_Burn
-            {
-                get; set;
-            }
-
-            public bool na_Bio
-            {
-                get; set;
-            }
-
-            public bool na_Bind
-            {
-                get; set;
-            }
-
-            public bool na_AttackDown
-            {
-                get; set;
-            }
-
-            public bool na_Addle
-            {
-                get; set;
-            }
-
-            public bool na_AccuracyDown
-            {
-                get; set;
-            }
-
-            public bool na_AgiDown
-            {
-                get; set;
-            }
-
-            // OTHER SETTINGS
-
-            // MP OPTIONS
-            public decimal mpMinCastValue
-            {
-                get; set;
-            }
-
-            public bool lowMPcheckBox
-            {
-                get; set;
-            }
-
-            public bool healLowMP
-            {
-                get; set;
-            }
-
-            public decimal healWhenMPBelow
-            {
-                get; set;
-            }
-
-            public bool standAtMP
-            {
-                get; set;
-            }
-
-            public decimal standAtMP_Percentage
-            {
-                get; set;
-            }
-
-            // CONVERT SETTINGS
-            public decimal convertMP
-            {
-                get; set;
-            }
-
-            // SUBLIMATION SETTINGS
-            public decimal sublimationMP
-            {
-                get; set;
-            }
-
-            // FULL CIRCLE SETTINGS
-            public bool Fullcircle_DisableEnemy
-            {
-                get; set;
-            }
-            public bool Fullcircle_GEOTarget
-            {
-                get; set;
-            }
-
-            // RADIAL ARCANA SETTINGS
-            public decimal RadialArcanaMP
-            {
-                get; set;
-            }
-
-            public int RadialArcana_Spell
-            {
-                get; set;
-            }
-
-            // DEVOTION SETTINGS
-            public decimal DevotionMP
-            {
-                get; set;
-            }
-
-            public int DevotionTargetType
-            {
-                get; set;
-            }
-
-            public string DevotionTargetName
-            {
-                get; set;
-            }
-
-            public bool DevotionWhenEngaged
-            {
-                get; set;
-            }
-
-            //AUTO CASTING SPELLS OPTIONS
-            public bool autoTarget
-            {
-                get; set;
-            }
-
-            public int Hate_SpellType
-            {
-                get; set;
-            }
-
-            public string autoTargetSpell
-            {
-                get; set;
-            }
-
-            public string autoTarget_Target
-            {
-                get; set;
-            }
-
-            public bool AssistSpecifiedTarget
-            {
-                get; set;
-            }
-
-            // DISABLE CANCEL TARGETTING
-            public bool DisableTargettingCancel
-            {
-                get; set;
-            }
-
-            // DELAY BEFORE REMOVING TARGET
-            public decimal TargetRemoval_Delay
-            {
-                get; set;
-            }
-
-            // RAISE SETTINGS
-            public bool AcceptRaise
-            {
-                get; set;
-            }
-
-            public bool AcceptRaiseOnlyWhenNotInCombat
-            {
-                get; set;
-            }
-
-            // CURING OPTIONS
-            public bool Overcure
-            {
-                get; set;
-            }
-
-            public bool Undercure
-            {
-                get; set;
-            }
-
-            public bool enableMonitoredPriority
-            {
-                get; set;
-            }
-
-            public bool enableOutOfPartyHealing
-            {
-                get; set;
-            }
-
-            public bool OvercureOnHighPriority
-            {
-                get; set;
-            }
-
-            public bool EnableAddOn
-            {
-                get; set;
-            }
-
-            // PROGRAM OPTIONS
-
-            // PAUSE OPTIONS
-            public bool pauseOnZoneBox
-            {
-                get; set;
-            }
-
-            public bool pauseOnStartBox
-            {
-                get; set;
-            }
-
-            public bool pauseOnKO
-            {
-                get; set;
-            }
-
-            public bool MinimiseonStart
-            {
-                get; set;
-            }
-
-            // AUTO FOLLOW OPTIONS
-            public string autoFollowName
-            {
-                get; set;
-            }
-
-            public decimal autoFollowDistance
-            {
-                get; set;
-            }
-
-            public bool autoFollow_Warning
-            {
-                get; set;
-            }
-
-            public bool FFXIDefaultAutoFollow
-            {
-                get; set;
-            }
-            public bool enableHotKeys
-            {
-                get; set;
-            }
-
-            // FAST CAST MODE
-            public bool enableFastCast_Mode
-            {
-                get; set;
-            }
-
-            // trackCastingPacketsMODE
-            public bool trackCastingPackets
-            {
-                get; set;
-            }
-
-            // ADD ON OPTIONS
-            public string ipAddress
-            {
-                get; set;
-            }
-
-            public string listeningPort
-            {
-                get; set;
-            }
-        }
-
-        #endregion "== Settings Class"
-
         public static MySettings config = new MySettings();
-        public List<JobTitles> JobNames = new List<JobTitles>();
+        
         public int runOnce = 0;
 
         public ConfigForm ( )
         {
             StartPosition = FormStartPosition.CenterScreen;
 
-            InitializeComponent ( );
+            InitializeComponent();
 
-            JobNames.Add ( new JobTitles
+            if (config.settingsSet != true)
             {
-                job_number = 1,
-                job_name = "WAR",
-            } );
-            JobNames.Add ( new JobTitles
-            {
-                job_number = 2,
-                job_name = "MNK"
-            } );
-            JobNames.Add ( new JobTitles
-            {
-                job_number = 3,
-                job_name = "WHM"
-            } );
-            JobNames.Add ( new JobTitles
-            {
-                job_number = 4,
-                job_name = "BLM"
-            } );
-            JobNames.Add ( new JobTitles
-            {
-                job_number = 5,
-                job_name = "RDM"
-            } );
-            JobNames.Add ( new JobTitles
-            {
-                job_number = 6,
-                job_name = "THF"
-            } );
-            JobNames.Add ( new JobTitles
-            {
-                job_number = 7,
-                job_name = "PLD"
-            } );
-            JobNames.Add ( new JobTitles
-            {
-                job_number = 8,
-                job_name = "DRK"
-            } );
-            JobNames.Add ( new JobTitles
-            {
-                job_number = 9,
-                job_name = "BST"
-            } );
-            JobNames.Add ( new JobTitles
-            {
-                job_number = 10,
-                job_name = "BRD"
-            } );
-            JobNames.Add ( new JobTitles
-            {
-                job_number = 11,
-                job_name = "RNG"
-            } );
-            JobNames.Add ( new JobTitles
-            {
-                job_number = 12,
-                job_name = "SAM"
-            } );
-            JobNames.Add ( new JobTitles
-            {
-                job_number = 13,
-                job_name = "NIN"
-            } );
-            JobNames.Add ( new JobTitles
-            {
-                job_number = 14,
-                job_name = "DRG"
-            } );
-            JobNames.Add ( new JobTitles
-            {
-                job_number = 15,
-                job_name = "SMN"
-            } );
-            JobNames.Add ( new JobTitles
-            {
-                job_number = 16,
-                job_name = "BLU"
-            } );
-            JobNames.Add ( new JobTitles
-            {
-                job_number = 17,
-                job_name = "COR"
-            } );
-            JobNames.Add ( new JobTitles
-            {
-                job_number = 18,
-                job_name = "PUP"
-            } );
-            JobNames.Add ( new JobTitles
-            {
-                job_number = 19,
-                job_name = "DNC"
-            } );
-            JobNames.Add ( new JobTitles
-            {
-                job_number = 20,
-                job_name = "SCH"
-            } );
-
-            JobNames.Add ( new JobTitles
-            {
-                job_number = 21,
-                job_name = "GEO"
-            } );
-            JobNames.Add ( new JobTitles
-            {
-                job_number = 22,
-                job_name = "RUN"
-            } );
-
-            if ( config.settingsSet != true )
-            {
-                // HEALING MAGIC
-                config.cure1enabled = false;
-                config.cure2enabled = false;
-                config.cure3enabled = true;
-                config.cure4enabled = true;
-                config.cure5enabled = true;
-                config.cure6enabled = true;
-                config.cure1amount = 10;
-                config.cure2amount = 60;
-                config.cure3amount = 130;
-                config.cure4amount = 270;
-                config.cure5amount = 450;
-                config.cure6amount = 600;
-                config.curePercentage = 75;
-                config.monitoredCurePercentage = 85;
-                config.priorityCurePercentage = 95;
-
-                config.curagaEnabled = false;
-                config.curaga2enabled = false;
-                config.curaga3enabled = false;
-                config.curaga4enabled = false;
-                config.curaga5enabled = false;
-                config.curagaAmount = 20;
-                config.curaga2Amount = 70;
-                config.curaga3Amount = 165;
-                config.curaga4Amount = 330;
-                config.curaga5Amount = 570;
-                config.curagaCurePercentage = 75;
-                config.curagaTargetType = 0;
-                config.curagaTargetName = "";
-                config.curagaRequiredMembers = 3;
-
-                // ENHANCING MAGIC
-
-                // BASIC ENHANCING
-                config.autoHasteMinutes = 2;
-                config.autoAdloquiumMinutes = 2;
-                config.autoProtect_Minutes = 29;
-                config.autoShellMinutes = 29;
-                config.autoPhalanxIIMinutes = 2;
-                config.autoStormspellMinutes = 3;
-                config.autoRefresh_Minutes = 2;
-                config.autoRegen_Minutes = 1;
-                config.autoRefresh_Minutes = 2;
-                config.plProtect = false;
-                config.plShell = false;
-                config.plBlink = false;
-                config.plReraise = false;
-                config.autoRegen_Spell = 3;
-                config.autoRefresh_Spell = 1;
-                config.autoShell_Spell = 4;
-                config.autoStorm_Spell = 0;
-                config.autoProtect_Spell = 4;
-                config.plRegen = false;
-                config.plRegen_Level = 4;
-                config.plReraise = false;
-                config.plReraise_Level = 2;
-                config.plRefresh = false;
-                config.plRefresh_Level = 2;
-                config.plStoneskin = false;
-                config.plPhalanx = false;
-                config.plProtectra = false;
-                config.plShellra = false;
-                config.plProtectra_Level = 5;
-                config.plShellra_Level = 5;
-                config.plTemper = false;
-                config.plTemper_Level = 0;
-                config.plEnspell = false;
-                config.plEnspell_Spell = 0;
-                config.plGainBoost = false;
-                config.plGainBoost_Spell = 0;
-                config.plBarElement = false;
-                config.plBarElement_Spell = 0;
-                config.AOE_Barelemental = false;
-                config.plBarStatus = false;
-                config.plBarStatus_Spell = 0;
-                config.AOE_Barstatus = false;
-                config.plStormSpell = false;
-                config.plAdloquium = false;
-                config.plKlimaform = false;
-                config.plStormSpell_Spell = 0;
-                config.plAuspice = false;
-                config.plAquaveil = false;
-                config.plHaste = false;
-                config.plHaste_Level = 0;
-                config.plSpikes = false;
-                config.plSpikes_Spell = 0;
-
-                config.plUtsusemi = false;
-
-                // SCHOLAR STRATAGEMS
-                config.AccessionRegen = false;
-                config.PerpetuanceRegen = false;
-                config.accessionCure = false;
-                config.accessionProShell = false;
-
-                config.regenPerpetuance = false;
-                config.regenAccession = false;
-                config.refreshPerpetuance = false;
-                config.refreshAccession = false;
-                config.blinkPerpetuance = false;
-                config.blinkAccession = false;
-                config.phalanxPerpetuance = false;
-                config.phalanxAccession = false;
-                config.stoneskinPerpetuance = false;
-                config.stoneskinAccession = false;
-                config.enspellPerpetuance = false;
-                config.enspellAccession = false;
-                config.stormspellPerpetuance = false;
-                config.stormspellAccession = false;
-                config.adloquiumPerpetuance = false;
-                config.adloquiumAccession = false;
-                config.aquaveilPerpetuance = false;
-                config.aquaveilAccession = false;
-                config.barspellPerpetuance = false;
-                config.barspellAccession = false;
-                config.barstatusPerpetuance = false;
-                config.barstatusAccession = false;
-
-                config.EnlightenmentReraise = false;
-
-                // GEOMANCER
-                config.EnableGeoSpells = false;
-                config.GeoWhenEngaged = false;
-                config.GeoSpell_Spell = 0;
-                config.LuopanSpell_Target = "";
-                config.IndiSpell_Spell = 0;
-                config.EntrustedSpell_Spell = 0;
-                config.EntrustedSpell_Target = "";
-                config.EnableLuopanSpells = false;
-                config.GeoWhenEngaged = false;
-
-                config.specifiedEngageTarget = false;
-
-                // SINGING
-                config.enableSinging = false;
-                config.song1 = 0;
-                config.song2 = 0;
-                config.song3 = 0;
-                config.song4 = 0;
-                config.dummy1 = 0;
-                config.dummy2 = 0;
-                config.recastSongTime = 2;
-                config.enableSinging = false;
-                config.recastSongs_Monitored = false;
-                config.SongsOnlyWhenNear = false;
-
-                // JOB ABILITIES
-                config.AfflatusSolace = false;
-                config.AfflatusMisery = false;
-                config.LightArts = false;
-                config.Composure = false;
-                config.Convert = false;
-                config.DivineSeal = false;
-                config.AddendumWhite = false;
-                config.Sublimation = false;
-                config.Celerity = false;
-                config.Accession = false;
-                config.Perpetuance = false;
-                config.Penury = false;
-                config.Rapture = false;
-                config.EclipticAttrition = false;
-                config.LifeCycle = false;
-                config.Entrust = false;
-                config.Dematerialize = false;
-                config.FullCircle = false;
-                config.BlazeOfGlory = false;
-                config.RadialArcana = false;
-                config.Troubadour = false;
-                config.Nightingale = false;
-                config.Marcato = false;
-                config.Devotion = false;
-                config.DivineCaress = false;
-                config.DarkArts = false;
-                config.AddendumBlack = false;
-
-                // DEBUFF REMOVAL
-                config.plSilenceItemEnabled = false;
-                config.plSilenceItem = 0;
-                config.wakeSleepEnabled = false;
-                config.wakeSleepSpell = 2;
-                config.plDoomEnabled = false;
-                config.plDoomitem = 0;
-
-                config.plDebuffEnabled = false;
-                config.plAgiDown = false;
-                config.plAccuracyDown = false;
-                config.plAddle = false;
-                config.plAttackDown = false;
-                config.plBane = false;
-                config.plBind = false;
-                config.plBio = false;
-                config.plBlindness = false;
-                config.plBurn = false;
-                config.plChrDown = false;
-                config.plChoke = false;
-                config.plCurse = false;
-                config.plCurse2 = false;
-                config.plDexDown = false;
-                config.plDefenseDown = false;
-                config.plDia = false;
-                config.plDisease = false;
-                config.plDoom = false;
-                config.plDrown = false;
-                config.plElegy = false;
-                config.plEvasionDown = false;
-                config.plFlash = false;
-                config.plFrost = false;
-                config.plHelix = false;
-                config.plIntDown = false;
-                config.plMndDown = false;
-                config.plMagicAccDown = false;
-                config.plMagicAtkDown = false;
-                config.plMaxHpDown = false;
-                config.plMaxMpDown = false;
-                config.plMaxTpDown = false;
-                config.plParalysis = false;
-                config.plPlague = false;
-                config.plPoison = false;
-                config.plRasp = false;
-                config.plRequiem = false;
-                config.plStrDown = false;
-                config.plShock = false;
-                config.plSilence = false;
-                config.plSlow = false;
-                config.plThrenody = false;
-                config.plVitDown = false;
-                config.plWeight = false;
-                config.plAmnesia = false;
-
-                config.enablePartyDebuffRemoval = false;
-                config.SpecifiednaSpellsenable = false;
-                config.naBlindness = false;
-                config.naCurse = false;
-                config.naDisease = false;
-                config.naParalysis = false;
-                config.naPetrification = false;
-                config.naPlague = false;
-                config.naPoison = false;
-                config.naSilence = false;
-                config.naErase = false;
-                config.Esuna = false;
-                config.EsunaOnlyAmnesia = false;
-
-                config.PrioritiseOverLowerTier = false;
-
-                config.monitoredDebuffEnabled = false;
-                config.monitoredAgiDown = false;
-                config.monitoredAccuracyDown = false;
-                config.monitoredAddle = false;
-                config.monitoredAttackDown = false;
-                config.monitoredBane = false;
-                config.monitoredBind = false;
-                config.monitoredBio = false;
-                config.monitoredBlindness = false;
-                config.monitoredBurn = false;
-                config.monitoredChrDown = false;
-                config.monitoredChoke = false;
-                config.monitoredCurse = false;
-                config.monitoredCurse2 = false;
-                config.monitoredDexDown = false;
-                config.monitoredDefenseDown = false;
-                config.monitoredDia = false;
-                config.monitoredDisease = false;
-                config.monitoredDoom = false;
-                config.monitoredDrown = false;
-                config.monitoredElegy = false;
-                config.monitoredEvasionDown = false;
-                config.monitoredFlash = false;
-                config.monitoredFrost = false;
-                config.monitoredHelix = false;
-                config.monitoredIntDown = false;
-                config.monitoredMndDown = false;
-                config.monitoredMagicAccDown = false;
-                config.monitoredMagicAtkDown = false;
-                config.monitoredMaxHpDown = false;
-                config.monitoredMaxMpDown = false;
-                config.monitoredMaxTpDown = false;
-                config.monitoredParalysis = false;
-                config.monitoredPetrification = false;
-                config.monitoredPlague = false;
-                config.monitoredPoison = false;
-                config.monitoredRasp = false;
-                config.monitoredRequiem = false;
-                config.monitoredStrDown = false;
-                config.monitoredShock = false;
-                config.monitoredSilence = false;
-                config.monitoredSleep = false;
-                config.monitoredSleep2 = false;
-                config.monitoredSlow = false;
-                config.monitoredThrenody = false;
-                config.monitoredVitDown = false;
-                config.monitoredWeight = false;
-                config.monitoredAmnesia = false;
-
-                config.na_Weight = false;
-                config.na_VitDown = false;
-                config.na_Threnody = false;
-                config.na_Slow = false;
-                config.na_Shock = false;
-                config.na_StrDown = false;
-                config.na_Requiem = false;
-                config.na_Rasp = false;
-                config.na_MaxTpDown = false;
-                config.na_MaxMpDown = false;
-                config.na_MaxHpDown = false;
-                config.na_MagicAttackDown = false;
-                config.na_MagicDefenseDown = false;
-                config.na_MagicAccDown = false;
-                config.na_MndDown = false;
-                config.na_IntDown = false;
-                config.na_Helix = false;
-                config.na_Frost = false;
-                config.na_EvasionDown = false;
-                config.na_Elegy = false;
-                config.na_Drown = false;
-                config.na_Dia = false;
-                config.na_DefenseDown = false;
-                config.na_DexDown = false;
-                config.na_Choke = false;
-                config.na_ChrDown = false;
-                config.na_Burn = false;
-                config.na_Bio = false;
-                config.na_Bind = false;
-                config.na_AttackDown = false;
-                config.na_Addle = false;
-                config.na_AccuracyDown = false;
-                config.na_AgiDown = false;
-
-                // OTHER OPTIONS
-
-                config.lowMPcheckBox = false;
-                config.mpMinCastValue = 100;
-
-                config.autoTarget = false;
-                config.autoTargetSpell = "Dia";
-                config.AssistSpecifiedTarget = false;
-
-                config.DisableTargettingCancel = false;
-                config.TargetRemoval_Delay = 3;
-
-                config.AcceptRaise = false;
-                config.AcceptRaiseOnlyWhenNotInCombat = false;
-
-                config.Fullcircle_DisableEnemy = false;
-                config.Fullcircle_GEOTarget = false;
-
-                config.RadialArcana_Spell = 0;
-                config.RadialArcanaMP = 300;
-
-                config.convertMP = 300;
-
-                config.DevotionMP = 200;
-
-                config.DevotionTargetType = 1;
-                config.DevotionTargetName = "";
-                config.DevotionWhenEngaged = false;
-
-                config.Hate_SpellType = 0;
-                config.autoTarget_Target = "";
-
-                config.healWhenMPBelow = 5;
-                config.healLowMP = false;
-
-                config.standAtMP_Percentage = 99;
-                config.standAtMP = false;
-
-                config.Overcure = true;
-                config.Undercure = true;
-                config.enableMonitoredPriority = false;
-                config.enableOutOfPartyHealing = true;
-                config.OvercureOnHighPriority = false;
-
-                config.EnableAddOn = false;
-
-                config.sublimationMP = 100;
-
-                // PROGRAM OPTIONS
-
-                config.pauseOnZoneBox = false;
-                config.pauseOnStartBox = false;
-                config.pauseOnKO = false;
-                config.MinimiseonStart = false;
-
-                config.autoFollowName = "";
-                config.autoFollowDistance = 5;
-                config.autoFollow_Warning = false;
-                config.FFXIDefaultAutoFollow = false;
-                config.enableHotKeys = false;
-
-                config.ipAddress = "127.0.0.1";
-                config.listeningPort = "19769";
-
-                config.enableFastCast_Mode = false;
-                config.trackCastingPackets = false;
-
-                // OTHERS
-
+                LoadConfiguration();
                 config.settingsSet = true;
             }
 
             updateForm ( config );
+        }
 
-            string path = System.IO.Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "Settings");
-            if ( loadJobSettings.Checked == false && System.IO.File.Exists ( path + "/loadSettings" ) )
+        public static void LoadConfiguration()
+        {
+            var loadedSettings = ReadConfigurationFromFile();
+
+            config = loadedSettings ?? LoadDefaultConfig();
+        }
+
+        private static MySettings ReadConfigurationFromFile()
+        {
+            string fileName = CreateFileName();
+            string path = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "Settings", fileName);
+            return ReadSettings(path);
+        }
+
+        private static MySettings LoadDefaultConfig()
+        {
+            // HEALING MAGIC
+            config.cure1enabled = false;
+            config.cure2enabled = false;
+            config.cure3enabled = true;
+            config.cure4enabled = true;
+            config.cure5enabled = true;
+            config.cure6enabled = true;
+            config.cure1amount = 10;
+            config.cure2amount = 60;
+            config.cure3amount = 130;
+            config.cure4amount = 270;
+            config.cure5amount = 450;
+            config.cure6amount = 600;
+            config.curePercentage = 75;
+            config.monitoredCurePercentage = 85;
+            config.priorityCurePercentage = 95;
+
+            config.curagaEnabled = false;
+            config.curaga2enabled = false;
+            config.curaga3enabled = false;
+            config.curaga4enabled = false;
+            config.curaga5enabled = false;
+            config.curagaAmount = 20;
+            config.curaga2Amount = 70;
+            config.curaga3Amount = 165;
+            config.curaga4Amount = 330;
+            config.curaga5Amount = 570;
+            config.curagaCurePercentage = 75;
+            config.curagaTargetType = 0;
+            config.curagaTargetName = "";
+            config.curagaRequiredMembers = 3;
+
+            // ENHANCING MAGIC
+
+            // BASIC ENHANCING
+            config.autoHasteMinutes = 2;
+            config.autoAdloquiumMinutes = 2;
+            config.autoProtect_Minutes = 29;
+            config.autoShellMinutes = 29;
+            config.autoPhalanxIIMinutes = 2;
+            config.autoStormspellMinutes = 3;
+            config.autoRefresh_Minutes = 2;
+            config.autoRegen_Minutes = 1;
+            config.autoRefresh_Minutes = 2;
+            config.plProtect = false;
+            config.plShell = false;
+            config.plBlink = false;
+            config.plReraise = false;
+            config.autoRegen_Spell = 3;
+            config.autoRefresh_Spell = 1;
+            config.autoShell_Spell = 4;
+            config.autoStorm_Spell = 0;
+            config.autoProtect_Spell = 4;
+            config.plRegen = false;
+            config.plRegen_Level = 4;
+            config.plReraise = false;
+            config.plReraise_Level = 2;
+            config.plRefresh = false;
+            config.plRefresh_Level = 2;
+            config.plStoneskin = false;
+            config.plPhalanx = false;
+            config.plProtectra = false;
+            config.plShellra = false;
+            config.plProtectra_Level = 5;
+            config.plShellra_Level = 5;
+            config.plTemper = false;
+            config.plTemper_Level = 0;
+            config.plEnspell = false;
+            config.plEnspell_Spell = 0;
+            config.plGainBoost = false;
+            config.plGainBoost_Spell = 0;
+            config.plBarElement = false;
+            config.plBarElement_Spell = 0;
+            config.AOE_Barelemental = false;
+            config.plBarStatus = false;
+            config.plBarStatus_Spell = 0;
+            config.AOE_Barstatus = false;
+            config.plStormSpell = false;
+            config.plAdloquium = false;
+            config.plKlimaform = false;
+            config.plStormSpell_Spell = 0;
+            config.plAuspice = false;
+            config.plAquaveil = false;
+            config.plHaste = false;
+            config.plHaste_Level = 0;
+            config.plSpikes = false;
+            config.plSpikes_Spell = 0;
+
+            config.plUtsusemi = false;
+
+            // SCHOLAR STRATAGEMS
+            config.AccessionRegen = false;
+            config.PerpetuanceRegen = false;
+            config.accessionCure = false;
+            config.accessionProShell = false;
+
+            config.regenPerpetuance = false;
+            config.regenAccession = false;
+            config.refreshPerpetuance = false;
+            config.refreshAccession = false;
+            config.blinkPerpetuance = false;
+            config.blinkAccession = false;
+            config.phalanxPerpetuance = false;
+            config.phalanxAccession = false;
+            config.stoneskinPerpetuance = false;
+            config.stoneskinAccession = false;
+            config.enspellPerpetuance = false;
+            config.enspellAccession = false;
+            config.stormspellPerpetuance = false;
+            config.stormspellAccession = false;
+            config.adloquiumPerpetuance = false;
+            config.adloquiumAccession = false;
+            config.aquaveilPerpetuance = false;
+            config.aquaveilAccession = false;
+            config.barspellPerpetuance = false;
+            config.barspellAccession = false;
+            config.barstatusPerpetuance = false;
+            config.barstatusAccession = false;
+
+            config.EnlightenmentReraise = false;
+
+            // GEOMANCER
+            config.EnableIndiSpells = false;
+            config.GeoWhenEngaged = false;
+            config.GeoSpell_Spell = 0;
+            config.LuopanSpell_Target = "";
+            config.IndiSpell_Spell = 0;
+            config.EntrustedSpell_Spell = 0;
+            config.EntrustedSpell_Target = "";
+            config.EnableLuopanSpells = false;
+            config.GeoWhenEngaged = false;
+
+            config.specifiedEngageTarget = false;
+
+            // SINGING
+            config.enableSinging = false;
+            config.song1 = 0;
+            config.song2 = 0;
+            config.song3 = 0;
+            config.song4 = 0;
+            config.dummy1 = 0;
+            config.dummy2 = 0;
+            config.recastSongTime = 2;
+            config.enableSinging = false;
+            config.recastSongs_Monitored = false;
+            config.SongsOnlyWhenNear = false;
+
+            // JOB ABILITIES
+            config.AfflatusSolace = false;
+            config.AfflatusMisery = false;
+            config.LightArts = false;
+            config.Composure = false;
+            config.Convert = false;
+            config.DivineSeal = false;
+            config.AddendumWhite = false;
+            config.Sublimation = false;
+            config.Celerity = false;
+            config.Accession = false;
+            config.Perpetuance = false;
+            config.Penury = false;
+            config.Rapture = false;
+            config.EclipticAttrition = false;
+            config.LifeCycle = false;
+            config.EntrustEnabled = false;
+            config.Dematerialize = false;
+            config.FullCircle = false;
+            config.BlazeOfGlory = false;
+            config.RadialArcana = false;
+            config.Troubadour = false;
+            config.Nightingale = false;
+            config.Marcato = false;
+            config.Devotion = false;
+            config.DivineCaress = false;
+            config.DarkArts = false;
+            config.AddendumBlack = false;
+
+            // DEBUFF REMOVAL
+            config.plSilenceItemEnabled = false;
+            config.plSilenceItem = 0;
+            config.wakeSleepEnabled = false;
+            config.wakeSleepSpell = 2;
+            config.plDoomEnabled = false;
+            config.plDoomitem = 0;
+
+            config.plDebuffEnabled = false;
+            config.plAgiDown = false;
+            config.plAccuracyDown = false;
+            config.plAddle = false;
+            config.plAttackDown = false;
+            config.plBane = false;
+            config.plBind = false;
+            config.plBio = false;
+            config.plBlindness = false;
+            config.plBurn = false;
+            config.plChrDown = false;
+            config.plChoke = false;
+            config.plCurse = false;
+            config.plCurse2 = false;
+            config.plDexDown = false;
+            config.plDefenseDown = false;
+            config.plDia = false;
+            config.plDisease = false;
+            config.plDoom = false;
+            config.plDrown = false;
+            config.plElegy = false;
+            config.plEvasionDown = false;
+            config.plFlash = false;
+            config.plFrost = false;
+            config.plHelix = false;
+            config.plIntDown = false;
+            config.plMndDown = false;
+            config.plMagicAccDown = false;
+            config.plMagicAtkDown = false;
+            config.plMaxHpDown = false;
+            config.plMaxMpDown = false;
+            config.plMaxTpDown = false;
+            config.plParalysis = false;
+            config.plPlague = false;
+            config.plPoison = false;
+            config.plRasp = false;
+            config.plRequiem = false;
+            config.plStrDown = false;
+            config.plShock = false;
+            config.plSilence = false;
+            config.plSlow = false;
+            config.plThrenody = false;
+            config.plVitDown = false;
+            config.plWeight = false;
+            config.plAmnesia = false;
+
+            config.enablePartyDebuffRemoval = false;
+            config.SpecifiednaSpellsenable = false;
+            config.naBlindness = false;
+            config.naCurse = false;
+            config.naDisease = false;
+            config.naParalysis = false;
+            config.naPetrification = false;
+            config.naPlague = false;
+            config.naPoison = false;
+            config.naSilence = false;
+            config.naErase = false;
+            config.Esuna = false;
+            config.EsunaOnlyAmnesia = false;
+
+            config.PrioritiseOverLowerTier = false;
+
+            config.monitoredDebuffEnabled = false;
+            config.monitoredAgiDown = false;
+            config.monitoredAccuracyDown = false;
+            config.monitoredAddle = false;
+            config.monitoredAttackDown = false;
+            config.monitoredBane = false;
+            config.monitoredBind = false;
+            config.monitoredBio = false;
+            config.monitoredBlindness = false;
+            config.monitoredBurn = false;
+            config.monitoredChrDown = false;
+            config.monitoredChoke = false;
+            config.monitoredCurse = false;
+            config.monitoredCurse2 = false;
+            config.monitoredDexDown = false;
+            config.monitoredDefenseDown = false;
+            config.monitoredDia = false;
+            config.monitoredDisease = false;
+            config.monitoredDoom = false;
+            config.monitoredDrown = false;
+            config.monitoredElegy = false;
+            config.monitoredEvasionDown = false;
+            config.monitoredFlash = false;
+            config.monitoredFrost = false;
+            config.monitoredHelix = false;
+            config.monitoredIntDown = false;
+            config.monitoredMndDown = false;
+            config.monitoredMagicAccDown = false;
+            config.monitoredMagicAtkDown = false;
+            config.monitoredMaxHpDown = false;
+            config.monitoredMaxMpDown = false;
+            config.monitoredMaxTpDown = false;
+            config.monitoredParalysis = false;
+            config.monitoredPetrification = false;
+            config.monitoredPlague = false;
+            config.monitoredPoison = false;
+            config.monitoredRasp = false;
+            config.monitoredRequiem = false;
+            config.monitoredStrDown = false;
+            config.monitoredShock = false;
+            config.monitoredSilence = false;
+            config.monitoredSleep = false;
+            config.monitoredSleep2 = false;
+            config.monitoredSlow = false;
+            config.monitoredThrenody = false;
+            config.monitoredVitDown = false;
+            config.monitoredWeight = false;
+            config.monitoredAmnesia = false;
+
+            config.na_Weight = false;
+            config.na_VitDown = false;
+            config.na_Threnody = false;
+            config.na_Slow = false;
+            config.na_Shock = false;
+            config.na_StrDown = false;
+            config.na_Requiem = false;
+            config.na_Rasp = false;
+            config.na_MaxTpDown = false;
+            config.na_MaxMpDown = false;
+            config.na_MaxHpDown = false;
+            config.na_MagicAttackDown = false;
+            config.na_MagicDefenseDown = false;
+            config.na_MagicAccDown = false;
+            config.na_MndDown = false;
+            config.na_IntDown = false;
+            config.na_Helix = false;
+            config.na_Frost = false;
+            config.na_EvasionDown = false;
+            config.na_Elegy = false;
+            config.na_Drown = false;
+            config.na_Dia = false;
+            config.na_DefenseDown = false;
+            config.na_DexDown = false;
+            config.na_Choke = false;
+            config.na_ChrDown = false;
+            config.na_Burn = false;
+            config.na_Bio = false;
+            config.na_Bind = false;
+            config.na_AttackDown = false;
+            config.na_Addle = false;
+            config.na_AccuracyDown = false;
+            config.na_AgiDown = false;
+
+            // OTHER OPTIONS
+
+            config.lowMPcheckBox = false;
+            config.mpMinCastValue = 100;
+
+            config.autoTarget = false;
+            config.autoTargetSpell = "Dia";
+            config.AssistSpecifiedTarget = false;
+
+            config.DisableTargettingCancel = false;
+            config.TargetRemoval_Delay = 3;
+
+            config.AcceptRaise = false;
+            config.AcceptRaiseOnlyWhenNotInCombat = false;
+
+            config.Fullcircle_DisableEnemy = false;
+            config.Fullcircle_GEOTarget = false;
+
+            config.RadialArcana_Spell = 0;
+            config.RadialArcanaMP = 300;
+
+            config.convertMP = 300;
+
+            config.DevotionMP = 200;
+
+            config.DevotionTargetType = 1;
+            config.DevotionTargetName = "";
+            config.DevotionWhenEngaged = false;
+
+            config.Hate_SpellType = 0;
+            config.autoTarget_Target = "";
+
+            config.healWhenMPBelow = 5;
+            config.healLowMP = false;
+
+            config.standAtMP_Percentage = 99;
+            config.standAtMP = false;
+
+            config.Overcure = true;
+            config.Undercure = true;
+            config.enableMonitoredPriority = false;
+            config.enableOutOfPartyHealing = true;
+            config.OvercureOnHighPriority = false;
+
+            config.EnableAddOn = false;
+
+            config.sublimationMP = 100;
+
+            // PROGRAM OPTIONS
+
+            config.pauseOnZoneBox = false;
+            config.pauseOnStartBox = false;
+            config.pauseOnKO = false;
+            config.MinimiseonStart = false;
+
+            config.autoFollowName = "";
+            config.autoFollowDistance = 5;
+            config.autoFollow_Warning = false;
+            config.FFXIDefaultAutoFollow = false;
+            config.enableHotKeys = false;
+
+            config.ipAddress = "127.0.0.1";
+            config.listeningPort = "19769";
+
+            config.enableFastCast_Mode = false;
+            config.trackCastingPackets = false;
+
+            return config;
+        }
+
+        public static MySettings ReadSettings(string filePath)
+        {
+            TextReader reader = null;
+            try
             {
-                loadJobSettings.Checked = true;
+                var serializer = new XmlSerializer(typeof(MySettings));
+                reader = new StreamReader(filePath);
+                return (MySettings)serializer.Deserialize(reader);
             }
-            else
+            catch(Exception)
             {
-                loadJobSettings.Checked = false;
+                return null;
+            }
+            finally
+            {
+                if (reader != null)
+                    reader.Close();
             }
         }
 
@@ -2376,8 +500,10 @@
 
         #region "== All Settings Saved"
 
-        public void button4_Click ( object sender, EventArgs e )
+        public void SaveAllSettings_Click ( object sender, EventArgs e )
         {
+            FollowEngine.ClearFollowing();
+
             // HEALING MAGIC
             config.cure1enabled = cure1enabled.Checked;
             config.cure2enabled = cure2enabled.Checked;
@@ -2559,8 +685,8 @@
             config.EnlightenmentReraise = EnlightenmentReraise.Checked;
 
             // GEOMANCER
-            config.EnableGeoSpells = EnableGeoSpells.Checked;
-            config.IndiWhenEngaged = GEO_engaged.Checked;
+            config.EnableIndiSpells = EnableIndiSpells.Checked;
+            config.EngagedOnly = EngagedOnly.Checked;
             config.EnableLuopanSpells = EnableLuopanSpells.Checked;
             config.GeoSpell_Spell = GEOSpell.SelectedIndex;
             config.LuopanSpell_Target = GEOSpell_target.Text;
@@ -2609,7 +735,7 @@
             config.Devotion = DevotionBox.Checked;
             config.DivineCaress = DivineCaressBox.Checked;
 
-            config.Entrust = EntrustBox.Checked;
+            config.EntrustEnabled = EnableEntrust.Checked;
             config.Dematerialize = DematerializeBox.Checked;
             config.BlazeOfGlory = BlazeOfGloryBox.Checked;
 
@@ -2840,34 +966,42 @@
             config.trackCastingPackets = trackCastingPackets.Checked;
 
             // OTHERS
+            var path = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "Settings");
+            Directory.CreateDirectory(path);
+            
+            var fileName = CreateFileName();
 
-            string path = System.IO.Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "Settings");
+            WriteFileToXml(Path.Combine(path, fileName));
 
-            if ( loadJobSettings.Checked == true )
-            {
-                string fileName = "loadSettings";
-                FileStream stream = File.Create(path + "/" + fileName);
-                stream.Close ( );
-                stream.Dispose ( );
-            }
-            else if ( loadJobSettings.Checked == false && System.IO.File.Exists ( path + "/loadSettings" ) )
-            {
-                try
-                {
-                    System.IO.File.Delete ( path + "/loadSettings" );
-                }
-                catch ( System.IO.IOException )
-                {
-                    //Console.WriteLine(e.Message);
-                    return;
-                }
-            }
-
-            Close ( );
-            //MessageBox.Show("Saved!", "All Settings");
+            Close();
         }
 
         #endregion "== All Settings Saved"
+
+        public static string CreateFileName()
+        {
+            var fileName = "Settings.xml";
+
+            if (MainForm.PL != null)
+            {
+                if (MainForm.PL.Player.MainJob != 0)
+                {
+                    if (MainForm.PL.Player.SubJob != 0)
+                    {
+                        JobTitles mainJob = JobUtils.JobNames.Where(c => c.job_number == MainForm.PL.Player.MainJob).FirstOrDefault();
+                        JobTitles subJob = JobUtils.JobNames.Where(c => c.job_number == MainForm.PL.Player.SubJob).FirstOrDefault();
+                        fileName = mainJob.job_name + "_" + subJob.job_name + ".xml";
+                    }
+                    else
+                    {
+                        JobTitles mainJob = JobUtils.JobNames.Where(c => c.job_number == MainForm.PL.Player.MainJob).FirstOrDefault();
+                        fileName = mainJob + ".xml";
+                    }
+                }
+            }
+
+            return fileName;
+        }
 
         #region "== PL Debuff Check Boxes"
 
@@ -3321,74 +1455,54 @@
 
         private void EnableGeoSpells_CheckedChanged ( object sender, EventArgs e )
         {
-            if ( EnableGeoSpells.Checked )
-            {
-                INDISpell.Enabled = true;
-                entrustINDISpell.Enabled = true;
-                entrustSpell_target.Enabled = true;
-            }
-            else if ( EnableGeoSpells.Checked == false )
-            {
-                INDISpell.Enabled = false;
-                entrustINDISpell.Enabled = false;
-                entrustSpell_target.Enabled = false;
-            }
+            INDISpell.Enabled = EnableIndiSpells.Checked;
         }
 
         private void EnableLuopanSpells_CheckedChanged ( object sender, EventArgs e )
         {
-            if ( EnableLuopanSpells.Checked )
-            {
-                GEOSpell.Enabled = true;
-                GEOSpell_target.Enabled = true;
-            }
-            else if ( EnableLuopanSpells.Checked == false )
-            {
-                GEOSpell.Enabled = false;
-                GEOSpell_target.Enabled = false;
-            }
+            GEOSpell.Enabled = EnableLuopanSpells.Checked;
+            GEOSpell_target.Enabled = EnableLuopanSpells.Checked;
+        }
+
+        private void EnableEntrust_CheckedChanged(object sender, EventArgs e)
+        {
+            entrustINDISpell.Enabled = EnableEntrust.Checked;
+            entrustSpell_target.Enabled = EnableEntrust.Checked;
         }
 
         #endregion "== Geomancy Check Boxes"
 
         private void saveAsButton_Click ( object sender, EventArgs e )
         {
-            button4_Click ( sender, e );
+            SaveAllSettings_Click ( sender, e );
 
             SaveFileDialog savefile = new SaveFileDialog();
 
-            if ( MainForm.PL != null )
-            {
-                if ( MainForm.PL.Player.MainJob != 0 )
-                {
-                    if ( MainForm.PL.Player.SubJob != 0 )
-                    {
-                        JobTitles mainJob = JobNames.Where(c => c.job_number == MainForm.PL.Player.MainJob).FirstOrDefault();
-                        JobTitles subJob = JobNames.Where(c => c.job_number == MainForm.PL.Player.SubJob).FirstOrDefault();
-                        savefile.FileName = mainJob.job_name + "_" + subJob.job_name + ".xml";
-                    }
-                    else
-                    {
-                        JobTitles mainJob = JobNames.Where(c => c.job_number == MainForm.PL.Player.MainJob).FirstOrDefault();
-                        savefile.FileName = mainJob + ".xml";
-                    }
-                }
-            }
-            else
-            {
-                savefile.FileName = "Settings.xml";
-            }
+            savefile.FileName = CreateFileName();
+
             savefile.Filter = " Extensible Markup Language (*.xml)|*.xml";
             savefile.FilterIndex = 2;
             savefile.InitialDirectory = System.IO.Path.Combine ( System.AppDomain.CurrentDomain.BaseDirectory, "Settings" );
 
             if ( savefile.ShowDialog ( ) == DialogResult.OK )
             {
+                WriteFileToXml(savefile.FileName);
+            }
+        }
+
+        private void WriteFileToXml(string fileName)
+        {
+            TextWriter writer = null;
+            try
+            {
                 XmlSerializer mySerializer = new XmlSerializer(typeof(MySettings));
-                StreamWriter myWriter = new StreamWriter(savefile.FileName);
-                mySerializer.Serialize ( myWriter, config );
-                myWriter.Close ( );
-                myWriter.Dispose ( );
+                writer = new StreamWriter(fileName);
+                mySerializer.Serialize(writer, config);
+            }
+            finally
+            {
+                if (writer != null)
+                    writer.Close();
             }
         }
 
@@ -3401,17 +1515,10 @@
                 InitialDirectory = System.IO.Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "Settings")
             };
 
-            if ( openFileDialog1.ShowDialog ( ) == DialogResult.OK )
+            if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
-                XmlSerializer mySerializer = new XmlSerializer(typeof(MySettings));
-
-                StreamReader reader = new StreamReader(openFileDialog1.FileName);
-                config = ( MySettings ) mySerializer.Deserialize ( reader );
-
-                reader.Close ( );
-                reader.Dispose ( );
-                updateForm ( config );
-                button4_Click ( sender, e );
+                config = ReadSettings(openFileDialog1.FileName);
+                updateForm(config);
             }
         }
 
@@ -3577,7 +1684,7 @@
             plEnspell_spell.SelectedIndex = config.plEnspell_Spell;
             plGainBoost.Checked = config.plGainBoost;
             plGainBoost_spell.SelectedIndex = config.plGainBoost_Spell;
-            EntrustBox.Checked = config.Entrust;
+            EnableEntrust.Checked = config.EntrustEnabled;
             DematerializeBox.Checked = config.Dematerialize;
             plBarElement.Checked = config.plBarElement;
             if ( config.plBarElement_Spell > 5 )
@@ -3641,8 +1748,8 @@
             EnlightenmentReraise.Checked = config.EnlightenmentReraise;
 
             // GEOMANCER
-            EnableGeoSpells.Checked = config.EnableGeoSpells;
-            GEO_engaged.Checked = config.IndiWhenEngaged;
+            EnableIndiSpells.Checked = config.EnableIndiSpells;
+            EngagedOnly.Checked = config.EngagedOnly;
             GEOSpell.SelectedIndex = config.GeoSpell_Spell;
             GEOSpell_target.Text = config.LuopanSpell_Target;
             INDISpell.SelectedIndex = config.IndiSpell_Spell;
@@ -4446,7 +2553,7 @@
         {
             return new GeoConfig()
             {
-                GeoSpellsEnabled = config.EnableGeoSpells,
+                IndiSpellsEnabled = config.EnableIndiSpells,
                 GeoWhenEngaged = config.GeoWhenEngaged,
                 RadialArcanaEnabled = config.RadialArcana,
                 RadialArcanaMP = config.RadialArcanaMP,
@@ -4458,14 +2565,15 @@
                 LuopanSpellsEnabled = config.EnableLuopanSpells,
                 LuopanSpellTarget = config.LuopanSpell_Target,
                 SpecifiedEngageTarget = config.specifiedEngageTarget,
-                EntrustEnabled = config.Entrust,
+                EntrustEnabled = config.EntrustEnabled,
                 EntrustSpell = config.EntrustedSpell_Spell,
                 EntrustSpellTarget = config.EntrustedSpell_Target,
-                IndiWhenEngaged = config.IndiWhenEngaged,
+                IndiWhenEngaged = config.EngagedOnly,
                 DematerializeEnabled = config.Dematerialize,
                 EclipticAttritionEnabled = config.EclipticAttrition,
                 LifeCycleEnabled = config.LifeCycle,
-                BlazeOfGloryEnabled = config.BlazeOfGlory
+                BlazeOfGloryEnabled = config.BlazeOfGlory,
+                IndiSpell = config.IndiSpell_Spell
             };
         }
 

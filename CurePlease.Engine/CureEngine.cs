@@ -16,34 +16,42 @@ namespace CurePlease.Engine
         private EliteAPI PL { get; set; }
         private EliteAPI Monitored { get; set; }
 
-        public CureEngine(EliteAPI pl, EliteAPI mon)
+        public CureEngine() { }
+
+        public EngineAction Run(EliteAPI pl, EliteAPI monitored, CureConfig Config, bool[] enabledMembers, bool[] highPriorityMembers)
         {
             PL = pl;
-            Monitored = mon;
-        }
-
-        public EngineAction Run(CureConfig Config, bool[] enabledMembers, bool[] highPriorityMembers)
-        {
+            Monitored = monitored;
             _config = Config;
 
-            IEnumerable<PartyMember> partyByHP = Monitored.GetActivePartyMembers().OrderBy(member => member.CurrentHPP);
+            List<PartyMember> partyByHP = PL.GetActivePartyMembers().OrderBy(member => member.CurrentHPP).ToList();
+
+            if (Monitored != null && !partyByHP.Any(p => p.Name == Monitored.Player.Name))
+            {
+                partyByHP.Add(new PartyMember
+                {
+                    Name = Monitored.Player.Name,
+                    CurrentHP = Monitored.Player.HP,
+                    CurrentHPP = (byte)Monitored.Player.HPP
+                });
+            }
 
             /////////////////////////// PL CURE //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-            // TODO: Test this! Pretty sure your own character is always party member index 0.
-            if (PL.Player.HP > 0 && (PL.Player.HPP <= Config.MonitoredCurePercentage) && Config.EnableOutOfPartyHealing && !PL.SamePartyAs(Monitored))
+            if (PL.Player.HP > 0 && (PL.Player.HPP <= Config.MonitoredCurePercentage))
             {
                 var plAsPartyMember = PL.Party.GetPartyMember(0);
                 return CureCalculator(plAsPartyMember);
             }
 
             /////////////////////////// CURAGA //////////////////////////////////////////////////////////////////////////////////////////////////////////////////                                    
-            if (Config.EnabledCuragaTiers.Any())
+            if (Config.EnabledCuragaTiers.Any(x => x))
             {
-                int plParty = PL.GetPartyRelativeTo(Monitored);
+                //TODO parameter "PL" could probably be switched to Following
+                int plParty = PL.GetPartyRelativeTo(PL);
 
                 // Order parties that qualify for AOE cures by average missing HP.
-                var partyNeedsAoe = Monitored.PartyNeedsAoeCure(Config.CuragaMinPlayers, Config.CuragaHealthPercent).OrderBy(partyNumber => Monitored.AverageHpLossForParty(partyNumber));
+                var partyNeedsAoe = PL.PartyNeedsAoeCure(Config.CuragaMinPlayers, Config.CuragaHealthPercent).OrderBy(partyNumber => PL.AverageHpLossForParty(partyNumber));
 
                 // If PL is in same alliance, and there's at least 1 party that needs an AOE cure.
                 // Parties are ordered by most average missing HP.
@@ -110,7 +118,7 @@ namespace CurePlease.Engine
             /////////////////////////// CURE //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
             // First run a check on the monitored target
-            if (Config.MonitoredPriorityEnabled && Monitored.Player.HP > 0 && (Monitored.Player.HPP <= Config.MonitoredCurePercentage))
+            if (Monitored != null && Config.MonitoredPriorityEnabled && Monitored.Player.HP > 0 && (Monitored.Player.HPP <= Config.MonitoredCurePercentage))
             {
                 // Need to get monitored player as a PartyMember
                 PartyMember monitoredPlayer = partyByHP.FirstOrDefault(p => p.Name == Monitored.Player.Name);

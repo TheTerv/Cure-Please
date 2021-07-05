@@ -127,7 +127,7 @@ namespace CurePlease.Utilities
             }
            
             // If we get here, we qualify for the spell. So make sure we own it, and that it's off cooldown.
-            return api.Player.HasSpell(apiSpell.ID) && (api.Recast.GetSpellRecast(apiSpell.Index) == 0);
+            return api.Player.HasSpell(apiSpell.Index) && (api.Recast.GetSpellRecast(apiSpell.Index) == 0);
         }
 
         public static int GetAbilityRecast(this EliteAPI api, string ability)

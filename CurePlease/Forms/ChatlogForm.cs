@@ -7,35 +7,20 @@
 
     public partial class ChatlogForm : Form
     {
-        private MainForm f1;
-
-        public ChatlogForm(MainForm f)
+        public ChatlogForm(MainForm mainForm)
         {
             this.StartPosition = FormStartPosition.CenterScreen;
 
             InitializeComponent();
 
-            f1 = f;
-
-            if (f1.setinstance2.Enabled == true)
+            if (PL != null)
             {
-                #region "== First generate all current chat entries."
+                characterNamed_label.Text = $"Chatlog for character: {PL.Player.Name}";
 
-                PL = new EliteAPI((int)f1.activeprocessids.SelectedItem);
-                characterNamed_label.Text = "Chatlog for character: " + PL.Player.Name + "\n";
-
-                EliteAPI.ChatEntry cl = new EliteAPI.ChatEntry();
-
-                while ((cl = PL.Chat.GetNextChatLine()) != null)
-                {
-                    chatlog_box.AppendText(cl.Text, cl.ChatColor);
-                    chatlog_box.AppendText(Environment.NewLine);
-                }
+                UpdateLines();
 
                 chatlog_box.SelectionStart = chatlog_box.Text.Length;
                 chatlog_box.ScrollToCaret();
-
-                #endregion "== First generate all current chat entries."
             }
             else
             {
@@ -50,19 +35,20 @@
             this.Close();
         }
 
-        private void chatlogscan_timer_Tick(object sender, EventArgs e)
+        private void UpdateLines()
         {
-            #region "== Now add any additional chat entries every set period of time"
-
-            EliteAPI.ChatEntry cl = new EliteAPI.ChatEntry();
+            EliteAPI.ChatEntry cl;
 
             while ((cl = PL.Chat.GetNextChatLine()) != null)
             {
                 chatlog_box.AppendText(cl.Text, cl.ChatColor);
                 chatlog_box.AppendText(Environment.NewLine);
             }
+        }
 
-            #endregion "== Now add any additional chat entries every set period of time"
+        private void chatlogscan_timer_Tick(object sender, EventArgs e)
+        {
+            UpdateLines();
         }
 
         private void chatlog_box_TextChanged(object sender, EventArgs e)

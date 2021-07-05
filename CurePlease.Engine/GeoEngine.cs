@@ -36,11 +36,46 @@ namespace CurePlease.Engine
         private Timer FullCircleTimer = new Timer();
         private Timer EclipticTimer = new Timer();
 
-        public GeoEngine(EliteAPI pl, EliteAPI mon)
+        private List<int> CityZoneIds = new List<int>
         {
-            PL = pl;
-            Monitored = mon;
+            26, // Tavnazian Safehold
 
+            50, // Aht Urhgan Whitegate
+
+            53, // Nashmau
+
+            224, // Bastok-Jeuno Airship
+
+            230, // Southern San D'oria 230
+            231, // Northern San D'oria 231
+            232, // Port San D'oria 232
+            233, // Chateau D'oraguille 233
+            234, // Bastok Mines 234
+            235, // Bastok Markets 235
+            236, // Port Bastok 236
+            237, // Metalworks 237
+            238, // Windurst Waters 238
+            239, // Windurst Walls 239
+            240, // Port Windurst 240
+            241, // Windurst Woods 241
+            242, // Heaven Tower 242
+            243, // Ru'lude Gardnes 243
+            244, // Upper Jeuno 244
+            245, // Lower Jeuno 245
+            246, // Port Jeuno 246
+
+            248, // Selbina 248
+            249, // Mhaura 249
+            250, // Kazham 250
+
+            252, // Norg 252
+
+            256, // Western is 256
+            257 // Eastern is 257
+        };
+
+        public GeoEngine()
+        {
             InitializeData();
 
             FullCircleTimer.Interval = 5000;
@@ -50,40 +85,39 @@ namespace CurePlease.Engine
             EclipticTimer.Elapsed += EclipticTimer_Tick;
         }
 
-        public EngineAction Run(GeoConfig Config)
+        private bool CanCastInArea()
         {
+            if (PL == null)
+                return false;
+
+            return !CityZoneIds.Contains(PL.Player.ZoneId);
+        }
+
+        public EngineAction Run(EliteAPI pl, EliteAPI monitored, GeoConfig Config)
+        {
+            PL = pl;
+            Monitored = monitored;
             _config = Config;
+
+            if (!CanCastInArea())
+                return null;
 
             EngineAction actionResult = new EngineAction
             {
                 Target = Target.Me
             };
 
-            if(Config.EntrustEnabled && !PL.HasStatus((StatusEffect)584) && CheckEngagedStatus() == true && PL.AbilityAvailable(Ability.Entrust))
+            // ENTRUSTED INDI SPELL CASTING, WILL BE CAST SO LONG AS ENTRUST IS ACTIVE
+            // StatusEffect 584 == Entrust
+            if (PL.HasStatus((StatusEffect)584) && PL.Player.Status != 33)
             {
-                actionResult.JobAbility = Ability.Entrust;
-                return actionResult;
-            }
-            else if (Config.DematerializeEnabled && CheckEngagedStatus() == true && PL.Player.Pet.HealthPercent >= 90 && PL.AbilityAvailable(Ability.Dematerialize))
-            {
-                actionResult.JobAbility = Ability.Dematerialize;
-                return actionResult;
-            }
-            else if (Config.EclipticAttritionEnabled && CheckEngagedStatus() == true && PL.Player.Pet.HealthPercent >= 90 && PL.AbilityAvailable(Ability.EclipticAttrition) && !PL.HasStatus(516) && EclipticStillUp != true)
-            {
-                actionResult.JobAbility = Ability.EclipticAttrition;
-                return actionResult;
-            }
-            else if (Config.LifeCycleEnabled && CheckEngagedStatus() == true && PL.Player.Pet.HealthPercent <= 30 && PL.Player.Pet.HealthPercent >= 5 && PL.Player.HPP >= 90 && PL.AbilityAvailable(Ability.LifeCycle))
-            {
-                actionResult.JobAbility = Ability.LifeCycle;
-                return actionResult;
+                actionResult = GetEntrustSpell(Config);
             }
 
             // TODO: Fix up this logic, I think something was lost in the refactoring.
             // Need to see if there's a situation where both of these JA's would be activated for the cast.
             // For now the old logic seems to be use RA on it's own, or check for FC + Cast.
-            if (Config.RadialArcanaEnabled && (PL.Player.MP <= Config.RadialArcanaMP) && PL.AbilityAvailable(Ability.RadialArcana) && !PL.Player.Buffs.Contains((short)StatusEffect.Weakness))
+            else if (Config.RadialArcanaEnabled && (PL.Player.MP <= Config.RadialArcanaMP) && PL.AbilityAvailable(Ability.RadialArcana) && !PL.Player.Buffs.Contains((short)StatusEffect.Weakness))
             {
                 // Check if a pet is already active
                 if (PL.Player.Pet.HealthPercent >= 1 && PL.Player.Pet.Distance <= 9)
@@ -98,7 +132,7 @@ namespace CurePlease.Engine
 
                 actionResult.Spell = ReturnGeoSpell(Config.RadialArcanaSpell, 2);
             }
-            else if (Config.FullCircleEnabled)
+            else if (Config.FullCircleEnabled && PL.Player.Pet.HealthPercent != 0)
             {
                 // When out of range Distance is 59 Yalms regardless, Must be within 15 yalms to gain
                 // the effect
@@ -156,48 +190,30 @@ namespace CurePlease.Engine
                     }
                 }
             }
-            // ENTRUSTED INDI SPELL CASTING, WILL BE CAST SO LONG AS ENTRUST IS ACTIVE
-            else if (Config.GeoSpellsEnabled && PL.HasStatus((StatusEffect)584) && PL.Player.Status != 33)
-            {
-                string SpellCheckedResult = ReturnGeoSpell(Config.EntrustSpell, 1);
-                if (SpellCheckedResult == "SpellError_Cancel")
-                {
-                    Config.GeoSpellsEnabled = false;
-                    actionResult.Error = "An error has occurred with Entrusted INDI spell casting, please report what spell was active at the time.";
-                }
-                else if (SpellCheckedResult == "SpellRecast" || SpellCheckedResult == "SpellUnknown")
-                {
-                }
-                else
-                {
-                    actionResult.Target = string.IsNullOrEmpty(Config.EntrustSpellTarget) ? Monitored.Player.Name : Config.EntrustSpellTarget;
-                    actionResult.Spell = SpellCheckedResult;
-                }
-            }
+            
             // CAST NON ENTRUSTED INDI SPELL
-            else if (Config.GeoSpellsEnabled && !PL.HasStatus(612) && PL.Player.Status != 33 && (CheckEngagedStatus() == true || !Config.IndiWhenEngaged))
+            else if (Config.IndiSpellsEnabled && !PL.HasStatus(612) && PL.Player.Status != 33 && (CheckEngagedStatus() || !Config.IndiWhenEngaged))
             {
                 string SpellCheckedResult = ReturnGeoSpell(Config.IndiSpell, 1);
 
-                if (SpellCheckedResult == "SpellError_Cancel")
+                if (SpellCheckedResult == "SpellRecast")
+                    return null;
+
+                if (SpellCheckedResult == "SpellError_Cancel" || SpellCheckedResult == "SpellNA" || SpellCheckedResult == "SpellUnknown")
                 {
-                    Config.GeoSpellsEnabled = false;
+                    Config.IndiSpellsEnabled = false;
                     actionResult.Error = "An error has occurred with INDI spell casting, please report what spell was active at the time.";
-                }
-                else if (SpellCheckedResult == "SpellRecast" || SpellCheckedResult == "SpellUnknown")
-                {
-                }
-                else
-                {
-                    actionResult.Spell = SpellCheckedResult;
+                    return null;
                 }
 
+                actionResult.Spell = SpellCheckedResult;
             }
-            // GEO SPELL CASTING 
-            else if (Config.LuopanSpellsEnabled && (PL.Player.Pet.HealthPercent < 1) && (CheckEngagedStatus() == true))
+
+            // GEO SPELL CASTING
+            else if (Config.LuopanSpellsEnabled && (PL.Player.Pet.HealthPercent < 1) && CheckEngagedStatus())
             {
                 // Use BLAZE OF GLORY if ENABLED
-                if (Config.BlazeOfGloryEnabled && PL.AbilityAvailable(Ability.BlazeOfGlory) && CheckEngagedStatus() == true && GEO_EnemyCheck() == true)
+                if (Config.BlazeOfGloryEnabled && PL.AbilityAvailable(Ability.BlazeOfGlory) && GEO_EnemyCheck())
                 {
                     actionResult.JobAbility = Ability.BlazeOfGlory;
                     return actionResult;
@@ -206,20 +222,20 @@ namespace CurePlease.Engine
                 // Grab GEO spell name
                 string SpellCheckedResult = ReturnGeoSpell(Config.GeoSpell, 2);
 
+                if (SpellCheckedResult == "SpellRecast" || SpellCheckedResult == "SpellUnknown" || SpellCheckedResult == "SpellNA")
+                    return actionResult;
+
                 if (SpellCheckedResult == "SpellError_Cancel")
                 {
-                    Config.GeoSpellsEnabled = false;
+                    Config.IndiSpellsEnabled = false;
                     actionResult.Error = "An error has occurred with GEO spell casting, please report what spell was active at the time.";
                 }
-                else if (SpellCheckedResult == "SpellRecast" || SpellCheckedResult == "SpellUnknown")
+
+                if (PL.Resources.GetSpell(SpellCheckedResult, 0).ValidTargets == 5)
                 {
-                    // Do nothing and continue on with the program
-                }
-                else
-                {
-                    if (PL.Resources.GetSpell(SpellCheckedResult, 0).ValidTargets == 5)
-                    { // PLAYER CHARACTER TARGET
-                        actionResult.Target = string.IsNullOrEmpty(Config.LuopanSpellTarget) ? Monitored.Player.Name : Config.LuopanSpellTarget;
+                    if (!string.IsNullOrEmpty(Config.LuopanSpellTarget))
+                    {
+                        actionResult.Target = Config.LuopanSpellTarget;
 
                         if (PL.HasStatus(516)) // IF ECLIPTIC IS UP THEN ACTIVATE THE BOOL
                         {
@@ -227,34 +243,135 @@ namespace CurePlease.Engine
                         }
 
                         actionResult.Spell = SpellCheckedResult;
-
                     }
-                    else
-                    { // ENEMY BASED TARGET NEED TO ASSURE PLAYER IS ENGAGED
-                        if (CheckEngagedStatus() == true)
+                }
+                else
+                { 
+                    // ENEMY BASED TARGET NEED TO ASSURE PLAYER IS ENGAGED
+                    if (CheckEngagedStatus())
+                    {
+                        int GrabbedTargetID = GrabGEOTargetID();
+
+                        if (GrabbedTargetID != 0)
                         {
+                            PL.Target.SetTarget(GrabbedTargetID);
 
-                            int GrabbedTargetID = GrabGEOTargetID();
-
-                            if (GrabbedTargetID != 0)
+                            if (PL.HasStatus(516)) // IF ECLIPTIC IS UP THEN ACTIVATE THE BOOL
                             {
-
-                                PL.Target.SetTarget(GrabbedTargetID);
-
-                                if (PL.HasStatus(516)) // IF ECLIPTIC IS UP THEN ACTIVATE THE BOOL
-                                {
-                                    EclipticStillUp = true;
-                                }
-
-                                actionResult.Target = "<t>";
-                                actionResult.Spell = SpellCheckedResult;
+                                EclipticStillUp = true;
                             }
+
+                            actionResult.Target = "<t>";
+                            actionResult.Spell = SpellCheckedResult;
                         }
                     }
                 }
             }
 
+            // if we have no spells to cast, see if we can trigger a JA
+            if (string.IsNullOrWhiteSpace(actionResult.Spell))
+            {
+                actionResult = CheckForJobAbility(Config);
+            }
+
             return actionResult;
+        }
+
+        private EngineAction CheckForJobAbility(GeoConfig Config)
+        {
+            EngineAction actionResult = new EngineAction
+            {
+                Target = Target.Me
+            };
+
+            // If we're using Entrust, and it's available
+            if (Config.EntrustEnabled
+                && !PL.HasStatus((StatusEffect)584) //entrust
+                && CheckEngagedStatus()
+                && PL.AbilityAvailable(Ability.Entrust))
+            {
+                if (VerifyEntrustTarget(Config.EntrustSpellTarget) != null)
+                {
+                    actionResult.JobAbility = Ability.Entrust;
+                }
+
+                return actionResult;
+            }
+            else if (Config.DematerializeEnabled && CheckEngagedStatus() == true && PL.Player.Pet.HealthPercent >= 90 && PL.AbilityAvailable(Ability.Dematerialize))
+            {
+                actionResult.JobAbility = Ability.Dematerialize;
+            }
+            else if (Config.EclipticAttritionEnabled && CheckEngagedStatus() == true && PL.Player.Pet.HealthPercent >= 90 && PL.AbilityAvailable(Ability.EclipticAttrition) && !PL.HasStatus(516) && EclipticStillUp != true)
+            {
+                actionResult.JobAbility = Ability.EclipticAttrition;
+            }
+            else if (Config.LifeCycleEnabled && CheckEngagedStatus() == true && PL.Player.Pet.HealthPercent <= 30 && PL.Player.Pet.HealthPercent >= 5 && PL.Player.HPP >= 90 && PL.AbilityAvailable(Ability.LifeCycle))
+            {
+                actionResult.JobAbility = Ability.LifeCycle;
+            }
+
+            return actionResult;
+        }
+
+        private EngineAction GetEntrustSpell(GeoConfig Config)
+        {
+            EngineAction actionResult = new EngineAction();
+
+            string SpellCheckedResult = ReturnGeoSpell(Config.EntrustSpell, 1);
+
+            if (SpellCheckedResult == "SpellRecast" || SpellCheckedResult == "SpellUnknown")
+                return actionResult;
+
+            if (SpellCheckedResult == "SpellError_Cancel")
+            {
+                Config.IndiSpellsEnabled = false;
+                actionResult.Error = "An error has occurred with Entrusted INDI spell casting, please report what spell was active at the time.";
+            }
+            else
+            {
+                var target = Config.EntrustSpellTarget;
+
+                if (string.IsNullOrWhiteSpace(target))
+                {
+                    // use P1
+                    target = PL.GetActivePartyMembers().FirstOrDefault(p => p.Index == 1).Name;
+                }
+
+                if (TargetVerified(target))
+                {
+                    actionResult.Target = target;
+                    actionResult.Spell = SpellCheckedResult;
+                }
+            }
+
+            return actionResult;
+        }
+
+        private string VerifyEntrustTarget(string target)
+        {
+            if (string.IsNullOrWhiteSpace(target))
+            {
+                // nothing in config, so let's default to P1
+                target = PL.GetActivePartyMembers().FirstOrDefault(p => p.Index == 1)?.Name;
+            }
+
+            if (!string.IsNullOrEmpty(target))
+            {
+
+            }
+
+            return target;
+        }
+
+        private bool TargetVerified(string target)
+        {
+            // make sure target is in party
+
+            // make sure target is in range
+
+            // make sure target isn't dead
+
+            return true;
         }
 
         private void InitializeData()
@@ -539,7 +656,10 @@ namespace CurePlease.Engine
 
         private bool GEO_EnemyCheck()
         {
-            if (Monitored == null || PL == null) { return false; }
+            if (PL == null) 
+            { 
+                return false;
+            }
 
             // Grab GEO spell name
             string SpellCheckedResult = ReturnGeoSpell(_config.GeoSpell, 2);
@@ -577,33 +697,28 @@ namespace CurePlease.Engine
                                 }
                             }
                         }
+
                         return false;
                     }
-                    else
-                    {
-                        if (Monitored.Player.Status == 1)
-                        {
-                            return true;
-                        }
-                        else
-                        {
-                            return false;
-                        }
-                    }
+
+                    return Monitored != null && Monitored.Player.Status == 1;
                 }
             }
         }
 
         private bool CheckEngagedStatus()
         {
-            if (Monitored == null || PL == null) { return false; }
-
+            if (PL == null)
+            { 
+                return false;
+            }
 
             if (!_config.GeoWhenEngaged)
             {
                 return true;
             }
-            else if (_config.SpecifiedEngageTarget && !string.IsNullOrEmpty(_config.LuopanSpellTarget))
+            
+            if (_config.SpecifiedEngageTarget && !string.IsNullOrEmpty(_config.LuopanSpellTarget))
             {
                 for (int x = 0; x < 2048; x++)
                 {
@@ -612,32 +727,15 @@ namespace CurePlease.Engine
                     {
                         if (z.Name.ToLower() == _config.LuopanSpellTarget.ToLower()) // A match was located so use this entity as a check.
                         {
-                            if (z.Status == 1)
-                            {
-                                return true;
-                            }
-                            else
-                            {
-                                return false;
-                            }
+                            return z.Status == 1;
                         }
                     }
                 }
+
                 return false;
             }
-            else
-            {
-                if (Monitored.Player.Status == 1)
-                {
-                    return true;
 
-
-                }
-                else
-                {
-                    return false;
-                }
-            }
+            return Monitored != null && Monitored.Player.Status == 1 && PL.GetActivePartyMembers().FirstOrDefault(p => p.Name == Monitored.Player.Name) != null;
         }
 
         private int GrabGEOTargetID()
@@ -654,27 +752,23 @@ namespace CurePlease.Engine
                         {
                             return z.TargetingIndex;
                         }
-                        else
-                        {
-                            return 0;
-                        }
+
+                        return 0;
                     }
                 }
+
                 return 0;
             }
             else
             {
-                if (Monitored.Player.Status == 1)
+                if (Monitored != null && Monitored.Player.Status == 1)
                 {
                     TargetInfo target = Monitored.Target.GetTargetInfo();
                     XiEntity entity = Monitored.Entity.GetEntity(Convert.ToInt32(target.TargetIndex));
                     return Convert.ToInt32(entity.TargetID);
+                }
 
-                }
-                else
-                {
-                    return 0;
-                }
+                return 0;
             }
         }
 
@@ -712,6 +806,10 @@ namespace CurePlease.Engine
 
         private void FullCircle_Timer_Tick(object sender, EventArgs e)
         {
+            if (PL == null)
+            {
+                return;
+            }
 
             if (PL.Player.Pet.HealthPercent >= 1)
             {
@@ -749,15 +847,10 @@ namespace CurePlease.Engine
                             PL.ThirdParty.SendString("/ja \"Full Circle\" <me>");
                         }
                     }
-
                 }
                 else if (!_config.FullCircleGeoTarget && Monitored.Player.Status == 1)
                 {
-
-
                     string SpellCheckedResult = ReturnGeoSpell(_config.GeoSpell, 2);
-
-
 
                     if (!_config.FullCircleDisableEnemy || (_config.FullCircleDisableEnemy && PL.Resources.GetSpell(SpellCheckedResult, 0).ValidTargets == 32))
                     {
@@ -776,16 +869,12 @@ namespace CurePlease.Engine
 
         private void EclipticTimer_Tick(object sender, EventArgs e)
         {
-            if (Monitored == null || PL == null) { return; }
+            if (PL == null)
+            { 
+                return; 
+            }
 
-            if (PL.Player.Pet.HealthPercent >= 1)
-            {
-                EclipticStillUp = true;
-            }
-            else
-            {
-                EclipticStillUp = false;
-            }
+            EclipticStillUp = PL.Player.Pet.HealthPercent >= 1;
         }
     }
 }

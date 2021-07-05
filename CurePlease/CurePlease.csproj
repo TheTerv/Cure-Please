@@ -65,10 +65,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="EliteMMO.API">
-      <HintPath>.\EliteMMO.API.dll</HintPath>
-    </Reference>
-    <Reference Include="GlobalHotKey, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\GlobalHotKey.1.1.0\lib\GlobalHotKey.dll</HintPath>
+      <HintPath>..\EliteMMO.API.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -119,6 +116,8 @@
     <Compile Include="Forms\PartyBuffs.Designer.cs">
       <DependentUpon>PartyBuffs.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\WinFormsExtensions.cs" />
+    <Compile Include="PartyUtils.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Components\ProgressBarEx.cs">
       <SubType>Component</SubType>
@@ -151,15 +150,13 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <None Include="Addons\Ashita\CurePlease\CurePlease.lua" />
     <None Include="app.config" />
     <None Include="app.manifest">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Addons\Ashita\CurePlease_Addon\CurePlease_Addon.lua">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Include="packages.config" />
-    <None Include="Addons\Windower\CurePlease_Addon\CurePlease_Addon.lua">
+    <None Include="Addons\Windower\CurePlease\CurePlease.lua">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
@@ -2113,7 +2110,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CurePlease.Engine\CurePlease.Engine.csproj">
-      <Project>{E9E551B0-451E-4C08-8D25-3CF057912A0E}</Project>
+      <Project>{e9e551b0-451e-4c08-8d25-3cf057912a0e}</Project>
       <Name>CurePlease.Engine</Name>
     </ProjectReference>
     <ProjectReference Include="..\CurePlease.Model\CurePlease.Model.csproj">
@@ -2127,6 +2124,9 @@
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy /y  "$(ProjectDir)..\EliteAPI.dll" "$(ProjectDir)$(OutDir)"</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

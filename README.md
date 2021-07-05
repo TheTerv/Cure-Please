@@ -1,6 +1,6 @@
 Cure-Please
 ===========
 
-Open source repository for anyone wishing to make changes to the official Cure Please source code. (Discontinued, see link below for an alternative version)
+Open source repository for anyone wishing to make changes to the official Cure Please source code.
 
-https://github.com/atom0s/Cure-Please
+Original Repo: https://github.com/atom0s/Cure-Please
