@@ -298,10 +298,12 @@ namespace CurePlease
 
         public void AddCurrentAction(string message)
         {
-            currentAction.Text = message;
-
             if (!string.IsNullOrWhiteSpace(message))
             {
+                var timestamp = DateTime.Now.ToString("[HH:mm:ss] ");
+                message = timestamp + message;
+
+                currentAction.Text = message;
                 actionlog_box.AppendText(message + Environment.NewLine);
             }
         }
