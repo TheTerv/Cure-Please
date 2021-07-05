@@ -289,7 +289,7 @@ namespace CurePlease.Engine
                 && CheckEngagedStatus()
                 && PL.AbilityAvailable(Ability.Entrust))
             {
-                if (VerifyEntrustTarget(Config.EntrustSpellTarget) != null)
+                if (VerifyEntrustTarget() != null)
                 {
                     actionResult.JobAbility = Ability.Entrust;
                 }
@@ -333,10 +333,10 @@ namespace CurePlease.Engine
                 if (string.IsNullOrWhiteSpace(target))
                 {
                     // use P1
-                    target = PL.GetActivePartyMembers().FirstOrDefault(p => p.Index == 1).Name;
+                    target = PL.GetActivePartyMembers().FirstOrDefault(p => p.Index == 1)?.Name;
                 }
 
-                if (TargetVerified(target))
+                if (!string.IsNullOrWhiteSpace(VerifyEntrustTarget()))
                 {
                     actionResult.Target = target;
                     actionResult.Spell = SpellCheckedResult;
@@ -346,8 +346,10 @@ namespace CurePlease.Engine
             return actionResult;
         }
 
-        private string VerifyEntrustTarget(string target)
+        private string VerifyEntrustTarget()
         {
+            var target = _Config.EntrustSpellTarget;
+
             if (string.IsNullOrWhiteSpace(target))
             {
                 // nothing in config, so let's default to P1
@@ -356,21 +358,20 @@ namespace CurePlease.Engine
 
             if (!string.IsNullOrEmpty(target))
             {
+                PartyMember entrustTarget = PL.GetActivePartyMembers().FirstOrDefault(p => p.Name == target);
 
+                // make sure target is in party
+                if (entrustTarget == null)
+                    return null;
+
+                XiEntity entrustEntity = PL.Entity.GetEntity((int)entrustTarget.TargetIndex);
+
+                // make sure target isn't dead and is in range
+                if (entrustEntity.IsDead() || entrustEntity.Distance > 21)
+                    return null;
             }
 
             return target;
-        }
-
-        private bool TargetVerified(string target)
-        {
-            // make sure target is in party
-
-            // make sure target is in range
-
-            // make sure target isn't dead
-
-            return true;
         }
 
         private void InitializeData()

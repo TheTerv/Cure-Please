@@ -396,5 +396,10 @@ namespace CurePlease.Utilities
             IItem item = api.Resources.GetItem(name, 0);
             return item != null ? (ushort)item.ItemID : (ushort)0;
         }
+
+        public static bool IsDead(this XiEntity entity)
+        {
+            return entity.Status == (int)EntityStatus.Dead || entity.Status == (int)EntityStatus.DeadEngaged;
+        }
     }
 }
