@@ -58,7 +58,7 @@ namespace CurePlease
 
         public GeoEngine GeoEngine = new GeoEngine();
 
-        public BuffEngine BuffEngine;
+        public BuffEngine BuffEngine = new BuffEngine();
 
         public DebuffEngine DebuffEngine = new DebuffEngine();
 
@@ -290,7 +290,6 @@ namespace CurePlease
             if (Monitored != null)
             {
                 SongEngine = new SongEngine(PL, Monitored);
-                BuffEngine = new BuffEngine(PL, Monitored);
                 PLEngine = new PLEngine(PL, Monitored);
             }
 
@@ -666,7 +665,7 @@ namespace CurePlease
             }
 
             // Auto Casting BUFF STUFF                    
-            var buffAction = BuffEngine?.Run(Config.GetBuffConfig());
+            var buffAction = BuffEngine?.Run(Config.GetBuffConfig(), PL);
 
             if (buffAction != null)
             {

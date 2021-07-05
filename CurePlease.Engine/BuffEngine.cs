@@ -19,27 +19,20 @@ namespace CurePlease.Engine
         // Auto Spells:
         // Haste, Haste II, Phalanx II, Regen, Shell, Protect, Sandstorm, Rainstorm, Windstorm, Firestorm, Hailstorm, Thunderstorm, Voidstorm, Aurorastorm, Refresh, Adloquium
              
-        private EliteAPI PL { get; set; }
-        private EliteAPI Monitored { get; set; }
-
         private Dictionary<string, IEnumerable<short>> ActiveBuffs = new Dictionary<string, IEnumerable<short>>();
 
         // TODO: Should this just be the exact spell we want to cast instead of the buff id?
         // Would probably be cleaner.
         private Dictionary<string, IEnumerable<string>> AutoBuffs = new Dictionary<string, IEnumerable<string>>();
 
-        public BuffEngine(EliteAPI pl, EliteAPI mon)
-        {
-            PL = pl;
-            Monitored = mon;                  
-        }
+        public BuffEngine() { }
 
-        public EngineAction Run(BuffConfig Config)
+        public EngineAction Run(BuffConfig Config, EliteAPI PL)
         {
             lock (ActiveBuffs)
             {
                 // Want to find party members where they have an autobuff configured but it isn't in their list of buffs.
-                foreach (PartyMember ptMember in Monitored.GetActivePartyMembers())
+                foreach (PartyMember ptMember in PL.GetActivePartyMembers())
                 {
                     // Make sure there's at least 1 auto-buff for the player.
                     if(AutoBuffs.ContainsKey(ptMember.Name) && AutoBuffs[ptMember.Name].Any())
@@ -113,6 +106,5 @@ namespace CurePlease.Engine
                 }
             }
         }
-
     }
 }
