@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30413.136
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CurePlease", "CurePlease\CurePlease.csproj", "{E5FD7062-1824-4D6C-B4CD-DF94355B73C0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CurePlease", "CurePlease\CurePlease.csproj", "{E5FD7062-1824-4D6C-B4CD-DF94355B73C0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CurePlease.Model", "CurePlease.Model\CurePlease.Model.csproj", "{8E8FC162-0B31-453E-A2F4-1E9A3CEE2029}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CurePlease.Model", "CurePlease.Model\CurePlease.Model.csproj", "{8E8FC162-0B31-453E-A2F4-1E9A3CEE2029}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CurePlease.Utilities", "CurePlease.Utilities\CurePlease.Utilities.csproj", "{98FE190E-2FAA-4600-97D3-4173456B264A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CurePlease.Utilities", "CurePlease.Utilities\CurePlease.Utilities.csproj", "{98FE190E-2FAA-4600-97D3-4173456B264A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CurePlease.Engine", "CurePlease.Engine\CurePlease.Engine.csproj", "{E9E551B0-451E-4C08-8D25-3CF057912A0E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CurePlease.Engine", "CurePlease.Engine\CurePlease.Engine.csproj", "{E9E551B0-451E-4C08-8D25-3CF057912A0E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,12 +21,12 @@ Global
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{E5FD7062-1824-4D6C-B4CD-DF94355B73C0}.Debug|Any CPU.ActiveCfg = Debug|x86
 		{E5FD7062-1824-4D6C-B4CD-DF94355B73C0}.Debug|Any CPU.Build.0 = Debug|x86
-		{E5FD7062-1824-4D6C-B4CD-DF94355B73C0}.Debug|x86.ActiveCfg = Debug|x86
-		{E5FD7062-1824-4D6C-B4CD-DF94355B73C0}.Debug|x86.Build.0 = Debug|x86
+		{E5FD7062-1824-4D6C-B4CD-DF94355B73C0}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E5FD7062-1824-4D6C-B4CD-DF94355B73C0}.Debug|x86.Build.0 = Debug|Any CPU
 		{E5FD7062-1824-4D6C-B4CD-DF94355B73C0}.Release|Any CPU.ActiveCfg = Release|x86
 		{E5FD7062-1824-4D6C-B4CD-DF94355B73C0}.Release|Any CPU.Build.0 = Release|x86
-		{E5FD7062-1824-4D6C-B4CD-DF94355B73C0}.Release|x86.ActiveCfg = Release|x86
-		{E5FD7062-1824-4D6C-B4CD-DF94355B73C0}.Release|x86.Build.0 = Release|x86
+		{E5FD7062-1824-4D6C-B4CD-DF94355B73C0}.Release|x86.ActiveCfg = Release|Any CPU
+		{E5FD7062-1824-4D6C-B4CD-DF94355B73C0}.Release|x86.Build.0 = Release|Any CPU
 		{8E8FC162-0B31-453E-A2F4-1E9A3CEE2029}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8E8FC162-0B31-453E-A2F4-1E9A3CEE2029}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8E8FC162-0B31-453E-A2F4-1E9A3CEE2029}.Debug|x86.ActiveCfg = Debug|Any CPU

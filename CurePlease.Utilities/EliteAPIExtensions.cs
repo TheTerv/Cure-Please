@@ -96,6 +96,11 @@ namespace CurePlease.Utilities
             return api.Player.Buffs.Any(buff => buff == effectId);
         }
 
+        public static bool CantAct(this EliteAPI api)
+        {
+            return api.HasStatus(StatusEffect.Terror) || api.HasStatus(StatusEffect.Petrification) || api.HasStatus(StatusEffect.Stun);
+        }
+
         public static bool SpellAvailable(this EliteAPI api, string spell)
         {
             // IF YOU HAVE OMERTA THEN BLOCK MAGIC CASTING

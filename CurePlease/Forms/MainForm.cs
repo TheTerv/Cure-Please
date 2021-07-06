@@ -1,36 +1,25 @@
-﻿/// <summary>
-/// TODO:
-/// - EngineInterface
-/// - Async Engine List in form
-/// - Engine Priorities.
-/// - Move Charm/Doom logic into debuff engine with priority 0
-/// - CONFIGS (don't calculate them every tick).
-/// - ???
-/// </summary>
+﻿using CurePlease.Engine;
+using CurePlease.Model;
+using CurePlease.Model.Constants;
+using CurePlease.Model.Enums;
+using CurePlease.Utilities;
+using EliteMMO.API;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Drawing;
+using System.Linq;
+using System.Net;
+using System.Net.Sockets;
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using static EliteMMO.API.EliteAPI;
+
 namespace CurePlease
 {
-    using CurePlease.Engine;
-    using CurePlease.Model;
-    using CurePlease.Model.Constants;
-    using CurePlease.Model.Enums;
-    using CurePlease.Properties;
-    using CurePlease.Utilities;
-    using EliteMMO.API;
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.Drawing;
-    using System.IO;
-    using System.Linq;
-    using System.Net;
-    using System.Net.Sockets;
-    using System.Runtime.InteropServices;
-    using System.Text;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using System.Windows.Forms;
-    using static EliteMMO.API.EliteAPI;
-
     public partial class MainForm : Form
     {
         private static ConfigForm Config = new ConfigForm();
@@ -310,15 +299,6 @@ namespace CurePlease
 
         private bool CheckForDLLFiles()
         {
-            if (!File.Exists("eliteapi.dll") || !File.Exists("elitemmo.api.dll"))
-            {
-                MessageBox.Show(
-                    "Unable to locate EliteAPI.dll or EliteMMO.API.dll\nMake sure both files are in the same directory as the application",
-                    "Error");
-
-                return false;
-            }
-
             foreach (Process dats in Process.GetProcessesByName("pol").Union(Process.GetProcessesByName("xiloader")).Union(Process.GetProcessesByName("edenxi")))
             {
                 for (int i = 0; i < dats.Modules.Count; i++)
@@ -432,39 +412,45 @@ namespace CurePlease
 
         #region Primary Logic
 
+        private bool ReadyForAction()
+        {
+            if (pauseActions)
+            {
+                return false;
+            }
+
+            // Skip if we aren't hooked into the game.
+            if (PL == null || PL.Player.LoginStatus != (int)LoginStatus.LoggedIn)
+            {
+                return false;
+            }
+
+            // Skip if we're busy or immobilized.
+            if (JobAbilityLock_Check || CastingBackground_Check || PL.CantAct())
+            {
+                return false;
+            }
+
+            if (PL.Player.Status != (uint)Status.Standing && PL.Player.Status != (uint)Status.Fighting)
+            {
+                return false;
+            }
+
+            if (_FollowEngine != null && _FollowEngine.IsMoving())
+            {
+                return false;
+            }
+
+            return true;
+        }
+
         // This is the timer that does our decision loop.
         // All the main action related stuff happens in here.
         private async void actionTimer_TickAsync(object sender, EventArgs e)
         {
             this.actionTimer.Stop();
 
-            if (pauseActions)
-            {
-                this.actionTimer.Start();
-                return;
-            }
-
-            // Skip if we aren't hooked into the game.
-            if (PL == null || PL.Player.LoginStatus != (int)LoginStatus.LoggedIn)
-            {
-                this.actionTimer.Start();
-                return;
-            }
-
-            // Skip if we're busy or immobilized.
-            if (JobAbilityLock_Check || CastingBackground_Check || PL.HasStatus(StatusEffect.Terror) || PL.HasStatus(StatusEffect.Petrification) || PL.HasStatus(StatusEffect.Stun))
-            {
-                this.actionTimer.Start();
-                return;
-            }
-
-            if (PL.Player.Status != (uint)Status.Standing && PL.Player.Status != (uint)Status.Fighting)
-            {
-                this.actionTimer.Start();
-                return;
-            }
-
-            if (_FollowEngine != null && _FollowEngine.IsMoving())
+            if (!ReadyForAction())
             {
                 this.actionTimer.Start();
                 return;
