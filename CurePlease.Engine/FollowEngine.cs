@@ -1,14 +1,17 @@
 ﻿using CurePlease.Model;
 using CurePlease.Model.Config;
 using EliteMMO.API;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Timers;
 using static EliteMMO.API.EliteAPI;
 
 namespace CurePlease.Engine
 {
-    public class FollowEngine
+    public class FollowEngine : IFollowEngine
     {
+        private readonly ILogger<FollowEngine> _Logger;
+
         public EliteAPI _PowerLeveler { get; set; }
 
         public EliteAPI _Monitored { get; set; }
@@ -29,8 +32,10 @@ namespace CurePlease.Engine
 
         private Timer _FollowEngineTimer = new Timer();
 
-        public FollowEngine() 
+        public FollowEngine(ILogger<FollowEngine> logger) 
         {
+            _Logger = logger;
+
             _FollowEngineTimer.Elapsed += new ElapsedEventHandler(Follow_DoWork);
             _FollowEngineTimer.Interval = 1000;
             _FollowEngineTimer.Enabled = true;
@@ -38,6 +43,8 @@ namespace CurePlease.Engine
 
         public void Setup(EliteAPI pl, EliteAPI monitored, MySettings config)
         {
+            _Logger.LogError("Setting up");
+
             _PowerLeveler = pl;
             _Monitored = monitored;
             _Config = config;
@@ -84,6 +91,7 @@ namespace CurePlease.Engine
                 _PowerLeveler.AutoFollow.IsAutoFollowing = false;
             }
 
+            _FollowerId = null;
             _StuckWarning = false;
             _StuckCount = 0;
         }
@@ -159,7 +167,6 @@ namespace CurePlease.Engine
                     _FollowEngineTimer.Start();
                     return;
                 }
-
             
                 // We'll use this to detect if we're moving
                 // NOTE: This throws an occassional NULL exception but when debugging nothing is null.. wrapping in try/catch to try and recover
@@ -199,8 +206,7 @@ namespace CurePlease.Engine
             }
             catch (Exception ex)
             {
-                int i = 0;
-                // todo - add logging
+                _Logger.LogError("Unexpected error occurred while running following engine", ex);
             }
 
             _FollowEngineTimer.Start();

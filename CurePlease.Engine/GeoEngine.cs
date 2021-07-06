@@ -3,6 +3,7 @@ using CurePlease.Model.Config;
 using CurePlease.Model.Constants;
 using CurePlease.Utilities;
 using EliteMMO.API;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,8 +21,10 @@ namespace CurePlease.Engine
         public string geo_spell { get; set; }
     }
 
-    public class GeoEngine
+    public class GeoEngine : IGeoEngine
     {
+        private readonly ILogger<GeoEngine> _Logger;
+
         private GeoConfig _Config;
 
         // GEO ENGAGED CHECK
@@ -74,8 +77,10 @@ namespace CurePlease.Engine
             257 // Eastern is 257
         };
 
-        public GeoEngine()
+        public GeoEngine(ILogger<GeoEngine> logger)
         {
+            _Logger = logger;
+
             InitializeData();
 
             FullCircleTimer.Interval = 5000;

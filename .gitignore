@@ -174,4 +174,4 @@ UpgradeLog*.htm
 FakesAssemblies/
 
 # Visual Studio IntelliSense Db
-.dtbcache.v2
+.vs/

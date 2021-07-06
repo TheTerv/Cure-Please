@@ -5,17 +5,17 @@
     <TargetFramework>net5.0-windows</TargetFramework>
     <PlatformTarget>x86</PlatformTarget>
     <UseWindowsForms>true</UseWindowsForms>
-    <AssemblyVersion>2.5.0.0</AssemblyVersion>
-    <FileVersion>2.5.0.0</FileVersion>
-    <Version>2.5.0</Version>
+    <AssemblyVersion>2.5.1</AssemblyVersion>
+    <FileVersion>2.5.1</FileVersion>
+    <Version>2.5.1</Version>
     <ApplicationIcon>CurePleaseIcon.ico</ApplicationIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\CurePlease.Engine\CurePlease.Engine.csproj" />
-    <ProjectReference Include="..\CurePlease.Model\CurePlease.Model.csproj" />
     <ProjectReference Include="..\CurePlease.Utilities\CurePlease.Utilities.csproj" />
+    <ProjectReference Include="..\CurePlease.Model\CurePlease.Model.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -30,5 +30,11 @@
   
   <ItemGroup>
     <None Include="Addons\**" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
+    <PackageReference Include="Serilog.Extensions.Hosting" Version="4.1.2" />
+    <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
   </ItemGroup>
 </Project>

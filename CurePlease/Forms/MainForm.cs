@@ -4,8 +4,10 @@ using CurePlease.Model.Constants;
 using CurePlease.Model.Enums;
 using CurePlease.Utilities;
 using EliteMMO.API;
+using Serilog;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
@@ -45,7 +47,8 @@ namespace CurePlease
         // and/or loaded/saved our config form.
         public SongEngine SongEngine;
 
-        public GeoEngine _GeoEngine = new GeoEngine();
+        private readonly IGeoEngine _GeoEngine;
+        private readonly IFollowEngine _FollowEngine;
 
         public BuffEngine _BuffEngine = new BuffEngine();
 
@@ -53,9 +56,7 @@ namespace CurePlease
 
         public PLEngine PLEngine;
 
-        public CureEngine CureEngine = new CureEngine();
-
-        public FollowEngine _FollowEngine = new FollowEngine();
+        public CureEngine CureEngine = new CureEngine();        
 
         public string castingSpell = string.Empty;
 
@@ -111,12 +112,15 @@ namespace CurePlease
         {
             Button button = sender as Button;
 
-            button.FlatAppearance.BorderColor = System.Drawing.Color.Gray;
+            button.FlatAppearance.BorderColor = Color.Gray;
         }
 
-
-        public MainForm()
+        public MainForm(IGeoEngine geoEngine, IFollowEngine followEngine)
         {
+
+            _GeoEngine = geoEngine;
+            _FollowEngine = followEngine;
+
             InitializeComponent();
 
             if (!CheckForDLLFiles())
@@ -403,7 +407,7 @@ namespace CurePlease
                 return false;
             }
 
-            if (_FollowEngine != null && _FollowEngine.IsMoving())
+            if (_FollowEngine.IsMoving())
             {
                 return false;
             }
