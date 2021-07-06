@@ -122,6 +122,7 @@ namespace CurePlease
             _FollowEngine = followEngine;
 
             InitializeComponent();
+            InitializeBackgroundWorker();
 
             if (!CheckForDLLFiles())
             {
@@ -294,6 +295,25 @@ namespace CurePlease
             return true;
         }
 
+        private BackgroundWorker zoningWorker = new BackgroundWorker();
+        private void backgroundZoneWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            Thread.Sleep(17000);
+        }
+
+        private void backgroundZoneWorker_WorkCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            pauseButton.Text = "Pause";
+            pauseButton.ForeColor = Color.Black;
+            _FollowEngine.Start();
+        }
+        
+        private void InitializeBackgroundWorker()
+        {
+            zoningWorker.DoWork += new DoWorkEventHandler(backgroundZoneWorker_DoWork);
+            zoningWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(backgroundZoneWorker_WorkCompleted);
+        }
+
         private void partyMembersUpdate_TickAsync(object sender, EventArgs e)
         {
             if (PL == null)
@@ -320,11 +340,11 @@ namespace CurePlease
                         pauseButton.ForeColor = Color.Red;
                         _FollowEngine.Stop();
 
-                        Thread.Sleep(17000);
-
-                        pauseButton.Text = "Pause";
-                        pauseButton.ForeColor = Color.Black;
-                        _FollowEngine.Start();
+                        // temporary fix/hack for zoning without freezing up the app
+                        if (!zoningWorker.IsBusy)
+                        {
+                            zoningWorker.RunWorkerAsync();
+                        }
                     }
                 }
 
