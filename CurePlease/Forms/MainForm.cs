@@ -45,11 +45,11 @@ namespace CurePlease
         // and/or loaded/saved our config form.
         public SongEngine SongEngine;
 
-        public GeoEngine GeoEngine = new GeoEngine();
+        public GeoEngine _GeoEngine = new GeoEngine();
 
-        public BuffEngine BuffEngine = new BuffEngine();
+        public BuffEngine _BuffEngine = new BuffEngine();
 
-        public DebuffEngine DebuffEngine = new DebuffEngine();
+        public DebuffEngine _DebuffEngine = new DebuffEngine();
 
         public PLEngine PLEngine;
 
@@ -67,8 +67,6 @@ namespace CurePlease
         private byte autoOptionsSelected;
 
         private bool pauseActions;
-
-        public int LUA_Plugin_Loaded = 0;
 
         private void PaintBorderlessGroupBox(object sender, PaintEventArgs e)
         {
@@ -164,48 +162,17 @@ namespace CurePlease
             if (string.IsNullOrWhiteSpace(WindowerMode))
                 return;
 
-            if (LUA_Plugin_Loaded == 0 && !ConfigForm.config.pauseOnStartBox && PL != null)
+            if (!ConfigForm.config.pauseOnStartBox && PL != null)
             {
-                if (WindowerMode == "Windower")
-                {
-                    PL.ThirdParty.SendString("//lua load CurePlease");
-                    Thread.Sleep(1500);
-                    PL.ThirdParty.SendString("//cpaddon settings " + ConfigForm.config.ipAddress + " " + ConfigForm.config.listeningPort);
-                    Thread.Sleep(100);
-                    PL.ThirdParty.SendString("//cpaddon verify");
-
-                    if (ConfigForm.config.enableHotKeys)
-                    {
-                        PL.ThirdParty.SendString("//bind ^!F1 cureplease toggle");
-                        PL.ThirdParty.SendString("//bind ^!F2 cureplease start");
-                        PL.ThirdParty.SendString("//bind ^!F3 cureplease pause");
-                    }
-                }
-                else if (WindowerMode == "Ashita")
-                {
-                    PL.ThirdParty.SendString("/addon load CurePlease");
-                    Thread.Sleep(1500);
-                    PL.ThirdParty.SendString("/cpaddon settings " + ConfigForm.config.ipAddress + " " + ConfigForm.config.listeningPort);
-                    Thread.Sleep(100);
-                    PL.ThirdParty.SendString("/cpaddon verify");
-
-                    if (ConfigForm.config.enableHotKeys)
-                    {
-                        PL.ThirdParty.SendString("/bind ^!F1 /cureplease toggle");
-                        PL.ThirdParty.SendString("/bind ^!F2 /cureplease start");
-                        PL.ThirdParty.SendString("/bind ^!F3 /cureplease pause");
-                    }
-                }
-
-                AddCurrentAction("LUA Addon loaded. ( " + ConfigForm.config.ipAddress + " - " + ConfigForm.config.listeningPort + " )");
-
-                LUA_Plugin_Loaded = 1;
+                AddonEngine.LoadAddonInClient(ConfigForm.config, PL.ThirdParty, WindowerMode);
 
                 if (AddonClient == null)
                 {
                     AddonClient = new UdpClient(Convert.ToInt32(ConfigForm.config.listeningPort));
                     AddonClient.BeginReceive(new AsyncCallback(OnAddonDataReceived), AddonClient);
                 }
+
+                AddCurrentAction("LUA Addon loaded. ( " + ConfigForm.config.ipAddress + " - " + ConfigForm.config.listeningPort + " )");
             }
         }
 
@@ -509,7 +476,7 @@ namespace CurePlease
             var doomedMembers = activeMembers.Count(pm => PL.CanCastOn(pm) && ActiveBuffs.ContainsKey(pm.Name) && ActiveBuffs[pm.Name].Contains((short)StatusEffect.Doom));
             if (doomedMembers > 0)
             {
-                var doomCheckResult = DebuffEngine.Run(PL, Monitored, Config.GetDebuffConfig());
+                var doomCheckResult = _DebuffEngine.Run(PL, Monitored, Config.GetDebuffConfig());
                 if (doomCheckResult != null && doomCheckResult.Spell != null)
                 {
                     CastSpell(doomCheckResult.Target, doomCheckResult.Spell);
@@ -541,7 +508,7 @@ namespace CurePlease
             if (cureResult != null)
             {
                 // RUN DEBUFF REMOVAL - CONVERTED TO FUNCTION SO CAN BE RUN IN MULTIPLE AREAS
-                var debuffResult = DebuffEngine.Run(PL, Monitored, Config.GetDebuffConfig());
+                var debuffResult = _DebuffEngine.Run(PL, Monitored, Config.GetDebuffConfig());
 
                 if (!string.IsNullOrEmpty(cureResult.Spell))
                 {
@@ -627,7 +594,7 @@ namespace CurePlease
 
             else if (PL.Player.MainJob == (byte)Job.GEO && !PL.HasStatus(StatusEffect.Silence) && (PL.Player.Status == 1 || PL.Player.Status == 0))
             {
-                var geoAction = GeoEngine.Run(PL, Monitored, Config.GetGeoConfig());
+                var geoAction = _GeoEngine.Run(PL, Monitored, Config.GetGeoConfig());
 
                 if (geoAction != null)
                 {
@@ -653,7 +620,7 @@ namespace CurePlease
             }
 
             // Auto Casting BUFF STUFF                    
-            var buffAction = BuffEngine?.Run(Config.GetBuffConfig(), PL);
+            var buffAction = _BuffEngine?.Run(Config.GetBuffConfig(), PL);
 
             if (buffAction != null)
             {
@@ -691,13 +658,13 @@ namespace CurePlease
             playerOptionsSelected = ptIndex;
             var name = PL.Party.GetPartyMembers()[ptIndex].Name;
 
-            autoHasteToolStripMenuItem.Checked = BuffEngine.BuffEnabled(name, Spells.Haste);
-            autoHasteIIToolStripMenuItem.Checked = BuffEngine.BuffEnabled(name, Spells.Haste_II);
-            autoAdloquiumToolStripMenuItem.Checked = BuffEngine.BuffEnabled(name, Spells.Adloquium);
-            autoFlurryToolStripMenuItem.Checked = BuffEngine.BuffEnabled(name, Spells.Flurry);
-            autoFlurryIIToolStripMenuItem.Checked = BuffEngine.BuffEnabled(name, Spells.Flurry_II);
-            autoProtectToolStripMenuItem.Checked = BuffEngine.BuffEnabled(name, Spells.Protect);
-            autoShellToolStripMenuItem.Checked = BuffEngine.BuffEnabled(name, Spells.Shell);
+            autoHasteToolStripMenuItem.Checked = _BuffEngine.BuffEnabled(name, Spells.Haste);
+            autoHasteIIToolStripMenuItem.Checked = _BuffEngine.BuffEnabled(name, Spells.Haste_II);
+            autoAdloquiumToolStripMenuItem.Checked = _BuffEngine.BuffEnabled(name, Spells.Adloquium);
+            autoFlurryToolStripMenuItem.Checked = _BuffEngine.BuffEnabled(name, Spells.Flurry);
+            autoFlurryIIToolStripMenuItem.Checked = _BuffEngine.BuffEnabled(name, Spells.Flurry_II);
+            autoProtectToolStripMenuItem.Checked = _BuffEngine.BuffEnabled(name, Spells.Protect);
+            autoShellToolStripMenuItem.Checked = _BuffEngine.BuffEnabled(name, Spells.Shell);
 
             playerOptions.Show(party, new Point(0, 0));
         }
@@ -710,17 +677,17 @@ namespace CurePlease
             // TODO: Figure out tiers and stuff, don't play SCH so not tier-II storms probably busted.
             if (party == party0)
             {
-                autoPhalanxIIToolStripMenuItem1.Checked = BuffEngine.BuffEnabled(name, Spells.Phalanx_II);
-                autoRegenVToolStripMenuItem.Checked = BuffEngine.BuffEnabled(name, Spells.Regen);
-                autoRefreshIIToolStripMenuItem.Checked = BuffEngine.BuffEnabled(name, Spells.Refresh);
-                SandstormToolStripMenuItem.Checked = BuffEngine.BuffEnabled(name, Spells.Sandstorm);
-                RainstormToolStripMenuItem.Checked = BuffEngine.BuffEnabled(name, Spells.Rainstorm);
-                WindstormToolStripMenuItem.Checked = BuffEngine.BuffEnabled(name, Spells.Windstorm);
-                FirestormToolStripMenuItem.Checked = BuffEngine.BuffEnabled(name, Spells.Firestorm);
-                HailstormToolStripMenuItem.Checked = BuffEngine.BuffEnabled(name, Spells.Hailstorm);
-                ThunderstormToolStripMenuItem.Checked = BuffEngine.BuffEnabled(name, Spells.Thunderstorm);
-                VoidstormToolStripMenuItem.Checked = BuffEngine.BuffEnabled(name, Spells.Voidstorm);
-                AurorastormToolStripMenuItem.Checked = BuffEngine.BuffEnabled(name, Spells.Aurorastorm);
+                autoPhalanxIIToolStripMenuItem1.Checked = _BuffEngine.BuffEnabled(name, Spells.Phalanx_II);
+                autoRegenVToolStripMenuItem.Checked = _BuffEngine.BuffEnabled(name, Spells.Regen);
+                autoRefreshIIToolStripMenuItem.Checked = _BuffEngine.BuffEnabled(name, Spells.Refresh);
+                SandstormToolStripMenuItem.Checked = _BuffEngine.BuffEnabled(name, Spells.Sandstorm);
+                RainstormToolStripMenuItem.Checked = _BuffEngine.BuffEnabled(name, Spells.Rainstorm);
+                WindstormToolStripMenuItem.Checked = _BuffEngine.BuffEnabled(name, Spells.Windstorm);
+                FirestormToolStripMenuItem.Checked = _BuffEngine.BuffEnabled(name, Spells.Firestorm);
+                HailstormToolStripMenuItem.Checked = _BuffEngine.BuffEnabled(name, Spells.Hailstorm);
+                ThunderstormToolStripMenuItem.Checked = _BuffEngine.BuffEnabled(name, Spells.Thunderstorm);
+                VoidstormToolStripMenuItem.Checked = _BuffEngine.BuffEnabled(name, Spells.Voidstorm);
+                AurorastormToolStripMenuItem.Checked = _BuffEngine.BuffEnabled(name, Spells.Aurorastorm);
             }
 
             autoOptions.Show(party, new Point(0, 0));
@@ -949,72 +916,72 @@ namespace CurePlease
             // TODO: Add in special logic to make sure we can't select more then
             // ONE of haste/haste2/flurry/flurry2
             var name = PL.Party.GetPartyMembers()[playerOptionsSelected].Name;
-            BuffEngine.ToggleAutoBuff(name, Spells.Haste);
+            _BuffEngine.ToggleAutoBuff(name, Spells.Haste);
         }
 
         private void autoHasteIIToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var name = PL.Party.GetPartyMembers()[playerOptionsSelected].Name;
-            BuffEngine.ToggleAutoBuff(name, Spells.Haste_II);
+            _BuffEngine.ToggleAutoBuff(name, Spells.Haste_II);
         }
 
         private void autoAdloquiumToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var name = PL.Party.GetPartyMembers()[playerOptionsSelected].Name;
-            BuffEngine.ToggleAutoBuff(name, Spells.Adloquium);
+            _BuffEngine.ToggleAutoBuff(name, Spells.Adloquium);
         }
 
         private void autoFlurryToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var name = PL.Party.GetPartyMembers()[playerOptionsSelected].Name;
-            BuffEngine.ToggleAutoBuff(name, Spells.Flurry);
+            _BuffEngine.ToggleAutoBuff(name, Spells.Flurry);
         }
 
         private void autoFlurryIIToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var name = PL.Party.GetPartyMembers()[playerOptionsSelected].Name;
-            BuffEngine.ToggleAutoBuff(name, Spells.Flurry_II);
+            _BuffEngine.ToggleAutoBuff(name, Spells.Flurry_II);
         }
 
         private void autoProtectToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var name = PL.Party.GetPartyMembers()[playerOptionsSelected].Name;
-            BuffEngine.ToggleAutoBuff(name, Spells.Protect);
+            _BuffEngine.ToggleAutoBuff(name, Spells.Protect);
         }
 
         private void enableDebuffRemovalToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            DebuffEngine.ToggleSpecifiedMember(PL.Party.GetPartyMembers()[playerOptionsSelected].Name);
+            _DebuffEngine.ToggleSpecifiedMember(PL.Party.GetPartyMembers()[playerOptionsSelected].Name);
         }
 
         private void autoShellToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var name = PL.Party.GetPartyMembers()[playerOptionsSelected].Name;
-            BuffEngine.ToggleAutoBuff(name, Spells.Shell);
+            _BuffEngine.ToggleAutoBuff(name, Spells.Shell);
         }
 
         private void autoHasteToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             var name = PL.Party.GetPartyMembers()[autoOptionsSelected].Name;
-            BuffEngine.ToggleAutoBuff(name, Spells.Haste);
+            _BuffEngine.ToggleAutoBuff(name, Spells.Haste);
         }
 
         private void autoPhalanxIIToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             var name = PL.Party.GetPartyMembers()[autoOptionsSelected].Name;
-            BuffEngine.ToggleAutoBuff(name, Spells.Phalanx_II);
+            _BuffEngine.ToggleAutoBuff(name, Spells.Phalanx_II);
         }
 
         private void autoRegenVToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var name = PL.Party.GetPartyMembers()[autoOptionsSelected].Name;
-            BuffEngine.ToggleAutoBuff(name, Spells.Regen);
+            _BuffEngine.ToggleAutoBuff(name, Spells.Regen);
         }
 
         private void autoRefreshIIToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var name = PL.Party.GetPartyMembers()[autoOptionsSelected].Name;
-            BuffEngine.ToggleAutoBuff(name, Spells.Refresh);
+            _BuffEngine.ToggleAutoBuff(name, Spells.Refresh);
         }
 
         private void hasteToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1147,49 +1114,49 @@ namespace CurePlease
             // TODO: Similar to haste/flurry, etc. add logic to deal with storm
             // tiers and only one at a time being selected.
             var name = PL.Party.GetPartyMembers()[autoOptionsSelected].Name;
-            BuffEngine.ToggleAutoBuff(name, Spells.Sandstorm);
+            _BuffEngine.ToggleAutoBuff(name, Spells.Sandstorm);
         }
 
         private void RainstormToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var name = PL.Party.GetPartyMembers()[autoOptionsSelected].Name;
-            BuffEngine.ToggleAutoBuff(name, Spells.Rainstorm);
+            _BuffEngine.ToggleAutoBuff(name, Spells.Rainstorm);
         }
 
         private void WindstormToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var name = PL.Party.GetPartyMembers()[autoOptionsSelected].Name;
-            BuffEngine.ToggleAutoBuff(name, Spells.Windstorm);
+            _BuffEngine.ToggleAutoBuff(name, Spells.Windstorm);
         }
 
         private void FirestormToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var name = PL.Party.GetPartyMembers()[autoOptionsSelected].Name;
-            BuffEngine.ToggleAutoBuff(name, Spells.Firestorm);
+            _BuffEngine.ToggleAutoBuff(name, Spells.Firestorm);
         }
 
         private void HailstormToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var name = PL.Party.GetPartyMembers()[autoOptionsSelected].Name;
-            BuffEngine.ToggleAutoBuff(name, Spells.Hailstorm);
+            _BuffEngine.ToggleAutoBuff(name, Spells.Hailstorm);
         }
 
         private void ThunderstormToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var name = PL.Party.GetPartyMembers()[autoOptionsSelected].Name;
-            BuffEngine.ToggleAutoBuff(name, Spells.Thunderstorm);
+            _BuffEngine.ToggleAutoBuff(name, Spells.Thunderstorm);
         }
 
         private void VoidstormToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var name = PL.Party.GetPartyMembers()[autoOptionsSelected].Name;
-            BuffEngine.ToggleAutoBuff(name, Spells.Voidstorm);
+            _BuffEngine.ToggleAutoBuff(name, Spells.Voidstorm);
         }
 
         private void AurorastormToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var name = PL.Party.GetPartyMembers()[autoOptionsSelected].Name;
-            BuffEngine.ToggleAutoBuff(name, Spells.Aurorastorm);
+            _BuffEngine.ToggleAutoBuff(name, Spells.Aurorastorm);
         }
 
         private void protectIVToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1234,39 +1201,15 @@ namespace CurePlease
                     WindowState = FormWindowState.Minimized;
                 }
 
-                if (ConfigForm.config.EnableAddOn && LUA_Plugin_Loaded == 0)
+                AddonEngine.LoadAddonInClient(ConfigForm.config, PL.ThirdParty, WindowerMode);
+
+                if (AddonClient == null)
                 {
-                    if (WindowerMode == "Windower")
-                    {
-                        PL.ThirdParty.SendString("//lua load CurePlease");
-                        Thread.Sleep(1500);
-                        PL.ThirdParty.SendString("//cpaddon settings " + ConfigForm.config.ipAddress + " " + ConfigForm.config.listeningPort);
-                        Thread.Sleep(100);
-                        if (ConfigForm.config.enableHotKeys)
-                        {
-                            PL.ThirdParty.SendString("//bind ^!F1 cureplease toggle");
-                            PL.ThirdParty.SendString("//bind ^!F2 cureplease start");
-                            PL.ThirdParty.SendString("//bind ^!F3 cureplease pause");
-                        }
-                    }
-                    else if (WindowerMode == "Ashita")
-                    {
-                        PL.ThirdParty.SendString("/addon load CurePlease");
-                        Thread.Sleep(1500);
-                        PL.ThirdParty.SendString("/cpaddon settings " + ConfigForm.config.ipAddress + " " + ConfigForm.config.listeningPort);
-                        Thread.Sleep(100);
-                        if (ConfigForm.config.enableHotKeys)
-                        {
-                            PL.ThirdParty.SendString("/bind ^!F1 /cureplease toggle");
-                            PL.ThirdParty.SendString("/bind ^!F2 /cureplease start");
-                            PL.ThirdParty.SendString("/bind ^!F3 /cureplease pause");
-                        }
-                    }
-
-                    AddOnStatus_Click(sender, e);
-
-                    LUA_Plugin_Loaded = 1;
+                    AddonClient = new UdpClient(Convert.ToInt32(ConfigForm.config.listeningPort));
+                    AddonClient.BeginReceive(new AsyncCallback(OnAddonDataReceived), AddonClient);
                 }
+
+                AddOnStatus_Click(sender, e);
             }
         }
 
@@ -1338,34 +1281,7 @@ namespace CurePlease
 
             if (PL != null)
             {
-                if (WindowerMode == "Ashita")
-                {
-                    PL.ThirdParty.SendString("/addon unload CurePlease");
-                    if (ConfigForm.config.enableHotKeys)
-                    {
-                        PL.ThirdParty.SendString("/unbind ^!F1");
-                        PL.ThirdParty.SendString("/unbind ^!F2");
-                        PL.ThirdParty.SendString("/unbind ^!F3");
-                    }
-                }
-                else if (WindowerMode == "Windower")
-                {
-                    PL.ThirdParty.SendString("//lua unload CurePlease");
-
-                    if (ConfigForm.config.enableHotKeys)
-                    {
-                        PL.ThirdParty.SendString("//unbind ^!F1");
-                        PL.ThirdParty.SendString("//unbind ^!F2");
-                        PL.ThirdParty.SendString("//unbind ^!F3");
-                    }
-
-                }
-
-                if (AddonClient != null)
-                {
-                    // Make sure we close the UDP connection for our addon client.
-                    AddonClient.Close();
-                }
+                AddonEngine.UnloadAddonInClient(ConfigForm.config, PL.ThirdParty, WindowerMode);
             }
 
         }
@@ -1670,11 +1586,11 @@ namespace CurePlease
                             var buffs = memberBuffs.Split(',').Select(str => short.Parse(str.Trim())).Where(buff => !Data.DebuffPriorities.Keys.Cast<short>().Contains(buff));
                             var debuffs = memberBuffs.Split(',').Select(str => short.Parse(str.Trim())).Where(buff => Data.DebuffPriorities.Keys.Cast<short>().Contains(buff));
 
-                            if (BuffEngine != null)
-                                BuffEngine.UpdateBuffs(memberName, buffs);
+                            if (_BuffEngine != null)
+                                _BuffEngine.UpdateBuffs(memberName, buffs);
 
-                            if (DebuffEngine != null)
-                                DebuffEngine.UpdateDebuffs(memberName, debuffs);
+                            if (_DebuffEngine != null)
+                                _DebuffEngine.UpdateDebuffs(memberName, debuffs);
                         }                             
                     }
 
