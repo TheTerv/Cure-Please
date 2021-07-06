@@ -100,182 +100,189 @@ namespace CurePlease.Engine
 
         public EngineAction Run(EliteAPI pl, EliteAPI monitored, GeoConfig Config)
         {
-            PL = pl;
-            Monitored = monitored;
-            _Config = Config;
-
-            if (!CanCastInArea())
-                return null;
-
             EngineAction actionResult = new EngineAction
             {
                 Target = Target.Me
             };
 
-            // ENTRUSTED INDI SPELL CASTING, WILL BE CAST SO LONG AS ENTRUST IS ACTIVE
-            // StatusEffect 584 == Entrust
-            if (PL.HasStatus((StatusEffect)584) && PL.Player.Status != (int)EntityStatus.Healing)
+            try
             {
-                actionResult = GetEntrustSpell();
-            }
+                PL = pl;
+                Monitored = monitored;
+                _Config = Config;
 
-            // TODO: Fix up this logic, I think something was lost in the refactoring.
-            // Need to see if there's a situation where both of these JA's would be activated for the cast.
-            // For now the old logic seems to be use RA on it's own, or check for FC + Cast.
-            else if (_Config.RadialArcanaEnabled && (PL.Player.MP <= _Config.RadialArcanaMP) && PL.AbilityAvailable(Ability.RadialArcana) && !PL.Player.Buffs.Contains((short)StatusEffect.Weakness))
-            {
-                // Check if a pet is already active
-                if (PL.Player.Pet.HealthPercent >= 1 && PL.Player.Pet.Distance <= 9)
+                if (!CanCastInArea())
+                    return null;
+
+                // ENTRUSTED INDI SPELL CASTING, WILL BE CAST SO LONG AS ENTRUST IS ACTIVE
+                // StatusEffect 584 == Entrust
+                if (PL.HasStatus((StatusEffect)584) && PL.Player.Status != (int)EntityStatus.Healing)
                 {
-                    actionResult.JobAbility = Ability.RadialArcana;
-                    return actionResult;
-                }
-                else if (PL.Player.Pet.HealthPercent >= 1 && PL.Player.Pet.Distance >= 9 && PL.AbilityAvailable(Ability.FullCircle))
-                {
-                    actionResult.JobAbility = Ability.FullCircle;
+                    actionResult = GetEntrustSpell();
                 }
 
-                actionResult.Spell = ReturnGeoSpell(_Config.RadialArcanaSpell, 2);
-            }
-            else if (_Config.FullCircleEnabled && PL.Player.Pet.HealthPercent != 0)
-            {
-                // When out of range Distance is 59 Yalms regardless, Must be within 15 yalms to gain
-                // the effect
-
-                //Check if "pet" is active and out of range of the monitored player
-                if (PL.Player.Pet.HealthPercent >= 1)
+                // TODO: Fix up this logic, I think something was lost in the refactoring.
+                // Need to see if there's a situation where both of these JA's would be activated for the cast.
+                // For now the old logic seems to be use RA on it's own, or check for FC + Cast.
+                else if (_Config.RadialArcanaEnabled && (PL.Player.MP <= _Config.RadialArcanaMP) && PL.AbilityAvailable(Ability.RadialArcana) && !PL.Player.Buffs.Contains((short)StatusEffect.Weakness))
                 {
-                    if (_Config.FullCircleGeoTarget == true && _Config.LuopanSpellTarget != "")
+                    // Check if a pet is already active
+                    if (PL.Player.Pet.HealthPercent >= 1 && PL.Player.Pet.Distance <= 9)
                     {
-                        ushort PetsIndex = PL.Player.PetIndex;
+                        actionResult.JobAbility = Ability.RadialArcana;
+                        return actionResult;
+                    }
+                    else if (PL.Player.Pet.HealthPercent >= 1 && PL.Player.Pet.Distance >= 9 && PL.AbilityAvailable(Ability.FullCircle))
+                    {
+                        actionResult.JobAbility = Ability.FullCircle;
+                    }
 
-                        XiEntity PetsEntity = PL.Entity.GetEntity(PetsIndex);
+                    actionResult.Spell = ReturnGeoSpell(_Config.RadialArcanaSpell, 2);
+                }
+                else if (_Config.FullCircleEnabled && PL.Player.Pet.HealthPercent != 0)
+                {
+                    // When out of range Distance is 59 Yalms regardless, Must be within 15 yalms to gain
+                    // the effect
 
-                        int FullCircle_CharID = 0;
-
-                        for (int x = 0; x < 2048; x++)
+                    //Check if "pet" is active and out of range of the monitored player
+                    if (PL.Player.Pet.HealthPercent >= 1)
+                    {
+                        if (_Config.FullCircleGeoTarget == true && _Config.LuopanSpellTarget != "")
                         {
-                            XiEntity entity = PL.Entity.GetEntity(x);
+                            ushort PetsIndex = PL.Player.PetIndex;
 
-                            if (entity.Name != null && entity.Name.ToLower().Equals(_Config.LuopanSpellTarget.ToLower()))
+                            XiEntity PetsEntity = PL.Entity.GetEntity(PetsIndex);
+
+                            int FullCircle_CharID = 0;
+
+                            for (int x = 0; x < 2048; x++)
                             {
-                                FullCircle_CharID = Convert.ToInt32(entity.TargetID);
-                                break;
+                                XiEntity entity = PL.Entity.GetEntity(x);
+
+                                if (entity.Name != null && entity.Name.ToLower().Equals(_Config.LuopanSpellTarget.ToLower()))
+                                {
+                                    FullCircle_CharID = Convert.ToInt32(entity.TargetID);
+                                    break;
+                                }
                             }
+
+                            if (FullCircle_CharID != 0)
+                            {
+                                XiEntity FullCircleEntity = PL.Entity.GetEntity(FullCircle_CharID);
+
+                                float fX = PetsEntity.X - FullCircleEntity.X;
+                                float fY = PetsEntity.Y - FullCircleEntity.Y;
+                                float fZ = PetsEntity.Z - FullCircleEntity.Z;
+
+                                float generatedDistance = (float)Math.Sqrt((fX * fX) + (fY * fY) + (fZ * fZ));
+
+                                if (generatedDistance >= 10)
+                                {
+                                    FullCircleTimer.Enabled = true;
+                                }
+                            }
+
                         }
-
-                        if (FullCircle_CharID != 0)
+                        else if (_Config.FullCircleGeoTarget == false && Monitored.Player.Status == (int)EntityStatus.Engaged)
                         {
-                            XiEntity FullCircleEntity = PL.Entity.GetEntity(FullCircle_CharID);
+                            ushort PetsIndex = PL.Player.PetIndex;
 
-                            float fX = PetsEntity.X - FullCircleEntity.X;
-                            float fY = PetsEntity.Y - FullCircleEntity.Y;
-                            float fZ = PetsEntity.Z - FullCircleEntity.Z;
+                            XiEntity PetsEntity = Monitored.Entity.GetEntity(PetsIndex);
 
-                            float generatedDistance = (float)Math.Sqrt((fX * fX) + (fY * fY) + (fZ * fZ));
-
-                            if (generatedDistance >= 10)
+                            if (PetsEntity.Distance >= 10)
                             {
                                 FullCircleTimer.Enabled = true;
                             }
                         }
-
-                    }
-                    else if (_Config.FullCircleGeoTarget == false && Monitored.Player.Status == (int)EntityStatus.Engaged)
-                    {
-                        ushort PetsIndex = PL.Player.PetIndex;
-
-                        XiEntity PetsEntity = Monitored.Entity.GetEntity(PetsIndex);
-
-                        if (PetsEntity.Distance >= 10)
-                        {
-                            FullCircleTimer.Enabled = true;
-                        }
                     }
                 }
-            }
-            
-            // CAST NON ENTRUSTED INDI SPELL
-            else if (_Config.IndiSpellsEnabled && !PL.HasStatus(612) && PL.Player.Status != (int)EntityStatus.Healing && (CheckEngagedStatus() || !_Config.IndiWhenEngaged))
-            {
-                string SpellCheckedResult = ReturnGeoSpell(_Config.IndiSpell, 1);
 
-                if (SpellCheckedResult == "SpellRecast")
-                    return null;
-
-                if (SpellCheckedResult == "SpellError_Cancel" || SpellCheckedResult == "SpellNA" || SpellCheckedResult == "SpellUnknown")
+                // CAST NON ENTRUSTED INDI SPELL
+                else if (_Config.IndiSpellsEnabled && !PL.HasStatus(612) && PL.Player.Status != (int)EntityStatus.Healing && (CheckEngagedStatus() || !_Config.IndiWhenEngaged))
                 {
-                    _Config.IndiSpellsEnabled = false;
-                    actionResult.Error = "An error has occurred with INDI spell casting, please report what spell was active at the time.";
-                    return null;
-                }
+                    string SpellCheckedResult = ReturnGeoSpell(_Config.IndiSpell, 1);
 
-                actionResult.Spell = SpellCheckedResult;
-            }
+                    if (SpellCheckedResult == "SpellRecast")
+                        return null;
 
-            // GEO SPELL CASTING
-            else if (_Config.LuopanSpellsEnabled && (PL.Player.Pet.HealthPercent < 1) && CheckEngagedStatus())
-            {
-                // Use BLAZE OF GLORY if ENABLED
-                if (_Config.BlazeOfGloryEnabled && PL.AbilityAvailable(Ability.BlazeOfGlory) && GEO_EnemyCheck())
-                {
-                    actionResult.JobAbility = Ability.BlazeOfGlory;
-                    return actionResult;
-                }
-
-                // Grab GEO spell name
-                string SpellCheckedResult = ReturnGeoSpell(_Config.GeoSpell, 2);
-
-                if (SpellCheckedResult == "SpellRecast" || SpellCheckedResult == "SpellUnknown" || SpellCheckedResult == "SpellNA")
-                    return actionResult;
-
-                if (SpellCheckedResult == "SpellError_Cancel")
-                {
-                    _Config.IndiSpellsEnabled = false;
-                    actionResult.Error = "An error has occurred with GEO spell casting, please report what spell was active at the time.";
-                }
-
-                if (PL.Resources.GetSpell(SpellCheckedResult, 0).ValidTargets == 5)
-                {
-                    if (!string.IsNullOrEmpty(_Config.LuopanSpellTarget))
+                    if (SpellCheckedResult == "SpellError_Cancel" || SpellCheckedResult == "SpellNA" || SpellCheckedResult == "SpellUnknown")
                     {
-                        actionResult.Target = _Config.LuopanSpellTarget;
-
-                        if (PL.HasStatus(516)) // IF ECLIPTIC IS UP THEN ACTIVATE THE BOOL
-                        {
-                            EclipticStillUp = true;
-                        }
-
-                        actionResult.Spell = SpellCheckedResult;
+                        _Config.IndiSpellsEnabled = false;
+                        actionResult.Error = "An error has occurred with INDI spell casting, please report what spell was active at the time.";
+                        return null;
                     }
-                }
-                else
-                { 
-                    // ENEMY BASED TARGET NEED TO ASSURE PLAYER IS ENGAGED
-                    if (CheckEngagedStatus())
-                    {
-                        int GrabbedTargetID = GrabGEOTargetID();
 
-                        if (GrabbedTargetID != 0)
+                    actionResult.Spell = SpellCheckedResult;
+                }
+
+                // GEO SPELL CASTING
+                else if (_Config.LuopanSpellsEnabled && (PL.Player.Pet.HealthPercent < 1) && CheckEngagedStatus())
+                {
+                    // Use BLAZE OF GLORY if ENABLED
+                    if (_Config.BlazeOfGloryEnabled && PL.AbilityAvailable(Ability.BlazeOfGlory) && GEO_EnemyCheck())
+                    {
+                        actionResult.JobAbility = Ability.BlazeOfGlory;
+                        return actionResult;
+                    }
+
+                    // Grab GEO spell name
+                    string SpellCheckedResult = ReturnGeoSpell(_Config.GeoSpell, 2);
+
+                    if (SpellCheckedResult == "SpellRecast" || SpellCheckedResult == "SpellUnknown" || SpellCheckedResult == "SpellNA")
+                        return actionResult;
+
+                    if (SpellCheckedResult == "SpellError_Cancel")
+                    {
+                        _Config.IndiSpellsEnabled = false;
+                        actionResult.Error = "An error has occurred with GEO spell casting, please report what spell was active at the time.";
+                    }
+
+                    if (PL.Resources.GetSpell(SpellCheckedResult, 0).ValidTargets == 5)
+                    {
+                        if (!string.IsNullOrEmpty(_Config.LuopanSpellTarget))
                         {
-                            PL.Target.SetTarget(GrabbedTargetID);
+                            actionResult.Target = _Config.LuopanSpellTarget;
 
                             if (PL.HasStatus(516)) // IF ECLIPTIC IS UP THEN ACTIVATE THE BOOL
                             {
                                 EclipticStillUp = true;
                             }
 
-                            actionResult.Target = "<t>";
                             actionResult.Spell = SpellCheckedResult;
                         }
                     }
+                    else
+                    {
+                        // ENEMY BASED TARGET NEED TO ASSURE PLAYER IS ENGAGED
+                        if (CheckEngagedStatus())
+                        {
+                            int GrabbedTargetID = GrabGEOTargetID();
+
+                            if (GrabbedTargetID != 0)
+                            {
+                                PL.Target.SetTarget(GrabbedTargetID);
+
+                                if (PL.HasStatus(516)) // IF ECLIPTIC IS UP THEN ACTIVATE THE BOOL
+                                {
+                                    EclipticStillUp = true;
+                                }
+
+                                actionResult.Target = "<t>";
+                                actionResult.Spell = SpellCheckedResult;
+                            }
+                        }
+                    }
+                }
+
+                // if we have no spells to cast, see if we can trigger a JA
+                if (string.IsNullOrWhiteSpace(actionResult.Spell))
+                {
+                    actionResult = CheckForJobAbility();
                 }
             }
-
-            // if we have no spells to cast, see if we can trigger a JA
-            if (string.IsNullOrWhiteSpace(actionResult.Spell))
+            catch(Exception ex)
             {
-                actionResult = CheckForJobAbility();
+                _Logger.LogError("Unexpected issue occurred while running geo engine", ex);
             }
 
             return actionResult;

@@ -12,13 +12,13 @@ namespace CurePlease.Engine
     {
         private readonly ILogger<FollowEngine> _Logger;
 
-        public EliteAPI _PowerLeveler { get; set; }
+        private EliteAPI _PowerLeveler;
 
-        public EliteAPI _Monitored { get; set; }
+        private EliteAPI _Monitored;
 
-        public MySettings _Config { get; set; }
+        private MySettings _Config;
 
-        private static int? _FollowerId { get; set; }
+        private static int? _FollowerId;
 
         private bool _Running { get; set; }
 
@@ -43,16 +43,23 @@ namespace CurePlease.Engine
 
         public void Setup(EliteAPI pl, EliteAPI monitored, MySettings config)
         {
-            _Logger.LogError("Setting up");
-
             _PowerLeveler = pl;
             _Monitored = monitored;
             _Config = config;
-        }        
+        }
 
-        public static void ClearFollowing()
+        public void Start()
         {
-            _FollowerId = null;
+            _Running = true;
+
+            try
+            {
+                _LastPLCoordinates = new Coordinates(_PowerLeveler.Player.X, _PowerLeveler.Player.Y, _PowerLeveler.Player.Z);
+            }
+            catch (Exception ex)
+            {
+                _Logger.LogError("Exception occurred when starting FollowEngine", ex);
+            }
         }
 
         public void Stop()
@@ -67,93 +74,28 @@ namespace CurePlease.Engine
             Reset();
         }
 
-        public void Start()
-        {
-            _Running = true;
-
-            _LastPLCoordinates = new Coordinates(_PowerLeveler.Player.X, _PowerLeveler.Player.Y, _PowerLeveler.Player.Z);
-        }
-
         public bool IsMoving()
         {
             if (_PowerLeveler == null || _LastPLCoordinates == null)
                 return false;
 
-            return _PowerLeveler.AutoFollow.IsAutoFollowing 
-                // in case we're using /follow
-                || 0.1 < _LastPLCoordinates.GetDistanceFrom(_PowerLeveler.Player.X, _PowerLeveler.Player.Y, _PowerLeveler.Player.Z);
+            try
+            {
+                return _PowerLeveler.AutoFollow.IsAutoFollowing
+                    // in case we're using /follow
+                    || 0.1 < _LastPLCoordinates.GetDistanceFrom(_PowerLeveler.Player.X, _PowerLeveler.Player.Y, _PowerLeveler.Player.Z);
+            }
+            catch(Exception ex)
+            {
+                _Logger.LogError("Exception occurred when checking if character moving", ex);
+                return false;
+            }
         }
 
-        private void Reset()
+        // temporary solution until we decompose UI from logic
+        public static void ClearFollowing()
         {
-            if (_Config != null && !_Config.FFXIDefaultAutoFollow)
-            {
-                _PowerLeveler.AutoFollow.IsAutoFollowing = false;
-            }
-
             _FollowerId = null;
-            _StuckWarning = false;
-            _StuckCount = 0;
-        }
-
-        private void FollowingUsingFFXICommand(int whoToFollowId)
-        {
-            // IF THE CURRENT TARGET IS NOT THE FOLLOWERS TARGET ID THEN CHANGE THAT NOW
-            if (_PowerLeveler.Target.GetTargetInfo().TargetIndex != whoToFollowId)
-            {
-                // FIRST REMOVE THE CURRENT TARGET
-                _PowerLeveler.Target.SetTarget(0);
-
-                // NOW SET THE NEXT TARGET AFTER A WAIT
-                System.Threading.Thread.Sleep(TimeSpan.FromSeconds(0.1));
-
-                _PowerLeveler.Target.SetTarget(whoToFollowId);
-            }
-            // IF THE TARGET IS CORRECT BUT YOU'RE NOT LOCKED ON THEN DO SO NOW
-            else if (_PowerLeveler.Target.GetTargetInfo().TargetIndex == whoToFollowId && !_PowerLeveler.Target.GetTargetInfo().LockedOn)
-            {
-                _PowerLeveler.ThirdParty.SendString("/lockon <t>");
-            }
-            // EVERYTHING SHOULD BE FINE SO FOLLOW THEM
-            else
-            {
-                _PowerLeveler.ThirdParty.SendString("/follow");
-            }
-        }
-
-        private bool ShouldUpdateFollow(XiEntity whoToFollow)
-        {
-            // if we're moving
-            if (_PowerLeveler.AutoFollow.IsAutoFollowing)
-                return false;
-
-            double currentTargetDistance = Math.Truncate(whoToFollow.Distance);
-
-            if (currentTargetDistance < (int)_Config.autoFollowDistance)
-                return false;
-
-            if (TooFarToFollow(currentTargetDistance))
-                return false;
-
-            return true;
-        }
-
-        private bool TooFarToFollow(double currentTargetDistance)
-        {
-            var tooFar = currentTargetDistance > 40;
-
-            // YOU ARE NOT AT NOR FURTHER THAN THE DISTANCE REQUIRED SO CANCEL ELITEAPI AUTOFOLLOW
-            if (tooFar)
-            {
-                // IF YOU ARE TOO FAR TO FOLLOW THEN STOP AND IF ENABLED WARN THE MONITORED PLAYER
-                if (_Config.autoFollow_Warning == true && _ToFarToFollowWarning == 0)
-                {
-                    IssueMessage("You're too far to follow.");
-                    _ToFarToFollowWarning = 1;
-                }
-            }
-
-            return tooFar;
         }
 
         public void Follow_DoWork(object source, ElapsedEventArgs e)
@@ -210,6 +152,31 @@ namespace CurePlease.Engine
             }
 
             _FollowEngineTimer.Start();
+        }
+
+        private void FollowingUsingFFXICommand(int whoToFollowId)
+        {
+            // IF THE CURRENT TARGET IS NOT THE FOLLOWERS TARGET ID THEN CHANGE THAT NOW
+            if (_PowerLeveler.Target.GetTargetInfo().TargetIndex != whoToFollowId)
+            {
+                // FIRST REMOVE THE CURRENT TARGET
+                _PowerLeveler.Target.SetTarget(0);
+
+                // NOW SET THE NEXT TARGET AFTER A WAIT
+                System.Threading.Thread.Sleep(TimeSpan.FromSeconds(0.1));
+
+                _PowerLeveler.Target.SetTarget(whoToFollowId);
+            }
+            // IF THE TARGET IS CORRECT BUT YOU'RE NOT LOCKED ON THEN DO SO NOW
+            else if (_PowerLeveler.Target.GetTargetInfo().TargetIndex == whoToFollowId && !_PowerLeveler.Target.GetTargetInfo().LockedOn)
+            {
+                _PowerLeveler.ThirdParty.SendString("/lockon <t>");
+            }
+            // EVERYTHING SHOULD BE FINE SO FOLLOW THEM
+            else
+            {
+                _PowerLeveler.ThirdParty.SendString("/follow");
+            }
         }
 
         private int GetFollowIDForPlayer(string playerName)
@@ -289,6 +256,53 @@ namespace CurePlease.Engine
                 _PowerLeveler.ThirdParty.SendString(createdTell);
                 _ToFarToFollowWarning = 1;
             }
+        }
+
+        private void Reset()
+        {
+            if (_Config != null && !_Config.FFXIDefaultAutoFollow)
+            {
+                _PowerLeveler.AutoFollow.IsAutoFollowing = false;
+            }
+
+            _FollowerId = null;
+            _StuckWarning = false;
+            _StuckCount = 0;
+        }
+
+        private bool ShouldUpdateFollow(XiEntity whoToFollow)
+        {
+            // if we're moving
+            if (_PowerLeveler.AutoFollow.IsAutoFollowing)
+                return false;
+
+            double currentTargetDistance = Math.Truncate(whoToFollow.Distance);
+
+            if (currentTargetDistance < (int)_Config.autoFollowDistance)
+                return false;
+
+            if (TooFarToFollow(currentTargetDistance))
+                return false;
+
+            return true;
+        }
+
+        private bool TooFarToFollow(double currentTargetDistance)
+        {
+            var tooFar = currentTargetDistance > 40;
+
+            // YOU ARE NOT AT NOR FURTHER THAN THE DISTANCE REQUIRED SO CANCEL ELITEAPI AUTOFOLLOW
+            if (tooFar)
+            {
+                // IF YOU ARE TOO FAR TO FOLLOW THEN STOP AND IF ENABLED WARN THE MONITORED PLAYER
+                if (_Config.autoFollow_Warning == true && _ToFarToFollowWarning == 0)
+                {
+                    IssueMessage("You're too far to follow.");
+                    _ToFarToFollowWarning = 1;
+                }
+            }
+
+            return tooFar;
         }
     }
 }

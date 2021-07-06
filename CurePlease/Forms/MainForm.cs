@@ -117,6 +117,7 @@ namespace CurePlease
 
         public MainForm(IGeoEngine geoEngine, IFollowEngine followEngine)
         {
+            Log.Information("Application Startup");
 
             _GeoEngine = geoEngine;
             _FollowEngine = followEngine;
@@ -1538,6 +1539,7 @@ namespace CurePlease
                             {
                                 ProtectCasting.CancelAsync();
                                 castingLockLabel.Text = "PACKET: Casting is INTERRUPTED";
+                                AddCurrentAction("Casting Interrupted");
                                 await Task.Delay(TimeSpan.FromSeconds(2));
                                 castingLockLabel.Text = "Casting is UNLOCKED";
                                 CastingBackground_Check = false;
