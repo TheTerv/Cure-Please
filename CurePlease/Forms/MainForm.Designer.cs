@@ -807,7 +807,7 @@ namespace CurePlease
             this.stopfollowToolStripMenuItem.Name = "stopfollowToolStripMenuItem";
             this.stopfollowToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
             this.stopfollowToolStripMenuItem.Text = "Cancel /follow";
-            this.stopfollowToolStripMenuItem.Click += new System.EventHandler(this.stopfollowToolStripMenuItem_Click);
+            this.stopfollowToolStripMenuItem.Click += new System.EventHandler(this.StopfollowToolStripMenuItem_Click);
             // 
             // toolStripSeparator2
             // 
