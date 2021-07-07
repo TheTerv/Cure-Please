@@ -24,7 +24,7 @@ namespace CurePlease
 {
     public partial class MainForm : Form
     {
-        private static ConfigForm Config = new ConfigForm();
+        private static readonly ConfigForm Config = new();
 
         private int lastCommand = 0;
 
@@ -39,7 +39,7 @@ namespace CurePlease
 
         public static EliteAPI Monitored;
 
-        public ListBox processids = new ListBox();
+        public ListBox processids = new();
 
         public UdpClient AddonClient;
 
@@ -47,21 +47,12 @@ namespace CurePlease
         // and/or loaded/saved our config form.
         public SongEngine SongEngine;
 
-        private readonly IGeoEngine _GeoEngine;
-        private readonly IFollowEngine _FollowEngine;
-
-        public BuffEngine _BuffEngine = new BuffEngine();
-
-        public DebuffEngine _DebuffEngine = new DebuffEngine();
-
-        public PLEngine PLEngine;
-
-        public CureEngine CureEngine = new CureEngine();        
+        private readonly IEngineManager _EngineManager;     
 
         public string castingSpell = string.Empty;
 
         // Stores the previously-colored button, if any
-        public Dictionary<string, IEnumerable<short>> ActiveBuffs = new Dictionary<string, IEnumerable<short>>();
+        public Dictionary<string, IEnumerable<short>> ActiveBuffs = new();
 
         private byte playerOptionsSelected;
 
@@ -81,12 +72,12 @@ namespace CurePlease
             {
                 Brush textBrush = new SolidBrush(textColor);
                 Brush borderBrush = new SolidBrush(borderColor);
-                Pen borderPen = new Pen(borderBrush);
+                Pen borderPen = new(borderBrush);
                 SizeF strSize = g.MeasureString(box.Text, box.Font);
-                Rectangle rect = new Rectangle(box.ClientRectangle.X,
-                                           box.ClientRectangle.Y + (int)(strSize.Height / 2),
-                                           box.ClientRectangle.Width - 1,
-                                           box.ClientRectangle.Height - (int)(strSize.Height / 2) - 1);
+                Rectangle rect = new(box.ClientRectangle.X,
+                                     box.ClientRectangle.Y + (int)(strSize.Height / 2),
+                                     box.ClientRectangle.Width - 1,
+                                     box.ClientRectangle.Height - (int)(strSize.Height / 2) - 1);
 
                 // Clear text and border
                 g.Clear(BackColor);
@@ -115,12 +106,11 @@ namespace CurePlease
             button.FlatAppearance.BorderColor = Color.Gray;
         }
 
-        public MainForm(IGeoEngine geoEngine, IFollowEngine followEngine)
+        public MainForm(IEngineManager engineManager)
         {
-            Log.Information("Application Startup");
+            _EngineManager = engineManager;
 
-            _GeoEngine = geoEngine;
-            _FollowEngine = followEngine;
+            Log.Information("Application Startup");
 
             InitializeComponent();
             InitializeBackgroundWorker();
@@ -144,7 +134,7 @@ namespace CurePlease
         {
             IEnumerable<Process> pol = Process.GetProcessesByName("pol").Union(Process.GetProcessesByName("xiloader")).Union(Process.GetProcessesByName("edenxi"));
 
-            if (pol.Count() < 1)
+            if (!pol.Any())
             {
                 MessageBox.Show("FFXI not found");
             }
@@ -168,21 +158,21 @@ namespace CurePlease
             if (string.IsNullOrWhiteSpace(WindowerMode))
                 return;
 
-            if (!ConfigForm.config.pauseOnStartBox && PL != null)
+            if (!ConfigForm.Config.pauseOnStartBox && PL != null)
             {
-                AddonEngine.LoadAddonInClient(ConfigForm.config, PL.ThirdParty, WindowerMode);
+                AddonEngine.LoadAddonInClient(ConfigForm.Config, PL.ThirdParty, WindowerMode);
 
                 if (AddonClient == null)
                 {
-                    AddonClient = new UdpClient(Convert.ToInt32(ConfigForm.config.listeningPort));
+                    AddonClient = new UdpClient(Convert.ToInt32(ConfigForm.Config.listeningPort));
                     AddonClient.BeginReceive(new AsyncCallback(OnAddonDataReceived), AddonClient);
                 }
 
-                AddCurrentAction("LUA Addon loaded. ( " + ConfigForm.config.ipAddress + " - " + ConfigForm.config.listeningPort + " )");
+                AddCurrentAction("LUA Addon loaded. ( " + ConfigForm.Config.ipAddress + " - " + ConfigForm.Config.listeningPort + " )");
             }
         }
 
-        private void setinstance_Click(object sender, EventArgs e)
+        private void Setinstance_Click(object sender, EventArgs e)
         {
             if (!CheckForDLLFiles())
             {
@@ -208,12 +198,10 @@ namespace CurePlease
 
             LoadAddon();
 
-            StartYourEngines();
-
-            _FollowEngine.Start();
+            _EngineManager.SetupFollow(PL, ConfigForm.Config);
         }
 
-        private void setinstance2_Click(object sender, EventArgs e)
+        private void Setinstance2_Click(object sender, EventArgs e)
         {
             if (!CheckForDLLFiles())
             {
@@ -226,7 +214,7 @@ namespace CurePlease
             monitoredLabel.ForeColor = Color.Green;
             POLID2.BackColor = Color.White;
 
-            if (ConfigForm.config.pauseOnStartBox)
+            if (ConfigForm.Config.pauseOnStartBox)
             {                
                 pauseButton.Text = "Loaded, Paused!";
                 pauseButton.ForeColor = Color.Red;
@@ -234,28 +222,13 @@ namespace CurePlease
             }
             else
             {
-                if (ConfigForm.config.MinimiseonStart == true && WindowState != FormWindowState.Minimized)
+                if (ConfigForm.Config.MinimiseonStart == true && WindowState != FormWindowState.Minimized)
                 {
                     WindowState = FormWindowState.Minimized;
                 }
             }
 
             lastCommand = Monitored.ThirdParty.ConsoleIsNewCommand();
-
-            StartYourEngines();
-        }
-
-        private void StartYourEngines()
-        {
-            // TODO: Solve this hack for intializing these after both selected.
-            // TODO: Disconnect from "Monitored" (ie: we shouldn't need monitored to run)
-            if (Monitored != null)
-            {
-                SongEngine = new SongEngine(PL, Monitored);
-                PLEngine = new PLEngine(PL, Monitored);
-            }
-
-            _FollowEngine.Setup(PL, Monitored, ConfigForm.config);
         }
 
         public void AddCurrentAction(string message)
@@ -296,26 +269,26 @@ namespace CurePlease
             return true;
         }
 
-        private BackgroundWorker zoningWorker = new BackgroundWorker();
-        private void backgroundZoneWorker_DoWork(object sender, DoWorkEventArgs e)
+        private readonly BackgroundWorker zoningWorker = new();
+        private void BackgroundZoneWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             Thread.Sleep(17000);
         }
 
-        private void backgroundZoneWorker_WorkCompleted(object sender, RunWorkerCompletedEventArgs e)
+        private void BackgroundZoneWorker_WorkCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             pauseButton.Text = "Pause";
             pauseButton.ForeColor = Color.Black;
-            _FollowEngine.Start();
+            _EngineManager.StartFollowing();
         }
         
         private void InitializeBackgroundWorker()
         {
-            zoningWorker.DoWork += new DoWorkEventHandler(backgroundZoneWorker_DoWork);
-            zoningWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(backgroundZoneWorker_WorkCompleted);
+            zoningWorker.DoWork += new DoWorkEventHandler(BackgroundZoneWorker_DoWork);
+            zoningWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(BackgroundZoneWorker_WorkCompleted);
         }
 
-        private void partyMembersUpdate_TickAsync(object sender, EventArgs e)
+        private void PartyMembersUpdate_TickAsync(object sender, EventArgs e)
         {
             if (PL == null)
             {
@@ -324,7 +297,7 @@ namespace CurePlease
 
             if (PL.Player.LoginStatus == (int)LoginStatus.Loading)
             {
-                if (ConfigForm.config.pauseOnZoneBox == true)
+                if (ConfigForm.Config.pauseOnZoneBox == true)
                 {
                     if (pauseActions != true)
                     {
@@ -339,7 +312,7 @@ namespace CurePlease
                     {
                         pauseButton.Text = "Zoned, waiting.";
                         pauseButton.ForeColor = Color.Red;
-                        _FollowEngine.Stop();
+                        _EngineManager.StopFollowing();
 
                         // temporary fix/hack for zoning without freezing up the app
                         if (!zoningWorker.IsBusy)
@@ -352,7 +325,7 @@ namespace CurePlease
                 ActiveBuffs.Clear();
             }
 
-            PartyUtils.UpdatePartyControls(this.Controls);
+            PartyUtils.UpdatePartyControls(PL.Party, this.Controls);
         }
 
         private void CastSpell(string partyMemberName, string spellName, [Optional] string OptionalExtras)
@@ -391,7 +364,7 @@ namespace CurePlease
 
             CastingBackground_Check = true;
 
-            if (ConfigForm.config.trackCastingPackets == true && ConfigForm.config.EnableAddOn == true)
+            if (ConfigForm.Config.trackCastingPackets == true && ConfigForm.Config.EnableAddOn == true)
             {
                 if (!ProtectCasting.IsBusy) { ProtectCasting.RunWorkerAsync(); }
             }
@@ -428,7 +401,7 @@ namespace CurePlease
                 return false;
             }
 
-            if (_FollowEngine.IsMoving())
+            if (_EngineManager.IsMoving())
             {
                 return false;
             }
@@ -438,7 +411,7 @@ namespace CurePlease
 
         // This is the timer that does our decision loop.
         // All the main action related stuff happens in here.
-        private async void actionTimer_TickAsync(object sender, EventArgs e)
+        private async void ActionTimer_TickAsync(object sender, EventArgs e)
         {
             this.actionTimer.Stop();
 
@@ -449,7 +422,7 @@ namespace CurePlease
             }
 
             // IF ENABLED PAUSE ON KO
-            if (ConfigForm.config.pauseOnKO && (PL.Player.Status == 2 || PL.Player.Status == 3))
+            if (ConfigForm.Config.pauseOnKO && (PL.Player.Status == 2 || PL.Player.Status == 3))
             {
                 pauseButton.Text = "Paused!";
                 pauseButton.ForeColor = Color.Red;
@@ -459,9 +432,9 @@ namespace CurePlease
             }
 
             // IF YOU ARE DEAD BUT RERAISE IS AVAILABLE THEN ACCEPT RAISE
-            if (ConfigForm.config.AcceptRaise == true && (PL.Player.Status == 2 || PL.Player.Status == 3))
+            if (ConfigForm.Config.AcceptRaise == true && (PL.Player.Status == 2 || PL.Player.Status == 3))
             {
-                if (PL.Menu.IsMenuOpen && PL.Menu.HelpName == "Revival" && PL.Menu.MenuIndex == 1 && ((ConfigForm.config.AcceptRaiseOnlyWhenNotInCombat == true && Monitored != null && Monitored.Player.Status != 1) || ConfigForm.config.AcceptRaiseOnlyWhenNotInCombat == false))
+                if (PL.Menu.IsMenuOpen && PL.Menu.HelpName == "Revival" && PL.Menu.MenuIndex == 1 && ((ConfigForm.Config.AcceptRaiseOnlyWhenNotInCombat == true && Monitored != null && Monitored.Player.Status != 1) || ConfigForm.Config.AcceptRaiseOnlyWhenNotInCombat == false))
                 {
                     await Task.Delay(2000);
                     AddCurrentAction("Accepting Raise or Reraise.");
@@ -501,7 +474,7 @@ namespace CurePlease
             var doomedMembers = activeMembers.Count(pm => PL.CanCastOn(pm) && ActiveBuffs.ContainsKey(pm.Name) && ActiveBuffs[pm.Name].Contains((short)StatusEffect.Doom));
             if (doomedMembers > 0)
             {
-                var doomCheckResult = _DebuffEngine.Run(PL, Monitored, Config.GetDebuffConfig());
+                var doomCheckResult = _EngineManager.RunDebuffEngine(PL, Config.GetDebuffConfig());
                 if (doomCheckResult != null && doomCheckResult.Spell != null)
                 {
                     CastSpell(doomCheckResult.Target, doomCheckResult.Spell);
@@ -528,12 +501,12 @@ namespace CurePlease
             // For now we run these before deciding what to do, in case we need
             // to skip a low priority cure.
             // CURE ENGINE
-            var cureResult = CureEngine?.Run(PL, Monitored, Config.GetCureConfig(), enabledBoxes, highPriorityBoxes);
+            var cureResult = _EngineManager.RunCureEngine(PL, Config.GetCureConfig(), enabledBoxes, highPriorityBoxes);
 
             if (cureResult != null)
             {
                 // RUN DEBUFF REMOVAL - CONVERTED TO FUNCTION SO CAN BE RUN IN MULTIPLE AREAS
-                var debuffResult = _DebuffEngine.Run(PL, Monitored, Config.GetDebuffConfig());
+                var debuffResult = _EngineManager.RunDebuffEngine(PL, Config.GetDebuffConfig());
 
                 if (!string.IsNullOrEmpty(cureResult.Spell))
                 {
@@ -541,7 +514,7 @@ namespace CurePlease
 
                     // Only cast the spell/JA if we don't need to skip debuffs based on
                     // config and low priority.
-                    if (!lowPriority || !ConfigForm.config.PrioritiseOverLowerTier || debuffResult == null)
+                    if (!lowPriority || !ConfigForm.Config.PrioritiseOverLowerTier || debuffResult == null)
                     {
                         if (!string.IsNullOrEmpty(cureResult.JobAbility))
                         {
@@ -575,7 +548,7 @@ namespace CurePlease
             }
 
             // PL AUTO BUFFS
-            var plEngineResult = PLEngine?.Run(Config.GetPLConfig());
+            var plEngineResult = _EngineManager.RunPLEngine(PL, Monitored, ConfigForm.GetPLConfig());
             if (plEngineResult != null)
             {
                 if (!string.IsNullOrEmpty(plEngineResult.Item))
@@ -605,9 +578,9 @@ namespace CurePlease
 
             // BARD SONGS
 
-            if (PL.Player.MainJob == (byte)Job.BRD && ConfigForm.config.enableSinging && !PL.HasStatus(StatusEffect.Silence) && (PL.Player.Status == 1 || PL.Player.Status == 0))
+            if (PL.Player.MainJob == (byte)Job.BRD && ConfigForm.Config.enableSinging && !PL.HasStatus(StatusEffect.Silence) && (PL.Player.Status == 1 || PL.Player.Status == 0))
             {
-                var songAction = SongEngine.Run(Config.GetSongConfig());
+                var songAction = _EngineManager.RunSongEngine(PL, Monitored, Config.GetSongConfig());
 
                 if (!string.IsNullOrEmpty(songAction.Spell))
                 {
@@ -619,7 +592,7 @@ namespace CurePlease
 
             else if (PL.Player.MainJob == (byte)Job.GEO && !PL.HasStatus(StatusEffect.Silence) && (PL.Player.Status == 1 || PL.Player.Status == 0))
             {
-                var geoAction = _GeoEngine.Run(PL, Monitored, Config.GetGeoConfig());
+                var geoAction = _EngineManager.RunGeoEngine(PL, Monitored, ConfigForm.GetGeoConfig());
 
                 if (geoAction != null)
                 {
@@ -627,7 +600,7 @@ namespace CurePlease
                     // as it will apply to all the engines.
                     if (!string.IsNullOrEmpty(geoAction.Error))
                     {
-                        showErrorMessage(geoAction.Error);
+                        ShowErrorMessage(geoAction.Error);
                     }
                     else
                     {
@@ -645,13 +618,13 @@ namespace CurePlease
             }
 
             // Auto Casting BUFF STUFF                    
-            var buffAction = _BuffEngine?.Run(Config.GetBuffConfig(), PL);
+            var buffAction = _EngineManager.RunBuffEngine(PL);
 
             if (buffAction != null)
             {
                 if (!string.IsNullOrEmpty(buffAction.Error))
                 {
-                    showErrorMessage(buffAction.Error);
+                    ShowErrorMessage(buffAction.Error);
                 }
                 else
                 {
@@ -672,9 +645,9 @@ namespace CurePlease
 
         #endregion
 
-        private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
+        private void SettingsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ConfigForm settings = new ConfigForm();
+            ConfigForm settings = new();
             settings.Show();
         }
 
@@ -683,13 +656,13 @@ namespace CurePlease
             playerOptionsSelected = ptIndex;
             var name = PL.Party.GetPartyMembers()[ptIndex].Name;
 
-            autoHasteToolStripMenuItem.Checked = _BuffEngine.BuffEnabled(name, Spells.Haste);
-            autoHasteIIToolStripMenuItem.Checked = _BuffEngine.BuffEnabled(name, Spells.Haste_II);
-            autoAdloquiumToolStripMenuItem.Checked = _BuffEngine.BuffEnabled(name, Spells.Adloquium);
-            autoFlurryToolStripMenuItem.Checked = _BuffEngine.BuffEnabled(name, Spells.Flurry);
-            autoFlurryIIToolStripMenuItem.Checked = _BuffEngine.BuffEnabled(name, Spells.Flurry_II);
-            autoProtectToolStripMenuItem.Checked = _BuffEngine.BuffEnabled(name, Spells.Protect);
-            autoShellToolStripMenuItem.Checked = _BuffEngine.BuffEnabled(name, Spells.Shell);
+            autoHasteToolStripMenuItem.Checked = _EngineManager.BuffEnabled(name, Spells.Haste);
+            autoHasteIIToolStripMenuItem.Checked = _EngineManager.BuffEnabled(name, Spells.Haste_II);
+            autoAdloquiumToolStripMenuItem.Checked = _EngineManager.BuffEnabled(name, Spells.Adloquium);
+            autoFlurryToolStripMenuItem.Checked = _EngineManager.BuffEnabled(name, Spells.Flurry);
+            autoFlurryIIToolStripMenuItem.Checked = _EngineManager.BuffEnabled(name, Spells.Flurry_II);
+            autoProtectToolStripMenuItem.Checked = _EngineManager.BuffEnabled(name, Spells.Protect);
+            autoShellToolStripMenuItem.Checked = _EngineManager.BuffEnabled(name, Spells.Shell);
 
             playerOptions.Show(party, new Point(0, 0));
         }
@@ -702,198 +675,198 @@ namespace CurePlease
             // TODO: Figure out tiers and stuff, don't play SCH so not tier-II storms probably busted.
             if (party == party0)
             {
-                autoPhalanxIIToolStripMenuItem1.Checked = _BuffEngine.BuffEnabled(name, Spells.Phalanx_II);
-                autoRegenVToolStripMenuItem.Checked = _BuffEngine.BuffEnabled(name, Spells.Regen);
-                autoRefreshIIToolStripMenuItem.Checked = _BuffEngine.BuffEnabled(name, Spells.Refresh);
-                SandstormToolStripMenuItem.Checked = _BuffEngine.BuffEnabled(name, Spells.Sandstorm);
-                RainstormToolStripMenuItem.Checked = _BuffEngine.BuffEnabled(name, Spells.Rainstorm);
-                WindstormToolStripMenuItem.Checked = _BuffEngine.BuffEnabled(name, Spells.Windstorm);
-                FirestormToolStripMenuItem.Checked = _BuffEngine.BuffEnabled(name, Spells.Firestorm);
-                HailstormToolStripMenuItem.Checked = _BuffEngine.BuffEnabled(name, Spells.Hailstorm);
-                ThunderstormToolStripMenuItem.Checked = _BuffEngine.BuffEnabled(name, Spells.Thunderstorm);
-                VoidstormToolStripMenuItem.Checked = _BuffEngine.BuffEnabled(name, Spells.Voidstorm);
-                AurorastormToolStripMenuItem.Checked = _BuffEngine.BuffEnabled(name, Spells.Aurorastorm);
+                autoPhalanxIIToolStripMenuItem1.Checked = _EngineManager.BuffEnabled(name, Spells.Phalanx_II);
+                autoRegenVToolStripMenuItem.Checked = _EngineManager.BuffEnabled(name, Spells.Regen);
+                autoRefreshIIToolStripMenuItem.Checked = _EngineManager.BuffEnabled(name, Spells.Refresh);
+                SandstormToolStripMenuItem.Checked = _EngineManager.BuffEnabled(name, Spells.Sandstorm);
+                RainstormToolStripMenuItem.Checked = _EngineManager.BuffEnabled(name, Spells.Rainstorm);
+                WindstormToolStripMenuItem.Checked = _EngineManager.BuffEnabled(name, Spells.Windstorm);
+                FirestormToolStripMenuItem.Checked = _EngineManager.BuffEnabled(name, Spells.Firestorm);
+                HailstormToolStripMenuItem.Checked = _EngineManager.BuffEnabled(name, Spells.Hailstorm);
+                ThunderstormToolStripMenuItem.Checked = _EngineManager.BuffEnabled(name, Spells.Thunderstorm);
+                VoidstormToolStripMenuItem.Checked = _EngineManager.BuffEnabled(name, Spells.Voidstorm);
+                AurorastormToolStripMenuItem.Checked = _EngineManager.BuffEnabled(name, Spells.Aurorastorm);
             }
 
             autoOptions.Show(party, new Point(0, 0));
         }
 
-        private void player0optionsButton_Click(object sender, EventArgs e)
+        private void Player0optionsButton_Click(object sender, EventArgs e)
         {
             ShowPlayerOptionsFor(party0, 0);
         }
 
-        private void player1optionsButton_Click(object sender, EventArgs e)
+        private void Player1optionsButton_Click(object sender, EventArgs e)
         {
             ShowPlayerOptionsFor(party0, 1);
         }
 
-        private void player2optionsButton_Click(object sender, EventArgs e)
+        private void Player2optionsButton_Click(object sender, EventArgs e)
         {
             ShowPlayerOptionsFor(party0, 2);
         }
 
-        private void player3optionsButton_Click(object sender, EventArgs e)
+        private void Player3optionsButton_Click(object sender, EventArgs e)
         {
             ShowPlayerOptionsFor(party0, 3);
         }
 
-        private void player4optionsButton_Click(object sender, EventArgs e)
+        private void Player4optionsButton_Click(object sender, EventArgs e)
         {
             ShowPlayerOptionsFor(party0, 4);
         }
 
-        private void player5optionsButton_Click(object sender, EventArgs e)
+        private void Player5optionsButton_Click(object sender, EventArgs e)
         {
             ShowPlayerOptionsFor(party0, 5);
         }
 
-        private void player6optionsButton_Click(object sender, EventArgs e)
+        private void Player6optionsButton_Click(object sender, EventArgs e)
         {
             ShowPlayerOptionsFor(party1, 6);
         }
 
-        private void player7optionsButton_Click(object sender, EventArgs e)
+        private void Player7optionsButton_Click(object sender, EventArgs e)
         {
             ShowPlayerOptionsFor(party1, 7);
         }
 
-        private void player8optionsButton_Click(object sender, EventArgs e)
+        private void Player8optionsButton_Click(object sender, EventArgs e)
         {
             ShowPlayerOptionsFor(party1, 8);
         }
 
-        private void player9optionsButton_Click(object sender, EventArgs e)
+        private void Player9optionsButton_Click(object sender, EventArgs e)
         {
             ShowPlayerOptionsFor(party1, 9);
         }
 
-        private void player10optionsButton_Click(object sender, EventArgs e)
+        private void Player10optionsButton_Click(object sender, EventArgs e)
         {
             ShowPlayerOptionsFor(party1, 10);
         }
 
-        private void player11optionsButton_Click(object sender, EventArgs e)
+        private void Player11optionsButton_Click(object sender, EventArgs e)
         {
             ShowPlayerOptionsFor(party1, 11);
         }
 
-        private void player12optionsButton_Click(object sender, EventArgs e)
+        private void Player12optionsButton_Click(object sender, EventArgs e)
         {
             ShowPlayerOptionsFor(party2, 12);
         }
 
-        private void player13optionsButton_Click(object sender, EventArgs e)
+        private void Player13optionsButton_Click(object sender, EventArgs e)
         {
             ShowPlayerOptionsFor(party2, 13);
         }
 
-        private void player14optionsButton_Click(object sender, EventArgs e)
+        private void Player14optionsButton_Click(object sender, EventArgs e)
         {
             ShowPlayerOptionsFor(party2, 14);
         }
 
-        private void player15optionsButton_Click(object sender, EventArgs e)
+        private void Player15optionsButton_Click(object sender, EventArgs e)
         {
             ShowPlayerOptionsFor(party2, 15);
         }
 
-        private void player16optionsButton_Click(object sender, EventArgs e)
+        private void Player16optionsButton_Click(object sender, EventArgs e)
         {
             ShowPlayerOptionsFor(party2, 16);
         }
 
-        private void player17optionsButton_Click(object sender, EventArgs e)
+        private void Player17optionsButton_Click(object sender, EventArgs e)
         {
             ShowPlayerOptionsFor(party2, 17);
         }
 
-        private void player0buffsButton_Click(object sender, EventArgs e)
+        private void Player0buffsButton_Click(object sender, EventArgs e)
         {
             ShowPlayerBuffsFor(party0, 0);
         }
 
-        private void player1buffsButton_Click(object sender, EventArgs e)
+        private void Player1buffsButton_Click(object sender, EventArgs e)
         {
             ShowPlayerBuffsFor(party0, 1);
         }
 
-        private void player2buffsButton_Click(object sender, EventArgs e)
+        private void Player2buffsButton_Click(object sender, EventArgs e)
         {
             ShowPlayerBuffsFor(party0, 2);
         }
 
-        private void player3buffsButton_Click(object sender, EventArgs e)
+        private void Player3buffsButton_Click(object sender, EventArgs e)
         {
             ShowPlayerBuffsFor(party0, 3);
         }
 
-        private void player4buffsButton_Click(object sender, EventArgs e)
+        private void Player4buffsButton_Click(object sender, EventArgs e)
         {
             ShowPlayerBuffsFor(party0, 4);
         }
 
-        private void player5buffsButton_Click(object sender, EventArgs e)
+        private void Player5buffsButton_Click(object sender, EventArgs e)
         {
             ShowPlayerBuffsFor(party0, 5);
         }
 
-        private void player6buffsButton_Click(object sender, EventArgs e)
+        private void Player6buffsButton_Click(object sender, EventArgs e)
         {
             ShowPlayerBuffsFor(party1, 6);
         }
 
-        private void player7buffsButton_Click(object sender, EventArgs e)
+        private void Player7buffsButton_Click(object sender, EventArgs e)
         {
             ShowPlayerBuffsFor(party1, 7);
         }
 
-        private void player8buffsButton_Click(object sender, EventArgs e)
+        private void Player8buffsButton_Click(object sender, EventArgs e)
         {
             ShowPlayerBuffsFor(party1, 8);
         }
 
-        private void player9buffsButton_Click(object sender, EventArgs e)
+        private void Player9buffsButton_Click(object sender, EventArgs e)
         {
             ShowPlayerBuffsFor(party1, 9);
         }
 
-        private void player10buffsButton_Click(object sender, EventArgs e)
+        private void Player10buffsButton_Click(object sender, EventArgs e)
         {
             ShowPlayerBuffsFor(party1, 10);
         }
 
-        private void player11buffsButton_Click(object sender, EventArgs e)
+        private void Player11buffsButton_Click(object sender, EventArgs e)
         {
             ShowPlayerBuffsFor(party1, 11);
         }
 
-        private void player12buffsButton_Click(object sender, EventArgs e)
+        private void Player12buffsButton_Click(object sender, EventArgs e)
         {
             ShowPlayerBuffsFor(party2, 12);
         }
 
-        private void player13buffsButton_Click(object sender, EventArgs e)
+        private void Player13buffsButton_Click(object sender, EventArgs e)
         {
             ShowPlayerBuffsFor(party2, 13);
         }
 
-        private void player14buffsButton_Click(object sender, EventArgs e)
+        private void Player14buffsButton_Click(object sender, EventArgs e)
         {
             ShowPlayerBuffsFor(party2, 14);
         }
 
-        private void player15buffsButton_Click(object sender, EventArgs e)
+        private void Player15buffsButton_Click(object sender, EventArgs e)
         {
             ShowPlayerBuffsFor(party2, 15);
         }
 
-        private void player16buffsButton_Click(object sender, EventArgs e)
+        private void Player16buffsButton_Click(object sender, EventArgs e)
         {
             ShowPlayerBuffsFor(party2, 16);
         }
 
-        private void player17buffsButton_Click(object sender, EventArgs e)
+        private void Player17buffsButton_Click(object sender, EventArgs e)
         {
             ShowPlayerBuffsFor(party2, 17);
         }
@@ -936,200 +909,200 @@ namespace CurePlease
             }
         }
 
-        private void autoHasteToolStripMenuItem_Click(object sender, EventArgs e)
+        private void AutoHasteToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // TODO: Add in special logic to make sure we can't select more then
             // ONE of haste/haste2/flurry/flurry2
             var name = PL.Party.GetPartyMembers()[playerOptionsSelected].Name;
-            _BuffEngine.ToggleAutoBuff(name, Spells.Haste);
+            _EngineManager.ToggleAutoBuff(name, Spells.Haste);
         }
 
-        private void autoHasteIIToolStripMenuItem_Click(object sender, EventArgs e)
+        private void AutoHasteIIToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var name = PL.Party.GetPartyMembers()[playerOptionsSelected].Name;
-            _BuffEngine.ToggleAutoBuff(name, Spells.Haste_II);
+            _EngineManager.ToggleAutoBuff(name, Spells.Haste_II);
         }
 
-        private void autoAdloquiumToolStripMenuItem_Click(object sender, EventArgs e)
+        private void AutoAdloquiumToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var name = PL.Party.GetPartyMembers()[playerOptionsSelected].Name;
-            _BuffEngine.ToggleAutoBuff(name, Spells.Adloquium);
+            _EngineManager.ToggleAutoBuff(name, Spells.Adloquium);
         }
 
-        private void autoFlurryToolStripMenuItem_Click(object sender, EventArgs e)
+        private void AutoFlurryToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var name = PL.Party.GetPartyMembers()[playerOptionsSelected].Name;
-            _BuffEngine.ToggleAutoBuff(name, Spells.Flurry);
+            _EngineManager.ToggleAutoBuff(name, Spells.Flurry);
         }
 
-        private void autoFlurryIIToolStripMenuItem_Click(object sender, EventArgs e)
+        private void AutoFlurryIIToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var name = PL.Party.GetPartyMembers()[playerOptionsSelected].Name;
-            _BuffEngine.ToggleAutoBuff(name, Spells.Flurry_II);
+            _EngineManager.ToggleAutoBuff(name, Spells.Flurry_II);
         }
 
-        private void autoProtectToolStripMenuItem_Click(object sender, EventArgs e)
+        private void AutoProtectToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var name = PL.Party.GetPartyMembers()[playerOptionsSelected].Name;
-            _BuffEngine.ToggleAutoBuff(name, Spells.Protect);
+            _EngineManager.ToggleAutoBuff(name, Spells.Protect);
         }
 
-        private void enableDebuffRemovalToolStripMenuItem_Click(object sender, EventArgs e)
+        private void EnableDebuffRemovalToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            _DebuffEngine.ToggleSpecifiedMember(PL.Party.GetPartyMembers()[playerOptionsSelected].Name);
+            _EngineManager.ToggleDebuffOnSpecifiedMember(PL.Party.GetPartyMembers()[playerOptionsSelected].Name);
         }
 
-        private void autoShellToolStripMenuItem_Click(object sender, EventArgs e)
+        private void AutoShellToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var name = PL.Party.GetPartyMembers()[playerOptionsSelected].Name;
-            _BuffEngine.ToggleAutoBuff(name, Spells.Shell);
+            _EngineManager.ToggleAutoBuff(name, Spells.Shell);
         }
 
-        private void autoHasteToolStripMenuItem1_Click(object sender, EventArgs e)
+        private void AutoHasteToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             var name = PL.Party.GetPartyMembers()[autoOptionsSelected].Name;
-            _BuffEngine.ToggleAutoBuff(name, Spells.Haste);
+            _EngineManager.ToggleAutoBuff(name, Spells.Haste);
         }
 
-        private void autoPhalanxIIToolStripMenuItem1_Click(object sender, EventArgs e)
+        private void AutoPhalanxIIToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             var name = PL.Party.GetPartyMembers()[autoOptionsSelected].Name;
-            _BuffEngine.ToggleAutoBuff(name, Spells.Phalanx_II);
+            _EngineManager.ToggleAutoBuff(name, Spells.Phalanx_II);
         }
 
-        private void autoRegenVToolStripMenuItem_Click(object sender, EventArgs e)
+        private void AutoRegenVToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var name = PL.Party.GetPartyMembers()[autoOptionsSelected].Name;
-            _BuffEngine.ToggleAutoBuff(name, Spells.Regen);
+            _EngineManager.ToggleAutoBuff(name, Spells.Regen);
         }
 
-        private void autoRefreshIIToolStripMenuItem_Click(object sender, EventArgs e)
+        private void AutoRefreshIIToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var name = PL.Party.GetPartyMembers()[autoOptionsSelected].Name;
-            _BuffEngine.ToggleAutoBuff(name, Spells.Refresh);
+            _EngineManager.ToggleAutoBuff(name, Spells.Refresh);
         }
 
-        private void hasteToolStripMenuItem_Click(object sender, EventArgs e)
+        private void HasteToolStripMenuItem_Click(object sender, EventArgs e)
         {
             CastSpell(PL.Party.GetPartyMembers()[playerOptionsSelected].Name, Spells.Haste);
         }
 
-        private void followToolStripMenuItem_Click(object sender, EventArgs e)
+        private void FollowToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ConfigForm.config.autoFollowName = PL.Party.GetPartyMembers()[playerOptionsSelected].Name;
+            ConfigForm.Config.autoFollowName = PL.Party.GetPartyMembers()[playerOptionsSelected].Name;
         }
 
-        private void stopfollowToolStripMenuItem_Click(object sender, EventArgs e)
+        private void StopfollowToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ConfigForm.config.autoFollowName = string.Empty;
+            ConfigForm.Config.autoFollowName = string.Empty;
         }
 
         private void EntrustTargetToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ConfigForm.config.EntrustedSpell_Target = PL.Party.GetPartyMembers()[playerOptionsSelected].Name;
+            ConfigForm.Config.EntrustedSpell_Target = PL.Party.GetPartyMembers()[playerOptionsSelected].Name;
         }
 
         private void GeoTargetToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ConfigForm.config.LuopanSpell_Target = PL.Party.GetPartyMembers()[playerOptionsSelected].Name;
+            ConfigForm.Config.LuopanSpell_Target = PL.Party.GetPartyMembers()[playerOptionsSelected].Name;
         }
 
         private void DevotionTargetToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ConfigForm.config.DevotionTargetName = PL.Party.GetPartyMembers()[playerOptionsSelected].Name;
+            ConfigForm.Config.DevotionTargetName = PL.Party.GetPartyMembers()[playerOptionsSelected].Name;
         }
 
         private void HateEstablisherToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ConfigForm.config.autoTarget_Target = PL.Party.GetPartyMembers()[playerOptionsSelected].Name;
+            ConfigForm.Config.autoTarget_Target = PL.Party.GetPartyMembers()[playerOptionsSelected].Name;
         }
 
-        private void phalanxIIToolStripMenuItem_Click(object sender, EventArgs e)
+        private void PhalanxIIToolStripMenuItem_Click(object sender, EventArgs e)
         {
             CastSpell(PL.Party.GetPartyMembers()[playerOptionsSelected].Name, Spells.Phalanx_II);
         }
 
-        private void invisibleToolStripMenuItem_Click(object sender, EventArgs e)
+        private void InvisibleToolStripMenuItem_Click(object sender, EventArgs e)
         {
             CastSpell(PL.Party.GetPartyMembers()[playerOptionsSelected].Name, Spells.Invisible);
         }
 
-        private void refreshToolStripMenuItem_Click(object sender, EventArgs e)
+        private void RefreshToolStripMenuItem_Click(object sender, EventArgs e)
         {
             CastSpell(PL.Party.GetPartyMembers()[playerOptionsSelected].Name, Spells.Refresh);
         }
 
-        private void refreshIIToolStripMenuItem_Click(object sender, EventArgs e)
+        private void RefreshIIToolStripMenuItem_Click(object sender, EventArgs e)
         {
             CastSpell(PL.Party.GetPartyMembers()[playerOptionsSelected].Name, Spells.Refresh_II);
         }
 
-        private void refreshIIIToolStripMenuItem_Click(object sender, EventArgs e)
+        private void RefreshIIIToolStripMenuItem_Click(object sender, EventArgs e)
         {
             CastSpell(PL.Party.GetPartyMembers()[playerOptionsSelected].Name, Spells.Refresh_III);
         }
 
-        private void sneakToolStripMenuItem_Click(object sender, EventArgs e)
+        private void SneakToolStripMenuItem_Click(object sender, EventArgs e)
         {
             CastSpell(PL.Party.GetPartyMembers()[playerOptionsSelected].Name, Spells.Sneak);
         }
 
-        private void regenIIToolStripMenuItem_Click(object sender, EventArgs e)
+        private void RegenIIToolStripMenuItem_Click(object sender, EventArgs e)
         {
             CastSpell(PL.Party.GetPartyMembers()[playerOptionsSelected].Name, Spells.Regen_II);
         }
 
-        private void regenIIIToolStripMenuItem_Click(object sender, EventArgs e)
+        private void RegenIIIToolStripMenuItem_Click(object sender, EventArgs e)
         {
             CastSpell(PL.Party.GetPartyMembers()[playerOptionsSelected].Name, Spells.Regen_III);
         }
 
-        private void regenIVToolStripMenuItem_Click(object sender, EventArgs e)
+        private void RegenIVToolStripMenuItem_Click(object sender, EventArgs e)
         {
             CastSpell(PL.Party.GetPartyMembers()[playerOptionsSelected].Name, Spells.Regen_IV);
         }
 
-        private void eraseToolStripMenuItem_Click(object sender, EventArgs e)
+        private void EraseToolStripMenuItem_Click(object sender, EventArgs e)
         {
             CastSpell(PL.Party.GetPartyMembers()[playerOptionsSelected].Name, Spells.Erase);
         }
 
-        private void sacrificeToolStripMenuItem_Click(object sender, EventArgs e)
+        private void SacrificeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             CastSpell(PL.Party.GetPartyMembers()[playerOptionsSelected].Name, Spells.Sacrifice);
         }
 
-        private void blindnaToolStripMenuItem_Click(object sender, EventArgs e)
+        private void BlindnaToolStripMenuItem_Click(object sender, EventArgs e)
         {
             CastSpell(PL.Party.GetPartyMembers()[playerOptionsSelected].Name, Spells.Blindna);
         }
 
-        private void cursnaToolStripMenuItem_Click(object sender, EventArgs e)
+        private void CursnaToolStripMenuItem_Click(object sender, EventArgs e)
         {
             CastSpell(PL.Party.GetPartyMembers()[playerOptionsSelected].Name, Spells.Cursna);
         }
 
-        private void paralynaToolStripMenuItem_Click(object sender, EventArgs e)
+        private void ParalynaToolStripMenuItem_Click(object sender, EventArgs e)
         {
             CastSpell(PL.Party.GetPartyMembers()[playerOptionsSelected].Name, Spells.Paralyna);
         }
 
-        private void poisonaToolStripMenuItem_Click(object sender, EventArgs e)
+        private void PoisonaToolStripMenuItem_Click(object sender, EventArgs e)
         {
             CastSpell(PL.Party.GetPartyMembers()[playerOptionsSelected].Name, Spells.Poisona);
         }
 
-        private void stonaToolStripMenuItem_Click(object sender, EventArgs e)
+        private void StonaToolStripMenuItem_Click(object sender, EventArgs e)
         {
             CastSpell(PL.Party.GetPartyMembers()[playerOptionsSelected].Name, Spells.Stona);
         }
 
-        private void silenaToolStripMenuItem_Click(object sender, EventArgs e)
+        private void SilenaToolStripMenuItem_Click(object sender, EventArgs e)
         {
             CastSpell(PL.Party.GetPartyMembers()[playerOptionsSelected].Name, Spells.Silena);
         }
 
-        private void virunaToolStripMenuItem_Click(object sender, EventArgs e)
+        private void VirunaToolStripMenuItem_Click(object sender, EventArgs e)
         {
             CastSpell(PL.Party.GetPartyMembers()[playerOptionsSelected].Name, Spells.Viruna);
         }
@@ -1139,72 +1112,72 @@ namespace CurePlease
             // TODO: Similar to haste/flurry, etc. add logic to deal with storm
             // tiers and only one at a time being selected.
             var name = PL.Party.GetPartyMembers()[autoOptionsSelected].Name;
-            _BuffEngine.ToggleAutoBuff(name, Spells.Sandstorm);
+            _EngineManager.ToggleAutoBuff(name, Spells.Sandstorm);
         }
 
         private void RainstormToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var name = PL.Party.GetPartyMembers()[autoOptionsSelected].Name;
-            _BuffEngine.ToggleAutoBuff(name, Spells.Rainstorm);
+            _EngineManager.ToggleAutoBuff(name, Spells.Rainstorm);
         }
 
         private void WindstormToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var name = PL.Party.GetPartyMembers()[autoOptionsSelected].Name;
-            _BuffEngine.ToggleAutoBuff(name, Spells.Windstorm);
+            _EngineManager.ToggleAutoBuff(name, Spells.Windstorm);
         }
 
         private void FirestormToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var name = PL.Party.GetPartyMembers()[autoOptionsSelected].Name;
-            _BuffEngine.ToggleAutoBuff(name, Spells.Firestorm);
+            _EngineManager.ToggleAutoBuff(name, Spells.Firestorm);
         }
 
         private void HailstormToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var name = PL.Party.GetPartyMembers()[autoOptionsSelected].Name;
-            _BuffEngine.ToggleAutoBuff(name, Spells.Hailstorm);
+            _EngineManager.ToggleAutoBuff(name, Spells.Hailstorm);
         }
 
         private void ThunderstormToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var name = PL.Party.GetPartyMembers()[autoOptionsSelected].Name;
-            _BuffEngine.ToggleAutoBuff(name, Spells.Thunderstorm);
+            _EngineManager.ToggleAutoBuff(name, Spells.Thunderstorm);
         }
 
         private void VoidstormToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var name = PL.Party.GetPartyMembers()[autoOptionsSelected].Name;
-            _BuffEngine.ToggleAutoBuff(name, Spells.Voidstorm);
+            _EngineManager.ToggleAutoBuff(name, Spells.Voidstorm);
         }
 
         private void AurorastormToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var name = PL.Party.GetPartyMembers()[autoOptionsSelected].Name;
-            _BuffEngine.ToggleAutoBuff(name, Spells.Aurorastorm);
+            _EngineManager.ToggleAutoBuff(name, Spells.Aurorastorm);
         }
 
-        private void protectIVToolStripMenuItem_Click(object sender, EventArgs e)
+        private void ProtectIVToolStripMenuItem_Click(object sender, EventArgs e)
         {
             CastSpell(PL.Party.GetPartyMembers()[playerOptionsSelected].Name, Spells.Protect_IV);
         }
 
-        private void protectVToolStripMenuItem_Click(object sender, EventArgs e)
+        private void ProtectVToolStripMenuItem_Click(object sender, EventArgs e)
         {
             CastSpell(PL.Party.GetPartyMembers()[playerOptionsSelected].Name, Spells.Protect_V);
         }
 
-        private void shellIVToolStripMenuItem_Click(object sender, EventArgs e)
+        private void ShellIVToolStripMenuItem_Click(object sender, EventArgs e)
         {
             CastSpell(PL.Party.GetPartyMembers()[playerOptionsSelected].Name, Spells.Shell_IV);
         }
 
-        private void shellVToolStripMenuItem_Click(object sender, EventArgs e)
+        private void ShellVToolStripMenuItem_Click(object sender, EventArgs e)
         {
             CastSpell(PL.Party.GetPartyMembers()[playerOptionsSelected].Name, Spells.Shell_V);
         }
 
-        private void button3_Click(object sender, EventArgs e)
+        private void Button3_Click(object sender, EventArgs e)
         {
 
             if (pauseActions == false)
@@ -1219,18 +1192,18 @@ namespace CurePlease
                 pauseButton.ForeColor = Color.Black;
                 actionTimer.Enabled = true;
                 pauseActions = false;
-                _FollowEngine.Start();
+                _EngineManager.StartFollowing();
 
-                if (ConfigForm.config.MinimiseonStart == true && WindowState != FormWindowState.Minimized)
+                if (ConfigForm.Config.MinimiseonStart == true && WindowState != FormWindowState.Minimized)
                 {
                     WindowState = FormWindowState.Minimized;
                 }
 
-                AddonEngine.LoadAddonInClient(ConfigForm.config, PL.ThirdParty, WindowerMode);
+                AddonEngine.LoadAddonInClient(ConfigForm.Config, PL.ThirdParty, WindowerMode);
 
                 if (AddonClient == null)
                 {
-                    AddonClient = new UdpClient(Convert.ToInt32(ConfigForm.config.listeningPort));
+                    AddonClient = new UdpClient(Convert.ToInt32(ConfigForm.Config.listeningPort));
                     AddonClient.BeginReceive(new AsyncCallback(OnAddonDataReceived), AddonClient);
                 }
 
@@ -1238,7 +1211,7 @@ namespace CurePlease
             }
         }
 
-        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        private void CheckBox1_CheckedChanged(object sender, EventArgs e)
         {
             TopMost = !TopMost;
         }
@@ -1257,25 +1230,25 @@ namespace CurePlease
             }
         }
 
-        private void chatLogToolStripMenuItem_Click(object sender, EventArgs e)
+        private void ChatLogToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ChatlogForm form4 = new ChatlogForm(this);
+            ChatlogForm form4 = new(this);
             form4.Show();
         }
 
-        private void partyBuffsdebugToolStripMenuItem_Click(object sender, EventArgs e)
+        private void PartyBuffsdebugToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            PartyBuffs PartyBuffs = new PartyBuffs(this);
+            PartyBuffs PartyBuffs = new(this);
             PartyBuffs.Show();
         }
 
-        private void refreshCharactersToolStripMenuItem_Click(object sender, EventArgs e)
+        private void RefreshCharactersToolStripMenuItem_Click(object sender, EventArgs e)
         {
             IEnumerable<Process> pol = Process.GetProcessesByName("pol").Union(Process.GetProcessesByName("xiloader")).Union(Process.GetProcessesByName("edenxi"));
 
             if (PL.Player.LoginStatus != (int)LoginStatus.Loading)
             {
-                if (pol.Count() < 1)
+                if (!pol.Any())
                 {
                     MessageBox.Show("FFXI not found");
                 }
@@ -1306,12 +1279,12 @@ namespace CurePlease
 
             if (PL != null)
             {
-                AddonEngine.UnloadAddonInClient(ConfigForm.config, PL.ThirdParty, WindowerMode);
+                AddonEngine.UnloadAddonInClient(ConfigForm.Config.enableHotKeys, PL.ThirdParty, WindowerMode);
             }
 
         }
 
-        private void showErrorMessage(string ErrorMessage)
+        private void ShowErrorMessage(string ErrorMessage)
         {
             pauseActions = true;
             pauseButton.Text = "Error!";
@@ -1320,7 +1293,7 @@ namespace CurePlease
             MessageBox.Show(ErrorMessage);
         }
 
-        private void updateInstances_Tick(object sender, EventArgs e)
+        private void UpdateInstances_Tick(object sender, EventArgs e)
         {
             if (PL != null && PL.Player.LoginStatus == (int)LoginStatus.Loading)
             {
@@ -1329,7 +1302,7 @@ namespace CurePlease
 
             IEnumerable<Process> pol = Process.GetProcessesByName("pol").Union(Process.GetProcessesByName("xiloader")).Union(Process.GetProcessesByName("edenxi"));
 
-            if (pol.Count() >= 1)
+            if (pol.Any())
             {
                 POLID.Items.Clear();
                 POLID2.Items.Clear();
@@ -1379,7 +1352,7 @@ namespace CurePlease
             }
         }
 
-        private void notifyIcon1_MouseDoubleClick(object sender, MouseEventArgs e)
+        private void NotifyIcon1_MouseDoubleClick(object sender, MouseEventArgs e)
         {
             Show();
             WindowState = FormWindowState.Normal;
@@ -1390,7 +1363,7 @@ namespace CurePlease
             pauseActions = true;
             actionTimer.Enabled = false;
             ActiveBuffs.Clear();
-            _FollowEngine.Stop();
+            _EngineManager.StopFollowing();
         }
 
         private void CheckCustomActions_TickAsync(object sender, EventArgs e)
@@ -1425,7 +1398,7 @@ namespace CurePlease
                                 pauseButton.ForeColor = Color.Black;
                                 actionTimer.Enabled = true;
                                 pauseActions = false;
-                                _FollowEngine.Start();
+                                _EngineManager.StartFollowing();
                             }
                             else if ((Monitored.ThirdParty.ConsoleGetArg(1) == "toggle") && PL.Player.Name.ToLower() == Monitored.ThirdParty.ConsoleGetArg(2).ToLower())
                             {
@@ -1446,7 +1419,7 @@ namespace CurePlease
                                 pauseButton.ForeColor = Color.Black;
                                 actionTimer.Enabled = true;
                                 pauseActions = false;
-                                _FollowEngine.Start();
+                                _EngineManager.StartFollowing();
                             }
                             else if (Monitored.ThirdParty.ConsoleGetArg(1) == "toggle")
                             {
@@ -1458,7 +1431,7 @@ namespace CurePlease
             }
         }
 
-        private void trackBar1_Scroll(object sender, EventArgs e)
+        private void TrackBar1_Scroll(object sender, EventArgs e)
         {
             Opacity = trackBar1.Value * 0.01;
         }
@@ -1471,13 +1444,13 @@ namespace CurePlease
             {
                 settings = new ConfigForm();
             }
-            settings.Show();
 
+            settings.Show();
         }
 
         private void ChatLogButton_Click(object sender, EventArgs e)
         {
-            ChatlogForm form4 = new ChatlogForm(this);
+            ChatlogForm form4 = new(this);
 
             if (PL != null)
             {
@@ -1487,7 +1460,8 @@ namespace CurePlease
 
         private void PartyBuffsButton_Click(object sender, EventArgs e)
         {
-            PartyBuffs PartyBuffs = new PartyBuffs(this);
+            PartyBuffs PartyBuffs = new(this);
+
             if (PL != null)
             {
                 PartyBuffs.Show();
@@ -1501,12 +1475,12 @@ namespace CurePlease
 
         private void OnAddonDataReceived(IAsyncResult result)
         {
-            if (!ConfigForm.config.EnableAddOn || PL == null)
+            if (!ConfigForm.Config.EnableAddOn || PL == null)
                 return;
 
             UdpClient socket = result.AsyncState as UdpClient;
 
-            IPEndPoint groupEP = new IPEndPoint(IPAddress.Parse(ConfigForm.config.ipAddress), Convert.ToInt32(ConfigForm.config.listeningPort));
+            IPEndPoint groupEP = new(IPAddress.Parse(ConfigForm.Config.ipAddress), Convert.ToInt32(ConfigForm.Config.listeningPort));
 
             try
             {
@@ -1516,7 +1490,7 @@ namespace CurePlease
 
                 string[] commands = received_data.Split('_');
          
-                if (commands[1] == "casting" && commands.Count() == 3 && ConfigForm.config.trackCastingPackets == true)
+                if (commands[1] == "casting" && commands.Length == 3 && ConfigForm.Config.trackCastingPackets == true)
                 {
                     if (commands[2] == "blocked")
                     {
@@ -1529,7 +1503,7 @@ namespace CurePlease
                         if (!ProtectCasting.IsBusy) { ProtectCasting.RunWorkerAsync(); }
 
                         pauseActions = true;
-                        _FollowEngine.Stop();
+                        _EngineManager.StopFollowing();
                     }
                     else
                     {
@@ -1561,7 +1535,7 @@ namespace CurePlease
                         }
 
                         pauseActions = false;
-                        _FollowEngine.Start();
+                        _EngineManager.StartFollowing();
                     }
                 }
                 else if (commands[1] == "confirmed")
@@ -1579,7 +1553,7 @@ namespace CurePlease
                             pauseButton.ForeColor = Color.Black;
                             actionTimer.Enabled = true;
                             pauseActions = false;
-                            _FollowEngine.Start();
+                            _EngineManager.StartFollowing();
                         }));
                     }
                     if (commands[2] == "stop" || commands[2] == "pause")
@@ -1600,7 +1574,7 @@ namespace CurePlease
                         }));
                     }
                 }
-                else if (commands[1] == "buffs" && commands.Count() == 4)
+                else if (commands[1] == "buffs" && commands.Length == 4)
                 {
                     lock (ActiveBuffs)
                     {
@@ -1612,11 +1586,9 @@ namespace CurePlease
                             var buffs = memberBuffs.Split(',').Select(str => short.Parse(str.Trim())).Where(buff => !Data.DebuffPriorities.Keys.Cast<short>().Contains(buff));
                             var debuffs = memberBuffs.Split(',').Select(str => short.Parse(str.Trim())).Where(buff => Data.DebuffPriorities.Keys.Cast<short>().Contains(buff));
 
-                            if (_BuffEngine != null)
-                                _BuffEngine.UpdateBuffs(memberName, buffs);
+                            _EngineManager.UpdateBuffs(memberName, buffs);
 
-                            if (_DebuffEngine != null)
-                                _DebuffEngine.UpdateDebuffs(memberName, debuffs);
+                            _EngineManager.UpdateDebuffs(memberName, debuffs);
                         }                             
                     }
 
@@ -1703,7 +1675,7 @@ namespace CurePlease
             CustomCommand_Tracker.RunWorkerAsync();
         }
 
-        private void actionlog_box_TextChanged(object sender, EventArgs e)
+        private void Actionlog_box_TextChanged(object sender, EventArgs e)
         {
             actionlog_box.SelectionStart = actionlog_box.Text.Length;
             actionlog_box.ScrollToCaret();

@@ -248,7 +248,7 @@ namespace CurePlease.Utilities
 
         public static IEnumerable<int> PartyNeedsAoeCure(this EliteAPI api, int countThreshold, int cureThreshold)
         {
-            List<int> partiesResult = new List<int>();
+            List<int> partiesResult = new();
 
             // Full alliance list of who's active and below the threshold.
             var activeMembers = api.GetActivePartyMembers().Where(pm => pm.HPLoss() >= cureThreshold);

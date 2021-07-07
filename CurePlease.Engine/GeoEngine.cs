@@ -14,11 +14,11 @@ namespace CurePlease.Engine
 {
     public class GeoData : List<GeoData>
     {
-        public int geo_position { get; set; }
+        public int GeoPosition { get; set; }
 
-        public string indi_spell { get; set; }
+        public string IndiSpell { get; set; }
 
-        public string geo_spell { get; set; }
+        public string GeoSpell { get; set; }
     }
 
     public class GeoEngine : IGeoEngine
@@ -28,18 +28,17 @@ namespace CurePlease.Engine
         private GeoConfig _Config;
 
         // GEO ENGAGED CHECK
-        public bool targetEngaged = false;
         private bool EclipticStillUp = false;
 
-        public List<GeoData> GeomancerInfo = new List<GeoData>();
+        public List<GeoData> GeomancerInfo = new();
 
-        private EliteAPI PL;
-        private EliteAPI Monitored;
+        private EliteAPI _PL;
+        private EliteAPI _Monitored;
 
-        private Timer FullCircleTimer = new Timer();
-        private Timer EclipticTimer = new Timer();
+        private readonly Timer FullCircleTimer = new();
+        private readonly Timer EclipticTimer = new();
 
-        private List<int> CityZoneIds = new List<int>
+        private readonly List<int> CityZoneIds = new()
         {
             26, // Tavnazian Safehold
 
@@ -90,33 +89,25 @@ namespace CurePlease.Engine
             EclipticTimer.Elapsed += EclipticTimer_Tick;
         }
 
-        private bool CanCastInArea()
+        public EngineAction Run(EliteAPI pl, EliteAPI monitored, GeoConfig config)
         {
-            if (PL == null)
-                return false;
-
-            return !CityZoneIds.Contains(PL.Player.ZoneId);
-        }
-
-        public EngineAction Run(EliteAPI pl, EliteAPI monitored, GeoConfig Config)
-        {
-            EngineAction actionResult = new EngineAction
+            EngineAction actionResult = new()
             {
                 Target = Target.Me
             };
 
             try
             {
-                PL = pl;
-                Monitored = monitored;
-                _Config = Config;
+                _PL = pl;
+                _Monitored = monitored;
+                _Config = config;
 
                 if (!CanCastInArea())
                     return null;
 
                 // ENTRUSTED INDI SPELL CASTING, WILL BE CAST SO LONG AS ENTRUST IS ACTIVE
                 // StatusEffect 584 == Entrust
-                if (PL.HasStatus((StatusEffect)584) && PL.Player.Status != (int)EntityStatus.Healing)
+                if (_PL.HasStatus((StatusEffect)584) && _PL.Player.Status != (int)EntityStatus.Healing)
                 {
                     actionResult = GetEntrustSpell();
                 }
@@ -124,40 +115,40 @@ namespace CurePlease.Engine
                 // TODO: Fix up this logic, I think something was lost in the refactoring.
                 // Need to see if there's a situation where both of these JA's would be activated for the cast.
                 // For now the old logic seems to be use RA on it's own, or check for FC + Cast.
-                else if (_Config.RadialArcanaEnabled && (PL.Player.MP <= _Config.RadialArcanaMP) && PL.AbilityAvailable(Ability.RadialArcana) && !PL.Player.Buffs.Contains((short)StatusEffect.Weakness))
+                else if (_Config.RadialArcanaEnabled && (_PL.Player.MP <= _Config.RadialArcanaMP) && _PL.AbilityAvailable(Ability.RadialArcana) && !_PL.Player.Buffs.Contains((short)StatusEffect.Weakness))
                 {
                     // Check if a pet is already active
-                    if (PL.Player.Pet.HealthPercent >= 1 && PL.Player.Pet.Distance <= 9)
+                    if (_PL.Player.Pet.HealthPercent >= 1 && _PL.Player.Pet.Distance <= 9)
                     {
                         actionResult.JobAbility = Ability.RadialArcana;
                         return actionResult;
                     }
-                    else if (PL.Player.Pet.HealthPercent >= 1 && PL.Player.Pet.Distance >= 9 && PL.AbilityAvailable(Ability.FullCircle))
+                    else if (_PL.Player.Pet.HealthPercent >= 1 && _PL.Player.Pet.Distance >= 9 && _PL.AbilityAvailable(Ability.FullCircle))
                     {
                         actionResult.JobAbility = Ability.FullCircle;
                     }
 
                     actionResult.Spell = ReturnGeoSpell(_Config.RadialArcanaSpell, 2);
                 }
-                else if (_Config.FullCircleEnabled && PL.Player.Pet.HealthPercent != 0)
+                else if (_Config.FullCircleEnabled && _PL.Player.Pet.HealthPercent != 0)
                 {
                     // When out of range Distance is 59 Yalms regardless, Must be within 15 yalms to gain
                     // the effect
 
                     //Check if "pet" is active and out of range of the monitored player
-                    if (PL.Player.Pet.HealthPercent >= 1)
+                    if (_PL.Player.Pet.HealthPercent >= 1)
                     {
                         if (_Config.FullCircleGeoTarget == true && _Config.LuopanSpellTarget != "")
                         {
-                            ushort PetsIndex = PL.Player.PetIndex;
+                            ushort PetsIndex = _PL.Player.PetIndex;
 
-                            XiEntity PetsEntity = PL.Entity.GetEntity(PetsIndex);
+                            XiEntity PetsEntity = _PL.Entity.GetEntity(PetsIndex);
 
                             int FullCircle_CharID = 0;
 
                             for (int x = 0; x < 2048; x++)
                             {
-                                XiEntity entity = PL.Entity.GetEntity(x);
+                                XiEntity entity = _PL.Entity.GetEntity(x);
 
                                 if (entity.Name != null && entity.Name.ToLower().Equals(_Config.LuopanSpellTarget.ToLower()))
                                 {
@@ -168,7 +159,7 @@ namespace CurePlease.Engine
 
                             if (FullCircle_CharID != 0)
                             {
-                                XiEntity FullCircleEntity = PL.Entity.GetEntity(FullCircle_CharID);
+                                XiEntity FullCircleEntity = _PL.Entity.GetEntity(FullCircle_CharID);
 
                                 float fX = PetsEntity.X - FullCircleEntity.X;
                                 float fY = PetsEntity.Y - FullCircleEntity.Y;
@@ -183,11 +174,11 @@ namespace CurePlease.Engine
                             }
 
                         }
-                        else if (_Config.FullCircleGeoTarget == false && Monitored.Player.Status == (int)EntityStatus.Engaged)
+                        else if (_Config.FullCircleGeoTarget == false && _Monitored.Player.Status == (int)EntityStatus.Engaged)
                         {
-                            ushort PetsIndex = PL.Player.PetIndex;
+                            ushort PetsIndex = _PL.Player.PetIndex;
 
-                            XiEntity PetsEntity = Monitored.Entity.GetEntity(PetsIndex);
+                            XiEntity PetsEntity = _Monitored.Entity.GetEntity(PetsIndex);
 
                             if (PetsEntity.Distance >= 10)
                             {
@@ -198,7 +189,7 @@ namespace CurePlease.Engine
                 }
 
                 // CAST NON ENTRUSTED INDI SPELL
-                else if (_Config.IndiSpellsEnabled && !PL.HasStatus(612) && PL.Player.Status != (int)EntityStatus.Healing && (CheckEngagedStatus() || !_Config.IndiWhenEngaged))
+                else if (_Config.IndiSpellsEnabled && !_PL.HasStatus(612) && _PL.Player.Status != (int)EntityStatus.Healing && (CheckEngagedStatus() || !_Config.IndiWhenEngaged))
                 {
                     string SpellCheckedResult = ReturnGeoSpell(_Config.IndiSpell, 1);
 
@@ -216,10 +207,10 @@ namespace CurePlease.Engine
                 }
 
                 // GEO SPELL CASTING
-                else if (_Config.LuopanSpellsEnabled && (PL.Player.Pet.HealthPercent < 1) && CheckEngagedStatus())
+                else if (_Config.LuopanSpellsEnabled && (_PL.Player.Pet.HealthPercent < 1) && CheckEngagedStatus())
                 {
                     // Use BLAZE OF GLORY if ENABLED
-                    if (_Config.BlazeOfGloryEnabled && PL.AbilityAvailable(Ability.BlazeOfGlory) && GEO_EnemyCheck())
+                    if (_Config.BlazeOfGloryEnabled && _PL.AbilityAvailable(Ability.BlazeOfGlory) && GEO_EnemyCheck())
                     {
                         actionResult.JobAbility = Ability.BlazeOfGlory;
                         return actionResult;
@@ -237,13 +228,13 @@ namespace CurePlease.Engine
                         actionResult.Error = "An error has occurred with GEO spell casting, please report what spell was active at the time.";
                     }
 
-                    if (PL.Resources.GetSpell(SpellCheckedResult, 0).ValidTargets == 5)
+                    if (_PL.Resources.GetSpell(SpellCheckedResult, 0).ValidTargets == 5)
                     {
                         if (!string.IsNullOrEmpty(_Config.LuopanSpellTarget))
                         {
                             actionResult.Target = _Config.LuopanSpellTarget;
 
-                            if (PL.HasStatus(516)) // IF ECLIPTIC IS UP THEN ACTIVATE THE BOOL
+                            if (_PL.HasStatus(516)) // IF ECLIPTIC IS UP THEN ACTIVATE THE BOOL
                             {
                                 EclipticStillUp = true;
                             }
@@ -260,9 +251,9 @@ namespace CurePlease.Engine
 
                             if (GrabbedTargetID != 0)
                             {
-                                PL.Target.SetTarget(GrabbedTargetID);
+                                _PL.Target.SetTarget(GrabbedTargetID);
 
-                                if (PL.HasStatus(516)) // IF ECLIPTIC IS UP THEN ACTIVATE THE BOOL
+                                if (_PL.HasStatus(516)) // IF ECLIPTIC IS UP THEN ACTIVATE THE BOOL
                                 {
                                     EclipticStillUp = true;
                                 }
@@ -288,18 +279,26 @@ namespace CurePlease.Engine
             return actionResult;
         }
 
+        private bool CanCastInArea()
+        {
+            if (_PL == null)
+                return false;
+
+            return !CityZoneIds.Contains(_PL.Player.ZoneId);
+        }
+
         private EngineAction CheckForJobAbility()
         {
-            EngineAction actionResult = new EngineAction
+            EngineAction actionResult = new()
             {
                 Target = Target.Me
             };
 
             // If we're using Entrust, and it's available
             if (_Config.EntrustEnabled
-                && !PL.HasStatus((StatusEffect)584) //entrust
+                && !_PL.HasStatus((StatusEffect)584) //entrust
                 && CheckEngagedStatus()
-                && PL.AbilityAvailable(Ability.Entrust))
+                && _PL.AbilityAvailable(Ability.Entrust))
             {
                 if (VerifyEntrustTarget() != null)
                 {
@@ -308,15 +307,15 @@ namespace CurePlease.Engine
 
                 return actionResult;
             }
-            else if (_Config.DematerializeEnabled && CheckEngagedStatus() == true && PL.Player.Pet.HealthPercent >= 90 && PL.AbilityAvailable(Ability.Dematerialize))
+            else if (_Config.DematerializeEnabled && CheckEngagedStatus() == true && _PL.Player.Pet.HealthPercent >= 90 && _PL.AbilityAvailable(Ability.Dematerialize))
             {
                 actionResult.JobAbility = Ability.Dematerialize;
             }
-            else if (_Config.EclipticAttritionEnabled && CheckEngagedStatus() == true && PL.Player.Pet.HealthPercent >= 90 && PL.AbilityAvailable(Ability.EclipticAttrition) && !PL.HasStatus(516) && EclipticStillUp != true)
+            else if (_Config.EclipticAttritionEnabled && CheckEngagedStatus() == true && _PL.Player.Pet.HealthPercent >= 90 && _PL.AbilityAvailable(Ability.EclipticAttrition) && !_PL.HasStatus(516) && EclipticStillUp != true)
             {
                 actionResult.JobAbility = Ability.EclipticAttrition;
             }
-            else if (_Config.LifeCycleEnabled && CheckEngagedStatus() == true && PL.Player.Pet.HealthPercent <= 30 && PL.Player.Pet.HealthPercent >= 5 && PL.Player.HPP >= 90 && PL.AbilityAvailable(Ability.LifeCycle))
+            else if (_Config.LifeCycleEnabled && CheckEngagedStatus() == true && _PL.Player.Pet.HealthPercent <= 30 && _PL.Player.Pet.HealthPercent >= 5 && _PL.Player.HPP >= 90 && _PL.AbilityAvailable(Ability.LifeCycle))
             {
                 actionResult.JobAbility = Ability.LifeCycle;
             }
@@ -326,7 +325,7 @@ namespace CurePlease.Engine
 
         private EngineAction GetEntrustSpell()
         {
-            EngineAction actionResult = new EngineAction();
+            EngineAction actionResult = new();
 
             string SpellCheckedResult = ReturnGeoSpell(_Config.EntrustSpell, 1);
 
@@ -345,7 +344,7 @@ namespace CurePlease.Engine
                 if (string.IsNullOrWhiteSpace(target))
                 {
                     // use P1
-                    target = PL.GetActivePartyMembers().FirstOrDefault(p => p.Index == 1)?.Name;
+                    target = _PL.GetActivePartyMembers().FirstOrDefault(p => p.Index == 1)?.Name;
                 }
 
                 if (!string.IsNullOrWhiteSpace(VerifyEntrustTarget()))
@@ -365,18 +364,18 @@ namespace CurePlease.Engine
             if (string.IsNullOrWhiteSpace(target))
             {
                 // nothing in config, so let's default to P1
-                target = PL.GetActivePartyMembers().FirstOrDefault(p => p.Index == 1)?.Name;
+                target = _PL.GetActivePartyMembers().FirstOrDefault(p => p.Index == 1)?.Name;
             }
 
             if (!string.IsNullOrEmpty(target))
             {
-                PartyMember entrustTarget = PL.GetActivePartyMembers().FirstOrDefault(p => p.Name == target);
+                PartyMember entrustTarget = _PL.GetActivePartyMembers().FirstOrDefault(p => p.Name == target);
 
                 // make sure target is in party
                 if (entrustTarget == null)
                     return null;
 
-                XiEntity entrustEntity = PL.Entity.GetEntity((int)entrustTarget.TargetIndex);
+                XiEntity entrustEntity = _PL.Entity.GetEntity((int)entrustTarget.TargetIndex);
 
                 // make sure target isn't dead and is in range
                 if (entrustEntity.IsDead() || entrustEntity.Distance > 21)
@@ -392,255 +391,255 @@ namespace CurePlease.Engine
 
             GeomancerInfo.Add(new GeoData
             {
-                indi_spell = "Indi-Voidance",
-                geo_spell = "Geo-Voidance",
-                geo_position = geo_position,
+                IndiSpell = "Indi-Voidance",
+                GeoSpell = "Geo-Voidance",
+                GeoPosition = geo_position,
             });
             geo_position++;
 
             GeomancerInfo.Add(new GeoData
             {
-                indi_spell = "Indi-Precision",
-                geo_spell = "Geo-Precision",
-                geo_position = geo_position,
+                IndiSpell = "Indi-Precision",
+                GeoSpell = "Geo-Precision",
+                GeoPosition = geo_position,
             });
             geo_position++;
 
             GeomancerInfo.Add(new GeoData
             {
-                indi_spell = "Indi-Regen",
-                geo_spell = "Geo-Regen",
-                geo_position = geo_position,
+                IndiSpell = "Indi-Regen",
+                GeoSpell = "Geo-Regen",
+                GeoPosition = geo_position,
             });
             geo_position++;
 
             GeomancerInfo.Add(new GeoData
             {
-                indi_spell = "Indi-Haste",
-                geo_spell = "Geo-Haste",
-                geo_position = geo_position,
+                IndiSpell = "Indi-Haste",
+                GeoSpell = "Geo-Haste",
+                GeoPosition = geo_position,
             });
             geo_position++;
 
             GeomancerInfo.Add(new GeoData
             {
-                indi_spell = "Indi-Attunement",
-                geo_spell = "Geo-Attunement",
-                geo_position = geo_position,
+                IndiSpell = "Indi-Attunement",
+                GeoSpell = "Geo-Attunement",
+                GeoPosition = geo_position,
             });
             geo_position++;
 
             GeomancerInfo.Add(new GeoData
             {
-                indi_spell = "Indi-Focus",
-                geo_spell = "Geo-Focus",
-                geo_position = geo_position,
+                IndiSpell = "Indi-Focus",
+                GeoSpell = "Geo-Focus",
+                GeoPosition = geo_position,
             });
             geo_position++;
 
             GeomancerInfo.Add(new GeoData
             {
-                indi_spell = "Indi-Barrier",
-                geo_spell = "Geo-Barrier",
-                geo_position = geo_position,
+                IndiSpell = "Indi-Barrier",
+                GeoSpell = "Geo-Barrier",
+                GeoPosition = geo_position,
             });
             geo_position++;
 
             GeomancerInfo.Add(new GeoData
             {
-                indi_spell = "Indi-Refresh",
-                geo_spell = "Geo-Refresh",
-                geo_position = geo_position,
+                IndiSpell = "Indi-Refresh",
+                GeoSpell = "Geo-Refresh",
+                GeoPosition = geo_position,
             });
             geo_position++;
 
             GeomancerInfo.Add(new GeoData
             {
-                indi_spell = "Indi-CHR",
-                geo_spell = "Geo-CHR",
-                geo_position = geo_position,
+                IndiSpell = "Indi-CHR",
+                GeoSpell = "Geo-CHR",
+                GeoPosition = geo_position,
             });
             geo_position++;
 
             GeomancerInfo.Add(new GeoData
             {
-                indi_spell = "Indi-MND",
-                geo_spell = "Geo-MND",
-                geo_position = geo_position,
+                IndiSpell = "Indi-MND",
+                GeoSpell = "Geo-MND",
+                GeoPosition = geo_position,
             });
             geo_position++;
 
             GeomancerInfo.Add(new GeoData
             {
-                indi_spell = "Indi-Fury",
-                geo_spell = "Geo-Fury",
-                geo_position = geo_position,
+                IndiSpell = "Indi-Fury",
+                GeoSpell = "Geo-Fury",
+                GeoPosition = geo_position,
             });
             geo_position++;
 
             GeomancerInfo.Add(new GeoData
             {
-                indi_spell = "Indi-INT",
-                geo_spell = "Geo-INT",
-                geo_position = geo_position,
+                IndiSpell = "Indi-INT",
+                GeoSpell = "Geo-INT",
+                GeoPosition = geo_position,
             });
             geo_position++;
 
             GeomancerInfo.Add(new GeoData
             {
-                indi_spell = "Indi-AGI",
-                geo_spell = "Geo-AGI",
-                geo_position = geo_position,
+                IndiSpell = "Indi-AGI",
+                GeoSpell = "Geo-AGI",
+                GeoPosition = geo_position,
             });
             geo_position++;
 
             GeomancerInfo.Add(new GeoData
             {
-                indi_spell = "Indi-Fend",
-                geo_spell = "Geo-Fend",
-                geo_position = geo_position,
+                IndiSpell = "Indi-Fend",
+                GeoSpell = "Geo-Fend",
+                GeoPosition = geo_position,
             });
             geo_position++;
 
             GeomancerInfo.Add(new GeoData
             {
-                indi_spell = "Indi-VIT",
-                geo_spell = "Geo-VIT",
-                geo_position = geo_position,
+                IndiSpell = "Indi-VIT",
+                GeoSpell = "Geo-VIT",
+                GeoPosition = geo_position,
             });
             geo_position++;
 
             GeomancerInfo.Add(new GeoData
             {
-                indi_spell = "Indi-DEX",
-                geo_spell = "Geo-DEX",
-                geo_position = geo_position,
+                IndiSpell = "Indi-DEX",
+                GeoSpell = "Geo-DEX",
+                GeoPosition = geo_position,
             });
             geo_position++;
 
             GeomancerInfo.Add(new GeoData
             {
-                indi_spell = "Indi-Acumen",
-                geo_spell = "Geo-Acumen",
-                geo_position = geo_position,
+                IndiSpell = "Indi-Acumen",
+                GeoSpell = "Geo-Acumen",
+                GeoPosition = geo_position,
             });
             geo_position++;
 
             GeomancerInfo.Add(new GeoData
             {
-                indi_spell = "Indi-STR",
-                geo_spell = "Geo-STR",
-                geo_position = geo_position,
+                IndiSpell = "Indi-STR",
+                GeoSpell = "Geo-STR",
+                GeoPosition = geo_position,
             });
             geo_position++;
 
             GeomancerInfo.Add(new GeoData
             {
-                indi_spell = "Indi-Poison",
-                geo_spell = "Geo-Poison",
-                geo_position = geo_position,
+                IndiSpell = "Indi-Poison",
+                GeoSpell = "Geo-Poison",
+                GeoPosition = geo_position,
             });
             geo_position++;
 
             GeomancerInfo.Add(new GeoData
             {
-                indi_spell = "Indi-Slow",
-                geo_spell = "Geo-Slow",
-                geo_position = geo_position,
+                IndiSpell = "Indi-Slow",
+                GeoSpell = "Geo-Slow",
+                GeoPosition = geo_position,
             });
             geo_position++;
 
             GeomancerInfo.Add(new GeoData
             {
-                indi_spell = "Indi-Torpor",
-                geo_spell = "Geo-Torpor",
-                geo_position = geo_position,
+                IndiSpell = "Indi-Torpor",
+                GeoSpell = "Geo-Torpor",
+                GeoPosition = geo_position,
             });
             geo_position++;
 
             GeomancerInfo.Add(new GeoData
             {
-                indi_spell = "Indi-Slip",
-                geo_spell = "Geo-Slip",
-                geo_position = geo_position,
+                IndiSpell = "Indi-Slip",
+                GeoSpell = "Geo-Slip",
+                GeoPosition = geo_position,
             });
             geo_position++;
 
             GeomancerInfo.Add(new GeoData
             {
-                indi_spell = "Indi-Languor",
-                geo_spell = "Geo-Languor",
-                geo_position = geo_position,
+                IndiSpell = "Indi-Languor",
+                GeoSpell = "Geo-Languor",
+                GeoPosition = geo_position,
             });
             geo_position++;
 
             GeomancerInfo.Add(new GeoData
             {
-                indi_spell = "Indi-Paralysis",
-                geo_spell = "Geo-Paralysis",
-                geo_position = geo_position,
+                IndiSpell = "Indi-Paralysis",
+                GeoSpell = "Geo-Paralysis",
+                GeoPosition = geo_position,
             });
             geo_position++;
 
             GeomancerInfo.Add(new GeoData
             {
-                indi_spell = "Indi-Vex",
-                geo_spell = "Geo-Vex",
-                geo_position = geo_position,
+                IndiSpell = "Indi-Vex",
+                GeoSpell = "Geo-Vex",
+                GeoPosition = geo_position,
             });
             geo_position++;
 
             GeomancerInfo.Add(new GeoData
             {
-                indi_spell = "Indi-Frailty",
-                geo_spell = "Geo-Frailty",
-                geo_position = geo_position,
+                IndiSpell = "Indi-Frailty",
+                GeoSpell = "Geo-Frailty",
+                GeoPosition = geo_position,
             });
             geo_position++;
 
             GeomancerInfo.Add(new GeoData
             {
-                indi_spell = "Indi-Wilt",
-                geo_spell = "Geo-Wilt",
-                geo_position = geo_position,
+                IndiSpell = "Indi-Wilt",
+                GeoSpell = "Geo-Wilt",
+                GeoPosition = geo_position,
             });
             geo_position++;
 
             GeomancerInfo.Add(new GeoData
             {
-                indi_spell = "Indi-Malaise",
-                geo_spell = "Geo-Malaise",
-                geo_position = geo_position,
+                IndiSpell = "Indi-Malaise",
+                GeoSpell = "Geo-Malaise",
+                GeoPosition = geo_position,
             });
             geo_position++;
 
             GeomancerInfo.Add(new GeoData
             {
-                indi_spell = "Indi-Gravity",
-                geo_spell = "Geo-Gravity",
-                geo_position = geo_position,
+                IndiSpell = "Indi-Gravity",
+                GeoSpell = "Geo-Gravity",
+                GeoPosition = geo_position,
             });
             geo_position++;
 
             GeomancerInfo.Add(new GeoData
             {
-                indi_spell = "Indi-Fade",
-                geo_spell = "Geo-Fade",
-                geo_position = geo_position,
+                IndiSpell = "Indi-Fade",
+                GeoSpell = "Geo-Fade",
+                GeoPosition = geo_position,
             });
         }
 
         private string ReturnGeoSpell(int GEOSpell_ID, int GeoSpell_Type)
         {
             // GRAB THE SPELL FROM THE CUSTOM LIST
-            GeoData GeoSpell = GeomancerInfo.Where(c => c.geo_position == GEOSpell_ID).FirstOrDefault();
+            GeoData GeoSpell = GeomancerInfo.Where(c => c.GeoPosition == GEOSpell_ID).FirstOrDefault();
 
             if (GeoSpell_Type == 1)
             {
-                var apiSpell = PL.Resources.GetSpell(GeoSpell.indi_spell, 0);
-                if (PL.SpellAvailable(apiSpell.Name[0]))
+                var apiSpell = _PL.Resources.GetSpell(GeoSpell.IndiSpell, 0);
+                if (_PL.SpellAvailable(apiSpell.Name[0]))
                 {
-                    return GeoSpell.indi_spell;
+                    return GeoSpell.IndiSpell;
                 }
                 else
                 {
@@ -650,11 +649,11 @@ namespace CurePlease.Engine
             }
             else if (GeoSpell_Type == 2)
             {
-                var apiSpell = PL.Resources.GetSpell(GeoSpell.geo_spell, 0);
+                var apiSpell = _PL.Resources.GetSpell(GeoSpell.GeoSpell, 0);
 
-                if (PL.SpellAvailable(apiSpell.Name[0]))
+                if (_PL.SpellAvailable(apiSpell.Name[0]))
                 {
-                    return GeoSpell.geo_spell;
+                    return GeoSpell.GeoSpell;
                 }
                 else
                 {
@@ -670,7 +669,7 @@ namespace CurePlease.Engine
 
         private bool GEO_EnemyCheck()
         {
-            if (PL == null) 
+            if (_PL == null) 
             { 
                 return false;
             }
@@ -685,7 +684,7 @@ namespace CurePlease.Engine
             }
             else
             {
-                if (PL.Resources.GetSpell(SpellCheckedResult, 0).ValidTargets == 5)
+                if (_PL.Resources.GetSpell(SpellCheckedResult, 0).ValidTargets == 5)
                 {
                     return true; // SPELL TARGET IS PLAYER THEREFORE ONLY THE DEFAULT CHECK IS REQUIRED SO JUST RETURN TRUE TO VOID THIS CHECK
                 }
@@ -695,7 +694,7 @@ namespace CurePlease.Engine
                     {
                         for (int x = 0; x < 2048; x++)
                         {
-                            XiEntity z = PL.Entity.GetEntity(x);
+                            XiEntity z = _PL.Entity.GetEntity(x);
                             if (!string.IsNullOrEmpty(z.Name))
                             {
                                 if (z.Name.ToLower() == _Config.LuopanSpellTarget.ToLower()) // A match was located so use this entity as a check.
@@ -715,14 +714,14 @@ namespace CurePlease.Engine
                         return false;
                     }
 
-                    return Monitored != null && Monitored.Player.Status == (int)EntityStatus.Engaged;
+                    return _Monitored != null && _Monitored.Player.Status == (int)EntityStatus.Engaged;
                 }
             }
         }
 
         private bool CheckEngagedStatus()
         {
-            if (PL == null)
+            if (_PL == null)
             { 
                 return false;
             }
@@ -736,7 +735,7 @@ namespace CurePlease.Engine
             {
                 for (int x = 0; x < 2048; x++)
                 {
-                    XiEntity z = PL.Entity.GetEntity(x);
+                    XiEntity z = _PL.Entity.GetEntity(x);
                     if (!string.IsNullOrEmpty(z.Name))
                     {
                         if (z.Name.ToLower() == _Config.LuopanSpellTarget.ToLower()) // A match was located so use this entity as a check.
@@ -749,7 +748,7 @@ namespace CurePlease.Engine
                 return false;
             }
 
-            return Monitored != null && Monitored.Player.Status == (int)EntityStatus.Engaged && PL.GetActivePartyMembers().FirstOrDefault(p => p.Name == Monitored.Player.Name) != null;
+            return _Monitored != null && _Monitored.Player.Status == (int)EntityStatus.Engaged && _PL.GetActivePartyMembers().FirstOrDefault(p => p.Name == _Monitored.Player.Name) != null;
         }
 
         private int GrabGEOTargetID()
@@ -758,7 +757,7 @@ namespace CurePlease.Engine
             {
                 for (int x = 0; x < 2048; x++)
                 {
-                    XiEntity z = PL.Entity.GetEntity(x);
+                    XiEntity z = _PL.Entity.GetEntity(x);
 
                     if (z.Name != null && z.Name.ToLower() == _Config.LuopanSpellTarget.ToLower())
                     {
@@ -775,10 +774,10 @@ namespace CurePlease.Engine
             }
             else
             {
-                if (Monitored != null && Monitored.Player.Status == (int)EntityStatus.Engaged)
+                if (_Monitored != null && _Monitored.Player.Status == (int)EntityStatus.Engaged)
                 {
-                    TargetInfo target = Monitored.Target.GetTargetInfo();
-                    XiEntity entity = Monitored.Entity.GetEntity(Convert.ToInt32(target.TargetIndex));
+                    TargetInfo target = _Monitored.Target.GetTargetInfo();
+                    XiEntity entity = _Monitored.Entity.GetEntity(Convert.ToInt32(target.TargetIndex));
                     return Convert.ToInt32(entity.TargetID);
                 }
 
@@ -788,24 +787,24 @@ namespace CurePlease.Engine
 
         private void FullCircle_Timer_Tick(object sender, EventArgs e)
         {
-            if (PL == null)
+            if (_PL == null)
             {
                 return;
             }
 
-            if (PL.Player.Pet.HealthPercent >= 1)
+            if (_PL.Player.Pet.HealthPercent >= 1)
             {
-                ushort PetsIndex = PL.Player.PetIndex;
+                ushort PetsIndex = _PL.Player.PetIndex;
 
                 if (_Config.FullCircleGeoTarget && !string.IsNullOrEmpty(_Config.LuopanSpellTarget))
                 {
-                    XiEntity PetsEntity = PL.Entity.GetEntity(PetsIndex);
+                    XiEntity PetsEntity = _PL.Entity.GetEntity(PetsIndex);
 
                     int FullCircle_CharID = 0;
 
                     for (int x = 0; x < 2048; x++)
                     {
-                        XiEntity entity = PL.Entity.GetEntity(x);
+                        XiEntity entity = _PL.Entity.GetEntity(x);
 
                         if (entity.Name != null && entity.Name.ToLower().Equals(_Config.LuopanSpellTarget.ToLower()))
                         {
@@ -816,7 +815,7 @@ namespace CurePlease.Engine
 
                     if (FullCircle_CharID != 0)
                     {
-                        XiEntity FullCircleEntity = PL.Entity.GetEntity(FullCircle_CharID);
+                        XiEntity FullCircleEntity = _PL.Entity.GetEntity(FullCircle_CharID);
 
                         float fX = PetsEntity.X - FullCircleEntity.X;
                         float fY = PetsEntity.Y - FullCircleEntity.Y;
@@ -826,21 +825,21 @@ namespace CurePlease.Engine
 
                         if (generatedDistance >= 10)
                         {
-                            PL.ThirdParty.SendString("/ja \"Full Circle\" <me>");
+                            _PL.ThirdParty.SendString("/ja \"Full Circle\" <me>");
                         }
                     }
                 }
-                else if (!_Config.FullCircleGeoTarget && Monitored.Player.Status == (int)EntityStatus.Engaged)
+                else if (!_Config.FullCircleGeoTarget && _Monitored.Player.Status == (int)EntityStatus.Engaged)
                 {
                     string SpellCheckedResult = ReturnGeoSpell(_Config.GeoSpell, 2);
 
-                    if (!_Config.FullCircleDisableEnemy || (_Config.FullCircleDisableEnemy && PL.Resources.GetSpell(SpellCheckedResult, 0).ValidTargets == 32))
+                    if (!_Config.FullCircleDisableEnemy || (_Config.FullCircleDisableEnemy && _PL.Resources.GetSpell(SpellCheckedResult, 0).ValidTargets == 32))
                     {
-                        XiEntity PetsEntity = Monitored.Entity.GetEntity(PetsIndex);
+                        XiEntity PetsEntity = _Monitored.Entity.GetEntity(PetsIndex);
 
-                        if (PetsEntity.Distance >= 10 && PetsEntity.Distance != 0 && PL.AbilityAvailable(Ability.FullCircle))
+                        if (PetsEntity.Distance >= 10 && PetsEntity.Distance != 0 && _PL.AbilityAvailable(Ability.FullCircle))
                         {
-                            PL.ThirdParty.SendString("/ja \"Full Circle\" <me>");
+                            _PL.ThirdParty.SendString("/ja \"Full Circle\" <me>");
                         }
                     }
                 }
@@ -851,12 +850,12 @@ namespace CurePlease.Engine
 
         private void EclipticTimer_Tick(object sender, EventArgs e)
         {
-            if (PL == null)
+            if (_PL == null)
             { 
                 return; 
             }
 
-            EclipticStillUp = PL.Player.Pet.HealthPercent >= 1;
+            EclipticStillUp = _PL.Player.Pet.HealthPercent >= 1;
         }
     }
 }

@@ -18,13 +18,12 @@
         private static void Main()
         {
             var host = AppStartup();
-            var geoEngine = ActivatorUtilities.CreateInstance<GeoEngine>(host.Services);
-            var followEngine = ActivatorUtilities.CreateInstance<FollowEngine>(host.Services);
+            var engineManager = ActivatorUtilities.CreateInstance<EngineManager>(host.Services);
 
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new MainForm(geoEngine, followEngine));
+            Application.Run(new MainForm(engineManager));
         }
 
         static void ConfigSetup(IConfigurationBuilder builder)
@@ -48,8 +47,14 @@
                         .ConfigureServices((context, services) =>
                         {
                             // here's where we can wire up dependency injection
+                            services.AddSingleton<IEngineManager, EngineManager>();
                             services.AddScoped<IGeoEngine, GeoEngine>();
-                            services.AddSingleton<IFollowEngine, FollowEngine>();
+                            services.AddScoped<IFollowEngine, FollowEngine>();
+                            services.AddScoped<IBuffEngine, BuffEngine>();
+                            services.AddScoped<ICureEngine, CureEngine>();
+                            services.AddScoped<IDebuffEngine, DebuffEngine>();
+                            services.AddScoped<IPLEngine, PLEngine>();
+                            services.AddScoped<ISongEngine, SongEngine>();
                         })
                         .UseSerilog()
                         .Build();

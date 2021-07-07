@@ -727,7 +727,7 @@ namespace CurePlease
         "led in OTHER OPTIONS\r\n\r\nOnly works with active party members, will not work with" +
         " Alliance or Trusts.");
             this.naSpellsenable.UseVisualStyleBackColor = true;
-            this.naSpellsenable.CheckedChanged += new System.EventHandler(this.naSpellsenable_CheckedChanged);
+            this.naSpellsenable.CheckedChanged += new System.EventHandler(this.NASpellsEnable_CheckedChanged);
             // 
             // naErase
             // 
@@ -741,7 +741,7 @@ namespace CurePlease
             this.naErase.Text = "Erase";
             this.toolTip1.SetToolTip(this.naErase, "Only certain debuffs will be erased, see Debuffs.xml");
             this.naErase.UseVisualStyleBackColor = true;
-            this.naErase.CheckedChanged += new System.EventHandler(this.naErase_CheckedChanged);
+            this.naErase.CheckedChanged += new System.EventHandler(this.NaErase_CheckedChanged);
             // 
             // Esuna
             // 
@@ -835,7 +835,7 @@ namespace CurePlease
             this.curagaCurePercentage.TabIndex = 8;
             this.toolTip1.SetToolTip(this.curagaCurePercentage, resources.GetString("curagaCurePercentage.ToolTip"));
             this.curagaCurePercentage.Value = 75;
-            this.curagaCurePercentage.ValueChanged += new System.EventHandler(this.curagaPercentage_ValueChanged);
+            this.curagaCurePercentage.ValueChanged += new System.EventHandler(this.CuragaPercentage_ValueChanged);
             // 
             // label30
             // 
@@ -923,7 +923,7 @@ namespace CurePlease
         "s lower than 60% it will then perform a check to see what tier is needed and cas" +
         "t that tier if available.\r\n\r\n\r\n");
             this.monitoredCurePercentage.Value = 75;
-            this.monitoredCurePercentage.ValueChanged += new System.EventHandler(this.monitoredPercentage_ValueChanged);
+            this.monitoredCurePercentage.ValueChanged += new System.EventHandler(this.MonitoredPercentage_ValueChanged);
             // 
             // label55
             // 
@@ -986,7 +986,7 @@ namespace CurePlease
         "s lower than 60% it will then perform a check to see what tier is needed and cas" +
         "t that tier if available.\r\n\r\n\r\n");
             this.priorityCurePercentage.Value = 75;
-            this.priorityCurePercentage.ValueChanged += new System.EventHandler(this.priorityCurePercentage_ValueChanged);
+            this.priorityCurePercentage.ValueChanged += new System.EventHandler(this.PriorityCurePercentage_ValueChanged);
             // 
             // priorityCurePercentageLabel
             // 
@@ -1049,7 +1049,7 @@ namespace CurePlease
         "s lower than 60% it will then perform a check to see what tier is needed and cas" +
         "t that tier if available.");
             this.curePercentage.Value = 75;
-            this.curePercentage.ValueChanged += new System.EventHandler(this.curePercentage_ValueChanged);
+            this.curePercentage.ValueChanged += new System.EventHandler(this.CurePercentage_ValueChanged);
             // 
             // cure4amount
             // 
@@ -1649,7 +1649,7 @@ namespace CurePlease
             this.saveAsButton.TabIndex = 3;
             this.saveAsButton.Text = "Save as...";
             this.saveAsButton.UseVisualStyleBackColor = true;
-            this.saveAsButton.Click += new System.EventHandler(this.saveAsButton_Click);
+            this.saveAsButton.Click += new System.EventHandler(this.SaveAsButton_Click);
             // 
             // loadButton
             // 
@@ -1659,7 +1659,7 @@ namespace CurePlease
             this.loadButton.TabIndex = 4;
             this.loadButton.Text = "Load from...";
             this.loadButton.UseVisualStyleBackColor = true;
-            this.loadButton.Click += new System.EventHandler(this.loadButton_Click);
+            this.loadButton.Click += new System.EventHandler(this.LoadButton_Click);
             // 
             // openFileDialog1
             // 
@@ -7622,7 +7622,7 @@ namespace CurePlease
             this.monitoredDebuffEnabled.TabIndex = 1;
             this.monitoredDebuffEnabled.Text = "Enable monitored player debuff removal";
             this.monitoredDebuffEnabled.UseVisualStyleBackColor = true;
-            this.monitoredDebuffEnabled.CheckedChanged += new System.EventHandler(this.monitoredDebuffEnabled_CheckedChanged);
+            this.monitoredDebuffEnabled.CheckedChanged += new System.EventHandler(this.MonitoredDebuffEnabled_CheckedChanged);
             // 
             // plDebuffEnabled
             // 
@@ -7634,7 +7634,7 @@ namespace CurePlease
             this.plDebuffEnabled.TabIndex = 1;
             this.plDebuffEnabled.Text = "Enable PL debuff removal";
             this.plDebuffEnabled.UseVisualStyleBackColor = true;
-            this.plDebuffEnabled.CheckedChanged += new System.EventHandler(this.plDebuffEnabled_CheckedChanged);
+            this.plDebuffEnabled.CheckedChanged += new System.EventHandler(this.PLDebuffEnabled_CheckedChanged);
             // 
             // tabPage1
             // 
@@ -7909,7 +7909,7 @@ namespace CurePlease
             this.autoAdjust_Cure.TabIndex = 12;
             this.autoAdjust_Cure.Text = "update";
             this.autoAdjust_Cure.UseVisualStyleBackColor = true;
-            this.autoAdjust_Cure.Click += new System.EventHandler(this.autoAdjust_Cure_Click);
+            this.autoAdjust_Cure.Click += new System.EventHandler(this.AutoAdjust_Cure_Click);
             // 
             // cure6enabled
             // 

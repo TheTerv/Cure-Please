@@ -14,23 +14,21 @@ namespace CurePlease.Engine
 
         private EliteAPI _PowerLeveler;
 
-        private EliteAPI _Monitored;
-
         private MySettings _Config;
 
         private static int? _FollowerId;
 
-        private bool _Running { get; set; }
+        private bool _Running;
 
-        private int _StuckCount { get; set; }
+        private int _StuckCount;
 
-        private bool _StuckWarning { get; set; }
+        private bool _StuckWarning;
 
-        private int _ToFarToFollowWarning { get; set; }
+        private int _ToFarToFollowWarning;
 
         private Coordinates _LastPLCoordinates;
 
-        private Timer _FollowEngineTimer = new Timer();
+        private readonly Timer _FollowEngineTimer = new();
 
         public FollowEngine(ILogger<FollowEngine> logger) 
         {
@@ -41,11 +39,12 @@ namespace CurePlease.Engine
             _FollowEngineTimer.Enabled = true;
         }
 
-        public void Setup(EliteAPI pl, EliteAPI monitored, MySettings config)
+        public void Setup(EliteAPI pl, MySettings config)
         {
             _PowerLeveler = pl;
-            _Monitored = monitored;
             _Config = config;
+
+            Start();
         }
 
         public void Start()
@@ -239,20 +238,20 @@ namespace CurePlease.Engine
                 {
                     _StuckCount++;
 
-                    if (_Config.autoFollow_Warning == true && _StuckWarning != true && followTarget.Name == _Monitored.Player.Name && _StuckCount == 10)
+                    if (_Config.autoFollow_Warning == true && _StuckWarning != true && _StuckCount == 10)
                     {
-                        IssueMessage("I appear to be stuck.");
+                        //IssueMessage(_Monitored.Player.Name, "I appear to be stuck.");
                         _StuckWarning = true;
                     }
                 }
             }
         }
 
-        private void IssueMessage(string Message)
+        private void IssueMessage(string whoToTell, string message)
         {
-            if (_Monitored != null && _Monitored.Player.Name != _PowerLeveler.Player.Name)
+            if (!string.IsNullOrWhiteSpace(whoToTell) && !string.IsNullOrWhiteSpace(message) && whoToTell != _PowerLeveler.Player.Name)
             {
-                string createdTell = "/tell " + _Monitored.Player.Name + " " + Message;
+                string createdTell = "/tell " + whoToTell + " " + message;
                 _PowerLeveler.ThirdParty.SendString(createdTell);
                 _ToFarToFollowWarning = 1;
             }
@@ -297,7 +296,7 @@ namespace CurePlease.Engine
                 // IF YOU ARE TOO FAR TO FOLLOW THEN STOP AND IF ENABLED WARN THE MONITORED PLAYER
                 if (_Config.autoFollow_Warning == true && _ToFarToFollowWarning == 0)
                 {
-                    IssueMessage("You're too far to follow.");
+                    //IssueMessage("You're too far to follow.");
                     _ToFarToFollowWarning = 1;
                 }
             }
