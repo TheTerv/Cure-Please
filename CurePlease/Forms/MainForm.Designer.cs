@@ -261,7 +261,7 @@ namespace CurePlease
             this.player0optionsButton.Text = "MENU";
             this.toolTips.SetToolTip(this.player0optionsButton, "View spells/options for this player.");
             this.player0optionsButton.UseVisualStyleBackColor = false;
-            this.player0optionsButton.Click += new System.EventHandler(this.player0optionsButton_Click);
+            this.player0optionsButton.Click += new System.EventHandler(this.Player0optionsButton_Click);
             this.player0optionsButton.Paint += new System.Windows.Forms.PaintEventHandler(this.PaintButton);
             // 
             // party0
@@ -371,7 +371,7 @@ namespace CurePlease
             this.player5buffsButton.Text = "AUTO";
             this.toolTips.SetToolTip(this.player5buffsButton, "Auto Casting Party Spells for this Player");
             this.player5buffsButton.UseVisualStyleBackColor = false;
-            this.player5buffsButton.Click += new System.EventHandler(this.player5buffsButton_Click);
+            this.player5buffsButton.Click += new System.EventHandler(this.Player5buffsButton_Click);
             this.player5buffsButton.Paint += new System.Windows.Forms.PaintEventHandler(this.PaintButton);
             // 
             // player4buffsButton
@@ -389,7 +389,7 @@ namespace CurePlease
             this.player4buffsButton.Text = "AUTO";
             this.toolTips.SetToolTip(this.player4buffsButton, "Auto Casting Party Spells for this Player");
             this.player4buffsButton.UseVisualStyleBackColor = false;
-            this.player4buffsButton.Click += new System.EventHandler(this.player4buffsButton_Click);
+            this.player4buffsButton.Click += new System.EventHandler(this.Player4buffsButton_Click);
             this.player4buffsButton.Paint += new System.Windows.Forms.PaintEventHandler(this.PaintButton);
             // 
             // player3buffsButton
@@ -407,7 +407,7 @@ namespace CurePlease
             this.player3buffsButton.Text = "AUTO";
             this.toolTips.SetToolTip(this.player3buffsButton, "Auto Casting Party Spells for this Player");
             this.player3buffsButton.UseVisualStyleBackColor = false;
-            this.player3buffsButton.Click += new System.EventHandler(this.player3buffsButton_Click);
+            this.player3buffsButton.Click += new System.EventHandler(this.Player3buffsButton_Click);
             this.player3buffsButton.Paint += new System.Windows.Forms.PaintEventHandler(this.PaintButton);
             // 
             // player2buffsButton
@@ -425,7 +425,7 @@ namespace CurePlease
             this.player2buffsButton.Text = "AUTO";
             this.toolTips.SetToolTip(this.player2buffsButton, "Auto Casting Party Spells for this Player");
             this.player2buffsButton.UseVisualStyleBackColor = false;
-            this.player2buffsButton.Click += new System.EventHandler(this.player2buffsButton_Click);
+            this.player2buffsButton.Click += new System.EventHandler(this.Player2buffsButton_Click);
             this.player2buffsButton.Paint += new System.Windows.Forms.PaintEventHandler(this.PaintButton);
             // 
             // player1buffsButton
@@ -443,7 +443,7 @@ namespace CurePlease
             this.player1buffsButton.Text = "AUTO";
             this.toolTips.SetToolTip(this.player1buffsButton, "Auto Casting Party Spells for this Player");
             this.player1buffsButton.UseVisualStyleBackColor = false;
-            this.player1buffsButton.Click += new System.EventHandler(this.player1buffsButton_Click);
+            this.player1buffsButton.Click += new System.EventHandler(this.Player1buffsButton_Click);
             this.player1buffsButton.Paint += new System.Windows.Forms.PaintEventHandler(this.PaintButton);
             // 
             // player0buffsButton
@@ -461,7 +461,7 @@ namespace CurePlease
             this.player0buffsButton.Text = "AUTO";
             this.toolTips.SetToolTip(this.player0buffsButton, "Auto Casting Party Spells for this Player");
             this.player0buffsButton.UseVisualStyleBackColor = false;
-            this.player0buffsButton.Click += new System.EventHandler(this.player0buffsButton_Click);
+            this.player0buffsButton.Click += new System.EventHandler(this.Player0buffsButton_Click);
             this.player0buffsButton.Paint += new System.Windows.Forms.PaintEventHandler(this.PaintButton);
             // 
             // player5optionsButton
@@ -479,7 +479,7 @@ namespace CurePlease
             this.player5optionsButton.Text = "MENU";
             this.toolTips.SetToolTip(this.player5optionsButton, "View spells/options for this player.");
             this.player5optionsButton.UseVisualStyleBackColor = false;
-            this.player5optionsButton.Click += new System.EventHandler(this.player5optionsButton_Click);
+            this.player5optionsButton.Click += new System.EventHandler(this.Player5optionsButton_Click);
             this.player5optionsButton.Paint += new System.Windows.Forms.PaintEventHandler(this.PaintButton);
             // 
             // player4optionsButton
@@ -497,7 +497,7 @@ namespace CurePlease
             this.player4optionsButton.Text = "MENU";
             this.toolTips.SetToolTip(this.player4optionsButton, "View spells/options for this player.");
             this.player4optionsButton.UseVisualStyleBackColor = false;
-            this.player4optionsButton.Click += new System.EventHandler(this.player4optionsButton_Click);
+            this.player4optionsButton.Click += new System.EventHandler(this.Player4optionsButton_Click);
             this.player4optionsButton.Paint += new System.Windows.Forms.PaintEventHandler(this.PaintButton);
             // 
             // player3optionsButton
@@ -515,7 +515,7 @@ namespace CurePlease
             this.player3optionsButton.Text = "MENU";
             this.toolTips.SetToolTip(this.player3optionsButton, "View spells/options for this player.");
             this.player3optionsButton.UseVisualStyleBackColor = false;
-            this.player3optionsButton.Click += new System.EventHandler(this.player3optionsButton_Click);
+            this.player3optionsButton.Click += new System.EventHandler(this.Player3optionsButton_Click);
             this.player3optionsButton.Paint += new System.Windows.Forms.PaintEventHandler(this.PaintButton);
             // 
             // player2optionsButton
@@ -533,7 +533,7 @@ namespace CurePlease
             this.player2optionsButton.Text = "MENU";
             this.toolTips.SetToolTip(this.player2optionsButton, "View spells/options for this player.");
             this.player2optionsButton.UseVisualStyleBackColor = false;
-            this.player2optionsButton.Click += new System.EventHandler(this.player2optionsButton_Click);
+            this.player2optionsButton.Click += new System.EventHandler(this.Player2optionsButton_Click);
             this.player2optionsButton.Paint += new System.Windows.Forms.PaintEventHandler(this.PaintButton);
             // 
             // player1optionsButton
@@ -551,7 +551,7 @@ namespace CurePlease
             this.player1optionsButton.Text = "MENU";
             this.toolTips.SetToolTip(this.player1optionsButton, "View spells/options for this player.");
             this.player1optionsButton.UseVisualStyleBackColor = false;
-            this.player1optionsButton.Click += new System.EventHandler(this.player1optionsButton_Click);
+            this.player1optionsButton.Click += new System.EventHandler(this.Player1optionsButton_Click);
             this.player1optionsButton.Paint += new System.Windows.Forms.PaintEventHandler(this.PaintButton);
             // 
             // player5priority
@@ -800,14 +800,14 @@ namespace CurePlease
             this.followToolStripMenuItem.Name = "followToolStripMenuItem";
             this.followToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
             this.followToolStripMenuItem.Text = "/follow";
-            this.followToolStripMenuItem.Click += new System.EventHandler(this.followToolStripMenuItem_Click);
+            this.followToolStripMenuItem.Click += new System.EventHandler(this.FollowToolStripMenuItem_Click);
             // 
             // stopfollowToolStripMenuItem
             // 
             this.stopfollowToolStripMenuItem.Name = "stopfollowToolStripMenuItem";
             this.stopfollowToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
             this.stopfollowToolStripMenuItem.Text = "Cancel /follow";
-            this.stopfollowToolStripMenuItem.Click += new System.EventHandler(this.stopfollowToolStripMenuItem_Click);
+            this.stopfollowToolStripMenuItem.Click += new System.EventHandler(this.StopfollowToolStripMenuItem_Click);
             // 
             // toolStripSeparator2
             // 
@@ -853,7 +853,7 @@ namespace CurePlease
             this.autoHasteToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
             this.autoHasteToolStripMenuItem.Text = "Auto Haste";
             this.autoHasteToolStripMenuItem.ToolTipText = "Auto Haste (Default 3 minutes)";
-            this.autoHasteToolStripMenuItem.Click += new System.EventHandler(this.autoHasteToolStripMenuItem_Click);
+            this.autoHasteToolStripMenuItem.Click += new System.EventHandler(this.AutoHasteToolStripMenuItem_Click);
             // 
             // autoHasteIIToolStripMenuItem
             // 
@@ -861,7 +861,7 @@ namespace CurePlease
             this.autoHasteIIToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
             this.autoHasteIIToolStripMenuItem.Text = "Auto Haste II";
             this.autoHasteIIToolStripMenuItem.ToolTipText = "Auto Haste II (Default 3 minutes)";
-            this.autoHasteIIToolStripMenuItem.Click += new System.EventHandler(this.autoHasteIIToolStripMenuItem_Click);
+            this.autoHasteIIToolStripMenuItem.Click += new System.EventHandler(this.AutoHasteIIToolStripMenuItem_Click);
             // 
             // autoAdloquiumToolStripMenuItem
             // 
@@ -869,7 +869,7 @@ namespace CurePlease
             this.autoAdloquiumToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
             this.autoAdloquiumToolStripMenuItem.Text = "Auto Adloquium";
             this.autoAdloquiumToolStripMenuItem.ToolTipText = "Auto Adloquium (Default 3 minutes)";
-            this.autoAdloquiumToolStripMenuItem.Click += new System.EventHandler(this.autoAdloquiumToolStripMenuItem_Click);
+            this.autoAdloquiumToolStripMenuItem.Click += new System.EventHandler(this.AutoAdloquiumToolStripMenuItem_Click);
             // 
             // autoFlurryToolStripMenuItem
             // 
@@ -877,7 +877,7 @@ namespace CurePlease
             this.autoFlurryToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
             this.autoFlurryToolStripMenuItem.Text = "Auto Flurry";
             this.autoFlurryToolStripMenuItem.ToolTipText = "Auto Flurry (Default 3 minutes)";
-            this.autoFlurryToolStripMenuItem.Click += new System.EventHandler(this.autoFlurryToolStripMenuItem_Click);
+            this.autoFlurryToolStripMenuItem.Click += new System.EventHandler(this.AutoFlurryToolStripMenuItem_Click);
             // 
             // autoFlurryIIToolStripMenuItem
             // 
@@ -885,21 +885,21 @@ namespace CurePlease
             this.autoFlurryIIToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
             this.autoFlurryIIToolStripMenuItem.Text = "Auto Flurry II";
             this.autoFlurryIIToolStripMenuItem.ToolTipText = "Auto Flurry II (Default 3 minutes)";
-            this.autoFlurryIIToolStripMenuItem.Click += new System.EventHandler(this.autoFlurryIIToolStripMenuItem_Click);
+            this.autoFlurryIIToolStripMenuItem.Click += new System.EventHandler(this.AutoFlurryIIToolStripMenuItem_Click);
             // 
             // autoShellToolStripMenuItem
             // 
             this.autoShellToolStripMenuItem.Name = "autoShellToolStripMenuItem";
             this.autoShellToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
             this.autoShellToolStripMenuItem.Text = "Auto Shell";
-            this.autoShellToolStripMenuItem.Click += new System.EventHandler(this.autoShellToolStripMenuItem_Click);
+            this.autoShellToolStripMenuItem.Click += new System.EventHandler(this.AutoShellToolStripMenuItem_Click);
             // 
             // autoProtectToolStripMenuItem
             // 
             this.autoProtectToolStripMenuItem.Name = "autoProtectToolStripMenuItem";
             this.autoProtectToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
             this.autoProtectToolStripMenuItem.Text = "Auto Protect";
-            this.autoProtectToolStripMenuItem.Click += new System.EventHandler(this.autoProtectToolStripMenuItem_Click);
+            this.autoProtectToolStripMenuItem.Click += new System.EventHandler(this.AutoProtectToolStripMenuItem_Click);
             // 
             // toolStripSeparator3
             // 
@@ -916,7 +916,7 @@ namespace CurePlease
             this.enableDebuffRemovalToolStripMenuItem.Name = "enableDebuffRemovalToolStripMenuItem";
             this.enableDebuffRemovalToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
             this.enableDebuffRemovalToolStripMenuItem.Text = "Enable Debuff Removal";
-            this.enableDebuffRemovalToolStripMenuItem.Click += new System.EventHandler(this.enableDebuffRemovalToolStripMenuItem_Click);
+            this.enableDebuffRemovalToolStripMenuItem.Click += new System.EventHandler(this.EnableDebuffRemovalToolStripMenuItem_Click);
             // 
             // toolStripSeperator13
             // 
@@ -1107,7 +1107,7 @@ namespace CurePlease
             this.setinstance.Text = "Select";
             this.toolTips.SetToolTip(this.setinstance, "Select Power Leveler");
             this.setinstance.UseVisualStyleBackColor = false;
-            this.setinstance.Click += new System.EventHandler(this.setinstance_Click);
+            this.setinstance.Click += new System.EventHandler(this.Setinstance_Click);
             this.setinstance.Paint += new System.Windows.Forms.PaintEventHandler(this.PaintButton);
             // 
             // POLID
@@ -1198,7 +1198,7 @@ namespace CurePlease
             this.player17optionsButton.Text = "MENU";
             this.toolTips.SetToolTip(this.player17optionsButton, "View spells/options for this player.");
             this.player17optionsButton.UseVisualStyleBackColor = false;
-            this.player17optionsButton.Click += new System.EventHandler(this.player17optionsButton_Click);
+            this.player17optionsButton.Click += new System.EventHandler(this.Player17optionsButton_Click);
             this.player17optionsButton.Paint += new System.Windows.Forms.PaintEventHandler(this.PaintButton);
             // 
             // player16HP
@@ -1259,7 +1259,7 @@ namespace CurePlease
             this.player16optionsButton.Text = "MENU";
             this.toolTips.SetToolTip(this.player16optionsButton, "View spells/options for this player.");
             this.player16optionsButton.UseVisualStyleBackColor = false;
-            this.player16optionsButton.Click += new System.EventHandler(this.player16optionsButton_Click);
+            this.player16optionsButton.Click += new System.EventHandler(this.Player16optionsButton_Click);
             this.player16optionsButton.Paint += new System.Windows.Forms.PaintEventHandler(this.PaintButton);
             // 
             // player14HP
@@ -1313,7 +1313,7 @@ namespace CurePlease
             this.player15optionsButton.Text = "MENU";
             this.toolTips.SetToolTip(this.player15optionsButton, "View spells/options for this player.");
             this.player15optionsButton.UseVisualStyleBackColor = false;
-            this.player15optionsButton.Click += new System.EventHandler(this.player15optionsButton_Click);
+            this.player15optionsButton.Click += new System.EventHandler(this.Player15optionsButton_Click);
             this.player15optionsButton.Paint += new System.Windows.Forms.PaintEventHandler(this.PaintButton);
             // 
             // player15priority
@@ -1353,7 +1353,7 @@ namespace CurePlease
             this.player14optionsButton.Text = "MENU";
             this.toolTips.SetToolTip(this.player14optionsButton, "View spells/options for this player.");
             this.player14optionsButton.UseVisualStyleBackColor = false;
-            this.player14optionsButton.Click += new System.EventHandler(this.player14optionsButton_Click);
+            this.player14optionsButton.Click += new System.EventHandler(this.Player14optionsButton_Click);
             this.player14optionsButton.Paint += new System.Windows.Forms.PaintEventHandler(this.PaintButton);
             // 
             // player14priority
@@ -1393,7 +1393,7 @@ namespace CurePlease
             this.player13optionsButton.Text = "MENU";
             this.toolTips.SetToolTip(this.player13optionsButton, "View spells/options for this player.");
             this.player13optionsButton.UseVisualStyleBackColor = false;
-            this.player13optionsButton.Click += new System.EventHandler(this.player13optionsButton_Click);
+            this.player13optionsButton.Click += new System.EventHandler(this.Player13optionsButton_Click);
             this.player13optionsButton.Paint += new System.Windows.Forms.PaintEventHandler(this.PaintButton);
             // 
             // player13priority
@@ -1422,7 +1422,7 @@ namespace CurePlease
             this.player12optionsButton.Text = "MENU";
             this.toolTips.SetToolTip(this.player12optionsButton, "View spells/options for this player.");
             this.player12optionsButton.UseVisualStyleBackColor = false;
-            this.player12optionsButton.Click += new System.EventHandler(this.player12optionsButton_Click);
+            this.player12optionsButton.Click += new System.EventHandler(this.Player12optionsButton_Click);
             this.player12optionsButton.Paint += new System.Windows.Forms.PaintEventHandler(this.PaintButton);
             // 
             // player13enabled
@@ -1533,11 +1533,11 @@ namespace CurePlease
             // partyMembersUpdate
             // 
             this.partyMembersUpdate.Interval = 250;
-            this.partyMembersUpdate.Tick += new System.EventHandler(this.partyMembersUpdate_TickAsync);
+            this.partyMembersUpdate.Tick += new System.EventHandler(this.PartyMembersUpdate_TickAsync);
             // 
             // actionTimer
             // 
-            this.actionTimer.Tick += new System.EventHandler(this.actionTimer_TickAsync);
+            this.actionTimer.Tick += new System.EventHandler(this.ActionTimer_TickAsync);
             // 
             // player6
             // 
@@ -1744,7 +1744,7 @@ namespace CurePlease
             this.player11optionsButton.Text = "MENU";
             this.toolTips.SetToolTip(this.player11optionsButton, "View spells/options for this player.");
             this.player11optionsButton.UseVisualStyleBackColor = false;
-            this.player11optionsButton.Click += new System.EventHandler(this.player11optionsButton_Click);
+            this.player11optionsButton.Click += new System.EventHandler(this.Player11optionsButton_Click);
             this.player11optionsButton.Paint += new System.Windows.Forms.PaintEventHandler(this.PaintButton);
             // 
             // player10HP
@@ -1787,7 +1787,7 @@ namespace CurePlease
             this.player10optionsButton.Text = "MENU";
             this.toolTips.SetToolTip(this.player10optionsButton, "View spells/options for this player.");
             this.player10optionsButton.UseVisualStyleBackColor = false;
-            this.player10optionsButton.Click += new System.EventHandler(this.player10optionsButton_Click);
+            this.player10optionsButton.Click += new System.EventHandler(this.Player10optionsButton_Click);
             this.player10optionsButton.Paint += new System.Windows.Forms.PaintEventHandler(this.PaintButton);
             // 
             // player7HP
@@ -1819,7 +1819,7 @@ namespace CurePlease
             this.player9optionsButton.Text = "MENU";
             this.toolTips.SetToolTip(this.player9optionsButton, "View spells/options for this player.");
             this.player9optionsButton.UseVisualStyleBackColor = false;
-            this.player9optionsButton.Click += new System.EventHandler(this.player9optionsButton_Click);
+            this.player9optionsButton.Click += new System.EventHandler(this.Player9optionsButton_Click);
             this.player9optionsButton.Paint += new System.Windows.Forms.PaintEventHandler(this.PaintButton);
             // 
             // player6HP
@@ -1855,7 +1855,7 @@ namespace CurePlease
             this.player8optionsButton.Text = "MENU";
             this.toolTips.SetToolTip(this.player8optionsButton, "View spells/options for this player.");
             this.player8optionsButton.UseVisualStyleBackColor = false;
-            this.player8optionsButton.Click += new System.EventHandler(this.player8optionsButton_Click);
+            this.player8optionsButton.Click += new System.EventHandler(this.Player8optionsButton_Click);
             this.player8optionsButton.Paint += new System.Windows.Forms.PaintEventHandler(this.PaintButton);
             // 
             // player7optionsButton
@@ -1873,7 +1873,7 @@ namespace CurePlease
             this.player7optionsButton.Text = "MENU";
             this.toolTips.SetToolTip(this.player7optionsButton, "View spells/options for this player.");
             this.player7optionsButton.UseVisualStyleBackColor = false;
-            this.player7optionsButton.Click += new System.EventHandler(this.player7optionsButton_Click);
+            this.player7optionsButton.Click += new System.EventHandler(this.Player7optionsButton_Click);
             this.player7optionsButton.Paint += new System.Windows.Forms.PaintEventHandler(this.PaintButton);
             // 
             // player9priority
@@ -1902,7 +1902,7 @@ namespace CurePlease
             this.player6optionsButton.Text = "MENU";
             this.toolTips.SetToolTip(this.player6optionsButton, "View spells/options for this player.");
             this.player6optionsButton.UseVisualStyleBackColor = false;
-            this.player6optionsButton.Click += new System.EventHandler(this.player6optionsButton_Click);
+            this.player6optionsButton.Click += new System.EventHandler(this.Player6optionsButton_Click);
             this.player6optionsButton.Paint += new System.Windows.Forms.PaintEventHandler(this.PaintButton);
             // 
             // player8priority
@@ -1962,7 +1962,7 @@ namespace CurePlease
             this.setinstance2.Text = "Select";
             this.toolTips.SetToolTip(this.setinstance2, "Select Monitored Player");
             this.setinstance2.UseVisualStyleBackColor = false;
-            this.setinstance2.Click += new System.EventHandler(this.setinstance2_Click);
+            this.setinstance2.Click += new System.EventHandler(this.Setinstance2_Click);
             this.setinstance2.Paint += new System.Windows.Forms.PaintEventHandler(this.PaintButton);
             // 
             // monitoredLabel
@@ -1991,7 +1991,7 @@ namespace CurePlease
             this.pauseButton.Text = "Pause";
             this.toolTips.SetToolTip(this.pauseButton, "Pauses Bot");
             this.pauseButton.UseVisualStyleBackColor = false;
-            this.pauseButton.Click += new System.EventHandler(this.button3_Click);
+            this.pauseButton.Click += new System.EventHandler(this.Button3_Click);
             this.pauseButton.Paint += new System.Windows.Forms.PaintEventHandler(this.PaintButton);
             // 
             // checkBox1
@@ -2005,7 +2005,7 @@ namespace CurePlease
             this.checkBox1.Text = "Always on Top";
             this.toolTips.SetToolTip(this.checkBox1, "Always on Top");
             this.checkBox1.UseVisualStyleBackColor = true;
-            this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+            this.checkBox1.CheckedChanged += new System.EventHandler(this.CheckBox1_CheckedChanged);
             // 
             // trackBar1
             // 
@@ -2019,7 +2019,7 @@ namespace CurePlease
             this.trackBar1.TabIndex = 19;
             this.toolTips.SetToolTip(this.trackBar1, "Cure Please Transparency");
             this.trackBar1.Value = 100;
-            this.trackBar1.Scroll += new System.EventHandler(this.trackBar1_Scroll);
+            this.trackBar1.Scroll += new System.EventHandler(this.TrackBar1_Scroll);
             // 
             // autoOptions
             // 
@@ -2044,21 +2044,21 @@ namespace CurePlease
             this.autoPhalanxIIToolStripMenuItem1.Name = "autoPhalanxIIToolStripMenuItem1";
             this.autoPhalanxIIToolStripMenuItem1.Size = new System.Drawing.Size(178, 22);
             this.autoPhalanxIIToolStripMenuItem1.Text = "Auto Phalanx II";
-            this.autoPhalanxIIToolStripMenuItem1.Click += new System.EventHandler(this.autoPhalanxIIToolStripMenuItem1_Click);
+            this.autoPhalanxIIToolStripMenuItem1.Click += new System.EventHandler(this.AutoPhalanxIIToolStripMenuItem1_Click);
             // 
             // autoRegenVToolStripMenuItem
             // 
             this.autoRegenVToolStripMenuItem.Name = "autoRegenVToolStripMenuItem";
             this.autoRegenVToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
             this.autoRegenVToolStripMenuItem.Text = "Auto Regen";
-            this.autoRegenVToolStripMenuItem.Click += new System.EventHandler(this.autoRegenVToolStripMenuItem_Click);
+            this.autoRegenVToolStripMenuItem.Click += new System.EventHandler(this.AutoRegenVToolStripMenuItem_Click);
             // 
             // autoRefreshIIToolStripMenuItem
             // 
             this.autoRefreshIIToolStripMenuItem.Name = "autoRefreshIIToolStripMenuItem";
             this.autoRefreshIIToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
             this.autoRefreshIIToolStripMenuItem.Text = "Auto Refresh";
-            this.autoRefreshIIToolStripMenuItem.Click += new System.EventHandler(this.autoRefreshIIToolStripMenuItem_Click);
+            this.autoRefreshIIToolStripMenuItem.Click += new System.EventHandler(this.AutoRefreshIIToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
@@ -2212,7 +2212,7 @@ namespace CurePlease
             // 
             this.updateInstances.Enabled = true;
             this.updateInstances.Interval = 60000;
-            this.updateInstances.Tick += new System.EventHandler(this.updateInstances_Tick);
+            this.updateInstances.Tick += new System.EventHandler(this.UpdateInstances_Tick);
             // 
             // checkCustomActions
             // 
@@ -2330,7 +2330,7 @@ namespace CurePlease
             this.actionlog_box.Size = new System.Drawing.Size(561, 320);
             this.actionlog_box.TabIndex = 34;
             this.actionlog_box.Text = "";
-            this.actionlog_box.TextChanged += new System.EventHandler(this.actionlog_box_TextChanged);
+            this.actionlog_box.TextChanged += new System.EventHandler(this.Actionlog_box_TextChanged);
             // 
             // MainForm
             // 

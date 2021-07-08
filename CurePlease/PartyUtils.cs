@@ -3,27 +3,26 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+using static EliteMMO.API.EliteAPI;
 using static System.Windows.Forms.Control;
 
 namespace CurePlease
 {
     public class PartyUtils
     {
-        public static List<Label> ListOfPartyLabels = new List<Label>();
-        public static List<ProgressBar> ListOfPartyProgressBars = new List<ProgressBar>();
-        public static List<Button> ListOfPartyButtons = new List<Button>();
+        private static List<Label> ListOfPartyLabels = new();
+        private static List<ProgressBar> ListOfPartyProgressBars = new();
+        private static List<Button> ListOfPartyButtons = new();
 
-        public static EliteAPI PL = MainForm.PL;
-
-        public static void UpdatePartyControls(ControlCollection controlCollection)
+        public static void UpdatePartyControls(PartyTools party, ControlCollection controlCollection)
         {
             BuildListOfPartyControls(controlCollection);
 
             // scanning alliance
             for (int i = 0; i < 18; i++)
             {
-                UpdatePartyMember(i);
-                UpdateHPProgressBar(i);
+                UpdatePartyMember(party, i);
+                UpdateHPProgressBar(party, i);
             }
         }
 
@@ -39,17 +38,17 @@ namespace CurePlease
             }
         }
 
-        private static bool UpdatePartyMember(int index)
+        private static bool UpdatePartyMember(PartyTools party, int index)
         {
             Label player = ListOfPartyLabels.FirstOrDefault(c => c.Name == $"player{index}");
             ProgressBar playerHP = ListOfPartyProgressBars.FirstOrDefault(c => c.Name == $"player{index}HP");
             Button playerOptionsButton = ListOfPartyButtons.FirstOrDefault(c => c.Name == $"player{index}optionsButton");
 
-            var doUpdate = PartyMemberUpdateMethod((byte)index);
+            var doUpdate = PartyMemberUpdateMethod(party, (byte)index);
 
             if (doUpdate)
             {
-                var partyMember = PL.Party.GetPartyMember(index);
+                var partyMember = party.GetPartyMember(index);
                 player.Text = partyMember?.Name;
             }
             else
@@ -64,9 +63,9 @@ namespace CurePlease
             return doUpdate;
         }
 
-        private static bool PartyMemberUpdateMethod(byte partyMemberId)
+        private static bool PartyMemberUpdateMethod(PartyTools party, byte partyMemberId)
         {
-            if (PL.Party.GetPartyMembers()[partyMemberId].Active >= 1)
+            if (party.GetPartyMembers()[partyMemberId].Active >= 1)
             {
                 return true;
             }
@@ -74,7 +73,7 @@ namespace CurePlease
             return false;
         }
 
-        private static void UpdateHPProgressBar(int index)
+        private static void UpdateHPProgressBar(PartyTools party, int index)
         {
             Label player = ListOfPartyLabels.FirstOrDefault(c => c.Name == $"player{index}");
             ProgressBar playerHP = ListOfPartyProgressBars.OfType<ProgressBar>().FirstOrDefault(c => c.Name == $"player{index}HP");
@@ -84,7 +83,7 @@ namespace CurePlease
                 return;
             }
 
-            int CurrentHPP = PL.Party.GetPartyMember(index).CurrentHPP;
+            int CurrentHPP = party.GetPartyMember(index).CurrentHPP;
 
             playerHP.Value = CurrentHPP;
             if (CurrentHPP >= 75)

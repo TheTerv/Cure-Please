@@ -27,7 +27,12 @@ namespace CurePlease.Model
                 {
                     if(!string.IsNullOrEmpty(Spell))
                     {
-                        return $"Using {JobAbility} + Casting {Spell} on {Target}";
+                        var message = $"Using {JobAbility} + ";
+
+                        if (!string.IsNullOrWhiteSpace(JobAbility2))
+                            message += $"{JobAbility2} + ";
+
+                        return message += $"Casting {Spell} on {Target ?? "<me>"}";
                     }
 
                     return $"Using {JobAbility} on {Target}";
@@ -36,6 +41,10 @@ namespace CurePlease.Model
                 return $"Casting {Spell} on {Target}";
             } 
         }
+
         public string Error { get; set; }
+
+        // feel shame!
+        public string JobAbility2 { get; set; }
     }
 }

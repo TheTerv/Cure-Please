@@ -1,24 +1,24 @@
-﻿namespace CurePlease
+﻿using CurePlease.Engine;
+using CurePlease.Model;
+using CurePlease.Model.Config;
+using EliteMMO.API;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Windows.Forms;
+using System.Xml.Serialization;
+using static CurePlease.Model.JobUtils;
+using Keys = System.Windows.Forms.Keys;
+
+namespace CurePlease
 {
-    using CurePlease.Engine;
-    using CurePlease.Model;
-    using CurePlease.Model.Config;
-    using EliteMMO.API;
-    using System;
-    using System.Collections.Generic;
-    using System.Globalization;
-    using System.IO;
-    using System.Linq;
-    using System.Windows.Forms;
-    using System.Xml.Serialization;
-    using static CurePlease.Model.JobUtils;
-    using Keys = System.Windows.Forms.Keys;
-
-    #region "== Form2"
-
     public partial class ConfigForm : Form
     {
-        public static MySettings config = new MySettings();
+        #region "== Form2"
+
+        public static MySettings Config = new();
         
         public int runOnce = 0;
 
@@ -28,431 +28,649 @@
 
             InitializeComponent();
 
-            if (config.settingsSet != true)
+            if (Config.settingsSet != true)
             {
                 LoadConfiguration();
-                config.settingsSet = true;
+                Config.settingsSet = true;
             }
 
-            updateForm ( config );
+            UpdateForm(Config);
         }
 
         public static void LoadConfiguration()
         {
             var loadedSettings = ReadConfigurationFromFile();
 
-            config = loadedSettings ?? LoadDefaultConfig();
+            Config = loadedSettings ?? LoadDefaultConfig();
+        }
+
+        public SongConfig GetSongConfig()
+        {
+            return new SongConfig()
+            {
+                SingingEnabled = enableSinging.Checked,
+                SingOnlyWhenNear = SongsOnlyWhenNearEngaged.Checked,
+                SongRecastMinutes = recastSong.Value,
+                Dummy1 = dummy1.SelectedIndex,
+                Dummy2 = dummy2.SelectedIndex,
+                Song1 = song1.SelectedIndex,
+                Song2 = song2.SelectedIndex,
+                Song3 = song3.SelectedIndex,
+                Song4 = song4.SelectedIndex,
+                TroubadourEnabled = Config.Troubadour,
+                NightingaleEnabled = Config.Nightingale
+            };
+        }
+
+        public static GeoConfig GetGeoConfig()
+        {
+            return new GeoConfig()
+            {
+                IndiSpellsEnabled = Config.EnableIndiSpells,
+                GeoWhenEngaged = Config.GeoWhenEngaged,
+                RadialArcanaEnabled = Config.RadialArcana,
+                RadialArcanaMP = Config.RadialArcanaMP,
+                RadialArcanaSpell = Config.RadialArcana_Spell,
+                GeoSpell = Config.GeoSpell_Spell,
+                FullCircleEnabled = Config.FullCircle,
+                FullCircleGeoTarget = Config.Fullcircle_GEOTarget,
+                FullCircleDisableEnemy = Config.Fullcircle_DisableEnemy,
+                LuopanSpellsEnabled = Config.EnableLuopanSpells,
+                LuopanSpellTarget = Config.LuopanSpell_Target,
+                SpecifiedEngageTarget = Config.specifiedEngageTarget,
+                EntrustEnabled = Config.EntrustEnabled,
+                EntrustSpell = Config.EntrustedSpell_Spell,
+                EntrustSpellTarget = Config.EntrustedSpell_Target,
+                IndiWhenEngaged = Config.EngagedOnly,
+                DematerializeEnabled = Config.Dematerialize,
+                EclipticAttritionEnabled = Config.EclipticAttrition,
+                LifeCycleEnabled = Config.LifeCycle,
+                BlazeOfGloryEnabled = Config.BlazeOfGlory,
+                IndiSpell = Config.IndiSpell_Spell
+            };
+        }
+
+        public static BuffConfig GetBuffConfig()
+        {
+            return new BuffConfig()
+            {
+                AddonIP = Config.ipAddress,
+                AddonPort = Config.listeningPort
+            };
+        }
+
+        public DebuffConfig GetDebuffConfig()
+        {
+            return new DebuffConfig()
+            {
+                AddonIP = Config.ipAddress,
+                AddonPort = Config.listeningPort,
+                PLDebuffEnabled = Config.plDebuffEnabled,
+                MonitoredDebuffEnabled = Config.monitoredDebuffEnabled,
+                PartyDebuffEnabled = Config.enablePartyDebuffRemoval,
+                OnlySpecificMembers = Config.SpecifiednaSpellsenable,
+                DebuffEnabled = DebuffEnabled,
+                PrioritizeOverLowerCures = Config.PrioritiseOverLowerTier
+            };
+        }
+
+        public static PLConfig GetPLConfig()
+        {
+            return new PLConfig()
+            {
+                PLSilenceItemEnabled = Config.plSilenceItemEnabled,
+                PLSilenceItem = Config.plSilenceItem,
+                PLDoomItemEnabled = Config.plDoomEnabled,
+                PLDoomItem = Config.plDoomitem,
+                DivineSeal = Config.DivineSeal,
+                Convert = Config.Convert,
+                ConvertMP = Config.convertMP,
+                MinCastingMP = Config.mpMinCastValue,
+                LowMPEnabled = Config.lowMPcheckBox,
+                HealLowMPEnabled = Config.healLowMP,
+                HealMPThreshold = Config.healWhenMPBelow,
+                StandMPEnabled = Config.standAtMP,
+                StandMPThreshold = Config.standAtMP_Percentage,
+                BarElementEnabled = Config.plBarElement,
+                AOEBarElementEnabled = Config.AOE_Barelemental,
+                BarElementSpell = Config.AOE_Barelemental ? Data.AoeBarSpells[Config.plBarElement_Spell] : Data.BarSpells[Config.plBarElement_Spell],
+                BarStatusEnabled = Config.plBarStatus,
+                AOEBarStatusEnabled = Config.AOE_Barstatus,
+                BarStatusSpell = Config.AOE_Barstatus ? Data.AoeBarStatus[Config.plBarStatus_Spell] : Data.BarStatus[Config.plBarStatus_Spell],
+                EnSpellEnabled = Config.plEnspell,
+                EnSpell = Data.Enspells[Config.plEnspell_Spell],
+                EnspellAccession = Config.enspellAccession,
+                EnspellPerpetuance = Config.enspellPerpetuance,
+                StormSpellEnabled = Config.plStormSpell,
+                StormSpell = Data.StormTiers[Config.plStormSpell_Spell],
+                GainBoostSpellEnabled = Config.plGainBoost,
+                GainBoostSpell = Data.GainBoostSpells[Config.plGainBoost_Spell],
+                Composure = Config.Composure,
+                LightArts = Config.LightArts,
+                AddendumWhite = Config.AddendumWhite,
+                DarkArts = Config.DarkArts,
+                AddendumBlack = Config.AddendumBlack,
+                ShellraEnabled = Config.plShellra,
+                ShellraLevel = (int)Config.plShellra_Level,
+                ProtectraEnabled = Config.plProtectra,
+                ProtectraLevel = (int)Config.plProtectra_Level,
+                AccessionEnabled = Config.Accession,
+                BarElementAccession = Config.barspellAccession,
+                BarStatusAccession = Config.barstatusAccession,
+                PerpetuanceEnabled = Config.Perpetuance,
+                BarElemenetPerpetuance = Config.barspellPerpetuance,
+                BarStatusPerpetuance = Config.barstatusPerpetuance,
+                StormspellAccession = Config.stormspellAccession,
+                StormspellPerpetuance = Config.stormspellPerpetuance,
+                ProtectEnabled = Config.plProtect,
+                ProtectSpell = Data.ProtectTiers[Config.autoProtect_Spell],
+                ShellEnabled = Config.plShell,
+                ShellSpell = Data.ShellTiers[Config.autoShell_Spell],
+                AccessionProtectShell = Config.accessionProShell,
+                ReraiseEnabled = Config.plReraise,
+                ReraiseSpell = Config.plReraise_Level > 0 ? Data.ReraiseTiers[Config.plReraise_Level - 1] : Data.ReraiseTiers[0],
+                EnlightenmentReraise = Config.EnlightenmentReraise,
+                UtsusemiEnabled = Config.plUtsusemi,
+                BlinkEnabled = Config.plBlink,
+                BlinkAccession = Config.blinkAccession,
+                BlinkPerpetuance = Config.blinkPerpetuance,
+                PhalanxEnabled = Config.plPhalanx,
+                PhalanxAccession = Config.phalanxAccession,
+                PhalanxPerpetuance = Config.phalanxPerpetuance,
+                RefreshEnabled = Config.plRefresh,
+                RefreshSpell = Config.plRefresh_Level > 0 ? Data.RefreshTiers[Config.plRefresh_Level - 1] : Data.RefreshTiers[0],
+                RefreshAccession = Config.refreshAccession,
+                RefreshPerpetuance = Config.refreshPerpetuance,
+                RegenEnabled = Config.plRegen,
+                RegenSpell = Config.plRegen_Level > 0 ? Data.RegenTiers[Config.plRegen_Level - 1] : Data.RegenTiers[0],
+                RegenAccession = Config.regenAccession,
+                RegenPerpetuance = Config.regenPerpetuance,
+                AdloquiumEnabled = Config.plAdloquium,
+                AdloquiumAccession = Config.adloquiumAccession,
+                AdloquiumPerpetuance = Config.adloquiumPerpetuance,
+                StoneskinEnabled = Config.plStoneskin,
+                StoneskinAccession = Config.stoneskinAccession,
+                StoneskinPerpetuance = Config.stoneskinPerpetuance,
+                AquaveilEnabled = Config.plAquaveil,
+                AquaveilAccession = Config.aquaveilAccession,
+                AquaveilPerpetuance = Config.aquaveilPerpetuance,
+                KlimaformEnabled = Config.plKlimaform,
+                TemperEnabled = Config.plTemper,
+                TemperSpell = Config.plTemper_Level > 0 ? Data.TemperTiers[Config.plTemper_Level - 1] : Data.TemperTiers[0],
+                HasteEnabled = Config.plHaste,
+                HasteSpell = Config.plHaste_Level > 0 ? Data.HasteTiers[Config.plHaste_Level - 1] : Data.HasteTiers[0],
+                SpikesEnabled = Config.plSpikes,
+                SpikesSpell = Data.SpikesSpells[Config.plSpikes_Spell],
+                AuspiceEnabled = Config.plAuspice,
+                AutoTargetEnabled = Config.autoTarget,
+                AutoTargetSpell = Config.autoTargetSpell,
+                AutoTargetTarget = Config.autoTarget_Target,
+                AssistSpecifiedTarget = Config.AssistSpecifiedTarget,
+                PartyBasedHateSpell = Config.Hate_SpellType == 1,
+                AfflatusSolaceEnabled = Config.AfflatusSolace,
+                AfflatusMiseryEnabled = Config.AfflatusMisery,
+                SublimationEnabled = Config.Sublimation,
+                SublimationMPLossThreshold = Config.sublimationMP,
+                DivineCaressEnabled = Config.DivineCaress,
+                DebuffsEnabled = (Config.plDebuffEnabled || Config.monitoredDebuffEnabled || Config.enablePartyDebuffRemoval),
+                DevotionEnabled = Config.Devotion,
+                DevotionWhenEngaged = Config.DevotionWhenEngaged,
+                DevotionMPThreshold = Config.DevotionMP,
+                DevotionSpecifiedTarget = Config.DevotionTargetType == 0,
+                DevotionTargetName = Config.DevotionTargetName
+            };
+        }
+
+        public CureConfig GetCureConfig()
+        {
+            return new CureConfig()
+            {
+                EnabledCureTiers = new bool[] { Config.cure1enabled, Config.cure2enabled, Config.cure3enabled, Config.cure4enabled, Config.cure5enabled, Config.cure6enabled },
+                CureTierThresholds = new int[] { Config.cure1amount, Config.cure2amount, Config.cure3amount, Config.cure4amount, Config.cure5amount, Config.cure6amount },
+                EnabledCuragaTiers = new bool[] { Config.curagaEnabled, Config.curaga2enabled, Config.curaga3enabled, Config.curaga4enabled, Config.curaga5enabled },
+                CuragaTierThresholds = new int[] { Config.curagaAmount, Config.curaga2Amount, Config.curaga3Amount, Config.curaga4Amount, Config.curaga5Amount },
+                EnableOutOfPartyHealing = Config.enableOutOfPartyHealing,
+                MonitoredCurePercentage = Config.monitoredCurePercentage,
+                CuragaMinPlayers = (int)Config.curagaRequiredMembers,
+                CuragaHealthPercent = curagaCurePercentage.Value,
+                CureHealthPercent = curePercentage.Value,
+                MonitoredPriorityEnabled = Config.enableMonitoredPriority,
+                OverCureEnabled = Config.Overcure,
+                UnderCureEnabled = Config.Undercure,
+                CuragaSpecifiedEnabled = Config.curagaTargetType != 0,
+                CuragaSpecifiedName = Config.curagaTargetName
+            };
         }
 
         private static MySettings ReadConfigurationFromFile()
         {
             string fileName = CreateFileName();
-            string path = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "Settings", fileName);
+            string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Settings", fileName);
             return ReadSettings(path);
         }
 
         private static MySettings LoadDefaultConfig()
         {
-            // HEALING MAGIC
-            config.cure1enabled = false;
-            config.cure2enabled = false;
-            config.cure3enabled = true;
-            config.cure4enabled = true;
-            config.cure5enabled = true;
-            config.cure6enabled = true;
-            config.cure1amount = 10;
-            config.cure2amount = 60;
-            config.cure3amount = 130;
-            config.cure4amount = 270;
-            config.cure5amount = 450;
-            config.cure6amount = 600;
-            config.curePercentage = 75;
-            config.monitoredCurePercentage = 85;
-            config.priorityCurePercentage = 95;
+            #region Healing Defaults
 
-            config.curagaEnabled = false;
-            config.curaga2enabled = false;
-            config.curaga3enabled = false;
-            config.curaga4enabled = false;
-            config.curaga5enabled = false;
-            config.curagaAmount = 20;
-            config.curaga2Amount = 70;
-            config.curaga3Amount = 165;
-            config.curaga4Amount = 330;
-            config.curaga5Amount = 570;
-            config.curagaCurePercentage = 75;
-            config.curagaTargetType = 0;
-            config.curagaTargetName = "";
-            config.curagaRequiredMembers = 3;
+            // HEALING MAGIC
+            Config.cure1enabled = false;
+            Config.cure2enabled = false;
+            Config.cure3enabled = true;
+            Config.cure4enabled = true;
+            Config.cure5enabled = true;
+            Config.cure6enabled = true;
+            Config.cure1amount = 10;
+            Config.cure2amount = 60;
+            Config.cure3amount = 130;
+            Config.cure4amount = 270;
+            Config.cure5amount = 450;
+            Config.cure6amount = 600;
+            Config.curePercentage = 75;
+            Config.monitoredCurePercentage = 85;
+            Config.priorityCurePercentage = 95;
+
+            Config.curagaEnabled = false;
+            Config.curaga2enabled = false;
+            Config.curaga3enabled = false;
+            Config.curaga4enabled = false;
+            Config.curaga5enabled = false;
+            Config.curagaAmount = 20;
+            Config.curaga2Amount = 70;
+            Config.curaga3Amount = 165;
+            Config.curaga4Amount = 330;
+            Config.curaga5Amount = 570;
+            Config.curagaCurePercentage = 75;
+            Config.curagaTargetType = 0;
+            Config.curagaTargetName = "";
+            Config.curagaRequiredMembers = 3;
+
+            #endregion
+
+            #region Enhancing Defaults
 
             // ENHANCING MAGIC
 
             // BASIC ENHANCING
-            config.autoHasteMinutes = 2;
-            config.autoAdloquiumMinutes = 2;
-            config.autoProtect_Minutes = 29;
-            config.autoShellMinutes = 29;
-            config.autoPhalanxIIMinutes = 2;
-            config.autoStormspellMinutes = 3;
-            config.autoRefresh_Minutes = 2;
-            config.autoRegen_Minutes = 1;
-            config.autoRefresh_Minutes = 2;
-            config.plProtect = false;
-            config.plShell = false;
-            config.plBlink = false;
-            config.plReraise = false;
-            config.autoRegen_Spell = 3;
-            config.autoRefresh_Spell = 1;
-            config.autoShell_Spell = 4;
-            config.autoStorm_Spell = 0;
-            config.autoProtect_Spell = 4;
-            config.plRegen = false;
-            config.plRegen_Level = 4;
-            config.plReraise = false;
-            config.plReraise_Level = 2;
-            config.plRefresh = false;
-            config.plRefresh_Level = 2;
-            config.plStoneskin = false;
-            config.plPhalanx = false;
-            config.plProtectra = false;
-            config.plShellra = false;
-            config.plProtectra_Level = 5;
-            config.plShellra_Level = 5;
-            config.plTemper = false;
-            config.plTemper_Level = 0;
-            config.plEnspell = false;
-            config.plEnspell_Spell = 0;
-            config.plGainBoost = false;
-            config.plGainBoost_Spell = 0;
-            config.plBarElement = false;
-            config.plBarElement_Spell = 0;
-            config.AOE_Barelemental = false;
-            config.plBarStatus = false;
-            config.plBarStatus_Spell = 0;
-            config.AOE_Barstatus = false;
-            config.plStormSpell = false;
-            config.plAdloquium = false;
-            config.plKlimaform = false;
-            config.plStormSpell_Spell = 0;
-            config.plAuspice = false;
-            config.plAquaveil = false;
-            config.plHaste = false;
-            config.plHaste_Level = 0;
-            config.plSpikes = false;
-            config.plSpikes_Spell = 0;
+            Config.autoHasteMinutes = 2;
+            Config.autoAdloquiumMinutes = 2;
+            Config.autoProtect_Minutes = 29;
+            Config.autoShellMinutes = 29;
+            Config.autoPhalanxIIMinutes = 2;
+            Config.autoStormspellMinutes = 3;
+            Config.autoRefresh_Minutes = 2;
+            Config.autoRegen_Minutes = 1;
+            Config.autoRefresh_Minutes = 2;
+            Config.plProtect = false;
+            Config.plShell = false;
+            Config.plBlink = false;
+            Config.plReraise = false;
+            Config.autoRegen_Spell = 3;
+            Config.autoRefresh_Spell = 1;
+            Config.autoShell_Spell = 4;
+            Config.autoStorm_Spell = 0;
+            Config.autoProtect_Spell = 4;
+            Config.plRegen = false;
+            Config.plRegen_Level = 4;
+            Config.plReraise = false;
+            Config.plReraise_Level = 2;
+            Config.plRefresh = false;
+            Config.plRefresh_Level = 2;
+            Config.plStoneskin = false;
+            Config.plPhalanx = false;
+            Config.plProtectra = false;
+            Config.plShellra = false;
+            Config.plProtectra_Level = 5;
+            Config.plShellra_Level = 5;
+            Config.plTemper = false;
+            Config.plTemper_Level = 0;
+            Config.plEnspell = false;
+            Config.plEnspell_Spell = 0;
+            Config.plGainBoost = false;
+            Config.plGainBoost_Spell = 0;
+            Config.plBarElement = false;
+            Config.plBarElement_Spell = 0;
+            Config.AOE_Barelemental = false;
+            Config.plBarStatus = false;
+            Config.plBarStatus_Spell = 0;
+            Config.AOE_Barstatus = false;
+            Config.plStormSpell = false;
+            Config.plAdloquium = false;
+            Config.plKlimaform = false;
+            Config.plStormSpell_Spell = 0;
+            Config.plAuspice = false;
+            Config.plAquaveil = false;
+            Config.plHaste = false;
+            Config.plHaste_Level = 0;
+            Config.plSpikes = false;
+            Config.plSpikes_Spell = 0;
 
-            config.plUtsusemi = false;
+            Config.plUtsusemi = false;
+
+            #endregion
+
+            #region SCH Defaults
 
             // SCHOLAR STRATAGEMS
-            config.AccessionRegen = false;
-            config.PerpetuanceRegen = false;
-            config.accessionCure = false;
-            config.accessionProShell = false;
+            Config.AccessionRegen = false;
+            Config.PerpetuanceRegen = false;
+            Config.accessionCure = false;
+            Config.accessionProShell = false;
 
-            config.regenPerpetuance = false;
-            config.regenAccession = false;
-            config.refreshPerpetuance = false;
-            config.refreshAccession = false;
-            config.blinkPerpetuance = false;
-            config.blinkAccession = false;
-            config.phalanxPerpetuance = false;
-            config.phalanxAccession = false;
-            config.stoneskinPerpetuance = false;
-            config.stoneskinAccession = false;
-            config.enspellPerpetuance = false;
-            config.enspellAccession = false;
-            config.stormspellPerpetuance = false;
-            config.stormspellAccession = false;
-            config.adloquiumPerpetuance = false;
-            config.adloquiumAccession = false;
-            config.aquaveilPerpetuance = false;
-            config.aquaveilAccession = false;
-            config.barspellPerpetuance = false;
-            config.barspellAccession = false;
-            config.barstatusPerpetuance = false;
-            config.barstatusAccession = false;
+            Config.regenPerpetuance = false;
+            Config.regenAccession = false;
+            Config.refreshPerpetuance = false;
+            Config.refreshAccession = false;
+            Config.blinkPerpetuance = false;
+            Config.blinkAccession = false;
+            Config.phalanxPerpetuance = false;
+            Config.phalanxAccession = false;
+            Config.stoneskinPerpetuance = false;
+            Config.stoneskinAccession = false;
+            Config.enspellPerpetuance = false;
+            Config.enspellAccession = false;
+            Config.stormspellPerpetuance = false;
+            Config.stormspellAccession = false;
+            Config.adloquiumPerpetuance = false;
+            Config.adloquiumAccession = false;
+            Config.aquaveilPerpetuance = false;
+            Config.aquaveilAccession = false;
+            Config.barspellPerpetuance = false;
+            Config.barspellAccession = false;
+            Config.barstatusPerpetuance = false;
+            Config.barstatusAccession = false;
 
-            config.EnlightenmentReraise = false;
+            Config.EnlightenmentReraise = false;
+
+            #endregion
 
             // GEOMANCER
-            config.EnableIndiSpells = false;
-            config.GeoWhenEngaged = false;
-            config.GeoSpell_Spell = 0;
-            config.LuopanSpell_Target = "";
-            config.IndiSpell_Spell = 0;
-            config.EntrustedSpell_Spell = 0;
-            config.EntrustedSpell_Target = "";
-            config.EnableLuopanSpells = false;
-            config.GeoWhenEngaged = false;
+            Config.EnableIndiSpells = false;
+            Config.GeoWhenEngaged = false;
+            Config.GeoSpell_Spell = 0;
+            Config.LuopanSpell_Target = "";
+            Config.IndiSpell_Spell = 0;
+            Config.EntrustedSpell_Spell = 0;
+            Config.EntrustedSpell_Target = "";
+            Config.EnableLuopanSpells = false;
+            Config.GeoWhenEngaged = false;
 
-            config.specifiedEngageTarget = false;
+            Config.specifiedEngageTarget = false;
 
             // SINGING
-            config.enableSinging = false;
-            config.song1 = 0;
-            config.song2 = 0;
-            config.song3 = 0;
-            config.song4 = 0;
-            config.dummy1 = 0;
-            config.dummy2 = 0;
-            config.recastSongTime = 2;
-            config.enableSinging = false;
-            config.recastSongs_Monitored = false;
-            config.SongsOnlyWhenNear = false;
+            Config.enableSinging = false;
+            Config.song1 = 0;
+            Config.song2 = 0;
+            Config.song3 = 0;
+            Config.song4 = 0;
+            Config.dummy1 = 0;
+            Config.dummy2 = 0;
+            Config.recastSongTime = 2;
+            Config.enableSinging = false;
+            Config.recastSongs_Monitored = false;
+            Config.SongsOnlyWhenNear = false;
 
             // JOB ABILITIES
-            config.AfflatusSolace = false;
-            config.AfflatusMisery = false;
-            config.LightArts = false;
-            config.Composure = false;
-            config.Convert = false;
-            config.DivineSeal = false;
-            config.AddendumWhite = false;
-            config.Sublimation = false;
-            config.Celerity = false;
-            config.Accession = false;
-            config.Perpetuance = false;
-            config.Penury = false;
-            config.Rapture = false;
-            config.EclipticAttrition = false;
-            config.LifeCycle = false;
-            config.EntrustEnabled = false;
-            config.Dematerialize = false;
-            config.FullCircle = false;
-            config.BlazeOfGlory = false;
-            config.RadialArcana = false;
-            config.Troubadour = false;
-            config.Nightingale = false;
-            config.Marcato = false;
-            config.Devotion = false;
-            config.DivineCaress = false;
-            config.DarkArts = false;
-            config.AddendumBlack = false;
+            Config.AfflatusSolace = false;
+            Config.AfflatusMisery = false;
+            Config.LightArts = false;
+            Config.Composure = false;
+            Config.Convert = false;
+            Config.DivineSeal = false;
+            Config.AddendumWhite = false;
+            Config.Sublimation = false;
+            Config.Celerity = false;
+            Config.Accession = false;
+            Config.Perpetuance = false;
+            Config.Penury = false;
+            Config.Rapture = false;
+            Config.EclipticAttrition = false;
+            Config.LifeCycle = false;
+            Config.EntrustEnabled = false;
+            Config.Dematerialize = false;
+            Config.FullCircle = false;
+            Config.BlazeOfGlory = false;
+            Config.RadialArcana = false;
+            Config.Troubadour = false;
+            Config.Nightingale = false;
+            Config.Marcato = false;
+            Config.Devotion = false;
+            Config.DivineCaress = false;
+            Config.DarkArts = false;
+            Config.AddendumBlack = false;
+
+            #region Debuffs
 
             // DEBUFF REMOVAL
-            config.plSilenceItemEnabled = false;
-            config.plSilenceItem = 0;
-            config.wakeSleepEnabled = false;
-            config.wakeSleepSpell = 2;
-            config.plDoomEnabled = false;
-            config.plDoomitem = 0;
+            Config.plSilenceItemEnabled = false;
+            Config.plSilenceItem = 0;
+            Config.wakeSleepEnabled = false;
+            Config.wakeSleepSpell = 2;
+            Config.plDoomEnabled = false;
+            Config.plDoomitem = 0;
 
-            config.plDebuffEnabled = false;
-            config.plAgiDown = false;
-            config.plAccuracyDown = false;
-            config.plAddle = false;
-            config.plAttackDown = false;
-            config.plBane = false;
-            config.plBind = false;
-            config.plBio = false;
-            config.plBlindness = false;
-            config.plBurn = false;
-            config.plChrDown = false;
-            config.plChoke = false;
-            config.plCurse = false;
-            config.plCurse2 = false;
-            config.plDexDown = false;
-            config.plDefenseDown = false;
-            config.plDia = false;
-            config.plDisease = false;
-            config.plDoom = false;
-            config.plDrown = false;
-            config.plElegy = false;
-            config.plEvasionDown = false;
-            config.plFlash = false;
-            config.plFrost = false;
-            config.plHelix = false;
-            config.plIntDown = false;
-            config.plMndDown = false;
-            config.plMagicAccDown = false;
-            config.plMagicAtkDown = false;
-            config.plMaxHpDown = false;
-            config.plMaxMpDown = false;
-            config.plMaxTpDown = false;
-            config.plParalysis = false;
-            config.plPlague = false;
-            config.plPoison = false;
-            config.plRasp = false;
-            config.plRequiem = false;
-            config.plStrDown = false;
-            config.plShock = false;
-            config.plSilence = false;
-            config.plSlow = false;
-            config.plThrenody = false;
-            config.plVitDown = false;
-            config.plWeight = false;
-            config.plAmnesia = false;
+            Config.plDebuffEnabled = false;
+            Config.plAgiDown = false;
+            Config.plAccuracyDown = false;
+            Config.plAddle = false;
+            Config.plAttackDown = false;
+            Config.plBane = false;
+            Config.plBind = false;
+            Config.plBio = false;
+            Config.plBlindness = false;
+            Config.plBurn = false;
+            Config.plChrDown = false;
+            Config.plChoke = false;
+            Config.plCurse = false;
+            Config.plCurse2 = false;
+            Config.plDexDown = false;
+            Config.plDefenseDown = false;
+            Config.plDia = false;
+            Config.plDisease = false;
+            Config.plDoom = false;
+            Config.plDrown = false;
+            Config.plElegy = false;
+            Config.plEvasionDown = false;
+            Config.plFlash = false;
+            Config.plFrost = false;
+            Config.plHelix = false;
+            Config.plIntDown = false;
+            Config.plMndDown = false;
+            Config.plMagicAccDown = false;
+            Config.plMagicAtkDown = false;
+            Config.plMaxHpDown = false;
+            Config.plMaxMpDown = false;
+            Config.plMaxTpDown = false;
+            Config.plParalysis = false;
+            Config.plPlague = false;
+            Config.plPoison = false;
+            Config.plRasp = false;
+            Config.plRequiem = false;
+            Config.plStrDown = false;
+            Config.plShock = false;
+            Config.plSilence = false;
+            Config.plSlow = false;
+            Config.plThrenody = false;
+            Config.plVitDown = false;
+            Config.plWeight = false;
+            Config.plAmnesia = false;
 
-            config.enablePartyDebuffRemoval = false;
-            config.SpecifiednaSpellsenable = false;
-            config.naBlindness = false;
-            config.naCurse = false;
-            config.naDisease = false;
-            config.naParalysis = false;
-            config.naPetrification = false;
-            config.naPlague = false;
-            config.naPoison = false;
-            config.naSilence = false;
-            config.naErase = false;
-            config.Esuna = false;
-            config.EsunaOnlyAmnesia = false;
+            Config.enablePartyDebuffRemoval = false;
+            Config.SpecifiednaSpellsenable = false;
+            Config.naBlindness = false;
+            Config.naCurse = false;
+            Config.naDisease = false;
+            Config.naParalysis = false;
+            Config.naPetrification = false;
+            Config.naPlague = false;
+            Config.naPoison = false;
+            Config.naSilence = false;
+            Config.naErase = false;
+            Config.Esuna = false;
+            Config.EsunaOnlyAmnesia = false;
 
-            config.PrioritiseOverLowerTier = false;
+            Config.PrioritiseOverLowerTier = false;
 
-            config.monitoredDebuffEnabled = false;
-            config.monitoredAgiDown = false;
-            config.monitoredAccuracyDown = false;
-            config.monitoredAddle = false;
-            config.monitoredAttackDown = false;
-            config.monitoredBane = false;
-            config.monitoredBind = false;
-            config.monitoredBio = false;
-            config.monitoredBlindness = false;
-            config.monitoredBurn = false;
-            config.monitoredChrDown = false;
-            config.monitoredChoke = false;
-            config.monitoredCurse = false;
-            config.monitoredCurse2 = false;
-            config.monitoredDexDown = false;
-            config.monitoredDefenseDown = false;
-            config.monitoredDia = false;
-            config.monitoredDisease = false;
-            config.monitoredDoom = false;
-            config.monitoredDrown = false;
-            config.monitoredElegy = false;
-            config.monitoredEvasionDown = false;
-            config.monitoredFlash = false;
-            config.monitoredFrost = false;
-            config.monitoredHelix = false;
-            config.monitoredIntDown = false;
-            config.monitoredMndDown = false;
-            config.monitoredMagicAccDown = false;
-            config.monitoredMagicAtkDown = false;
-            config.monitoredMaxHpDown = false;
-            config.monitoredMaxMpDown = false;
-            config.monitoredMaxTpDown = false;
-            config.monitoredParalysis = false;
-            config.monitoredPetrification = false;
-            config.monitoredPlague = false;
-            config.monitoredPoison = false;
-            config.monitoredRasp = false;
-            config.monitoredRequiem = false;
-            config.monitoredStrDown = false;
-            config.monitoredShock = false;
-            config.monitoredSilence = false;
-            config.monitoredSleep = false;
-            config.monitoredSleep2 = false;
-            config.monitoredSlow = false;
-            config.monitoredThrenody = false;
-            config.monitoredVitDown = false;
-            config.monitoredWeight = false;
-            config.monitoredAmnesia = false;
+            Config.monitoredDebuffEnabled = false;
+            Config.monitoredAgiDown = false;
+            Config.monitoredAccuracyDown = false;
+            Config.monitoredAddle = false;
+            Config.monitoredAttackDown = false;
+            Config.monitoredBane = false;
+            Config.monitoredBind = false;
+            Config.monitoredBio = false;
+            Config.monitoredBlindness = false;
+            Config.monitoredBurn = false;
+            Config.monitoredChrDown = false;
+            Config.monitoredChoke = false;
+            Config.monitoredCurse = false;
+            Config.monitoredCurse2 = false;
+            Config.monitoredDexDown = false;
+            Config.monitoredDefenseDown = false;
+            Config.monitoredDia = false;
+            Config.monitoredDisease = false;
+            Config.monitoredDoom = false;
+            Config.monitoredDrown = false;
+            Config.monitoredElegy = false;
+            Config.monitoredEvasionDown = false;
+            Config.monitoredFlash = false;
+            Config.monitoredFrost = false;
+            Config.monitoredHelix = false;
+            Config.monitoredIntDown = false;
+            Config.monitoredMndDown = false;
+            Config.monitoredMagicAccDown = false;
+            Config.monitoredMagicAtkDown = false;
+            Config.monitoredMaxHpDown = false;
+            Config.monitoredMaxMpDown = false;
+            Config.monitoredMaxTpDown = false;
+            Config.monitoredParalysis = false;
+            Config.monitoredPetrification = false;
+            Config.monitoredPlague = false;
+            Config.monitoredPoison = false;
+            Config.monitoredRasp = false;
+            Config.monitoredRequiem = false;
+            Config.monitoredStrDown = false;
+            Config.monitoredShock = false;
+            Config.monitoredSilence = false;
+            Config.monitoredSleep = false;
+            Config.monitoredSleep2 = false;
+            Config.monitoredSlow = false;
+            Config.monitoredThrenody = false;
+            Config.monitoredVitDown = false;
+            Config.monitoredWeight = false;
+            Config.monitoredAmnesia = false;
 
-            config.na_Weight = false;
-            config.na_VitDown = false;
-            config.na_Threnody = false;
-            config.na_Slow = false;
-            config.na_Shock = false;
-            config.na_StrDown = false;
-            config.na_Requiem = false;
-            config.na_Rasp = false;
-            config.na_MaxTpDown = false;
-            config.na_MaxMpDown = false;
-            config.na_MaxHpDown = false;
-            config.na_MagicAttackDown = false;
-            config.na_MagicDefenseDown = false;
-            config.na_MagicAccDown = false;
-            config.na_MndDown = false;
-            config.na_IntDown = false;
-            config.na_Helix = false;
-            config.na_Frost = false;
-            config.na_EvasionDown = false;
-            config.na_Elegy = false;
-            config.na_Drown = false;
-            config.na_Dia = false;
-            config.na_DefenseDown = false;
-            config.na_DexDown = false;
-            config.na_Choke = false;
-            config.na_ChrDown = false;
-            config.na_Burn = false;
-            config.na_Bio = false;
-            config.na_Bind = false;
-            config.na_AttackDown = false;
-            config.na_Addle = false;
-            config.na_AccuracyDown = false;
-            config.na_AgiDown = false;
+            Config.na_Weight = false;
+            Config.na_VitDown = false;
+            Config.na_Threnody = false;
+            Config.na_Slow = false;
+            Config.na_Shock = false;
+            Config.na_StrDown = false;
+            Config.na_Requiem = false;
+            Config.na_Rasp = false;
+            Config.na_MaxTpDown = false;
+            Config.na_MaxMpDown = false;
+            Config.na_MaxHpDown = false;
+            Config.na_MagicAttackDown = false;
+            Config.na_MagicDefenseDown = false;
+            Config.na_MagicAccDown = false;
+            Config.na_MndDown = false;
+            Config.na_IntDown = false;
+            Config.na_Helix = false;
+            Config.na_Frost = false;
+            Config.na_EvasionDown = false;
+            Config.na_Elegy = false;
+            Config.na_Drown = false;
+            Config.na_Dia = false;
+            Config.na_DefenseDown = false;
+            Config.na_DexDown = false;
+            Config.na_Choke = false;
+            Config.na_ChrDown = false;
+            Config.na_Burn = false;
+            Config.na_Bio = false;
+            Config.na_Bind = false;
+            Config.na_AttackDown = false;
+            Config.na_Addle = false;
+            Config.na_AccuracyDown = false;
+            Config.na_AgiDown = false;
+
+            #endregion
+
+            #region Other
 
             // OTHER OPTIONS
 
-            config.lowMPcheckBox = false;
-            config.mpMinCastValue = 100;
+            Config.lowMPcheckBox = false;
+            Config.mpMinCastValue = 100;
 
-            config.autoTarget = false;
-            config.autoTargetSpell = "Dia";
-            config.AssistSpecifiedTarget = false;
+            Config.autoTarget = false;
+            Config.autoTargetSpell = "Dia";
+            Config.AssistSpecifiedTarget = false;
 
-            config.DisableTargettingCancel = false;
-            config.TargetRemoval_Delay = 3;
+            Config.DisableTargettingCancel = false;
+            Config.TargetRemoval_Delay = 3;
 
-            config.AcceptRaise = false;
-            config.AcceptRaiseOnlyWhenNotInCombat = false;
+            Config.AcceptRaise = false;
+            Config.AcceptRaiseOnlyWhenNotInCombat = false;
 
-            config.Fullcircle_DisableEnemy = false;
-            config.Fullcircle_GEOTarget = false;
+            Config.Fullcircle_DisableEnemy = false;
+            Config.Fullcircle_GEOTarget = false;
 
-            config.RadialArcana_Spell = 0;
-            config.RadialArcanaMP = 300;
+            Config.RadialArcana_Spell = 0;
+            Config.RadialArcanaMP = 300;
 
-            config.convertMP = 300;
+            Config.convertMP = 300;
 
-            config.DevotionMP = 200;
+            Config.DevotionMP = 200;
 
-            config.DevotionTargetType = 1;
-            config.DevotionTargetName = "";
-            config.DevotionWhenEngaged = false;
+            Config.DevotionTargetType = 1;
+            Config.DevotionTargetName = "";
+            Config.DevotionWhenEngaged = false;
 
-            config.Hate_SpellType = 0;
-            config.autoTarget_Target = "";
+            Config.Hate_SpellType = 0;
+            Config.autoTarget_Target = "";
 
-            config.healWhenMPBelow = 5;
-            config.healLowMP = false;
+            Config.healWhenMPBelow = 5;
+            Config.healLowMP = false;
 
-            config.standAtMP_Percentage = 99;
-            config.standAtMP = false;
+            Config.standAtMP_Percentage = 99;
+            Config.standAtMP = false;
 
-            config.Overcure = true;
-            config.Undercure = true;
-            config.enableMonitoredPriority = false;
-            config.enableOutOfPartyHealing = true;
-            config.OvercureOnHighPriority = false;
+            Config.Overcure = true;
+            Config.Undercure = true;
+            Config.enableMonitoredPriority = false;
+            Config.enableOutOfPartyHealing = true;
+            Config.OvercureOnHighPriority = false;
 
-            config.EnableAddOn = false;
+            Config.EnableAddOn = false;
 
-            config.sublimationMP = 100;
+            Config.sublimationMP = 100;
+
+            #endregion
 
             // PROGRAM OPTIONS
 
-            config.pauseOnZoneBox = false;
-            config.pauseOnStartBox = false;
-            config.pauseOnKO = false;
-            config.MinimiseonStart = false;
+            Config.pauseOnZoneBox = false;
+            Config.pauseOnStartBox = false;
+            Config.pauseOnKO = false;
+            Config.MinimiseonStart = false;
 
-            config.autoFollowName = "";
-            config.autoFollowDistance = 5;
-            config.autoFollow_Warning = false;
-            config.FFXIDefaultAutoFollow = false;
-            config.enableHotKeys = false;
+            Config.autoFollowName = "";
+            Config.autoFollowDistance = 5;
+            Config.autoFollow_Warning = false;
+            Config.FFXIDefaultAutoFollow = false;
+            Config.enableHotKeys = false;
 
-            config.ipAddress = "127.0.0.1";
-            config.listeningPort = "19769";
+            Config.ipAddress = "127.0.0.1";
+            Config.listeningPort = "19769";
 
-            config.enableFastCast_Mode = false;
-            config.trackCastingPackets = false;
+            Config.enableFastCast_Mode = false;
+            Config.trackCastingPackets = false;
 
-            return config;
+            return Config;
         }
 
-        public static MySettings ReadSettings(string filePath)
+        private static MySettings ReadSettings(string filePath)
         {
             TextReader reader = null;
             try
@@ -476,22 +694,22 @@
 
         #region "== Cure Percentage's Changed"
 
-        private void curePercentage_ValueChanged ( object sender, EventArgs e )
+        private void CurePercentage_ValueChanged ( object sender, EventArgs e )
         {
             curePercentageValueLabel.Text = curePercentage.Value.ToString ( );
         }
 
-        private void priorityCurePercentage_ValueChanged ( object sender, EventArgs e )
+        private void PriorityCurePercentage_ValueChanged ( object sender, EventArgs e )
         {
             priorityCurePercentageValueLabel.Text = priorityCurePercentage.Value.ToString ( );
         }
 
-        private void curagaPercentage_ValueChanged ( object sender, EventArgs e )
+        private void CuragaPercentage_ValueChanged ( object sender, EventArgs e )
         {
             curagaPercentageValueLabel.Text = curagaCurePercentage.Value.ToString ( );
         }
 
-        private void monitoredPercentage_ValueChanged ( object sender, EventArgs e )
+        private void MonitoredPercentage_ValueChanged ( object sender, EventArgs e )
         {
             monitoredCurePercentageValueLabel.Text = monitoredCurePercentage.Value.ToString ( );
         }
@@ -500,470 +718,470 @@
 
         #region "== All Settings Saved"
 
-        public void SaveAllSettings_Click ( object sender, EventArgs e )
+        private void SaveAllSettings_Click ( object sender, EventArgs e )
         {
             FollowEngine.ClearFollowing();
 
             // HEALING MAGIC
-            config.cure1enabled = cure1enabled.Checked;
-            config.cure2enabled = cure2enabled.Checked;
-            config.cure3enabled = cure3enabled.Checked;
-            config.cure4enabled = cure4enabled.Checked;
-            config.cure5enabled = cure5enabled.Checked;
-            config.cure6enabled = cure6enabled.Checked;
-            config.cure1amount = Convert.ToInt32 ( cure1amount.Value );
-            config.cure2amount = Convert.ToInt32 ( cure2amount.Value );
-            config.cure3amount = Convert.ToInt32 ( cure3amount.Value );
-            config.cure4amount = Convert.ToInt32 ( cure4amount.Value );
-            config.cure5amount = Convert.ToInt32 ( cure5amount.Value );
-            config.cure6amount = Convert.ToInt32 ( cure6amount.Value );
-            config.curePercentage = curePercentage.Value;
-            config.priorityCurePercentage = priorityCurePercentage.Value;
-            config.monitoredCurePercentage = monitoredCurePercentage.Value;
+            Config.cure1enabled = cure1enabled.Checked;
+            Config.cure2enabled = cure2enabled.Checked;
+            Config.cure3enabled = cure3enabled.Checked;
+            Config.cure4enabled = cure4enabled.Checked;
+            Config.cure5enabled = cure5enabled.Checked;
+            Config.cure6enabled = cure6enabled.Checked;
+            Config.cure1amount = Convert.ToInt32 ( cure1amount.Value );
+            Config.cure2amount = Convert.ToInt32 ( cure2amount.Value );
+            Config.cure3amount = Convert.ToInt32 ( cure3amount.Value );
+            Config.cure4amount = Convert.ToInt32 ( cure4amount.Value );
+            Config.cure5amount = Convert.ToInt32 ( cure5amount.Value );
+            Config.cure6amount = Convert.ToInt32 ( cure6amount.Value );
+            Config.curePercentage = curePercentage.Value;
+            Config.priorityCurePercentage = priorityCurePercentage.Value;
+            Config.monitoredCurePercentage = monitoredCurePercentage.Value;
 
-            config.curagaEnabled = curagaEnabled.Checked;
-            config.curaga2enabled = curaga2Enabled.Checked;
-            config.curaga3enabled = curaga3Enabled.Checked;
-            config.curaga4enabled = curaga4Enabled.Checked;
-            config.curaga5enabled = curaga5Enabled.Checked;
-            config.curagaAmount = Convert.ToInt32 ( curagaAmount.Value );
-            config.curaga2Amount = Convert.ToInt32 ( curaga2Amount.Value );
-            config.curaga3Amount = Convert.ToInt32 ( curaga3Amount.Value );
-            config.curaga4Amount = Convert.ToInt32 ( curaga4Amount.Value );
-            config.curaga5Amount = Convert.ToInt32 ( curaga5Amount.Value );
-            config.curagaCurePercentage = curagaCurePercentage.Value;
-            config.curagaTargetType = curagaTargetType.SelectedIndex;
-            config.curagaTargetName = curagaTargetName.Text;
-            config.curagaRequiredMembers = requiredCuragaNumbers.Value;
+            Config.curagaEnabled = curagaEnabled.Checked;
+            Config.curaga2enabled = curaga2Enabled.Checked;
+            Config.curaga3enabled = curaga3Enabled.Checked;
+            Config.curaga4enabled = curaga4Enabled.Checked;
+            Config.curaga5enabled = curaga5Enabled.Checked;
+            Config.curagaAmount = Convert.ToInt32 ( curagaAmount.Value );
+            Config.curaga2Amount = Convert.ToInt32 ( curaga2Amount.Value );
+            Config.curaga3Amount = Convert.ToInt32 ( curaga3Amount.Value );
+            Config.curaga4Amount = Convert.ToInt32 ( curaga4Amount.Value );
+            Config.curaga5Amount = Convert.ToInt32 ( curaga5Amount.Value );
+            Config.curagaCurePercentage = curagaCurePercentage.Value;
+            Config.curagaTargetType = curagaTargetType.SelectedIndex;
+            Config.curagaTargetName = curagaTargetName.Text;
+            Config.curagaRequiredMembers = requiredCuragaNumbers.Value;
 
             // ENHANCING MAGIC
 
             // BASIC ENHANCING
-            config.autoHasteMinutes = autoHasteMinutes.Value;
-            config.autoAdloquiumMinutes = autoAdloquium_Minutes.Value;
-            config.autoProtect_Minutes = autoProtect_Minutes.Value;
-            config.autoShellMinutes = autoShell_Minutes.Value;
-            config.autoPhalanxIIMinutes = autoPhalanxIIMinutes.Value;
-            config.autoStormspellMinutes = autoStormspellMinutes.Value;
-            config.autoRegen_Minutes = autoRegen_Minutes.Value;
-            config.autoRefresh_Minutes = autoRefresh_Minutes.Value;
-            config.plProtect = plProtect.Checked;
-            config.plShell = plShell.Checked;
-            config.plBlink = plBlink.Checked;
-            config.plReraise = plReraise.Checked;
+            Config.autoHasteMinutes = autoHasteMinutes.Value;
+            Config.autoAdloquiumMinutes = autoAdloquium_Minutes.Value;
+            Config.autoProtect_Minutes = autoProtect_Minutes.Value;
+            Config.autoShellMinutes = autoShell_Minutes.Value;
+            Config.autoPhalanxIIMinutes = autoPhalanxIIMinutes.Value;
+            Config.autoStormspellMinutes = autoStormspellMinutes.Value;
+            Config.autoRegen_Minutes = autoRegen_Minutes.Value;
+            Config.autoRefresh_Minutes = autoRefresh_Minutes.Value;
+            Config.plProtect = plProtect.Checked;
+            Config.plShell = plShell.Checked;
+            Config.plBlink = plBlink.Checked;
+            Config.plReraise = plReraise.Checked;
             if ( plReraiseLevel1.Checked )
             {
-                config.plReraise_Level = 1;
+                Config.plReraise_Level = 1;
             }
             else if ( plReraiseLevel2.Checked )
             {
-                config.plReraise_Level = 2;
+                Config.plReraise_Level = 2;
             }
             else if ( plReraiseLevel3.Checked )
             {
-                config.plReraise_Level = 3;
+                Config.plReraise_Level = 3;
             }
             else if ( plReraiseLevel4.Checked )
             {
-                config.plReraise_Level = 4;
+                Config.plReraise_Level = 4;
             }
-            config.plRegen = plRegen.Checked;
+            Config.plRegen = plRegen.Checked;
             if ( plRegenLevel1.Checked )
             {
-                config.plRegen_Level = 1;
+                Config.plRegen_Level = 1;
             }
             else if ( plRegenLevel2.Checked )
             {
-                config.plRegen_Level = 2;
+                Config.plRegen_Level = 2;
             }
             else if ( plRegenLevel3.Checked )
             {
-                config.plRegen_Level = 3;
+                Config.plRegen_Level = 3;
             }
             else if ( plRegenLevel4.Checked )
             {
-                config.plRegen_Level = 4;
+                Config.plRegen_Level = 4;
             }
             else if ( plRegenLevel5.Checked )
             {
-                config.plRegen_Level = 5;
+                Config.plRegen_Level = 5;
             }
-            config.plStoneskin = plStoneskin.Checked;
-            config.plPhalanx = plPhalanx.Checked;
-            config.plShellra = plShellra.Checked;
-            config.plProtectra = plProtectra.Checked;
-            config.plProtectra_Level = plProtectralevel.Value;
-            config.plShellra_Level = plShellralevel.Value;
-            config.autoRegen_Spell = autoRegen.SelectedIndex;
-            config.autoRefresh_Spell = autoRefresh.SelectedIndex;
-            config.autoShell_Spell = autoShell.SelectedIndex;
-            config.autoStorm_Spell = autoStorm.SelectedIndex;
-            config.autoProtect_Spell = autoProtect.SelectedIndex;
-            config.plTemper = plTemper.Checked;
+            Config.plStoneskin = plStoneskin.Checked;
+            Config.plPhalanx = plPhalanx.Checked;
+            Config.plShellra = plShellra.Checked;
+            Config.plProtectra = plProtectra.Checked;
+            Config.plProtectra_Level = plProtectralevel.Value;
+            Config.plShellra_Level = plShellralevel.Value;
+            Config.autoRegen_Spell = autoRegen.SelectedIndex;
+            Config.autoRefresh_Spell = autoRefresh.SelectedIndex;
+            Config.autoShell_Spell = autoShell.SelectedIndex;
+            Config.autoStorm_Spell = autoStorm.SelectedIndex;
+            Config.autoProtect_Spell = autoProtect.SelectedIndex;
+            Config.plTemper = plTemper.Checked;
             if ( plTemperLevel1.Checked )
             {
-                config.plTemper_Level = 1;
+                Config.plTemper_Level = 1;
             }
             else if ( plTemperLevel2.Checked )
             {
-                config.plTemper_Level = 2;
+                Config.plTemper_Level = 2;
             }
-            config.plEnspell = plEnspell.Checked;
-            config.plEnspell_Spell = plEnspell_spell.SelectedIndex;
-            config.plGainBoost = plGainBoost.Checked;
-            config.plGainBoost_Spell = plGainBoost_spell.SelectedIndex;
-            config.plBarElement = plBarElement.Checked;
-            config.plBarElement_Spell = plBarElement_Spell.SelectedIndex;
-            config.AOE_Barelemental = AOE_Barelemental.Checked;
-            config.plBarStatus = plBarStatus.Checked;
-            config.plBarStatus_Spell = plBarStatus_Spell.SelectedIndex;
-            config.plStormSpell = plStormSpell.Checked;
-            config.plAdloquium = plAdloquium.Checked;
-            config.AOE_Barstatus = AOE_Barstatus.Checked;
-            config.plStormSpell_Spell = plStormSpell_Spell.SelectedIndex;
-            config.plKlimaform = plKlimaform.Checked;
-            config.plAuspice = plAuspice.Checked;
-            config.plAquaveil = plAquaveil.Checked;
+            Config.plEnspell = plEnspell.Checked;
+            Config.plEnspell_Spell = plEnspell_spell.SelectedIndex;
+            Config.plGainBoost = plGainBoost.Checked;
+            Config.plGainBoost_Spell = plGainBoost_spell.SelectedIndex;
+            Config.plBarElement = plBarElement.Checked;
+            Config.plBarElement_Spell = plBarElement_Spell.SelectedIndex;
+            Config.AOE_Barelemental = AOE_Barelemental.Checked;
+            Config.plBarStatus = plBarStatus.Checked;
+            Config.plBarStatus_Spell = plBarStatus_Spell.SelectedIndex;
+            Config.plStormSpell = plStormSpell.Checked;
+            Config.plAdloquium = plAdloquium.Checked;
+            Config.AOE_Barstatus = AOE_Barstatus.Checked;
+            Config.plStormSpell_Spell = plStormSpell_Spell.SelectedIndex;
+            Config.plKlimaform = plKlimaform.Checked;
+            Config.plAuspice = plAuspice.Checked;
+            Config.plAquaveil = plAquaveil.Checked;
 
-            config.plHaste = plHaste.Checked;
+            Config.plHaste = plHaste.Checked;
             if ( plHasteLevel1.Checked )
             {
-                config.plHaste_Level = 1;
+                Config.plHaste_Level = 1;
             }
             else if ( plHasteLevel2.Checked )
             {
-                config.plHaste_Level = 2;
+                Config.plHaste_Level = 2;
             }
 
-            config.plSpikes = plSpikes.Checked;
-            config.plSpikes_Spell = plSpikes_Spell.SelectedIndex;
+            Config.plSpikes = plSpikes.Checked;
+            Config.plSpikes_Spell = plSpikes_Spell.SelectedIndex;
 
-            config.plUtsusemi = plUtsusemi.Checked;
-            config.plRefresh = plRefresh.Checked;
+            Config.plUtsusemi = plUtsusemi.Checked;
+            Config.plRefresh = plRefresh.Checked;
             if ( plRefreshLevel1.Checked )
             {
-                config.plRefresh_Level = 1;
+                Config.plRefresh_Level = 1;
             }
             else if ( plRefreshLevel2.Checked )
             {
-                config.plRefresh_Level = 2;
+                Config.plRefresh_Level = 2;
             }
             else if ( plRefreshLevel3.Checked )
             {
-                config.plRefresh_Level = 3;
+                Config.plRefresh_Level = 3;
             }
 
             // SCHOLAR STRATAGEMS
-            config.accessionCure = accessionCure.Checked;
-            config.AccessionRegen = accessionRegen.Checked;
-            config.PerpetuanceRegen = perpetuanceRegen.Checked;
-            config.accessionProShell = accessionProShell.Checked;
+            Config.accessionCure = accessionCure.Checked;
+            Config.AccessionRegen = accessionRegen.Checked;
+            Config.PerpetuanceRegen = perpetuanceRegen.Checked;
+            Config.accessionProShell = accessionProShell.Checked;
 
-            config.regenPerpetuance = regenPerpetuance.Checked;
-            config.regenAccession = regenAccession.Checked;
-            config.refreshPerpetuance = refreshPerpetuance.Checked;
-            config.refreshAccession = refreshAccession.Checked;
-            config.blinkPerpetuance = blinkPerpetuance.Checked;
-            config.blinkAccession = blinkAccession.Checked;
-            config.phalanxPerpetuance = phalanxPerpetuance.Checked;
-            config.phalanxAccession = phalanxAccession.Checked;
-            config.stoneskinPerpetuance = stoneskinPerpetuance.Checked;
-            config.stoneskinAccession = stoneskinAccession.Checked;
-            config.enspellPerpetuance = enspellPerpetuance.Checked;
-            config.enspellAccession = enspellAccession.Checked;
-            config.stormspellPerpetuance = stormspellPerpetuance.Checked;
-            config.stormspellAccession = stormspellAccession.Checked;
-            config.adloquiumPerpetuance = adloquiumPerpetuance.Checked;
-            config.adloquiumAccession = adloquiumAccession.Checked;
-            config.aquaveilPerpetuance = aquaveilPerpetuance.Checked;
-            config.aquaveilAccession = aquaveilAccession.Checked;
-            config.barspellPerpetuance = barspellPerpetuance.Checked;
-            config.barspellAccession = barstatusAccession.Checked;
-            config.barstatusPerpetuance = barstatusPerpetuance.Checked;
-            config.barstatusAccession = barstatusAccession.Checked;
+            Config.regenPerpetuance = regenPerpetuance.Checked;
+            Config.regenAccession = regenAccession.Checked;
+            Config.refreshPerpetuance = refreshPerpetuance.Checked;
+            Config.refreshAccession = refreshAccession.Checked;
+            Config.blinkPerpetuance = blinkPerpetuance.Checked;
+            Config.blinkAccession = blinkAccession.Checked;
+            Config.phalanxPerpetuance = phalanxPerpetuance.Checked;
+            Config.phalanxAccession = phalanxAccession.Checked;
+            Config.stoneskinPerpetuance = stoneskinPerpetuance.Checked;
+            Config.stoneskinAccession = stoneskinAccession.Checked;
+            Config.enspellPerpetuance = enspellPerpetuance.Checked;
+            Config.enspellAccession = enspellAccession.Checked;
+            Config.stormspellPerpetuance = stormspellPerpetuance.Checked;
+            Config.stormspellAccession = stormspellAccession.Checked;
+            Config.adloquiumPerpetuance = adloquiumPerpetuance.Checked;
+            Config.adloquiumAccession = adloquiumAccession.Checked;
+            Config.aquaveilPerpetuance = aquaveilPerpetuance.Checked;
+            Config.aquaveilAccession = aquaveilAccession.Checked;
+            Config.barspellPerpetuance = barspellPerpetuance.Checked;
+            Config.barspellAccession = barstatusAccession.Checked;
+            Config.barstatusPerpetuance = barstatusPerpetuance.Checked;
+            Config.barstatusAccession = barstatusAccession.Checked;
 
-            config.EnlightenmentReraise = EnlightenmentReraise.Checked;
+            Config.EnlightenmentReraise = EnlightenmentReraise.Checked;
 
             // GEOMANCER
-            config.EnableIndiSpells = EnableIndiSpells.Checked;
-            config.EngagedOnly = EngagedOnly.Checked;
-            config.EnableLuopanSpells = EnableLuopanSpells.Checked;
-            config.GeoSpell_Spell = GEOSpell.SelectedIndex;
-            config.LuopanSpell_Target = GEOSpell_target.Text;
-            config.IndiSpell_Spell = INDISpell.SelectedIndex;
-            config.EntrustedSpell_Spell = entrustINDISpell.SelectedIndex;
-            config.EntrustedSpell_Target = entrustSpell_target.Text;
-            config.GeoWhenEngaged = GeoAOE_Engaged.Checked;
+            Config.EnableIndiSpells = EnableIndiSpells.Checked;
+            Config.EngagedOnly = EngagedOnly.Checked;
+            Config.EnableLuopanSpells = EnableLuopanSpells.Checked;
+            Config.GeoSpell_Spell = GEOSpell.SelectedIndex;
+            Config.LuopanSpell_Target = GEOSpell_target.Text;
+            Config.IndiSpell_Spell = INDISpell.SelectedIndex;
+            Config.EntrustedSpell_Spell = entrustINDISpell.SelectedIndex;
+            Config.EntrustedSpell_Target = entrustSpell_target.Text;
+            Config.GeoWhenEngaged = GeoAOE_Engaged.Checked;
 
-            config.specifiedEngageTarget = false;
+            Config.specifiedEngageTarget = false;
 
             // SINGING
-            config.enableSinging = enableSinging.Checked;
+            Config.enableSinging = enableSinging.Checked;
 
-            config.song1 = song1.SelectedIndex;
-            config.song2 = song2.SelectedIndex;
-            config.song3 = song3.SelectedIndex;
-            config.song4 = song4.SelectedIndex;
+            Config.song1 = song1.SelectedIndex;
+            Config.song2 = song2.SelectedIndex;
+            Config.song3 = song3.SelectedIndex;
+            Config.song4 = song4.SelectedIndex;
 
-            config.dummy1 = dummy1.SelectedIndex;
-            config.dummy2 = dummy2.SelectedIndex;
+            Config.dummy1 = dummy1.SelectedIndex;
+            Config.dummy2 = dummy2.SelectedIndex;
 
-            config.recastSongTime = recastSong.Value;
+            Config.recastSongTime = recastSong.Value;
 
-            config.recastSongs_Monitored = recastSongs_monitored.Checked;
-            config.SongsOnlyWhenNear = SongsOnlyWhenNearEngaged.Checked;
+            Config.recastSongs_Monitored = recastSongs_monitored.Checked;
+            Config.SongsOnlyWhenNear = SongsOnlyWhenNearEngaged.Checked;
 
             // JOB ABILITIES
 
-            config.AfflatusSolace = afflatusSolace.Checked;
-            config.AfflatusMisery = afflatusMisery.Checked;
-            config.LightArts = lightArts.Checked;
-            config.AddendumWhite = addWhite.Checked;
-            config.Sublimation = sublimation.Checked;
-            config.Celerity = celerity.Checked;
-            config.Accession = accession.Checked;
-            config.Perpetuance = perpetuance.Checked;
-            config.Penury = penury.Checked;
-            config.Rapture = rapture.Checked;
-            config.DarkArts = darkArts.Checked;
-            config.AddendumBlack = addBlack.Checked;
+            Config.AfflatusSolace = afflatusSolace.Checked;
+            Config.AfflatusMisery = afflatusMisery.Checked;
+            Config.LightArts = lightArts.Checked;
+            Config.AddendumWhite = addWhite.Checked;
+            Config.Sublimation = sublimation.Checked;
+            Config.Celerity = celerity.Checked;
+            Config.Accession = accession.Checked;
+            Config.Perpetuance = perpetuance.Checked;
+            Config.Penury = penury.Checked;
+            Config.Rapture = rapture.Checked;
+            Config.DarkArts = darkArts.Checked;
+            Config.AddendumBlack = addBlack.Checked;
 
-            config.Composure = composure.Checked;
-            config.Convert = convert.Checked;
+            Config.Composure = composure.Checked;
+            Config.Convert = convert.Checked;
 
-            config.DivineSeal = divineSealBox.Checked;
-            config.Devotion = DevotionBox.Checked;
-            config.DivineCaress = DivineCaressBox.Checked;
+            Config.DivineSeal = divineSealBox.Checked;
+            Config.Devotion = DevotionBox.Checked;
+            Config.DivineCaress = DivineCaressBox.Checked;
 
-            config.EntrustEnabled = EnableEntrust.Checked;
-            config.Dematerialize = DematerializeBox.Checked;
-            config.BlazeOfGlory = BlazeOfGloryBox.Checked;
+            Config.EntrustEnabled = EnableEntrust.Checked;
+            Config.Dematerialize = DematerializeBox.Checked;
+            Config.BlazeOfGlory = BlazeOfGloryBox.Checked;
 
-            config.RadialArcana = RadialArcanaBox.Checked;
-            config.RadialArcana_Spell = RadialArcanaSpell.SelectedIndex;
-            config.FullCircle = FullCircleBox.Checked;
-            config.EclipticAttrition = EclipticAttritionBox.Checked;
-            config.LifeCycle = LifeCycleBox.Checked;
+            Config.RadialArcana = RadialArcanaBox.Checked;
+            Config.RadialArcana_Spell = RadialArcanaSpell.SelectedIndex;
+            Config.FullCircle = FullCircleBox.Checked;
+            Config.EclipticAttrition = EclipticAttritionBox.Checked;
+            Config.LifeCycle = LifeCycleBox.Checked;
 
-            config.Troubadour = troubadour.Checked;
-            config.Nightingale = nightingale.Checked;
-            config.Marcato = marcato.Checked;
+            Config.Troubadour = troubadour.Checked;
+            Config.Nightingale = nightingale.Checked;
+            Config.Marcato = marcato.Checked;
 
             // DEBUFF REMOVAL
-            config.plSilenceItemEnabled = plSilenceItemEnabled.Checked;
-            config.plSilenceItem = plSilenceItem.SelectedIndex;
-            config.wakeSleepEnabled = wakeSleepEnabled.Checked;
-            config.wakeSleepSpell = wakeSleepSpell.SelectedIndex;
-            config.plDebuffEnabled = plDebuffEnabled.Checked;
-            config.monitoredDebuffEnabled = monitoredDebuffEnabled.Checked;
+            Config.plSilenceItemEnabled = plSilenceItemEnabled.Checked;
+            Config.plSilenceItem = plSilenceItem.SelectedIndex;
+            Config.wakeSleepEnabled = wakeSleepEnabled.Checked;
+            Config.wakeSleepSpell = wakeSleepSpell.SelectedIndex;
+            Config.plDebuffEnabled = plDebuffEnabled.Checked;
+            Config.monitoredDebuffEnabled = monitoredDebuffEnabled.Checked;
 
-            config.plAgiDown = plAgiDown.Checked;
-            config.plAccuracyDown = plAccuracyDown.Checked;
-            config.plAddle = plAddle.Checked;
-            config.plAttackDown = plAttackDown.Checked;
-            config.plBane = plBane.Checked;
-            config.plBind = plBind.Checked;
-            config.plBio = plBio.Checked;
-            config.plBlindness = plBlindness.Checked;
-            config.plBurn = plBurn.Checked;
-            config.plChrDown = plChrDown.Checked;
-            config.plChoke = plChoke.Checked;
-            config.plCurse = plCurse.Checked;
-            config.plCurse2 = plCurse2.Checked;
-            config.plDexDown = plDexDown.Checked;
-            config.plDefenseDown = plDefenseDown.Checked;
-            config.plDia = plDia.Checked;
-            config.plDisease = plDisease.Checked;
-            config.plDoom = plDoom.Checked;
-            config.plDrown = plDrown.Checked;
-            config.plElegy = plElegy.Checked;
-            config.plEvasionDown = plEvasionDown.Checked;
-            config.plFlash = plFlash.Checked;
-            config.plFrost = plFrost.Checked;
-            config.plHelix = plHelix.Checked;
-            config.plIntDown = plIntDown.Checked;
-            config.plMndDown = plMndDown.Checked;
-            config.plMagicAccDown = plMagicAccDown.Checked;
-            config.plMagicAtkDown = plMagicAtkDown.Checked;
-            config.plMaxHpDown = plMaxHpDown.Checked;
-            config.plMaxMpDown = plMaxMpDown.Checked;
-            config.plMaxTpDown = plMaxTpDown.Checked;
-            config.plParalysis = plParalysis.Checked;
-            config.plPlague = plPlague.Checked;
-            config.plPoison = plPoison.Checked;
-            config.plRasp = plRasp.Checked;
-            config.plRequiem = plRequiem.Checked;
-            config.plStrDown = plStrDown.Checked;
-            config.plShock = plShock.Checked;
-            config.plSilence = plSilence.Checked;
-            config.plSlow = plSlow.Checked;
-            config.plThrenody = plThrenody.Checked;
-            config.plVitDown = plVitDown.Checked;
-            config.plWeight = plWeight.Checked;
-            config.plAmnesia = plAmnesia.Checked;
-            config.plDoomEnabled = plDoomEnabled.Checked;
-            config.plDoomitem = plDoomitem.SelectedIndex;
+            Config.plAgiDown = plAgiDown.Checked;
+            Config.plAccuracyDown = plAccuracyDown.Checked;
+            Config.plAddle = plAddle.Checked;
+            Config.plAttackDown = plAttackDown.Checked;
+            Config.plBane = plBane.Checked;
+            Config.plBind = plBind.Checked;
+            Config.plBio = plBio.Checked;
+            Config.plBlindness = plBlindness.Checked;
+            Config.plBurn = plBurn.Checked;
+            Config.plChrDown = plChrDown.Checked;
+            Config.plChoke = plChoke.Checked;
+            Config.plCurse = plCurse.Checked;
+            Config.plCurse2 = plCurse2.Checked;
+            Config.plDexDown = plDexDown.Checked;
+            Config.plDefenseDown = plDefenseDown.Checked;
+            Config.plDia = plDia.Checked;
+            Config.plDisease = plDisease.Checked;
+            Config.plDoom = plDoom.Checked;
+            Config.plDrown = plDrown.Checked;
+            Config.plElegy = plElegy.Checked;
+            Config.plEvasionDown = plEvasionDown.Checked;
+            Config.plFlash = plFlash.Checked;
+            Config.plFrost = plFrost.Checked;
+            Config.plHelix = plHelix.Checked;
+            Config.plIntDown = plIntDown.Checked;
+            Config.plMndDown = plMndDown.Checked;
+            Config.plMagicAccDown = plMagicAccDown.Checked;
+            Config.plMagicAtkDown = plMagicAtkDown.Checked;
+            Config.plMaxHpDown = plMaxHpDown.Checked;
+            Config.plMaxMpDown = plMaxMpDown.Checked;
+            Config.plMaxTpDown = plMaxTpDown.Checked;
+            Config.plParalysis = plParalysis.Checked;
+            Config.plPlague = plPlague.Checked;
+            Config.plPoison = plPoison.Checked;
+            Config.plRasp = plRasp.Checked;
+            Config.plRequiem = plRequiem.Checked;
+            Config.plStrDown = plStrDown.Checked;
+            Config.plShock = plShock.Checked;
+            Config.plSilence = plSilence.Checked;
+            Config.plSlow = plSlow.Checked;
+            Config.plThrenody = plThrenody.Checked;
+            Config.plVitDown = plVitDown.Checked;
+            Config.plWeight = plWeight.Checked;
+            Config.plAmnesia = plAmnesia.Checked;
+            Config.plDoomEnabled = plDoomEnabled.Checked;
+            Config.plDoomitem = plDoomitem.SelectedIndex;
 
-            config.enablePartyDebuffRemoval = naSpellsenable.Checked;
-            config.SpecifiednaSpellsenable = SpecifiednaSpellsenable.Checked;
-            config.PrioritiseOverLowerTier = PrioritiseOverLowerTier.Checked;
-            config.naBlindness = naBlindness.Checked;
-            config.naCurse = naCurse.Checked;
-            config.naDisease = naDisease.Checked;
-            config.naParalysis = naParalysis.Checked;
-            config.naPetrification = naPetrification.Checked;
-            config.naPlague = naPlague.Checked;
-            config.naPoison = naPoison.Checked;
-            config.naSilence = naSilence.Checked;
-            config.naErase = naErase.Checked;
-            config.Esuna = Esuna.Checked;
-            config.EsunaOnlyAmnesia = EsunaOnlyAmnesia.Checked;
+            Config.enablePartyDebuffRemoval = naSpellsenable.Checked;
+            Config.SpecifiednaSpellsenable = SpecifiednaSpellsenable.Checked;
+            Config.PrioritiseOverLowerTier = PrioritiseOverLowerTier.Checked;
+            Config.naBlindness = naBlindness.Checked;
+            Config.naCurse = naCurse.Checked;
+            Config.naDisease = naDisease.Checked;
+            Config.naParalysis = naParalysis.Checked;
+            Config.naPetrification = naPetrification.Checked;
+            Config.naPlague = naPlague.Checked;
+            Config.naPoison = naPoison.Checked;
+            Config.naSilence = naSilence.Checked;
+            Config.naErase = naErase.Checked;
+            Config.Esuna = Esuna.Checked;
+            Config.EsunaOnlyAmnesia = EsunaOnlyAmnesia.Checked;
 
-            config.na_Weight = na_Weight.Checked;
-            config.na_VitDown = na_VitDown.Checked;
-            config.na_Threnody = na_Threnody.Checked;
-            config.na_Slow = na_Slow.Checked;
-            config.na_Shock = na_Shock.Checked;
-            config.na_StrDown = na_StrDown.Checked;
-            config.na_Requiem = na_Requiem.Checked;
-            config.na_Rasp = na_Rasp.Checked;
-            config.na_MaxTpDown = na_MaxTpDown.Checked;
-            config.na_MaxMpDown = na_MaxMpDown.Checked;
-            config.na_MaxHpDown = na_MaxHpDown.Checked;
-            config.na_MagicAttackDown = na_MagicAttackDown.Checked;
-            config.na_MagicDefenseDown = na_MagicDefenseDown.Checked;
-            config.na_MagicAccDown = na_MagicAccDown.Checked;
-            config.na_MndDown = na_MndDown.Checked;
-            config.na_IntDown = na_IntDown.Checked;
-            config.na_Helix = na_Helix.Checked;
-            config.na_Frost = na_Frost.Checked;
-            config.na_EvasionDown = na_EvasionDown.Checked;
-            config.na_Elegy = na_Elegy.Checked;
-            config.na_Drown = na_Drown.Checked;
-            config.na_Dia = na_Dia.Checked;
-            config.na_DefenseDown = na_DefenseDown.Checked;
-            config.na_DexDown = na_DexDown.Checked;
-            config.na_Choke = na_Choke.Checked;
-            config.na_ChrDown = na_ChrDown.Checked;
-            config.na_Burn = na_Burn.Checked;
-            config.na_Bio = na_Bio.Checked;
-            config.na_Bind = na_Bind.Checked;
-            config.na_AttackDown = na_AttackDown.Checked;
-            config.na_Addle = na_Addle.Checked;
-            config.na_AccuracyDown = na_AccuracyDown.Checked;
-            config.na_AgiDown = na_AgiDown.Checked;
+            Config.na_Weight = na_Weight.Checked;
+            Config.na_VitDown = na_VitDown.Checked;
+            Config.na_Threnody = na_Threnody.Checked;
+            Config.na_Slow = na_Slow.Checked;
+            Config.na_Shock = na_Shock.Checked;
+            Config.na_StrDown = na_StrDown.Checked;
+            Config.na_Requiem = na_Requiem.Checked;
+            Config.na_Rasp = na_Rasp.Checked;
+            Config.na_MaxTpDown = na_MaxTpDown.Checked;
+            Config.na_MaxMpDown = na_MaxMpDown.Checked;
+            Config.na_MaxHpDown = na_MaxHpDown.Checked;
+            Config.na_MagicAttackDown = na_MagicAttackDown.Checked;
+            Config.na_MagicDefenseDown = na_MagicDefenseDown.Checked;
+            Config.na_MagicAccDown = na_MagicAccDown.Checked;
+            Config.na_MndDown = na_MndDown.Checked;
+            Config.na_IntDown = na_IntDown.Checked;
+            Config.na_Helix = na_Helix.Checked;
+            Config.na_Frost = na_Frost.Checked;
+            Config.na_EvasionDown = na_EvasionDown.Checked;
+            Config.na_Elegy = na_Elegy.Checked;
+            Config.na_Drown = na_Drown.Checked;
+            Config.na_Dia = na_Dia.Checked;
+            Config.na_DefenseDown = na_DefenseDown.Checked;
+            Config.na_DexDown = na_DexDown.Checked;
+            Config.na_Choke = na_Choke.Checked;
+            Config.na_ChrDown = na_ChrDown.Checked;
+            Config.na_Burn = na_Burn.Checked;
+            Config.na_Bio = na_Bio.Checked;
+            Config.na_Bind = na_Bind.Checked;
+            Config.na_AttackDown = na_AttackDown.Checked;
+            Config.na_Addle = na_Addle.Checked;
+            Config.na_AccuracyDown = na_AccuracyDown.Checked;
+            Config.na_AgiDown = na_AgiDown.Checked;
 
-            config.monitoredAgiDown = monitoredAgiDown.Checked;
-            config.monitoredAccuracyDown = monitoredAccuracyDown.Checked;
-            config.monitoredAddle = monitoredAddle.Checked;
-            config.monitoredAttackDown = monitoredAttackDown.Checked;
-            config.monitoredBane = monitoredBane.Checked;
-            config.monitoredBind = monitoredBind.Checked;
-            config.monitoredBio = monitoredBio.Checked;
-            config.monitoredBlindness = monitoredBlindness.Checked;
-            config.monitoredBurn = monitoredBurn.Checked;
-            config.monitoredChrDown = monitoredChrDown.Checked;
-            config.monitoredChoke = monitoredChoke.Checked;
-            config.monitoredCurse = monitoredCurse.Checked;
-            config.monitoredCurse2 = monitoredCurse2.Checked;
-            config.monitoredDexDown = monitoredDexDown.Checked;
-            config.monitoredDefenseDown = monitoredDefenseDown.Checked;
-            config.monitoredDia = monitoredDia.Checked;
-            config.monitoredDisease = monitoredDisease.Checked;
-            config.monitoredDoom = monitoredDoom.Checked;
-            config.monitoredDrown = monitoredDrown.Checked;
-            config.monitoredElegy = monitoredElegy.Checked;
-            config.monitoredEvasionDown = monitoredEvasionDown.Checked;
-            config.monitoredFlash = monitoredFlash.Checked;
-            config.monitoredFrost = monitoredFrost.Checked;
-            config.monitoredHelix = monitoredHelix.Checked;
-            config.monitoredIntDown = monitoredIntDown.Checked;
-            config.monitoredMndDown = monitoredMndDown.Checked;
-            config.monitoredMagicAccDown = monitoredMagicAccDown.Checked;
-            config.monitoredMagicAtkDown = monitoredMagicAtkDown.Checked;
-            config.monitoredMaxHpDown = monitoredMaxHpDown.Checked;
-            config.monitoredMaxMpDown = monitoredMaxMpDown.Checked;
-            config.monitoredMaxTpDown = monitoredMaxTpDown.Checked;
-            config.monitoredParalysis = monitoredParalysis.Checked;
-            config.monitoredPetrification = monitoredPetrification.Checked;
-            config.monitoredPlague = monitoredPlague.Checked;
-            config.monitoredPoison = monitoredPoison.Checked;
-            config.monitoredRasp = monitoredRasp.Checked;
-            config.monitoredRequiem = monitoredRequiem.Checked;
-            config.monitoredStrDown = monitoredStrDown.Checked;
-            config.monitoredShock = monitoredShock.Checked;
-            config.monitoredSilence = monitoredSilence.Checked;
-            config.monitoredSleep = monitoredSleep.Checked;
-            config.monitoredSleep2 = monitoredSleep2.Checked;
-            config.monitoredSlow = monitoredSlow.Checked;
-            config.monitoredThrenody = monitoredThrenody.Checked;
-            config.monitoredVitDown = monitoredVitDown.Checked;
-            config.monitoredWeight = monitoredWeight.Checked;
-            config.monitoredAmnesia = monitoredAmnesia.Checked;
+            Config.monitoredAgiDown = monitoredAgiDown.Checked;
+            Config.monitoredAccuracyDown = monitoredAccuracyDown.Checked;
+            Config.monitoredAddle = monitoredAddle.Checked;
+            Config.monitoredAttackDown = monitoredAttackDown.Checked;
+            Config.monitoredBane = monitoredBane.Checked;
+            Config.monitoredBind = monitoredBind.Checked;
+            Config.monitoredBio = monitoredBio.Checked;
+            Config.monitoredBlindness = monitoredBlindness.Checked;
+            Config.monitoredBurn = monitoredBurn.Checked;
+            Config.monitoredChrDown = monitoredChrDown.Checked;
+            Config.monitoredChoke = monitoredChoke.Checked;
+            Config.monitoredCurse = monitoredCurse.Checked;
+            Config.monitoredCurse2 = monitoredCurse2.Checked;
+            Config.monitoredDexDown = monitoredDexDown.Checked;
+            Config.monitoredDefenseDown = monitoredDefenseDown.Checked;
+            Config.monitoredDia = monitoredDia.Checked;
+            Config.monitoredDisease = monitoredDisease.Checked;
+            Config.monitoredDoom = monitoredDoom.Checked;
+            Config.monitoredDrown = monitoredDrown.Checked;
+            Config.monitoredElegy = monitoredElegy.Checked;
+            Config.monitoredEvasionDown = monitoredEvasionDown.Checked;
+            Config.monitoredFlash = monitoredFlash.Checked;
+            Config.monitoredFrost = monitoredFrost.Checked;
+            Config.monitoredHelix = monitoredHelix.Checked;
+            Config.monitoredIntDown = monitoredIntDown.Checked;
+            Config.monitoredMndDown = monitoredMndDown.Checked;
+            Config.monitoredMagicAccDown = monitoredMagicAccDown.Checked;
+            Config.monitoredMagicAtkDown = monitoredMagicAtkDown.Checked;
+            Config.monitoredMaxHpDown = monitoredMaxHpDown.Checked;
+            Config.monitoredMaxMpDown = monitoredMaxMpDown.Checked;
+            Config.monitoredMaxTpDown = monitoredMaxTpDown.Checked;
+            Config.monitoredParalysis = monitoredParalysis.Checked;
+            Config.monitoredPetrification = monitoredPetrification.Checked;
+            Config.monitoredPlague = monitoredPlague.Checked;
+            Config.monitoredPoison = monitoredPoison.Checked;
+            Config.monitoredRasp = monitoredRasp.Checked;
+            Config.monitoredRequiem = monitoredRequiem.Checked;
+            Config.monitoredStrDown = monitoredStrDown.Checked;
+            Config.monitoredShock = monitoredShock.Checked;
+            Config.monitoredSilence = monitoredSilence.Checked;
+            Config.monitoredSleep = monitoredSleep.Checked;
+            Config.monitoredSleep2 = monitoredSleep2.Checked;
+            Config.monitoredSlow = monitoredSlow.Checked;
+            Config.monitoredThrenody = monitoredThrenody.Checked;
+            Config.monitoredVitDown = monitoredVitDown.Checked;
+            Config.monitoredWeight = monitoredWeight.Checked;
+            Config.monitoredAmnesia = monitoredAmnesia.Checked;
 
             // OTHER OPTIONS
 
-            config.lowMPcheckBox = lowMPcheckBox.Checked;
-            config.mpMinCastValue = mpMinCastValue.Value;
+            Config.lowMPcheckBox = lowMPcheckBox.Checked;
+            Config.mpMinCastValue = mpMinCastValue.Value;
 
-            config.autoTarget = autoTarget.Checked;
-            config.autoTargetSpell = autoTargetSpell.Text;
-            config.Hate_SpellType = Hate_SpellType.SelectedIndex;
-            config.autoTarget_Target = autoTarget_target.Text;
-            config.AssistSpecifiedTarget = AssistSpecifiedTarget.Checked;
+            Config.autoTarget = autoTarget.Checked;
+            Config.autoTargetSpell = autoTargetSpell.Text;
+            Config.Hate_SpellType = Hate_SpellType.SelectedIndex;
+            Config.autoTarget_Target = autoTarget_target.Text;
+            Config.AssistSpecifiedTarget = AssistSpecifiedTarget.Checked;
 
-            config.DisableTargettingCancel = DisableTargettingCancel.Checked;
-            config.TargetRemoval_Delay = TargetRemoval_Delay.Value;
+            Config.DisableTargettingCancel = DisableTargettingCancel.Checked;
+            Config.TargetRemoval_Delay = TargetRemoval_Delay.Value;
 
-            config.AcceptRaise = acceptRaise.Checked;
-            config.AcceptRaiseOnlyWhenNotInCombat = acceptRaiseOnlyWhenNotInCombat.Checked;
+            Config.AcceptRaise = acceptRaise.Checked;
+            Config.AcceptRaiseOnlyWhenNotInCombat = acceptRaiseOnlyWhenNotInCombat.Checked;
 
 
-            config.Fullcircle_DisableEnemy = Fullcircle_DisableEnemy.Checked;
-            config.Fullcircle_GEOTarget = Fullcircle_GEOTarget.Checked;
+            Config.Fullcircle_DisableEnemy = Fullcircle_DisableEnemy.Checked;
+            Config.Fullcircle_GEOTarget = Fullcircle_GEOTarget.Checked;
 
-            config.RadialArcanaMP = RadialArcanaMP.Value;
+            Config.RadialArcanaMP = RadialArcanaMP.Value;
 
-            config.convertMP = ConvertMP.Value;
+            Config.convertMP = ConvertMP.Value;
 
-            config.sublimationMP = sublimationMP.Value;
+            Config.sublimationMP = sublimationMP.Value;
 
-            config.DevotionMP = DevotionMP.Value;
-            config.DevotionTargetType = DevotionTargetType.SelectedIndex;
-            config.DevotionTargetName = DevotionTargetName.Text;
-            config.DevotionWhenEngaged = DevotionWhenEngaged.Checked;
+            Config.DevotionMP = DevotionMP.Value;
+            Config.DevotionTargetType = DevotionTargetType.SelectedIndex;
+            Config.DevotionTargetName = DevotionTargetName.Text;
+            Config.DevotionWhenEngaged = DevotionWhenEngaged.Checked;
 
-            config.healLowMP = healLowMP.Checked;
-            config.standAtMP = standAtMP.Checked;
-            config.specifiedEngageTarget = specifiedEngageTarget.Checked;
-            config.standAtMP_Percentage = standAtMP_Percentage.Value;
-            config.healWhenMPBelow = healWhenMPBelow.Value;
+            Config.healLowMP = healLowMP.Checked;
+            Config.standAtMP = standAtMP.Checked;
+            Config.specifiedEngageTarget = specifiedEngageTarget.Checked;
+            Config.standAtMP_Percentage = standAtMP_Percentage.Value;
+            Config.healWhenMPBelow = healWhenMPBelow.Value;
 
-            config.Overcure = Overcure.Checked;
-            config.Undercure = Undercure.Checked;
-            config.enableMonitoredPriority = enableMonitoredPriority.Checked;
-            config.enableOutOfPartyHealing = enableOutOfPartyHealing.Checked;
-            config.OvercureOnHighPriority = OvercureOnHighPriority.Checked;
-            config.EnableAddOn = enableAddOn.Checked;
+            Config.Overcure = Overcure.Checked;
+            Config.Undercure = Undercure.Checked;
+            Config.enableMonitoredPriority = enableMonitoredPriority.Checked;
+            Config.enableOutOfPartyHealing = enableOutOfPartyHealing.Checked;
+            Config.OvercureOnHighPriority = OvercureOnHighPriority.Checked;
+            Config.EnableAddOn = enableAddOn.Checked;
 
             // PROGRAM OPTIONS
 
-            config.pauseOnZoneBox = pauseOnZoneBox.Checked;
-            config.pauseOnStartBox = pauseOnStartBox.Checked;
-            config.pauseOnKO = pauseOnKO.Checked;
-            config.MinimiseonStart = MinimiseonStart.Checked;
+            Config.pauseOnZoneBox = pauseOnZoneBox.Checked;
+            Config.pauseOnStartBox = pauseOnStartBox.Checked;
+            Config.pauseOnKO = pauseOnKO.Checked;
+            Config.MinimiseonStart = MinimiseonStart.Checked;
 
-            config.autoFollowName = autoFollowName.Text;
-            config.autoFollowDistance = autoFollowDistance.Value;
-            config.autoFollow_Warning = autoFollow_Warning.Checked;
-            config.FFXIDefaultAutoFollow = FFXIDefaultAutoFollow.Checked;
-            config.enableHotKeys = enableHotKeys.Checked;
+            Config.autoFollowName = autoFollowName.Text;
+            Config.autoFollowDistance = autoFollowDistance.Value;
+            Config.autoFollow_Warning = autoFollow_Warning.Checked;
+            Config.FFXIDefaultAutoFollow = FFXIDefaultAutoFollow.Checked;
+            Config.enableHotKeys = enableHotKeys.Checked;
 
-            config.ipAddress = ipAddress.Text;
-            config.listeningPort = listeningPort.Text;
+            Config.ipAddress = ipAddress.Text;
+            Config.listeningPort = listeningPort.Text;
 
-            config.enableFastCast_Mode = enableFastCast_Mode.Checked;
-            config.trackCastingPackets = trackCastingPackets.Checked;
+            Config.enableFastCast_Mode = enableFastCast_Mode.Checked;
+            Config.trackCastingPackets = trackCastingPackets.Checked;
 
             // OTHERS
             var path = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "Settings");
@@ -978,7 +1196,7 @@
 
         #endregion "== All Settings Saved"
 
-        public static string CreateFileName()
+        private static string CreateFileName()
         {
             var fileName = "Settings.xml";
 
@@ -1005,7 +1223,7 @@
 
         #region "== PL Debuff Check Boxes"
 
-        private void plDebuffEnabled_CheckedChanged ( object sender, EventArgs e )
+        private void PLDebuffEnabled_CheckedChanged ( object sender, EventArgs e )
         {
             if ( plDebuffEnabled.Checked )
             {
@@ -1195,7 +1413,7 @@
 
         #region "== Na spell check boxes"
 
-        private void naSpellsenable_CheckedChanged ( object sender, EventArgs e )
+        private void NASpellsEnable_CheckedChanged ( object sender, EventArgs e )
         {
             if ( naSpellsenable.Checked )
             {
@@ -1251,7 +1469,7 @@
 
         #region "== Monitored Player Debuff Check Boxes"
 
-        private void monitoredDebuffEnabled_CheckedChanged ( object sender, EventArgs e )
+        private void MonitoredDebuffEnabled_CheckedChanged ( object sender, EventArgs e )
         {
             if ( monitoredDebuffEnabled.Checked )
             {
@@ -1472,17 +1690,17 @@
 
         #endregion "== Geomancy Check Boxes"
 
-        private void saveAsButton_Click ( object sender, EventArgs e )
+        private void SaveAsButton_Click ( object sender, EventArgs e )
         {
             SaveAllSettings_Click ( sender, e );
 
-            SaveFileDialog savefile = new SaveFileDialog();
-
-            savefile.FileName = CreateFileName();
-
-            savefile.Filter = " Extensible Markup Language (*.xml)|*.xml";
-            savefile.FilterIndex = 2;
-            savefile.InitialDirectory = System.IO.Path.Combine ( System.AppDomain.CurrentDomain.BaseDirectory, "Settings" );
+            SaveFileDialog savefile = new()
+            {
+                FileName = CreateFileName(),
+                Filter = " Extensible Markup Language (*.xml)|*.xml",
+                FilterIndex = 2,
+                InitialDirectory = System.IO.Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "Settings")
+            };
 
             if ( savefile.ShowDialog ( ) == DialogResult.OK )
             {
@@ -1490,14 +1708,14 @@
             }
         }
 
-        private void WriteFileToXml(string fileName)
+        private static void WriteFileToXml(string fileName)
         {
             TextWriter writer = null;
             try
             {
-                XmlSerializer mySerializer = new XmlSerializer(typeof(MySettings));
+                XmlSerializer mySerializer = new(typeof(MySettings));
                 writer = new StreamWriter(fileName);
-                mySerializer.Serialize(writer, config);
+                mySerializer.Serialize(writer, Config);
             }
             finally
             {
@@ -1506,9 +1724,9 @@
             }
         }
 
-        private void loadButton_Click ( object sender, EventArgs e )
+        private void LoadButton_Click ( object sender, EventArgs e )
         {
-            OpenFileDialog openFileDialog1 = new OpenFileDialog
+            OpenFileDialog openFileDialog1 = new()
             {
                 Filter = " Extensible Markup Language (*.xml)|*.xml",
                 FilterIndex = 2,
@@ -1517,12 +1735,12 @@
 
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
-                config = ReadSettings(openFileDialog1.FileName);
-                updateForm(config);
+                Config = ReadSettings(openFileDialog1.FileName);
+                UpdateForm(Config);
             }
         }
 
-        public void updateForm ( MySettings config )
+        private void UpdateForm(MySettings config)
         {
             // HEALING MAGIC
             cure1enabled.Checked = config.cure1enabled;
@@ -2027,7 +2245,7 @@
             trackCastingPackets.Checked = config.trackCastingPackets;
         }
 
-        private void autoAdjust_Cure_Click ( object sender, EventArgs e )
+        private void AutoAdjust_Cure_Click ( object sender, EventArgs e )
         {
             //decimal level = this.cureLevel.Value;
             double potency = System.Convert.ToDouble(curePotency.Value);
@@ -2336,7 +2554,7 @@
             return base.ProcessCmdKey ( ref msg, keyData );
         }
 
-        private void naErase_CheckedChanged ( object sender, EventArgs e )
+        private void NaErase_CheckedChanged ( object sender, EventArgs e )
         {
             if ( naErase.Checked == true )
             {
@@ -2480,7 +2698,7 @@
             }
         }
 
-        public Dictionary<StatusEffect, bool> DebuffEnabled => new Dictionary<StatusEffect, bool>
+        private Dictionary<StatusEffect, bool> DebuffEnabled => new()
         {
             { StatusEffect.Doom, true},
             { StatusEffect.Sleep, true },
@@ -2530,203 +2748,5 @@
             { StatusEffect.Elegy, na_Elegy.Checked },
             { StatusEffect.Threnody, na_Threnody.Checked }
         };
-
-        public SongConfig GetSongConfig()
-        {
-            return new SongConfig()
-            {
-                SingingEnabled = enableSinging.Checked,
-                SingOnlyWhenNear = SongsOnlyWhenNearEngaged.Checked,
-                SongRecastMinutes = recastSong.Value,
-                Dummy1 = dummy1.SelectedIndex,
-                Dummy2 = dummy2.SelectedIndex,
-                Song1 = song1.SelectedIndex,
-                Song2 = song2.SelectedIndex,
-                Song3 = song3.SelectedIndex,
-                Song4 = song4.SelectedIndex,
-                TroubadourEnabled = config.Troubadour,
-                NightingaleEnabled = config.Nightingale
-            };
-        }
-
-        public GeoConfig GetGeoConfig()
-        {
-            return new GeoConfig()
-            {
-                IndiSpellsEnabled = config.EnableIndiSpells,
-                GeoWhenEngaged = config.GeoWhenEngaged,
-                RadialArcanaEnabled = config.RadialArcana,
-                RadialArcanaMP = config.RadialArcanaMP,
-                RadialArcanaSpell = config.RadialArcana_Spell,
-                GeoSpell = config.GeoSpell_Spell,
-                FullCircleEnabled = config.FullCircle,
-                FullCircleGeoTarget = config.Fullcircle_GEOTarget,
-                FullCircleDisableEnemy = config.Fullcircle_DisableEnemy,
-                LuopanSpellsEnabled = config.EnableLuopanSpells,
-                LuopanSpellTarget = config.LuopanSpell_Target,
-                SpecifiedEngageTarget = config.specifiedEngageTarget,
-                EntrustEnabled = config.EntrustEnabled,
-                EntrustSpell = config.EntrustedSpell_Spell,
-                EntrustSpellTarget = config.EntrustedSpell_Target,
-                IndiWhenEngaged = config.EngagedOnly,
-                DematerializeEnabled = config.Dematerialize,
-                EclipticAttritionEnabled = config.EclipticAttrition,
-                LifeCycleEnabled = config.LifeCycle,
-                BlazeOfGloryEnabled = config.BlazeOfGlory,
-                IndiSpell = config.IndiSpell_Spell
-            };
-        }
-
-        public BuffConfig GetBuffConfig()
-        {
-            return new BuffConfig()
-            {
-                AddonIP = config.ipAddress,
-                AddonPort = config.listeningPort
-            };
-        }
-
-        public DebuffConfig GetDebuffConfig()
-        {
-            return new DebuffConfig()
-            {
-                AddonIP = config.ipAddress,
-                AddonPort = config.listeningPort,
-                PLDebuffEnabled = config.plDebuffEnabled,
-                MonitoredDebuffEnabled = config.monitoredDebuffEnabled,
-                PartyDebuffEnabled = config.enablePartyDebuffRemoval,
-                OnlySpecificMembers = config.SpecifiednaSpellsenable,
-                DebuffEnabled = DebuffEnabled,
-                PrioritizeOverLowerCures = config.PrioritiseOverLowerTier
-            };
-        }
-
-        public PLConfig GetPLConfig()
-        {
-            return new PLConfig()
-            {
-                PLSilenceItemEnabled = config.plSilenceItemEnabled,
-                PLSilenceItem = config.plSilenceItem,
-                PLDoomItemEnabled = config.plDoomEnabled,
-                PLDoomItem = config.plDoomitem,
-                DivineSeal = config.DivineSeal,
-                Convert = config.Convert,
-                ConvertMP = config.convertMP,
-                MinCastingMP = config.mpMinCastValue,
-                LowMPEnabled = config.lowMPcheckBox,
-                HealLowMPEnabled = config.healLowMP,
-                HealMPThreshold = config.healWhenMPBelow,
-                StandMPEnabled = config.standAtMP,
-                StandMPThreshold = config.standAtMP_Percentage,
-                BarElementEnabled = config.plBarElement,
-                AOEBarElementEnabled = config.AOE_Barelemental,
-                BarElementSpell = config.AOE_Barelemental ? Data.AoeBarSpells[config.plBarElement_Spell] : Data.BarSpells[config.plBarElement_Spell],
-                BarStatusEnabled = config.plBarStatus,
-                AOEBarStatusEnabled = config.AOE_Barstatus,
-                BarStatusSpell = config.AOE_Barstatus ? Data.AoeBarStatus[config.plBarStatus_Spell] : Data.BarStatus[config.plBarStatus_Spell],
-                EnSpellEnabled = config.plEnspell,
-                EnSpell = Data.Enspells[config.plEnspell_Spell],
-                EnspellAccession = config.enspellAccession,
-                EnspellPerpetuance = config.enspellPerpetuance,
-                StormSpellEnabled = config.plStormSpell,
-                StormSpell = Data.StormTiers[config.plStormSpell_Spell],
-                GainBoostSpellEnabled = config.plGainBoost,
-                GainBoostSpell = Data.GainBoostSpells[config.plGainBoost_Spell],
-                Composure = config.Composure,
-                LightArts = config.LightArts,
-                AddendumWhite = config.AddendumWhite,
-                DarkArts = config.DarkArts,
-                AddendumBlack = config.AddendumBlack,
-                ShellraEnabled = config.plShellra,
-                ShellraLevel = (int)config.plShellra_Level,
-                ProtectraEnabled = config.plProtectra,
-                ProtectraLevel = (int)config.plProtectra_Level,
-                AccessionEnabled = config.Accession,
-                BarElementAccession = config.barspellAccession,
-                BarStatusAccession = config.barstatusAccession,
-                PerpetuanceEnabled = config.Perpetuance,
-                BarElemenetPerpetuance = config.barspellPerpetuance,
-                BarStatusPerpetuance = config.barstatusPerpetuance,
-                StormspellAccession = config.stormspellAccession,
-                StormspellPerpetuance = config.stormspellPerpetuance,
-                ProtectEnabled = config.plProtect,
-                ProtectSpell = Data.ProtectTiers[config.autoProtect_Spell],
-                ShellEnabled = config.plShell,
-                ShellSpell = Data.ShellTiers[config.autoShell_Spell],
-                AccessionProtectShell = config.accessionProShell,
-                ReraiseEnabled = config.plReraise,
-                ReraiseSpell = config.plReraise_Level > 0 ? Data.ReraiseTiers[config.plReraise_Level - 1] : Data.ReraiseTiers[0],
-                EnlightenmentReraise = config.EnlightenmentReraise,
-                UtsusemiEnabled = config.plUtsusemi,
-                BlinkEnabled = config.plBlink,
-                BlinkAccession = config.blinkAccession,
-                BlinkPerpetuance = config.blinkPerpetuance,
-                PhalanxEnabled = config.plPhalanx,
-                PhalanxAccession = config.phalanxAccession,
-                PhalanxPerpetuance = config.phalanxPerpetuance,
-                RefreshEnabled = config.plRefresh,
-                RefreshSpell = config.plRefresh_Level > 0 ? Data.RefreshTiers[config.plRefresh_Level - 1] : Data.RefreshTiers[0],
-                RefreshAccession = config.refreshAccession,
-                RefreshPerpetuance = config.refreshPerpetuance,
-                RegenEnabled = config.plRegen,
-                RegenSpell = config.plRegen_Level > 0 ? Data.RegenTiers[config.plRegen_Level - 1] : Data.RegenTiers[0],
-                RegenAccession = config.regenAccession,
-                RegenPerpetuance = config.regenPerpetuance,
-                AdloquiumEnabled = config.plAdloquium,
-                AdloquiumAccession = config.adloquiumAccession,
-                AdloquiumPerpetuance = config.adloquiumPerpetuance,
-                StoneskinEnabled = config.plStoneskin,
-                StoneskinAccession = config.stoneskinAccession,
-                StoneskinPerpetuance = config.stoneskinPerpetuance,
-                AquaveilEnabled = config.plAquaveil,
-                AquaveilAccession = config.aquaveilAccession,
-                AquaveilPerpetuance = config.aquaveilPerpetuance,
-                KlimaformEnabled = config.plKlimaform,
-                TemperEnabled = config.plTemper,
-                TemperSpell = config.plTemper_Level > 0 ? Data.TemperTiers[config.plTemper_Level - 1] : Data.TemperTiers[0],
-                HasteEnabled = config.plHaste,
-                HasteSpell = config.plHaste_Level > 0 ? Data.HasteTiers[config.plHaste_Level - 1] : Data.HasteTiers[0],
-                SpikesEnabled = config.plSpikes,
-                SpikesSpell = Data.SpikesSpells[config.plSpikes_Spell],
-                AuspiceEnabled = config.plAuspice,
-                AutoTargetEnabled = config.autoTarget,
-                AutoTargetSpell = config.autoTargetSpell,
-                AutoTargetTarget = config.autoTarget_Target,
-                AssistSpecifiedTarget = config.AssistSpecifiedTarget,
-                PartyBasedHateSpell = config.Hate_SpellType == 1,
-                AfflatusSolaceEnabled = config.AfflatusSolace,
-                AfflatusMiseryEnabled = config.AfflatusMisery,
-                SublimationEnabled = config.Sublimation,
-                SublimationMPLossThreshold = config.sublimationMP,
-                DivineCaressEnabled = config.DivineCaress,
-                DebuffsEnabled = (config.plDebuffEnabled || config.monitoredDebuffEnabled || config.enablePartyDebuffRemoval),
-                DevotionEnabled = config.Devotion,
-                DevotionWhenEngaged = config.DevotionWhenEngaged,
-                DevotionMPThreshold = config.DevotionMP,
-                DevotionSpecifiedTarget = config.DevotionTargetType == 0,
-                DevotionTargetName = config.DevotionTargetName
-            };
-        }
-
-        public CureConfig GetCureConfig()
-        {
-            return new CureConfig()
-            {
-                EnabledCureTiers = new bool[] { config.cure1enabled, config.cure2enabled, config.cure3enabled, config.cure4enabled, config.cure5enabled, config.cure6enabled },
-                CureTierThresholds = new int[] { config.cure1amount, config.cure2amount, config.cure3amount, config.cure4amount, config.cure5amount, config.cure6amount },
-                EnabledCuragaTiers = new bool[] { config.curagaEnabled, config.curaga2enabled, config.curaga3enabled, config.curaga4enabled, config.curaga5enabled },
-                CuragaTierThresholds = new int[] { config.curagaAmount, config.curaga2Amount, config.curaga3Amount, config.curaga4Amount, config.curaga5Amount },
-                EnableOutOfPartyHealing = config.enableOutOfPartyHealing,
-                MonitoredCurePercentage = config.monitoredCurePercentage,
-                CuragaMinPlayers = (int)config.curagaRequiredMembers,
-                CuragaHealthPercent = curagaCurePercentage.Value,
-                CureHealthPercent = curePercentage.Value,
-                MonitoredPriorityEnabled = config.enableMonitoredPriority,
-                OverCureEnabled = config.Overcure,
-                UnderCureEnabled = config.Undercure,
-                CuragaSpecifiedEnabled = config.curagaTargetType != 0,
-                CuragaSpecifiedName = config.curagaTargetName
-            };
-        }
     }
 }

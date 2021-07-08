@@ -135,15 +135,39 @@ namespace CurePlease.Utilities
             return api.Player.HasSpell(apiSpell.Index) && (api.Recast.GetSpellRecast(apiSpell.Index) == 0);
         }
 
-        public static int GetAbilityRecast(this EliteAPI api, string ability)
+        private static List<string> Strategems = new()
         {
-            var apiAbility = api.Resources.GetAbility(ability, 0);
+            "Penury",
+            "Celerity",
+            "Rapture",
+            "Accession",
+            "Addendum: White",
+            "Tranquility",
+            "Perpetuance",
+            "Parsimony",
+            "Alacrity",
+            "Ebullience",
+            "Manifestation",
+            "Addendum: Black",
+            "Focalization",
+            "Immanence"
+        };
+
+        public static int GetAbilityRecast(this EliteAPI api, string abilityName, IAbility apiAbility)
+        {
+            // strategems always return the CD for recharges, not the ability itself
+            if (Strategems.Contains(abilityName))
+            {
+                if (CurrentSCHCharges(api) > 0)
+                    return 0;
+            }
+
             var recastIndex = api.Recast.GetAbilityIds().IndexOf(apiAbility.TimerID);
 
             return (recastIndex > -1) ? api.Recast.GetAbilityRecast(recastIndex) : 0;
         }
 
-        public static bool AbilityAvailable(this EliteAPI api, string ability)
+        public static bool AbilityAvailable(this EliteAPI api, string abilityName)
         {
             // IF YOU HAVE INPAIRMENT/AMNESIA THEN BLOCK JOB ABILITY CASTING
             if (api.HasStatus(StatusEffect.No_Job_Abilities) || api.HasStatus(StatusEffect.Amnesia))
@@ -151,10 +175,9 @@ namespace CurePlease.Utilities
                 return false;
             }
 
-            var apiAbility = api.Resources.GetAbility(ability, 0);
+            var apiAbility = api.Resources.GetAbility(abilityName, 0);
 
-            //int recast = api.Recast.GetAbilityRecast(apiAbility);
-            return api.Player.HasAbility(apiAbility.ID) && api.GetAbilityRecast(ability) == 0;
+            return api.Player.HasAbility(apiAbility.ID) && api.GetAbilityRecast(abilityName, apiAbility) == 0;
         }
 
         public static int CurrentSCHCharges(this EliteAPI api)
@@ -169,7 +192,8 @@ namespace CurePlease.Utilities
                     if (api.HasStatus(StatusEffect.Light_Arts) || api.HasStatus(StatusEffect.Addendum_White))
                     {
                         // Stragem charge recast = ability ID 231?
-                        int currentRecastTimer = api.Recast.GetAbilityRecast(231);
+                        var recastIndex = api.Recast.GetAbilityIds().IndexOf(231);
+                        int currentRecastTimer = api.Recast.GetAbilityRecast(recastIndex);
 
                         int SpentPoints = api.Player.GetJobPoints((int)Job.SCH).SpentJobPoints;
 
@@ -235,7 +259,7 @@ namespace CurePlease.Utilities
 
                             int stratsUsed = t / baseTimer;
 
-                            int currentCharges = (int)Math.Ceiling((decimal)baseCharges - stratsUsed);
+                            int currentCharges = (int)Math.Ceiling((decimal)baseCharges - stratsUsed) - 1;
 
                             return (baseTimer == 120) ? currentCharges-- : currentCharges;
                         }
@@ -248,7 +272,7 @@ namespace CurePlease.Utilities
 
         public static IEnumerable<int> PartyNeedsAoeCure(this EliteAPI api, int countThreshold, int cureThreshold)
         {
-            List<int> partiesResult = new List<int>();
+            List<int> partiesResult = new();
 
             // Full alliance list of who's active and below the threshold.
             var activeMembers = api.GetActivePartyMembers().Where(pm => pm.HPLoss() >= cureThreshold);

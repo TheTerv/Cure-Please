@@ -1,9 +1,10 @@
 ﻿
 using CurePlease.Model;
 using CurePlease.Model.Config;
-using CurePlease.Model.Constants;
 using CurePlease.Utilities;
 using EliteMMO.API;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using static EliteMMO.API.EliteAPI;
@@ -14,55 +15,66 @@ namespace CurePlease.Engine
     // - Figure out tiers.
     // - Prevent overlap with haste/flurry/storms.
     // - Don't consider buffs we can't cast? Or just prevent that before we get here?
-    public class BuffEngine
+    public class BuffEngine : IBuffEngine
     {
         // Auto Spells:
         // Haste, Haste II, Phalanx II, Regen, Shell, Protect, Sandstorm, Rainstorm, Windstorm, Firestorm, Hailstorm, Thunderstorm, Voidstorm, Aurorastorm, Refresh, Adloquium
              
-        private Dictionary<string, IEnumerable<short>> ActiveBuffs = new Dictionary<string, IEnumerable<short>>();
+        private readonly Dictionary<string, IEnumerable<short>> ActiveBuffs = new();
 
         // TODO: Should this just be the exact spell we want to cast instead of the buff id?
         // Would probably be cleaner.
-        private Dictionary<string, IEnumerable<string>> AutoBuffs = new Dictionary<string, IEnumerable<string>>();
+        private readonly Dictionary<string, IEnumerable<string>> AutoBuffs = new();
+        private readonly ILogger<BuffEngine> _Logger;
 
-        public BuffEngine() { }
-
-        public EngineAction Run(BuffConfig Config, EliteAPI PL)
+        public BuffEngine(ILogger<BuffEngine> logger)
         {
-            lock (ActiveBuffs)
+            _Logger = logger;
+        }
+
+        public EngineAction Run(EliteAPI pL)
+        {
+            try
             {
-                // Want to find party members where they have an autobuff configured but it isn't in their list of buffs.
-                foreach (PartyMember ptMember in PL.GetActivePartyMembers())
+                lock (ActiveBuffs)
                 {
-                    // Make sure there's at least 1 auto-buff for the player.
-                    if(AutoBuffs.ContainsKey(ptMember.Name) && AutoBuffs[ptMember.Name].Any())
+                    // Want to find party members where they have an autobuff configured but it isn't in their list of buffs.
+                    foreach (PartyMember ptMember in pL.GetActivePartyMembers())
                     {
-                        // First check if they're ActiveBuffs are empty, and if so return first buff to cast.
-                        if(!ActiveBuffs.ContainsKey(ptMember.Name) || !ActiveBuffs[ptMember.Name].Any())
+                        // Make sure there's at least 1 auto-buff for the player.
+                        if (AutoBuffs.ContainsKey(ptMember.Name) && AutoBuffs[ptMember.Name].Any())
                         {
-                            return new EngineAction()
-                            {
-                                Spell = AutoBuffs[ptMember.Name].First(),
-                                Target = ptMember.Name
-                            };
-                           
-                        }
-                        else
-                        {
-                            var missingBuffSpell = AutoBuffs[ptMember.Name].FirstOrDefault(buff => !ActiveBuffs[ptMember.Name].Contains(Data.SpellEffects[buff]));
-                            if(!string.IsNullOrEmpty(missingBuffSpell))
+                            // First check if they're ActiveBuffs are empty, and if so return first buff to cast.
+                            if (!ActiveBuffs.ContainsKey(ptMember.Name) || !ActiveBuffs[ptMember.Name].Any())
                             {
                                 return new EngineAction()
                                 {
-                                    Spell = missingBuffSpell,
+                                    Spell = AutoBuffs[ptMember.Name].First(),
                                     Target = ptMember.Name
                                 };
+
                             }
+                            else
+                            {
+                                var missingBuffSpell = AutoBuffs[ptMember.Name].FirstOrDefault(buff => !ActiveBuffs[ptMember.Name].Contains(Data.SpellEffects[buff]));
+                                if (!string.IsNullOrEmpty(missingBuffSpell))
+                                {
+                                    return new EngineAction()
+                                    {
+                                        Spell = missingBuffSpell,
+                                        Target = ptMember.Name
+                                    };
+                                }
+                            }
+
                         }
-                            
                     }
                 }
-            }        
+            }
+            catch (Exception ex)
+            {
+                _Logger.LogError("Unexpected issue occurred while running buff engine", ex);
+            }
 
             return null;
         }
