@@ -49,7 +49,7 @@
                             // here's where we can wire up dependency injection
                             services.AddSingleton<IEngineManager, EngineManager>();
                             services.AddScoped<IGeoEngine, GeoEngine>();
-                            services.AddScoped<IFollowEngine, FollowEngine>();
+                            services.AddSingleton<IFollowEngine, FollowEngine>();
                             services.AddScoped<IBuffEngine, BuffEngine>();
                             services.AddScoped<ICureEngine, CureEngine>();
                             services.AddScoped<IDebuffEngine, DebuffEngine>();

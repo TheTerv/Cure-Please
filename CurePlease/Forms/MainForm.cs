@@ -330,7 +330,7 @@ namespace CurePlease
 
         private void CastSpell(string partyMemberName, string spellName, [Optional] string OptionalExtras)
         {
-            if (CastingBackground_Check)
+            if (CastingBackground_Check || JobAbilityLock_Check)
             {
                 return;
             }
@@ -564,7 +564,7 @@ namespace CurePlease
                     }
                     else
                     {
-                        JobAbility_Wait(plEngineResult.Message, plEngineResult.JobAbility);
+                        JobAbility_Wait(plEngineResult.Message, plEngineResult.JobAbility, plEngineResult.JobAbility2);
                     }
                 }
 
@@ -873,7 +873,7 @@ namespace CurePlease
 
         private void Item_Wait(string ItemName)
         {
-            if (CastingBackground_Check != true && JobAbilityLock_Check != true)
+            if (!CastingBackground_Check && !JobAbilityLock_Check)
             {
                 Invoke((MethodInvoker)(async () =>
                 {
@@ -890,17 +890,27 @@ namespace CurePlease
             }
         }
 
-        private void JobAbility_Wait(string JobabilityDATA, string JobAbilityName)
+        private void JobAbility_Wait(string jobAbilityDATA, string jobAbilityName, string jobAbilityName2 = null)
         {
-            if (CastingBackground_Check != true && JobAbilityLock_Check != true)
+            if (!CastingBackground_Check && !JobAbilityLock_Check)
             {
                 Invoke((MethodInvoker)(async () =>
                 {
                     JobAbilityLock_Check = true;
                     castingLockLabel.Text = "Casting is LOCKED for a JA.";
-                    AddCurrentAction("Using a Job Ability: " + JobabilityDATA);
-                    PL.ThirdParty.SendString("/ja \"" + JobAbilityName + "\" <me>");
+
+                    if (!string.IsNullOrWhiteSpace(jobAbilityDATA))
+                        AddCurrentAction("Using a Job Ability: " + jobAbilityDATA);
+
+                    PL.ThirdParty.SendString("/ja \"" + jobAbilityName + "\" <me>");
                     await Task.Delay(TimeSpan.FromSeconds(2));
+
+                    if (!string.IsNullOrWhiteSpace(jobAbilityName2))
+                    {
+                        PL.ThirdParty.SendString("/ja \"" + jobAbilityName2 + "\" <me>");
+                        await Task.Delay(TimeSpan.FromSeconds(2));
+                    }
+
                     castingLockLabel.Text = "Casting is UNLOCKED";
                     AddCurrentAction(string.Empty);
                     castingSpell = string.Empty;

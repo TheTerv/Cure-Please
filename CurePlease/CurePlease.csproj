@@ -26,6 +26,7 @@
   
   <ItemGroup>
     <None Include="..\EliteAPI.dll" CopyToOutputDirectory="Always" />
+    <None Include="Resources\**" CopyToOutputDirectory="Always" />
   </ItemGroup>
   
   <ItemGroup>
