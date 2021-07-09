@@ -115,11 +115,6 @@ namespace CurePlease
             InitializeComponent();
             InitializeBackgroundWorker();
 
-            if (!CheckForDLLFiles())
-            {
-                return;
-            }
-
             // Show the current version number..
             Text = notifyIcon1.Text = "Cure Please v" + Application.ProductVersion;
 
@@ -127,30 +122,78 @@ namespace CurePlease
             notifyIcon1.BalloonTipText = "CurePlease has been minimized.";
             notifyIcon1.BalloonTipIcon = ToolTipIcon.Info;
 
-            CheckForProcesses();
+            var results = CheckForDLLFiles(out WindowerMode, out string errorMessage);
+            if (!string.IsNullOrWhiteSpace(errorMessage))
+            {
+                MessageBox.Show(errorMessage, "Error");
+                return;
+            }
+
+            foreach(var result in results)
+            {
+                POLID.Items.Add(result.ProcessName);
+                POLID2.Items.Add(result.ProcessName);
+                processids.Items.Add(result.ProcessId);
+            }
+
+            POLID.SelectedIndex = 0;
+            POLID2.SelectedIndex = 0;
+            processids.SelectedIndex = 0;
         }
 
-        private void CheckForProcesses()
+        private class ProcessDetails
         {
+            public ProcessDetails(string processName, string processId, string wrapperMode)
+            {
+                ProcessName = processName;
+                ProcessId = processId;
+                WrapperMode = wrapperMode;
+            }
+
+            public string ProcessName { get; set; }
+            public string ProcessId { get; set; }
+            public string WrapperMode { get; set; }
+        }
+
+        private static List<ProcessDetails> CheckForDLLFiles(out string wrapper, out string errorMessage)
+        {
+            wrapper = string.Empty;
+            errorMessage = string.Empty;
+
+            var results = new List<ProcessDetails>();
+
             IEnumerable<Process> pol = Process.GetProcessesByName("pol").Union(Process.GetProcessesByName("xiloader")).Union(Process.GetProcessesByName("edenxi"));
 
             if (!pol.Any())
             {
-                MessageBox.Show("FFXI not found");
+                errorMessage = "Could not find a running instance of FFXI. Please load FFXI first";
             }
-            else
-            {
-                for (int i = 0; i < pol.Count(); i++)
-                {
-                    POLID.Items.Add(pol.ElementAt(i).MainWindowTitle);
-                    POLID2.Items.Add(pol.ElementAt(i).MainWindowTitle);
-                    processids.Items.Add(pol.ElementAt(i).Id);
-                }
 
-                POLID.SelectedIndex = 0;
-                POLID2.SelectedIndex = 0;
-                processids.SelectedIndex = 0;
+            foreach (Process process in pol)
+            {
+                for (int i = 0; i < process.Modules.Count; i++)
+                {
+                    if (process.Modules[i].FileName.Contains("Ashita.dll"))
+                    {
+                        wrapper = "Ashita";
+                        results.Add(new ProcessDetails(process.MainWindowTitle, process.Id.ToString(), "Ashita"));
+                        break;
+                    }
+                    else if (process.Modules[i].FileName.Contains("\\Hook.dll"))
+                    {
+                        wrapper = "Windower";
+                        results.Add(new ProcessDetails(process.MainWindowTitle, process.Id.ToString(), "Windower"));
+                        break;
+                    }
+                }
             }
+
+            if (!results.Any())
+            {
+                errorMessage = "Unable to identify Windower or Ashita. CurePlease requires one of these FFXi wrappers";
+            }
+
+            return results;
         }
 
         private void LoadAddon()
@@ -174,11 +217,6 @@ namespace CurePlease
 
         private void Setinstance_Click(object sender, EventArgs e)
         {
-            if (!CheckForDLLFiles())
-            {
-                return;
-            }
-
             processids.SelectedIndex = POLID.SelectedIndex;
             PL = new EliteAPI((int)processids.SelectedItem);
             plLabel.Text = "Selected PL: " + PL.Player.Name;
@@ -203,11 +241,6 @@ namespace CurePlease
 
         private void Setinstance2_Click(object sender, EventArgs e)
         {
-            if (!CheckForDLLFiles())
-            {
-                return;
-            }
-
             processids.SelectedIndex = POLID2.SelectedIndex;
             Monitored = new EliteAPI((int)processids.SelectedItem);
             monitoredLabel.Text = "Monitoring: " + Monitored.Player.Name;
@@ -241,32 +274,6 @@ namespace CurePlease
                 currentAction.Text = message;
                 actionlog_box.AppendText(message + Environment.NewLine);
             }
-        }
-
-        private bool CheckForDLLFiles()
-        {
-            foreach (Process dats in Process.GetProcessesByName("pol").Union(Process.GetProcessesByName("xiloader")).Union(Process.GetProcessesByName("edenxi")))
-            {
-                for (int i = 0; i < dats.Modules.Count; i++)
-                {
-                    if (dats.Modules[i].FileName.Contains("Ashita.dll"))
-                    {
-                        WindowerMode = "Ashita";
-                        return true;
-                    }
-                    else if (dats.Modules[i].FileName.Contains("Hook.dll"))
-                    {
-                        WindowerMode = "Windower";
-                        return true;
-                    }
-                }
-            }
-
-            MessageBox.Show(
-                    "Unable to identify if Windower or Ashita. Addon will not be loaded.",
-                    "Error");
-
-            return true;
         }
 
         private readonly BackgroundWorker zoningWorker = new();
