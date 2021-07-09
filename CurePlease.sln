@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CurePlease.Utilities", "Cur
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CurePlease.Engine", "CurePlease.Engine\CurePlease.Engine.csproj", "{E9E551B0-451E-4C08-8D25-3CF057912A0E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CurePlease.Infrastructure", "CurePlease.Infrastructure\CurePlease.Infrastructure.csproj", "{19E7D6D1-C7D9-4A7B-BABF-8E85D87EC210}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,14 @@ Global
 		{E9E551B0-451E-4C08-8D25-3CF057912A0E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E9E551B0-451E-4C08-8D25-3CF057912A0E}.Release|x86.ActiveCfg = Release|Any CPU
 		{E9E551B0-451E-4C08-8D25-3CF057912A0E}.Release|x86.Build.0 = Release|Any CPU
+		{19E7D6D1-C7D9-4A7B-BABF-8E85D87EC210}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{19E7D6D1-C7D9-4A7B-BABF-8E85D87EC210}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{19E7D6D1-C7D9-4A7B-BABF-8E85D87EC210}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{19E7D6D1-C7D9-4A7B-BABF-8E85D87EC210}.Debug|x86.Build.0 = Debug|Any CPU
+		{19E7D6D1-C7D9-4A7B-BABF-8E85D87EC210}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{19E7D6D1-C7D9-4A7B-BABF-8E85D87EC210}.Release|Any CPU.Build.0 = Release|Any CPU
+		{19E7D6D1-C7D9-4A7B-BABF-8E85D87EC210}.Release|x86.ActiveCfg = Release|Any CPU
+		{19E7D6D1-C7D9-4A7B-BABF-8E85D87EC210}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

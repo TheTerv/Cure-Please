@@ -14,6 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CurePlease.Engine\CurePlease.Engine.csproj" />
+    <ProjectReference Include="..\CurePlease.Infrastructure\CurePlease.Infrastructure.csproj" />
     <ProjectReference Include="..\CurePlease.Utilities\CurePlease.Utilities.csproj" />
     <ProjectReference Include="..\CurePlease.Model\CurePlease.Model.csproj" />
   </ItemGroup>

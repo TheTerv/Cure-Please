@@ -221,7 +221,6 @@ namespace CurePlease
             this.AutomaticChecks = new System.Windows.Forms.Timer(this.components);
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.currentAction = new System.Windows.Forms.Label();
-            this.updateInstances = new System.Windows.Forms.Timer(this.components);
             this.checkCustomActions = new System.Windows.Forms.Timer(this.components);
             this.castingLockLabel = new System.Windows.Forms.Label();
             this.OptionsButton = new System.Windows.Forms.Button();
@@ -2208,12 +2207,6 @@ namespace CurePlease
             this.currentAction.TabIndex = 0;
             this.currentAction.Text = "CURRENT ACTION";
             // 
-            // updateInstances
-            // 
-            this.updateInstances.Enabled = true;
-            this.updateInstances.Interval = 60000;
-            this.updateInstances.Tick += new System.EventHandler(this.UpdateInstances_Tick);
-            // 
             // checkCustomActions
             // 
             this.checkCustomActions.Enabled = true;
@@ -2553,7 +2546,6 @@ namespace CurePlease
         private Timer AutomaticChecks;
         private GroupBox groupBox2;
         private Label currentAction;
-        private Timer updateInstances;
         private Button player0optionsButton;
         private Timer checkCustomActions;
         private ProgressBarEx player0HP;

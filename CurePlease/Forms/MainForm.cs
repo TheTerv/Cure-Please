@@ -1,4 +1,5 @@
 ﻿using CurePlease.Engine;
+using CurePlease.Infrastructure;
 using CurePlease.Model;
 using CurePlease.Model.Constants;
 using CurePlease.Model.Enums;
@@ -8,7 +9,6 @@ using Serilog;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Net;
@@ -38,8 +38,6 @@ namespace CurePlease
         public static EliteAPI PL;
 
         public static EliteAPI Monitored;
-
-        public ListBox processids = new();
 
         public UdpClient AddonClient;
 
@@ -106,6 +104,18 @@ namespace CurePlease
             button.FlatAppearance.BorderColor = Color.Gray;
         }
 
+        public class ComboBoxItemWithDetails
+        {
+            public string Text { get; set; }
+            public int Id { get; set; }
+            public string WrapperMode { get; set; }
+
+            public override string ToString()
+            {
+                return Text;
+            }
+        }
+
         public MainForm(IEngineManager engineManager)
         {
             _EngineManager = engineManager;
@@ -122,78 +132,35 @@ namespace CurePlease
             notifyIcon1.BalloonTipText = "CurePlease has been minimized.";
             notifyIcon1.BalloonTipIcon = ToolTipIcon.Info;
 
-            var results = CheckForDLLFiles(out WindowerMode, out string errorMessage);
+            PopulateCharacterSelections();
+        }
+
+        private bool PopulateCharacterSelections()
+        {
+            var results = ProcessManager.CheckForDLLFiles(out WindowerMode, out string errorMessage);
             if (!string.IsNullOrWhiteSpace(errorMessage))
             {
                 MessageBox.Show(errorMessage, "Error");
-                return;
+                return false;
             }
 
-            foreach(var result in results)
+            foreach (var result in results)
             {
-                POLID.Items.Add(result.ProcessName);
-                POLID2.Items.Add(result.ProcessName);
-                processids.Items.Add(result.ProcessId);
+                var comboBoxWithDetails = new ComboBoxItemWithDetails
+                {
+                    Text = result.ProcessName,
+                    Id = result.ProcessId,
+                    WrapperMode = result.WrapperMode
+                };
+
+                POLID.Items.Add(comboBoxWithDetails);
+                POLID2.Items.Add(comboBoxWithDetails);
             }
 
             POLID.SelectedIndex = 0;
             POLID2.SelectedIndex = 0;
-            processids.SelectedIndex = 0;
-        }
 
-        private class ProcessDetails
-        {
-            public ProcessDetails(string processName, string processId, string wrapperMode)
-            {
-                ProcessName = processName;
-                ProcessId = processId;
-                WrapperMode = wrapperMode;
-            }
-
-            public string ProcessName { get; set; }
-            public string ProcessId { get; set; }
-            public string WrapperMode { get; set; }
-        }
-
-        private static List<ProcessDetails> CheckForDLLFiles(out string wrapper, out string errorMessage)
-        {
-            wrapper = string.Empty;
-            errorMessage = string.Empty;
-
-            var results = new List<ProcessDetails>();
-
-            IEnumerable<Process> pol = Process.GetProcessesByName("pol").Union(Process.GetProcessesByName("xiloader")).Union(Process.GetProcessesByName("edenxi"));
-
-            if (!pol.Any())
-            {
-                errorMessage = "Could not find a running instance of FFXI. Please load FFXI first";
-            }
-
-            foreach (Process process in pol)
-            {
-                for (int i = 0; i < process.Modules.Count; i++)
-                {
-                    if (process.Modules[i].FileName.Contains("Ashita.dll"))
-                    {
-                        wrapper = "Ashita";
-                        results.Add(new ProcessDetails(process.MainWindowTitle, process.Id.ToString(), "Ashita"));
-                        break;
-                    }
-                    else if (process.Modules[i].FileName.Contains("\\Hook.dll"))
-                    {
-                        wrapper = "Windower";
-                        results.Add(new ProcessDetails(process.MainWindowTitle, process.Id.ToString(), "Windower"));
-                        break;
-                    }
-                }
-            }
-
-            if (!results.Any())
-            {
-                errorMessage = "Unable to identify Windower or Ashita. CurePlease requires one of these FFXi wrappers";
-            }
-
-            return results;
+            return true;
         }
 
         private void LoadAddon()
@@ -217,8 +184,8 @@ namespace CurePlease
 
         private void Setinstance_Click(object sender, EventArgs e)
         {
-            processids.SelectedIndex = POLID.SelectedIndex;
-            PL = new EliteAPI((int)processids.SelectedItem);
+            var selectedItem = (ComboBoxItemWithDetails)POLID.SelectedItem;
+            PL = new EliteAPI(selectedItem.Id);
             plLabel.Text = "Selected PL: " + PL.Player.Name;
             Text = notifyIcon1.Text = PL.Player.Name + " - " + "Cure Please v" + Application.ProductVersion;
 
@@ -241,8 +208,8 @@ namespace CurePlease
 
         private void Setinstance2_Click(object sender, EventArgs e)
         {
-            processids.SelectedIndex = POLID2.SelectedIndex;
-            Monitored = new EliteAPI((int)processids.SelectedItem);
+            var selectedItem = (ComboBoxItemWithDetails)POLID2.SelectedItem;
+            Monitored = new EliteAPI(selectedItem.Id);
             monitoredLabel.Text = "Monitoring: " + Monitored.Player.Name;
             monitoredLabel.ForeColor = Color.Green;
             POLID2.BackColor = Color.White;
@@ -1259,36 +1226,6 @@ namespace CurePlease
             PartyBuffs.Show();
         }
 
-        private void RefreshCharactersToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            IEnumerable<Process> pol = Process.GetProcessesByName("pol").Union(Process.GetProcessesByName("xiloader")).Union(Process.GetProcessesByName("edenxi"));
-
-            if (PL.Player.LoginStatus != (int)LoginStatus.Loading)
-            {
-                if (!pol.Any())
-                {
-                    MessageBox.Show("FFXI not found");
-                }
-                else
-                {
-                    POLID.Items.Clear();
-                    POLID2.Items.Clear();
-                    processids.Items.Clear();
-
-                    for (int i = 0; i < pol.Count(); i++)
-                    {
-                        POLID.Items.Add(pol.ElementAt(i).MainWindowTitle);
-                        POLID2.Items.Add(pol.ElementAt(i).MainWindowTitle);
-                        processids.Items.Add(pol.ElementAt(i).Id);
-                    }
-
-                    POLID.SelectedIndex = 0;
-                    POLID2.SelectedIndex = 0;
-                }
-            }
-        }
-
-
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             notifyIcon1.Icon = null;
@@ -1308,55 +1245,6 @@ namespace CurePlease
             pauseButton.ForeColor = Color.Red;
             actionTimer.Enabled = false;
             MessageBox.Show(ErrorMessage);
-        }
-
-        private void UpdateInstances_Tick(object sender, EventArgs e)
-        {
-            if (PL != null && PL.Player.LoginStatus == (int)LoginStatus.Loading)
-            {
-                return;
-            }
-
-            IEnumerable<Process> pol = Process.GetProcessesByName("pol").Union(Process.GetProcessesByName("xiloader")).Union(Process.GetProcessesByName("edenxi"));
-
-            if (pol.Any())
-            {
-                POLID.Items.Clear();
-                POLID2.Items.Clear();
-                processids.Items.Clear();
-
-                int selectedPOLID = 0;
-                int selectedPOLID2 = 0;
-
-                for (int i = 0; i < pol.Count(); i++)
-                {
-                    POLID.Items.Add(pol.ElementAt(i).MainWindowTitle);
-                    POLID2.Items.Add(pol.ElementAt(i).MainWindowTitle);
-                    processids.Items.Add(pol.ElementAt(i).Id);
-
-                    if (PL != null && PL.Player.Name != null)
-                    {
-                        if (pol.ElementAt(i).MainWindowTitle.ToLower() == PL.Player.Name.ToLower())
-                        {
-                            selectedPOLID = i;
-                            plLabel.Text = "Selected PL: " + PL.Player.Name;
-                            Text = notifyIcon1.Text = PL.Player.Name + " - " + "Cure Please v" + Application.ProductVersion;
-                        }
-                    }
-
-                    if (Monitored != null && Monitored.Player.Name != null && Monitored.Player.LoginStatus == (int)LoginStatus.Loading)
-                    {
-                        if (pol.ElementAt(i).MainWindowTitle == Monitored.Player.Name)
-                        {
-                            selectedPOLID2 = i;
-                            monitoredLabel.Text = "Monitored Player: " + Monitored.Player.Name;
-                        }
-                    }
-                }
-
-                POLID.SelectedIndex = selectedPOLID;
-                POLID2.SelectedIndex = selectedPOLID2;
-            }
         }
 
         private void Form1_Resize(object sender, EventArgs e)
