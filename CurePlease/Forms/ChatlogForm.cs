@@ -9,6 +9,8 @@
     {
         public ChatlogForm(MainForm mainForm)
         {
+            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+
             this.StartPosition = FormStartPosition.CenterScreen;
 
             InitializeComponent();
