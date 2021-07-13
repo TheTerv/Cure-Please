@@ -103,7 +103,7 @@ namespace CurePlease.Engine
 
             try
             {
-                if (_PowerLeveler == null || _PowerLeveler.Player == null || _LastPLCoordinates == null|| _Config == null || !_Running)
+                if (_PowerLeveler == null || _PowerLeveler.Player == null || _LastPLCoordinates == null || _Config == null || !_Running)
                 {
                     _FollowEngineTimer.Start();
                     return;
@@ -204,6 +204,11 @@ namespace CurePlease.Engine
 
         private void MoveToTarget(XiEntity followTarget)
         {
+            if (_LastPLCoordinates == null)
+            {
+                return;
+            }
+
             float Target_X;
             float Target_Y;
             float Target_Z;
