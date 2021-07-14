@@ -585,7 +585,7 @@ namespace CurePlease
 
             else if (PL.Player.MainJob == (byte)Job.GEO && !PL.HasStatus(StatusEffect.Silence) && (PL.Player.Status == 1 || PL.Player.Status == 0))
             {
-                var geoAction = _EngineManager.RunGeoEngine(PL, Monitored, ConfigForm.GetGeoConfig());
+                var geoAction = _EngineManager.RunGeoEngine(PL, ConfigForm.GetGeoConfig(), ConfigForm.Config.autoFollowName);
 
                 if (geoAction != null)
                 {

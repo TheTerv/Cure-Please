@@ -19,6 +19,8 @@ namespace CurePlease.Utilities
                     return member.MemberNumber > 5 && member.MemberNumber <= 11;
                 case 3:
                     return member.MemberNumber > 11;
+                default:
+                    break;
             }
 
             return false;

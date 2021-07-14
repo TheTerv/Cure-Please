@@ -135,7 +135,7 @@ namespace CurePlease.Utilities
             return api.Player.HasSpell(apiSpell.Index) && (api.Recast.GetSpellRecast(apiSpell.Index) == 0);
         }
 
-        private static List<string> Strategems = new()
+        private static readonly List<string> Strategems = new()
         {
             "Penury",
             "Celerity",
@@ -404,6 +404,26 @@ namespace CurePlease.Utilities
         {
             IItem item = api.Resources.GetItem(name, 0);
             return item != null ? (ushort)item.ItemID : (ushort)0;
+        }
+
+        public static int GetEntityIdForPlayerByName(this EliteAPI api, string playerName)
+        {
+            int result = -1;
+
+            if (!string.IsNullOrEmpty(playerName))
+            {
+                for (int x = 0; x < 2048; x++)
+                {
+                    XiEntity entity = api.Entity.GetEntity(x);
+
+                    if (entity.Name != null && string.Equals(entity.Name, playerName, StringComparison.OrdinalIgnoreCase))
+                    {
+                        return Convert.ToInt32(entity.TargetID);
+                    }
+                }
+            }
+
+            return result;
         }
     }
 }

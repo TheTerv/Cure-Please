@@ -6,6 +6,6 @@ namespace CurePlease.Engine
 {
     public interface IGeoEngine
     {
-        EngineAction Run(EliteAPI pl, EliteAPI monitored, GeoConfig Config);
+        EngineAction Run(EliteAPI pl, GeoConfig Config, string followName);
     }
 }

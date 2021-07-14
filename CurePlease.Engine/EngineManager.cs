@@ -26,9 +26,9 @@ namespace CurePlease.Engine
             _SongEngine = songEngine;
         }
 
-        public EngineAction RunGeoEngine(EliteAPI pl, EliteAPI monitored, GeoConfig config)
+        public EngineAction RunGeoEngine(EliteAPI pl, GeoConfig config, string followName)
         {
-            return _GeoEngine.Run(pl, monitored, config);
+            return _GeoEngine.Run(pl, config, followName);
         }
 
         public EngineAction RunBuffEngine(EliteAPI pl)

@@ -32,8 +32,8 @@ namespace CurePlease.Engine
 
         public List<GeoData> GeomancerInfo = new();
 
-        private EliteAPI _PL;
-        private EliteAPI _Monitored;
+        private EliteAPI _Self;
+        private XiEntity _GeoTarget;
 
         private readonly Timer FullCircleTimer = new();
         private readonly Timer EclipticTimer = new();
@@ -89,7 +89,28 @@ namespace CurePlease.Engine
             EclipticTimer.Elapsed += EclipticTimer_Tick;
         }
 
-        public EngineAction Run(EliteAPI pl, EliteAPI monitored, GeoConfig config)
+        private XiEntity GetWhoToCastOn(string followName)
+        {
+            int targetId = 0;
+
+            if (!string.IsNullOrEmpty(followName))
+            {
+                targetId = _Self.GetEntityIdForPlayerByName(followName);
+            }
+            else if (_Self.GetActivePartyMembers().Any())
+            {
+                targetId = (int)_Self.GetActivePartyMembers().FirstOrDefault().TargetIndex;
+            }
+
+            if (targetId > 0)
+            {
+                return _Self.Entity.GetEntity(targetId);
+            }
+
+            return null;
+        }
+
+        public EngineAction Run(EliteAPI pl, GeoConfig config, string followName)
         {
             EngineAction actionResult = new()
             {
@@ -98,8 +119,8 @@ namespace CurePlease.Engine
 
             try
             {
-                _PL = pl;
-                _Monitored = monitored;
+                _Self = pl;
+                _GeoTarget = GetWhoToCastOn(followName);
                 _Config = config;
 
                 if (!CanCastInArea())
@@ -107,7 +128,7 @@ namespace CurePlease.Engine
 
                 // ENTRUSTED INDI SPELL CASTING, WILL BE CAST SO LONG AS ENTRUST IS ACTIVE
                 // StatusEffect 584 == Entrust
-                if (_PL.HasStatus((StatusEffect)584) && _PL.Player.Status != (int)EntityStatus.Healing)
+                if (_Self.HasStatus((StatusEffect)584) && _Self.Player.Status != (int)EntityStatus.Healing)
                 {
                     actionResult = GetEntrustSpell();
                 }
@@ -115,51 +136,42 @@ namespace CurePlease.Engine
                 // TODO: Fix up this logic, I think something was lost in the refactoring.
                 // Need to see if there's a situation where both of these JA's would be activated for the cast.
                 // For now the old logic seems to be use RA on it's own, or check for FC + Cast.
-                else if (_Config.RadialArcanaEnabled && (_PL.Player.MP <= _Config.RadialArcanaMP) && _PL.AbilityAvailable(Ability.RadialArcana) && !_PL.Player.Buffs.Contains((short)StatusEffect.Weakness))
+                else if (_Config.RadialArcanaEnabled && (_Self.Player.MP <= _Config.RadialArcanaMP) && _Self.AbilityAvailable(Ability.RadialArcana) && !_Self.Player.Buffs.Contains((short)StatusEffect.Weakness))
                 {
                     // Check if a pet is already active
-                    if (_PL.Player.Pet.HealthPercent >= 1 && _PL.Player.Pet.Distance <= 9)
+                    if (_Self.Player.Pet.HealthPercent >= 1 && _Self.Player.Pet.Distance <= 9)
                     {
                         actionResult.JobAbility = Ability.RadialArcana;
                         return actionResult;
                     }
-                    else if (_PL.Player.Pet.HealthPercent >= 1 && _PL.Player.Pet.Distance >= 9 && _PL.AbilityAvailable(Ability.FullCircle))
+                    else if (_Self.Player.Pet.HealthPercent >= 1 && _Self.Player.Pet.Distance >= 9 && _Self.AbilityAvailable(Ability.FullCircle))
                     {
                         actionResult.JobAbility = Ability.FullCircle;
                     }
 
                     actionResult.Spell = ReturnGeoSpell(_Config.RadialArcanaSpell, 2);
                 }
-                else if (_Config.FullCircleEnabled && _PL.Player.Pet.HealthPercent != 0)
+                else if (_Config.FullCircleEnabled && _Self.Player.Pet.HealthPercent != 0)
                 {
                     // When out of range Distance is 59 Yalms regardless, Must be within 15 yalms to gain
                     // the effect
 
                     //Check if "pet" is active and out of range of the monitored player
-                    if (_PL.Player.Pet.HealthPercent >= 1)
+                    if (_Self.Player.Pet.HealthPercent >= 1)
                     {
                         if (_Config.FullCircleGeoTarget == true && _Config.LuopanSpellTarget != "")
                         {
-                            ushort PetsIndex = _PL.Player.PetIndex;
+                            ushort PetsIndex = _Self.Player.PetIndex;
 
-                            XiEntity PetsEntity = _PL.Entity.GetEntity(PetsIndex);
+                            XiEntity PetsEntity = _Self.Entity.GetEntity(PetsIndex);
 
                             int FullCircle_CharID = 0;
 
-                            for (int x = 0; x < 2048; x++)
-                            {
-                                XiEntity entity = _PL.Entity.GetEntity(x);
+                            FullCircle_CharID = _Self.GetEntityIdForPlayerByName(_Config.LuopanSpellTarget);
 
-                                if (entity.Name != null && entity.Name.ToLower().Equals(_Config.LuopanSpellTarget.ToLower()))
-                                {
-                                    FullCircle_CharID = Convert.ToInt32(entity.TargetID);
-                                    break;
-                                }
-                            }
-
-                            if (FullCircle_CharID != 0)
+                            if (FullCircle_CharID > 0)
                             {
-                                XiEntity FullCircleEntity = _PL.Entity.GetEntity(FullCircle_CharID);
+                                XiEntity FullCircleEntity = _Self.Entity.GetEntity(FullCircle_CharID);
 
                                 float fX = PetsEntity.X - FullCircleEntity.X;
                                 float fY = PetsEntity.Y - FullCircleEntity.Y;
@@ -174,11 +186,11 @@ namespace CurePlease.Engine
                             }
 
                         }
-                        else if (_Config.FullCircleGeoTarget == false && _Monitored.Player.Status == (int)EntityStatus.Engaged)
+                        else if (_Config.FullCircleGeoTarget == false && _GeoTarget != null && _GeoTarget.Status == (int)EntityStatus.Engaged)
                         {
-                            ushort PetsIndex = _PL.Player.PetIndex;
+                            ushort PetsIndex = _Self.Player.PetIndex;
 
-                            XiEntity PetsEntity = _Monitored.Entity.GetEntity(PetsIndex);
+                            XiEntity PetsEntity = _Self.Entity.GetEntity(PetsIndex);
 
                             if (PetsEntity.Distance >= 10)
                             {
@@ -189,7 +201,7 @@ namespace CurePlease.Engine
                 }
 
                 // CAST NON ENTRUSTED INDI SPELL
-                else if (_Config.IndiSpellsEnabled && !_PL.HasStatus(612) && _PL.Player.Status != (int)EntityStatus.Healing && (CheckEngagedStatus() || !_Config.IndiWhenEngaged))
+                else if (_Config.IndiSpellsEnabled && !_Self.HasStatus(612) && _Self.Player.Status != (int)EntityStatus.Healing && (CheckEngagedStatus() || !_Config.IndiWhenEngaged))
                 {
                     string SpellCheckedResult = ReturnGeoSpell(_Config.IndiSpell, 1);
 
@@ -207,10 +219,10 @@ namespace CurePlease.Engine
                 }
 
                 // GEO SPELL CASTING
-                else if (_Config.LuopanSpellsEnabled && (_PL.Player.Pet.HealthPercent < 1) && CheckEngagedStatus())
+                else if (_Config.LuopanSpellsEnabled && (_Self.Player.Pet.HealthPercent < 1) && CheckEngagedStatus())
                 {
                     // Use BLAZE OF GLORY if ENABLED
-                    if (_Config.BlazeOfGloryEnabled && _PL.AbilityAvailable(Ability.BlazeOfGlory) && GEO_EnemyCheck())
+                    if (_Config.BlazeOfGloryEnabled && _Self.AbilityAvailable(Ability.BlazeOfGlory) && GEO_EnemyCheck())
                     {
                         actionResult.JobAbility = Ability.BlazeOfGlory;
                         return actionResult;
@@ -228,13 +240,13 @@ namespace CurePlease.Engine
                         actionResult.Error = "An error has occurred with GEO spell casting, please report what spell was active at the time.";
                     }
 
-                    if (_PL.Resources.GetSpell(SpellCheckedResult, 0).ValidTargets == 5)
+                    if (_Self.Resources.GetSpell(SpellCheckedResult, 0).ValidTargets == 5)
                     {
                         if (!string.IsNullOrEmpty(_Config.LuopanSpellTarget))
                         {
                             actionResult.Target = _Config.LuopanSpellTarget;
 
-                            if (_PL.HasStatus(516)) // IF ECLIPTIC IS UP THEN ACTIVATE THE BOOL
+                            if (_Self.HasStatus(516)) // IF ECLIPTIC IS UP THEN ACTIVATE THE BOOL
                             {
                                 EclipticStillUp = true;
                             }
@@ -249,11 +261,11 @@ namespace CurePlease.Engine
                         {
                             int GrabbedTargetID = GrabGEOTargetID();
 
-                            if (GrabbedTargetID != 0)
+                            if (GrabbedTargetID > 0)
                             {
-                                _PL.Target.SetTarget(GrabbedTargetID);
+                                _Self.Target.SetTarget(GrabbedTargetID);
 
-                                if (_PL.HasStatus(516)) // IF ECLIPTIC IS UP THEN ACTIVATE THE BOOL
+                                if (_Self.HasStatus(516)) // IF ECLIPTIC IS UP THEN ACTIVATE THE BOOL
                                 {
                                     EclipticStillUp = true;
                                 }
@@ -281,10 +293,10 @@ namespace CurePlease.Engine
 
         private bool CanCastInArea()
         {
-            if (_PL == null)
+            if (_Self == null)
                 return false;
 
-            return !CityZoneIds.Contains(_PL.Player.ZoneId);
+            return !CityZoneIds.Contains(_Self.Player.ZoneId);
         }
 
         private EngineAction CheckForJobAbility()
@@ -296,9 +308,9 @@ namespace CurePlease.Engine
 
             // If we're using Entrust, and it's available
             if (_Config.EntrustEnabled
-                && !_PL.HasStatus((StatusEffect)584) //entrust
+                && !_Self.HasStatus((StatusEffect)584) //entrust
                 && CheckEngagedStatus()
-                && _PL.AbilityAvailable(Ability.Entrust))
+                && _Self.AbilityAvailable(Ability.Entrust))
             {
                 if (VerifyEntrustTarget() != null)
                 {
@@ -307,15 +319,15 @@ namespace CurePlease.Engine
 
                 return actionResult;
             }
-            else if (_Config.DematerializeEnabled && CheckEngagedStatus() == true && _PL.Player.Pet.HealthPercent >= 90 && _PL.AbilityAvailable(Ability.Dematerialize))
+            else if (_Config.DematerializeEnabled && CheckEngagedStatus() == true && _Self.Player.Pet.HealthPercent >= 90 && _Self.AbilityAvailable(Ability.Dematerialize))
             {
                 actionResult.JobAbility = Ability.Dematerialize;
             }
-            else if (_Config.EclipticAttritionEnabled && CheckEngagedStatus() == true && _PL.Player.Pet.HealthPercent >= 90 && _PL.AbilityAvailable(Ability.EclipticAttrition) && !_PL.HasStatus(516) && EclipticStillUp != true)
+            else if (_Config.EclipticAttritionEnabled && CheckEngagedStatus() == true && _Self.Player.Pet.HealthPercent >= 90 && _Self.AbilityAvailable(Ability.EclipticAttrition) && !_Self.HasStatus(516) && EclipticStillUp != true)
             {
                 actionResult.JobAbility = Ability.EclipticAttrition;
             }
-            else if (_Config.LifeCycleEnabled && CheckEngagedStatus() == true && _PL.Player.Pet.HealthPercent <= 30 && _PL.Player.Pet.HealthPercent >= 5 && _PL.Player.HPP >= 90 && _PL.AbilityAvailable(Ability.LifeCycle))
+            else if (_Config.LifeCycleEnabled && CheckEngagedStatus() == true && _Self.Player.Pet.HealthPercent <= 30 && _Self.Player.Pet.HealthPercent >= 5 && _Self.Player.HPP >= 90 && _Self.AbilityAvailable(Ability.LifeCycle))
             {
                 actionResult.JobAbility = Ability.LifeCycle;
             }
@@ -344,7 +356,7 @@ namespace CurePlease.Engine
                 if (string.IsNullOrWhiteSpace(target))
                 {
                     // use P1
-                    target = _PL.GetActivePartyMembers().FirstOrDefault(p => p.Index == 1)?.Name;
+                    target = _Self.GetActivePartyMembers().FirstOrDefault(p => p.Index == 1)?.Name;
                 }
 
                 if (!string.IsNullOrWhiteSpace(VerifyEntrustTarget()))
@@ -364,18 +376,18 @@ namespace CurePlease.Engine
             if (string.IsNullOrWhiteSpace(target))
             {
                 // nothing in config, so let's default to P1
-                target = _PL.GetActivePartyMembers().FirstOrDefault(p => p.Index == 1)?.Name;
+                target = _Self.GetActivePartyMembers().FirstOrDefault(p => p.Index == 1)?.Name;
             }
 
             if (!string.IsNullOrEmpty(target))
             {
-                PartyMember entrustTarget = _PL.GetActivePartyMembers().FirstOrDefault(p => p.Name == target);
+                PartyMember entrustTarget = _Self.GetActivePartyMembers().FirstOrDefault(p => p.Name == target);
 
                 // make sure target is in party
                 if (entrustTarget == null)
                     return null;
 
-                XiEntity entrustEntity = _PL.Entity.GetEntity((int)entrustTarget.TargetIndex);
+                XiEntity entrustEntity = _Self.Entity.GetEntity((int)entrustTarget.TargetIndex);
 
                 // make sure target isn't dead and is in range
                 if (entrustEntity.IsDead() || entrustEntity.Distance > 21)
@@ -387,6 +399,8 @@ namespace CurePlease.Engine
 
         private void InitializeData()
         {
+            #region Init Data
+
             int geo_position = 0;
 
             GeomancerInfo.Add(new GeoData
@@ -627,6 +641,8 @@ namespace CurePlease.Engine
                 GeoSpell = "Geo-Fade",
                 GeoPosition = geo_position,
             });
+
+            #endregion
         }
 
         private string ReturnGeoSpell(int GEOSpell_ID, int GeoSpell_Type)
@@ -636,8 +652,8 @@ namespace CurePlease.Engine
 
             if (GeoSpell_Type == 1)
             {
-                var apiSpell = _PL.Resources.GetSpell(GeoSpell.IndiSpell, 0);
-                if (_PL.SpellAvailable(apiSpell.Name[0]))
+                var apiSpell = _Self.Resources.GetSpell(GeoSpell.IndiSpell, 0);
+                if (_Self.SpellAvailable(apiSpell.Name[0]))
                 {
                     return GeoSpell.IndiSpell;
                 }
@@ -649,9 +665,9 @@ namespace CurePlease.Engine
             }
             else if (GeoSpell_Type == 2)
             {
-                var apiSpell = _PL.Resources.GetSpell(GeoSpell.GeoSpell, 0);
+                var apiSpell = _Self.Resources.GetSpell(GeoSpell.GeoSpell, 0);
 
-                if (_PL.SpellAvailable(apiSpell.Name[0]))
+                if (_Self.SpellAvailable(apiSpell.Name[0]))
                 {
                     return GeoSpell.GeoSpell;
                 }
@@ -669,7 +685,7 @@ namespace CurePlease.Engine
 
         private bool GEO_EnemyCheck()
         {
-            if (_PL == null) 
+            if (_Self == null) 
             { 
                 return false;
             }
@@ -684,7 +700,7 @@ namespace CurePlease.Engine
             }
             else
             {
-                if (_PL.Resources.GetSpell(SpellCheckedResult, 0).ValidTargets == 5)
+                if (_Self.Resources.GetSpell(SpellCheckedResult, 0).ValidTargets == 5)
                 {
                     return true; // SPELL TARGET IS PLAYER THEREFORE ONLY THE DEFAULT CHECK IS REQUIRED SO JUST RETURN TRUE TO VOID THIS CHECK
                 }
@@ -694,7 +710,7 @@ namespace CurePlease.Engine
                     {
                         for (int x = 0; x < 2048; x++)
                         {
-                            XiEntity z = _PL.Entity.GetEntity(x);
+                            XiEntity z = _Self.Entity.GetEntity(x);
                             if (!string.IsNullOrEmpty(z.Name))
                             {
                                 if (z.Name.ToLower() == _Config.LuopanSpellTarget.ToLower()) // A match was located so use this entity as a check.
@@ -714,14 +730,14 @@ namespace CurePlease.Engine
                         return false;
                     }
 
-                    return _Monitored != null && _Monitored.Player.Status == (int)EntityStatus.Engaged;
+                    return _GeoTarget != null && _GeoTarget.Status == (int)EntityStatus.Engaged;
                 }
             }
         }
 
         private bool CheckEngagedStatus()
         {
-            if (_PL == null)
+            if (_Self == null)
             { 
                 return false;
             }
@@ -735,7 +751,7 @@ namespace CurePlease.Engine
             {
                 for (int x = 0; x < 2048; x++)
                 {
-                    XiEntity z = _PL.Entity.GetEntity(x);
+                    XiEntity z = _Self.Entity.GetEntity(x);
                     if (!string.IsNullOrEmpty(z.Name))
                     {
                         if (z.Name.ToLower() == _Config.LuopanSpellTarget.ToLower()) // A match was located so use this entity as a check.
@@ -748,36 +764,20 @@ namespace CurePlease.Engine
                 return false;
             }
 
-            return _Monitored != null && _Monitored.Player.Status == (int)EntityStatus.Engaged && _PL.GetActivePartyMembers().FirstOrDefault(p => p.Name == _Monitored.Player.Name) != null;
+            return _GeoTarget != null && _GeoTarget.Status == (int)EntityStatus.Engaged && _Self.GetActivePartyMembers().FirstOrDefault(p => p.Name == _GeoTarget.Name) != null;
         }
 
         private int GrabGEOTargetID()
         {
             if (_Config.SpecifiedEngageTarget && !string.IsNullOrEmpty(_Config.LuopanSpellTarget))
             {
-                for (int x = 0; x < 2048; x++)
-                {
-                    XiEntity z = _PL.Entity.GetEntity(x);
-
-                    if (z.Name != null && z.Name.ToLower() == _Config.LuopanSpellTarget.ToLower())
-                    {
-                        if (z.Status == (int)EntityStatus.Engaged)
-                        {
-                            return z.TargetingIndex;
-                        }
-
-                        return 0;
-                    }
-                }
-
-                return 0;
+                return _Self.GetEntityIdForPlayerByName(_Config.LuopanSpellTarget);
             }
             else
             {
-                if (_Monitored != null && _Monitored.Player.Status == (int)EntityStatus.Engaged)
+                if (_GeoTarget != null && _GeoTarget.Status == (int)EntityStatus.Engaged)
                 {
-                    TargetInfo target = _Monitored.Target.GetTargetInfo();
-                    XiEntity entity = _Monitored.Entity.GetEntity(Convert.ToInt32(target.TargetIndex));
+                    XiEntity entity = _Self.Entity.GetEntity(Convert.ToInt32(_GeoTarget.TargetingIndex));
                     return Convert.ToInt32(entity.TargetID);
                 }
 
@@ -787,24 +787,24 @@ namespace CurePlease.Engine
 
         private void FullCircle_Timer_Tick(object sender, EventArgs e)
         {
-            if (_PL == null)
+            if (_Self == null)
             {
                 return;
             }
 
-            if (_PL.Player.Pet.HealthPercent >= 1)
+            if (_Self.Player.Pet.HealthPercent >= 1)
             {
-                ushort PetsIndex = _PL.Player.PetIndex;
+                ushort PetsIndex = _Self.Player.PetIndex;
 
                 if (_Config.FullCircleGeoTarget && !string.IsNullOrEmpty(_Config.LuopanSpellTarget))
                 {
-                    XiEntity PetsEntity = _PL.Entity.GetEntity(PetsIndex);
+                    XiEntity PetsEntity = _Self.Entity.GetEntity(PetsIndex);
 
                     int FullCircle_CharID = 0;
 
                     for (int x = 0; x < 2048; x++)
                     {
-                        XiEntity entity = _PL.Entity.GetEntity(x);
+                        XiEntity entity = _Self.Entity.GetEntity(x);
 
                         if (entity.Name != null && entity.Name.ToLower().Equals(_Config.LuopanSpellTarget.ToLower()))
                         {
@@ -815,7 +815,7 @@ namespace CurePlease.Engine
 
                     if (FullCircle_CharID != 0)
                     {
-                        XiEntity FullCircleEntity = _PL.Entity.GetEntity(FullCircle_CharID);
+                        XiEntity FullCircleEntity = _Self.Entity.GetEntity(FullCircle_CharID);
 
                         float fX = PetsEntity.X - FullCircleEntity.X;
                         float fY = PetsEntity.Y - FullCircleEntity.Y;
@@ -825,21 +825,21 @@ namespace CurePlease.Engine
 
                         if (generatedDistance >= 10)
                         {
-                            _PL.ThirdParty.SendString("/ja \"Full Circle\" <me>");
+                            _Self.ThirdParty.SendString("/ja \"Full Circle\" <me>");
                         }
                     }
                 }
-                else if (!_Config.FullCircleGeoTarget && _Monitored.Player.Status == (int)EntityStatus.Engaged)
+                else if (!_Config.FullCircleGeoTarget && _GeoTarget.Status == (int)EntityStatus.Engaged)
                 {
                     string SpellCheckedResult = ReturnGeoSpell(_Config.GeoSpell, 2);
 
-                    if (!_Config.FullCircleDisableEnemy || (_Config.FullCircleDisableEnemy && _PL.Resources.GetSpell(SpellCheckedResult, 0).ValidTargets == 32))
+                    if (!_Config.FullCircleDisableEnemy || (_Config.FullCircleDisableEnemy && _Self.Resources.GetSpell(SpellCheckedResult, 0).ValidTargets == 32))
                     {
-                        XiEntity PetsEntity = _Monitored.Entity.GetEntity(PetsIndex);
+                        XiEntity PetsEntity = _Self.Entity.GetEntity(PetsIndex);
 
-                        if (PetsEntity.Distance >= 10 && PetsEntity.Distance != 0 && _PL.AbilityAvailable(Ability.FullCircle))
+                        if (PetsEntity.Distance >= 10 && PetsEntity.Distance != 0 && _Self.AbilityAvailable(Ability.FullCircle))
                         {
-                            _PL.ThirdParty.SendString("/ja \"Full Circle\" <me>");
+                            _Self.ThirdParty.SendString("/ja \"Full Circle\" <me>");
                         }
                     }
                 }
@@ -850,12 +850,12 @@ namespace CurePlease.Engine
 
         private void EclipticTimer_Tick(object sender, EventArgs e)
         {
-            if (_PL == null)
+            if (_Self == null)
             { 
                 return; 
             }
 
-            EclipticStillUp = _PL.Player.Pet.HealthPercent >= 1;
+            EclipticStillUp = _Self.Player.Pet.HealthPercent >= 1;
         }
     }
 }

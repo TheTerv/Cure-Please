@@ -7,7 +7,7 @@ namespace CurePlease.Engine
 {
     public interface IEngineManager
     {
-        EngineAction RunGeoEngine(EliteAPI pl, EliteAPI monitored, GeoConfig config);
+        EngineAction RunGeoEngine(EliteAPI pl, GeoConfig config, string followName);
 
         void SetupFollow(EliteAPI pl, MySettings config);
         void StartFollowing();
