@@ -18,15 +18,9 @@
     <ProjectReference Include="..\CurePlease.Utilities\CurePlease.Utilities.csproj" />
     <ProjectReference Include="..\CurePlease.Model\CurePlease.Model.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="EliteMMO.API">
-      <HintPath>..\EliteMMO.API.dll</HintPath>
-    </Reference>
-  </ItemGroup>
   
   <ItemGroup>
-    <None Include="..\EliteAPI.dll" CopyToOutputDirectory="Always" />
+    <None Include="..\libraries\EliteAPI.dll" CopyToOutputDirectory="Always" />
     <None Include="Resources\**" CopyToOutputDirectory="Always" />
   </ItemGroup>
   
@@ -39,5 +33,11 @@
     <PackageReference Include="Serilog.Extensions.Hosting" Version="4.1.2" />
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
     <PackageReference Include="System.Text.Encoding.CodePages" Version="5.0.0" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Reference Include="EliteMMO.API">
+      <HintPath>..\libraries\EliteMMO.API.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>

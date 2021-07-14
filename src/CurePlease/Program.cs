@@ -1,6 +1,7 @@
 ﻿namespace CurePlease
 {
     using CurePlease.Engine;
+    using CurePlease.Infrastructure;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
@@ -19,11 +20,12 @@
         {
             var host = AppStartup();
             var engineManager = ActivatorUtilities.CreateInstance<EngineManager>(host.Services);
+            var processManager = ActivatorUtilities.CreateInstance<ProcessManager>(host.Services);
 
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new MainForm(engineManager));
+            Application.Run(new MainForm(processManager, engineManager));
         }
 
         static void ConfigSetup(IConfigurationBuilder builder)
@@ -47,6 +49,8 @@
                         .ConfigureServices((context, services) =>
                         {
                             // here's where we can wire up dependency injection
+                            services.AddSingleton<IProcessManager, ProcessManager>();
+                            services.AddSingleton<IProcessUtilities, ProcessUtilities>();
                             services.AddSingleton<IEngineManager, EngineManager>();
                             services.AddScoped<IGeoEngine, GeoEngine>();
                             services.AddSingleton<IFollowEngine, FollowEngine>();

@@ -9,12 +9,18 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <Reference Include="EliteMMO.API">
-      <HintPath>..\EliteMMO.API.dll</HintPath>
-    </Reference>
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0" />
   </ItemGroup>
   
   <ItemGroup>
+    <ProjectReference Include="..\CurePlease.Infrastructure\CurePlease.Infrastructure.csproj" />
     <ProjectReference Include="..\CurePlease.Model\CurePlease.Model.csproj" />
+    <ProjectReference Include="..\CurePlease.Utilities\CurePlease.Utilities.csproj" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Reference Include="EliteMMO.API">
+      <HintPath>..\libraries\EliteMMO.API.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>

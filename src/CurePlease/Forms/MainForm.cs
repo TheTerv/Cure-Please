@@ -33,7 +33,7 @@ namespace CurePlease
 
         public string JobAbilityCMD = string.Empty;
 
-        public string WindowerMode = string.Empty;
+        public string WrapperMode = string.Empty;
 
         public static EliteAPI PL;
 
@@ -45,6 +45,7 @@ namespace CurePlease
         // and/or loaded/saved our config form.
         public SongEngine SongEngine;
 
+        private readonly IProcessManager _ProcessManager;
         private readonly IEngineManager _EngineManager;     
 
         public string castingSpell = string.Empty;
@@ -57,6 +58,26 @@ namespace CurePlease
         private byte autoOptionsSelected;
 
         private bool pauseActions;
+
+        public MainForm(IProcessManager processManager, IEngineManager engineManager)
+        {
+            _ProcessManager = processManager;
+            _EngineManager = engineManager;            
+
+            Log.Information("Application Startup");
+
+            InitializeComponent();
+            InitializeBackgroundWorker();
+
+            // Show the current version number..
+            Text = notifyIcon1.Text = "Cure Please v" + Application.ProductVersion;
+
+            notifyIcon1.BalloonTipTitle = "Cure Please v" + Application.ProductVersion;
+            notifyIcon1.BalloonTipText = "CurePlease has been minimized.";
+            notifyIcon1.BalloonTipIcon = ToolTipIcon.Info;
+
+            PopulateCharacterSelections();
+        }
 
         private void PaintBorderlessGroupBox(object sender, PaintEventArgs e)
         {
@@ -116,28 +137,9 @@ namespace CurePlease
             }
         }
 
-        public MainForm(IEngineManager engineManager)
-        {
-            _EngineManager = engineManager;
-
-            Log.Information("Application Startup");
-
-            InitializeComponent();
-            InitializeBackgroundWorker();
-
-            // Show the current version number..
-            Text = notifyIcon1.Text = "Cure Please v" + Application.ProductVersion;
-
-            notifyIcon1.BalloonTipTitle = "Cure Please v" + Application.ProductVersion;
-            notifyIcon1.BalloonTipText = "CurePlease has been minimized.";
-            notifyIcon1.BalloonTipIcon = ToolTipIcon.Info;
-
-            PopulateCharacterSelections();
-        }
-
         private bool PopulateCharacterSelections()
         {
-            var results = ProcessManager.CheckForDLLFiles(out WindowerMode, out string errorMessage);
+            var results = _ProcessManager.CheckForDLLFiles(out string errorMessage);
             if (!string.IsNullOrWhiteSpace(errorMessage))
             {
                 MessageBox.Show(errorMessage, "Error");
@@ -165,7 +167,7 @@ namespace CurePlease
 
         private void LoadAddon()
         {
-            if (string.IsNullOrWhiteSpace(WindowerMode))
+            if (string.IsNullOrWhiteSpace(WrapperMode))
                 return;
 
             if (PL != null && ConfigForm.Config.EnableAddOn)
@@ -173,7 +175,7 @@ namespace CurePlease
                 if (AddonClient == null)
                 {
                     InitializeSocket(Convert.ToInt32(ConfigForm.Config.listeningPort));
-                    AddonEngine.LoadAddonInClient(ConfigForm.Config.ipAddress, ConfigForm.Config.listeningPort, ConfigForm.Config.enableHotKeys, PL.ThirdParty, WindowerMode);
+                    AddonEngine.LoadAddonInClient(ConfigForm.Config.ipAddress, ConfigForm.Config.listeningPort, ConfigForm.Config.enableHotKeys, PL.ThirdParty, WrapperMode);
                 }
 
                 AddCurrentAction("LUA Addon loaded. ( " + ConfigForm.Config.ipAddress + " - " + ConfigForm.Config.listeningPort + " )");
@@ -202,6 +204,8 @@ namespace CurePlease
         {
             var selectedItem = (ComboBoxItemWithDetails)POLID.SelectedItem;
             PL = new EliteAPI(selectedItem.Id);
+            WrapperMode = selectedItem.WrapperMode;
+
             plLabel.Text = "Selected PL: " + PL.Player.Name;
             Text = notifyIcon1.Text = PL.Player.Name + " - " + "Cure Please v" + Application.ProductVersion;
 
@@ -1205,7 +1209,7 @@ namespace CurePlease
                 if (PL != null && ConfigForm.Config.EnableAddOn)
                 {
                     InitializeSocket(Convert.ToInt32(ConfigForm.Config.listeningPort));
-                    AddonEngine.LoadAddonInClient(ConfigForm.Config.ipAddress, ConfigForm.Config.listeningPort, ConfigForm.Config.enableHotKeys, PL.ThirdParty, WindowerMode);
+                    AddonEngine.LoadAddonInClient(ConfigForm.Config.ipAddress, ConfigForm.Config.listeningPort, ConfigForm.Config.enableHotKeys, PL.ThirdParty, WrapperMode);
                 }
 
                 AddOnStatus_Click(sender, e);
@@ -1250,7 +1254,7 @@ namespace CurePlease
 
             if (PL != null)
             {
-                AddonEngine.UnloadAddonInClient(ConfigForm.Config.enableHotKeys, PL.ThirdParty, WindowerMode);
+                AddonEngine.UnloadAddonInClient(ConfigForm.Config.enableHotKeys, PL.ThirdParty, WrapperMode);
             }
 
         }
@@ -1536,11 +1540,11 @@ namespace CurePlease
         {
             if (PL != null)
             {
-                if (WindowerMode == "Ashita")
+                if (WrapperMode == "Ashita")
                 {
                     PL.ThirdParty.SendString(string.Format("/cpaddon verify"));
                 }
-                else if (WindowerMode == "Windower")
+                else if (WrapperMode == "Windower")
                 {
                     PL.ThirdParty.SendString(string.Format("//cpaddon verify"));
                 }
