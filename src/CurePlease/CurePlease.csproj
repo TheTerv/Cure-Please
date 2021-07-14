@@ -5,9 +5,9 @@
     <TargetFramework>net5.0-windows</TargetFramework>
     <PlatformTarget>x86</PlatformTarget>
     <UseWindowsForms>true</UseWindowsForms>
-    <AssemblyVersion>2.5.1</AssemblyVersion>
+    <AssemblyVersion>2.5.2</AssemblyVersion>
     <FileVersion>2.5.1</FileVersion>
-    <Version>2.5.1</Version>
+    <Version>2.5.2</Version>
     <ApplicationIcon>CurePleaseIcon.ico</ApplicationIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
