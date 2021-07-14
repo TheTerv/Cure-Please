@@ -708,26 +708,10 @@ namespace CurePlease.Engine
                 {
                     if (_Config.SpecifiedEngageTarget && !string.IsNullOrEmpty(_Config.LuopanSpellTarget))
                     {
-                        for (int x = 0; x < 2048; x++)
-                        {
-                            XiEntity z = _Self.Entity.GetEntity(x);
-                            if (!string.IsNullOrEmpty(z.Name))
-                            {
-                                if (z.Name.ToLower() == _Config.LuopanSpellTarget.ToLower()) // A match was located so use this entity as a check.
-                                {
-                                    if (z.Status == (int)EntityStatus.Engaged)
-                                    {
-                                        return true;
-                                    }
-                                    else
-                                    {
-                                        return false;
-                                    }
-                                }
-                            }
-                        }
+                        var targetId = _Self.GetEntityIdForPlayerByName(_Config.LuopanSpellTarget);
+                        var luopan = _Self.Entity.GetEntity(targetId);
 
-                        return false;
+                        return luopan != null && luopan.Status == (int)EntityStatus.Engaged;
                     }
 
                     return _GeoTarget != null && _GeoTarget.Status == (int)EntityStatus.Engaged;
@@ -749,19 +733,10 @@ namespace CurePlease.Engine
             
             if (_Config.SpecifiedEngageTarget && !string.IsNullOrEmpty(_Config.LuopanSpellTarget))
             {
-                for (int x = 0; x < 2048; x++)
-                {
-                    XiEntity z = _Self.Entity.GetEntity(x);
-                    if (!string.IsNullOrEmpty(z.Name))
-                    {
-                        if (z.Name.ToLower() == _Config.LuopanSpellTarget.ToLower()) // A match was located so use this entity as a check.
-                        {
-                            return z.Status == (int)EntityStatus.Engaged;
-                        }
-                    }
-                }
+                var targetId = _Self.GetEntityIdForPlayerByName(_Config.LuopanSpellTarget);
+                var luopan = _Self.Entity.GetEntity(targetId);
 
-                return false;
+                return luopan.Status == (int)EntityStatus.Engaged;
             }
 
             return _GeoTarget != null && _GeoTarget.Status == (int)EntityStatus.Engaged && _Self.GetActivePartyMembers().FirstOrDefault(p => p.Name == _GeoTarget.Name) != null;
@@ -802,16 +777,9 @@ namespace CurePlease.Engine
 
                     int FullCircle_CharID = 0;
 
-                    for (int x = 0; x < 2048; x++)
-                    {
-                        XiEntity entity = _Self.Entity.GetEntity(x);
-
-                        if (entity.Name != null && entity.Name.ToLower().Equals(_Config.LuopanSpellTarget.ToLower()))
-                        {
-                            FullCircle_CharID = Convert.ToInt32(entity.TargetID);
-                            break;
-                        }
-                    }
+                    var targetId = _Self.GetEntityIdForPlayerByName(_Config.LuopanSpellTarget);
+                    var luopan = _Self.Entity.GetEntity(targetId);
+                    FullCircle_CharID = (int)luopan.TargetID;
 
                     if (FullCircle_CharID != 0)
                     {

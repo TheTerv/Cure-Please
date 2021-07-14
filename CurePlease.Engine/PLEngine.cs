@@ -504,23 +504,13 @@ namespace CurePlease.Engine
         {
             if (config.AssistSpecifiedTarget == true && !string.IsNullOrEmpty(config.AutoTargetTarget))
             {
-                for (int x = 0; x < 2048; x++)
-                {
-                    XiEntity z = PL.Entity.GetEntity(x);
+                var targetId = PL.GetEntityIdForPlayerByName(config.AutoTargetTarget);
+                var target = PL.Entity.GetEntity(targetId);
 
-                    if (!string.IsNullOrEmpty(z.Name) && z.Name.ToLower() == config.AutoTargetTarget.ToLower())
-                    {
-                        if (z.Status == 1)
-                        {
-                            return z.TargetingIndex;
-                        }
-                        else
-                        {
-                            return 0;
-                        }
-                    }
+                if (target.Status == 1)
+                {
+                    return target.TargetingIndex;
                 }
-                return 0;
             }
 
             return 0;
