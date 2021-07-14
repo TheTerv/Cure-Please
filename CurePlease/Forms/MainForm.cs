@@ -168,17 +168,33 @@ namespace CurePlease
             if (string.IsNullOrWhiteSpace(WindowerMode))
                 return;
 
-            if (!ConfigForm.Config.pauseOnStartBox && PL != null)
+            if (PL != null && ConfigForm.Config.EnableAddOn)
             {
-                AddonEngine.LoadAddonInClient(ConfigForm.Config, PL.ThirdParty, WindowerMode);
-
                 if (AddonClient == null)
                 {
-                    AddonClient = new UdpClient(Convert.ToInt32(ConfigForm.Config.listeningPort));
-                    AddonClient.BeginReceive(new AsyncCallback(OnAddonDataReceived), AddonClient);
+                    InitializeSocket(Convert.ToInt32(ConfigForm.Config.listeningPort));
+                    AddonEngine.LoadAddonInClient(ConfigForm.Config.ipAddress, ConfigForm.Config.listeningPort, ConfigForm.Config.enableHotKeys, PL.ThirdParty, WindowerMode);
                 }
 
                 AddCurrentAction("LUA Addon loaded. ( " + ConfigForm.Config.ipAddress + " - " + ConfigForm.Config.listeningPort + " )");
+            }
+        }
+
+        // If the port is already in use, lets try another port
+        private void InitializeSocket(int port)
+        {
+            try
+            {
+                AddonClient = new UdpClient(port);
+                AddonClient.BeginReceive(new AsyncCallback(OnAddonDataReceived), AddonClient);
+            }
+            catch (SocketException se)
+            {
+                AddCurrentAction($"Socket port #{port} was already in use. Automatically bumping the port # up and trying again");
+                if (se.Message.Contains("Only one usage of each socket address"))
+                {
+                    InitializeSocket(port + 2);
+                }
             }
         }
 
@@ -201,9 +217,12 @@ namespace CurePlease
             // LOAD AUTOMATIC SETTINGS
             ConfigForm.LoadConfiguration();
 
-            LoadAddon();
-
             _EngineManager.SetupFollow(PL, ConfigForm.Config);
+
+            if (!ConfigForm.Config.pauseOnStartBox)
+            {
+                LoadAddon();
+            }            
         }
 
         private void Setinstance2_Click(object sender, EventArgs e)
@@ -1183,12 +1202,10 @@ namespace CurePlease
                     WindowState = FormWindowState.Minimized;
                 }
 
-                AddonEngine.LoadAddonInClient(ConfigForm.Config, PL.ThirdParty, WindowerMode);
-
-                if (AddonClient == null)
+                if (PL != null && ConfigForm.Config.EnableAddOn)
                 {
-                    AddonClient = new UdpClient(Convert.ToInt32(ConfigForm.Config.listeningPort));
-                    AddonClient.BeginReceive(new AsyncCallback(OnAddonDataReceived), AddonClient);
+                    InitializeSocket(Convert.ToInt32(ConfigForm.Config.listeningPort));
+                    AddonEngine.LoadAddonInClient(ConfigForm.Config.ipAddress, ConfigForm.Config.listeningPort, ConfigForm.Config.enableHotKeys, PL.ThirdParty, WindowerMode);
                 }
 
                 AddOnStatus_Click(sender, e);

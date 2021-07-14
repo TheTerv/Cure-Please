@@ -9,21 +9,21 @@ namespace CurePlease.Engine
     {
         private static bool LUA_Plugin_Loaded;
 
-        public static void LoadAddonInClient(MySettings config, ThirdPartyTools thirdParty, string clientMode)
+        public static void LoadAddonInClient(string ipAddress, string port, bool enableHotKeys, ThirdPartyTools thirdParty, string clientMode)
         {
             string preChar = GetPreChar(clientMode);
 
-            if (config.EnableAddOn && !LUA_Plugin_Loaded)
+            if (!LUA_Plugin_Loaded)
             {
                 thirdParty.SendString($"{preChar}lua load CurePlease");
                 Thread.Sleep(1500);
 
-                thirdParty.SendString($"{preChar}cpaddon settings " + config.ipAddress + " " + config.listeningPort);
+                thirdParty.SendString($"{preChar}cpaddon settings " + ipAddress + " " + port);
                 Thread.Sleep(100);
 
                 thirdParty.SendString($"{preChar}cpaddon verify");
 
-                if (config.enableHotKeys)
+                if (enableHotKeys)
                 {
                     thirdParty.SendString($"{preChar}bind ^!F1 cureplease toggle");
                     thirdParty.SendString($"{preChar}bind ^!F2 cureplease start");
