@@ -15,7 +15,7 @@ namespace CurePlease.Engine
     {
         private CureConfig _Config;
 
-        private EliteAPI PL { get; set; }
+        private EliteAPI _Self;
 
         private readonly ILogger<CureEngine> _Logger;
 
@@ -28,27 +28,30 @@ namespace CurePlease.Engine
         {
             try
             {
-                PL = pl;
+                _Self = pl;
                 _Config = config;
 
-                List<PartyMember> partyByHP = PL.GetActivePartyMembers().OrderBy(member => member.CurrentHPP).ToList();
+                List<PartyMember> partyByHP = _Self.GetActivePartyMembers().OrderBy(member => member.CurrentHPP).ToList();
 
-                /////////////////////////// PL CURE //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                /////////////////////////// SELF CURE //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-                if (PL.Player.HP > 0 && (PL.Player.HPP <= config.MonitoredCurePercentage))
+                if (_Self.Player.HP > 0 && (_Self.Player.HPP <= config.MonitoredCurePercentage))
                 {
-                    var plAsPartyMember = PL.Party.GetPartyMember(0);
-                    return CureCalculator(plAsPartyMember);
+                    var plAsPartyMember = _Self.Party.GetPartyMember(0);
+                    var spell = CureCalculator(plAsPartyMember);
+
+                    if (spell != null)
+                        return spell;
                 }
 
                 /////////////////////////// CURAGA //////////////////////////////////////////////////////////////////////////////////////////////////////////////////                                    
                 if (config.EnabledCuragaTiers.Any(x => x))
                 {
                     //TODO parameter "PL" could probably be switched to Following
-                    int plParty = PL.GetPartyRelativeTo(PL);
+                    int plParty = _Self.GetPartyRelativeTo(_Self);
 
                     // Order parties that qualify for AOE cures by average missing HP.
-                    var partyNeedsAoe = PL.PartyNeedsAoeCure(config.CuragaMinPlayers, config.CuragaHealthPercent).OrderBy(partyNumber => PL.AverageHpLossForParty(partyNumber));
+                    var partyNeedsAoe = _Self.PartyNeedsAoeCure(config.CuragaMinPlayers, config.CuragaHealthPercent).OrderBy(partyNumber => _Self.AverageHpLossForParty(partyNumber));
 
                     // If PL is in same alliance, and there's at least 1 party that needs an AOE cure.
                     // Parties are ordered by most average missing HP.
@@ -58,8 +61,8 @@ namespace CurePlease.Engine
 
                         // We can accession if we have light arts/addendum white, and either we already have the status or we have the ability available,
                         // and have the charges to use it.
-                        bool plCanAccession = (PL.HasStatus(StatusEffect.Light_Arts) || PL.HasStatus(StatusEffect.Addendum_White))
-                            && (PL.HasStatus(StatusEffect.Accession) || (PL.AbilityAvailable(Ability.Accession) && PL.CurrentSCHCharges() > 0));
+                        bool plCanAccession = (_Self.HasStatus(StatusEffect.Light_Arts) || _Self.HasStatus(StatusEffect.Addendum_White))
+                            && (_Self.HasStatus(StatusEffect.Accession) || (_Self.AbilityAvailable(Ability.Accession) && _Self.CurrentSCHCharges() > 0));
 
                         foreach (int party in partyNeedsAoe)
                         {
@@ -75,7 +78,7 @@ namespace CurePlease.Engine
                             // to AOE a party where we can't reach any of the injured members.
                             if (partyByHP.Any(pm => pm.InParty(party) && enabledMembers[pm.MemberNumber]))
                             {
-                                if (partyByHP.Any(pm => pm.InParty(party) && pm.CurrentHPP < config.CuragaHealthPercent && PL.CanCastOn(pm)))
+                                if (partyByHP.Any(pm => pm.InParty(party) && pm.CurrentHPP < config.CuragaHealthPercent && _Self.CanCastOn(pm)))
                                 {
                                     targetParty = party;
                                 }
@@ -85,7 +88,7 @@ namespace CurePlease.Engine
                         if (targetParty > 0)
                         {
                             // The target is the first person we can cast on, since they're already ordered by HPP.
-                            var target = partyByHP.FirstOrDefault(pm => pm.InParty(targetParty) && PL.CanCastOn(pm));
+                            var target = partyByHP.FirstOrDefault(pm => pm.InParty(targetParty) && _Self.CanCastOn(pm));
 
                             if (target != default)
                             {
@@ -100,7 +103,7 @@ namespace CurePlease.Engine
                                     var actionResult = CureCalculator(target);
 
                                     // We've already determined we can accession, or already have the status.
-                                    if (actionResult != null && !PL.HasStatus(StatusEffect.Accession))
+                                    if (actionResult != null && !_Self.HasStatus(StatusEffect.Accession))
                                     {
                                         actionResult.JobAbility = Ability.Accession;
                                     }
@@ -116,7 +119,7 @@ namespace CurePlease.Engine
 
                 // Calculate who needs a cure, and is a valid target.
                 // Anyone who's: Enabled + Active + Alive + Under cure threshold
-                var validCures = partyByHP.Where(pm => enabledMembers[pm.MemberNumber] && (pm.CurrentHPP <= config.CureHealthPercent) && PL.CanCastOn(pm));
+                var validCures = partyByHP.Where(pm => enabledMembers[pm.MemberNumber] && (pm.CurrentHPP <= config.CureHealthPercent) && _Self.CanCastOn(pm));
 
                 // Now run a scan to check all targets in the High Priority Threshold
                 if (validCures != null && validCures.Any())
@@ -145,7 +148,7 @@ namespace CurePlease.Engine
         {
             for (int i = 5; i >= 0; i--)
             {
-                if (_Config.EnabledCureTiers[i] && hpLoss >= _Config.CureTierThresholds[i] && PL.HasMPFor(Data.CureTiers[i]))
+                if (_Config.EnabledCureTiers[i] && hpLoss >= _Config.CureTierThresholds[i] && _Self.HasMPFor(Data.CureTiers[i]))
                 {
                     return PickCureTier(Data.CureTiers[i], Data.CureTiers); 
                 }
@@ -189,7 +192,7 @@ namespace CurePlease.Engine
 
             for (int i = 4; i <= 0; i--)
             {
-                if (_Config.EnabledCuragaTiers[i] && hpLoss >= _Config.CuragaTierThresholds[i] && PL.HasMPFor(Data.CuragaTiers[i]))
+                if (_Config.EnabledCuragaTiers[i] && hpLoss >= _Config.CuragaTierThresholds[i] && _Self.HasMPFor(Data.CuragaTiers[i]))
                 {
                     cureSpell = Data.CuragaTiers[i];
                     break;
@@ -240,15 +243,15 @@ namespace CurePlease.Engine
                 underSpell = tierList[spellIndex - 1];
             }
 
-            if (PL.SpellAvailable(cureSpell) && PL.HasMPFor(cureSpell))
+            if (_Self.SpellAvailable(cureSpell) && _Self.HasMPFor(cureSpell))
             {
                 return cureSpell;
             }
-            else if (_Config.OverCureEnabled && PL.SpellAvailable(overSpell) && PL.HasMPFor(overSpell))
+            else if (_Config.OverCureEnabled && _Self.SpellAvailable(overSpell) && _Self.HasMPFor(overSpell))
             {
                 return overSpell;
             }
-            else if (_Config.UnderCureEnabled && PL.SpellAvailable(underSpell) && PL.HasMPFor(underSpell))
+            else if (_Config.UnderCureEnabled && _Self.SpellAvailable(underSpell) && _Self.HasMPFor(underSpell))
             {
                 return underSpell;
             }
