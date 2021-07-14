@@ -1,117 +1,46 @@
-﻿using CurePlease.Model;
+﻿using CurePlease.Infrastructure;
+using CurePlease.Model;
 using CurePlease.Model.Config;
 using CurePlease.Model.Constants;
 using CurePlease.Utilities;
 using EliteMMO.API;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Timers;
 using static EliteMMO.API.EliteAPI;
 
 namespace CurePlease.Engine
 {
-    public class GeoData : List<GeoData>
-    {
-        public int GeoPosition { get; set; }
-
-        public string IndiSpell { get; set; }
-
-        public string GeoSpell { get; set; }
-    }
-
     public class GeoEngine : IGeoEngine
     {
         private readonly ILogger<GeoEngine> _Logger;
 
         private GeoConfig _Config;
-
-        // GEO ENGAGED CHECK
-        private bool EclipticStillUp = false;
-
-        public List<GeoData> GeomancerInfo = new();
-
         private EliteAPI _Self;
         private XiEntity _GeoTarget;
 
-        private readonly Timer FullCircleTimer = new();
+        // GEO ENGAGED CHECK
+        private bool EclipticStillUp;
         private readonly Timer EclipticTimer = new();
 
-        private readonly List<int> CityZoneIds = new()
-        {
-            26, // Tavnazian Safehold
-
-            50, // Aht Urhgan Whitegate
-
-            53, // Nashmau
-
-            224, // Bastok-Jeuno Airship
-
-            230, // Southern San D'oria 230
-            231, // Northern San D'oria 231
-            232, // Port San D'oria 232
-            233, // Chateau D'oraguille 233
-            234, // Bastok Mines 234
-            235, // Bastok Markets 235
-            236, // Port Bastok 236
-            237, // Metalworks 237
-            238, // Windurst Waters 238
-            239, // Windurst Walls 239
-            240, // Port Windurst 240
-            241, // Windurst Woods 241
-            242, // Heaven Tower 242
-            243, // Ru'lude Gardnes 243
-            244, // Upper Jeuno 244
-            245, // Lower Jeuno 245
-            246, // Port Jeuno 246
-
-            248, // Selbina 248
-            249, // Mhaura 249
-            250, // Kazham 250
-
-            252, // Norg 252
-
-            256, // Western is 256
-            257 // Eastern is 257
-        };
+        private bool _Running;
 
         public GeoEngine(ILogger<GeoEngine> logger)
         {
             _Logger = logger;
 
-            InitializeData();
-
-            FullCircleTimer.Interval = 5000;
-            FullCircleTimer.Elapsed += FullCircle_Timer_Tick;
-
             EclipticTimer.Interval = 1000;
             EclipticTimer.Elapsed += EclipticTimer_Tick;
         }
 
-        private XiEntity GetWhoToCastOn(string followName)
-        {
-            int targetId = 0;
-
-            if (!string.IsNullOrEmpty(followName))
-            {
-                targetId = _Self.GetEntityIdForPlayerByName(followName);
-            }
-            else if (_Self.GetActivePartyMembers().Any())
-            {
-                targetId = (int)_Self.GetActivePartyMembers().FirstOrDefault().TargetIndex;
-            }
-
-            if (targetId > 0)
-            {
-                return _Self.Entity.GetEntity(targetId);
-            }
-
-            return null;
-        }
-
         public EngineAction Run(EliteAPI pl, GeoConfig config, string followName)
         {
+            if (_Running)
+                return null;
+
+            _Running = true;
+
             EngineAction actionResult = new()
             {
                 Target = Target.Me
@@ -120,8 +49,8 @@ namespace CurePlease.Engine
             try
             {
                 _Self = pl;
-                _GeoTarget = GetWhoToCastOn(followName);
                 _Config = config;
+                _GeoTarget = GetWhoToCastGeoSpellsOn(followName);
 
                 if (!CanCastInArea())
                     return null;
@@ -151,50 +80,44 @@ namespace CurePlease.Engine
 
                     actionResult.Spell = ReturnGeoSpell(_Config.RadialArcanaSpell, 2);
                 }
-                else if (_Config.FullCircleEnabled && _Self.Player.Pet.HealthPercent != 0)
+                else if (_Self.AbilityAvailable(Ability.FullCircle) && _Config.FullCircleEnabled && _Self.Player.Pet.HealthPercent > 0)
                 {
                     // When out of range Distance is 59 Yalms regardless, Must be within 15 yalms to gain
                     // the effect
+                    ushort luopanTargetId = _Self.Player.PetIndex;
+                    XiEntity luopan = _Self.Entity.GetEntity(luopanTargetId);
 
-                    //Check if "pet" is active and out of range of the monitored player
-                    if (_Self.Player.Pet.HealthPercent >= 1)
+                    if (_Config.FullCircleGeoTarget && !string.IsNullOrWhiteSpace(_Config.LuopanSpellTarget))
                     {
-                        if (_Config.FullCircleGeoTarget == true && _Config.LuopanSpellTarget != "")
+                        int FullCircle_CharID = 0;
+
+                        FullCircle_CharID = _Self.GetEntityIdForPlayerByName(_Config.LuopanSpellTarget);
+
+                        if (FullCircle_CharID > 0)
                         {
-                            ushort PetsIndex = _Self.Player.PetIndex;
+                            XiEntity FullCircleEntity = _Self.Entity.GetEntity(FullCircle_CharID);
 
-                            XiEntity PetsEntity = _Self.Entity.GetEntity(PetsIndex);
+                            float fX = luopan.X - FullCircleEntity.X;
+                            float fY = luopan.Y - FullCircleEntity.Y;
+                            float fZ = luopan.Z - FullCircleEntity.Z;
 
-                            int FullCircle_CharID = 0;
+                            float generatedDistance = (float)Math.Sqrt((fX * fX) + (fY * fY) + (fZ * fZ));
 
-                            FullCircle_CharID = _Self.GetEntityIdForPlayerByName(_Config.LuopanSpellTarget);
-
-                            if (FullCircle_CharID > 0)
+                            if (generatedDistance >= 10)
                             {
-                                XiEntity FullCircleEntity = _Self.Entity.GetEntity(FullCircle_CharID);
-
-                                float fX = PetsEntity.X - FullCircleEntity.X;
-                                float fY = PetsEntity.Y - FullCircleEntity.Y;
-                                float fZ = PetsEntity.Z - FullCircleEntity.Z;
-
-                                float generatedDistance = (float)Math.Sqrt((fX * fX) + (fY * fY) + (fZ * fZ));
-
-                                if (generatedDistance >= 10)
-                                {
-                                    FullCircleTimer.Enabled = true;
-                                }
+                                _Self.ThirdParty.SendString("/ja \"Full Circle\" <me>");
                             }
-
                         }
-                        else if (_Config.FullCircleGeoTarget == false && _GeoTarget != null && _GeoTarget.Status == (int)EntityStatus.Engaged)
+                    }
+                    else if (!_Config.FullCircleGeoTarget && _GeoTarget != null && _GeoTarget.Status == (int)EntityStatus.Engaged)
+                    {
+                        string SpellCheckedResult = ReturnGeoSpell(_Config.GeoSpell, 2);
+
+                        if (!_Config.FullCircleDisableEnemy || (_Config.FullCircleDisableEnemy && _Self.Resources.GetSpell(SpellCheckedResult, 0).ValidTargets == 32))
                         {
-                            ushort PetsIndex = _Self.Player.PetIndex;
-
-                            XiEntity PetsEntity = _Self.Entity.GetEntity(PetsIndex);
-
-                            if (PetsEntity.Distance >= 10)
+                            if (luopan.Distance >= 10 && luopan.Distance != 0)
                             {
-                                FullCircleTimer.Enabled = true;
+                                _Self.ThirdParty.SendString("/ja \"Full Circle\" <me>");
                             }
                         }
                     }
@@ -287,8 +210,37 @@ namespace CurePlease.Engine
             {
                 _Logger.LogError("Unexpected issue occurred while running geo engine", ex);
             }
+            finally
+            {
+                _Running = false;
+            }
 
             return actionResult;
+        }
+
+        private XiEntity GetWhoToCastGeoSpellsOn(string followName)
+        {
+            int targetId = 0;
+
+            if (!string.IsNullOrEmpty(_Config.LuopanSpellTarget))
+            {
+                targetId = _Self.GetEntityIdForPlayerByName(_Config.LuopanSpellTarget);
+            }
+            else if (!string.IsNullOrEmpty(followName))
+            {
+                targetId = _Self.GetEntityIdForPlayerByName(followName);
+            }
+            else if (_Self.GetActivePartyMembers().Any())
+            {
+                targetId = (int)_Self.GetActivePartyMembers().FirstOrDefault().TargetIndex;
+            }
+
+            if (targetId > 0)
+            {
+                return _Self.Entity.GetEntity(targetId);
+            }
+
+            return null;
         }
 
         private bool CanCastInArea()
@@ -296,7 +248,7 @@ namespace CurePlease.Engine
             if (_Self == null)
                 return false;
 
-            return !CityZoneIds.Contains(_Self.Player.ZoneId);
+            return !CityZones.CityZoneIds.Contains(_Self.Player.ZoneId);
         }
 
         private EngineAction CheckForJobAbility()
@@ -323,7 +275,7 @@ namespace CurePlease.Engine
             {
                 actionResult.JobAbility = Ability.Dematerialize;
             }
-            else if (_Config.EclipticAttritionEnabled && CheckEngagedStatus() == true && _Self.Player.Pet.HealthPercent >= 90 && _Self.AbilityAvailable(Ability.EclipticAttrition) && !_Self.HasStatus(516) && EclipticStillUp != true)
+            else if (_Config.EclipticAttritionEnabled && CheckEngagedStatus() == true && _Self.Player.Pet.HealthPercent >= 90 && _Self.AbilityAvailable(Ability.EclipticAttrition) && !_Self.HasStatus(516) && !EclipticStillUp)
             {
                 actionResult.JobAbility = Ability.EclipticAttrition;
             }
@@ -397,258 +349,10 @@ namespace CurePlease.Engine
             return target;
         }
 
-        private void InitializeData()
-        {
-            #region Init Data
-
-            int geo_position = 0;
-
-            GeomancerInfo.Add(new GeoData
-            {
-                IndiSpell = "Indi-Voidance",
-                GeoSpell = "Geo-Voidance",
-                GeoPosition = geo_position,
-            });
-            geo_position++;
-
-            GeomancerInfo.Add(new GeoData
-            {
-                IndiSpell = "Indi-Precision",
-                GeoSpell = "Geo-Precision",
-                GeoPosition = geo_position,
-            });
-            geo_position++;
-
-            GeomancerInfo.Add(new GeoData
-            {
-                IndiSpell = "Indi-Regen",
-                GeoSpell = "Geo-Regen",
-                GeoPosition = geo_position,
-            });
-            geo_position++;
-
-            GeomancerInfo.Add(new GeoData
-            {
-                IndiSpell = "Indi-Haste",
-                GeoSpell = "Geo-Haste",
-                GeoPosition = geo_position,
-            });
-            geo_position++;
-
-            GeomancerInfo.Add(new GeoData
-            {
-                IndiSpell = "Indi-Attunement",
-                GeoSpell = "Geo-Attunement",
-                GeoPosition = geo_position,
-            });
-            geo_position++;
-
-            GeomancerInfo.Add(new GeoData
-            {
-                IndiSpell = "Indi-Focus",
-                GeoSpell = "Geo-Focus",
-                GeoPosition = geo_position,
-            });
-            geo_position++;
-
-            GeomancerInfo.Add(new GeoData
-            {
-                IndiSpell = "Indi-Barrier",
-                GeoSpell = "Geo-Barrier",
-                GeoPosition = geo_position,
-            });
-            geo_position++;
-
-            GeomancerInfo.Add(new GeoData
-            {
-                IndiSpell = "Indi-Refresh",
-                GeoSpell = "Geo-Refresh",
-                GeoPosition = geo_position,
-            });
-            geo_position++;
-
-            GeomancerInfo.Add(new GeoData
-            {
-                IndiSpell = "Indi-CHR",
-                GeoSpell = "Geo-CHR",
-                GeoPosition = geo_position,
-            });
-            geo_position++;
-
-            GeomancerInfo.Add(new GeoData
-            {
-                IndiSpell = "Indi-MND",
-                GeoSpell = "Geo-MND",
-                GeoPosition = geo_position,
-            });
-            geo_position++;
-
-            GeomancerInfo.Add(new GeoData
-            {
-                IndiSpell = "Indi-Fury",
-                GeoSpell = "Geo-Fury",
-                GeoPosition = geo_position,
-            });
-            geo_position++;
-
-            GeomancerInfo.Add(new GeoData
-            {
-                IndiSpell = "Indi-INT",
-                GeoSpell = "Geo-INT",
-                GeoPosition = geo_position,
-            });
-            geo_position++;
-
-            GeomancerInfo.Add(new GeoData
-            {
-                IndiSpell = "Indi-AGI",
-                GeoSpell = "Geo-AGI",
-                GeoPosition = geo_position,
-            });
-            geo_position++;
-
-            GeomancerInfo.Add(new GeoData
-            {
-                IndiSpell = "Indi-Fend",
-                GeoSpell = "Geo-Fend",
-                GeoPosition = geo_position,
-            });
-            geo_position++;
-
-            GeomancerInfo.Add(new GeoData
-            {
-                IndiSpell = "Indi-VIT",
-                GeoSpell = "Geo-VIT",
-                GeoPosition = geo_position,
-            });
-            geo_position++;
-
-            GeomancerInfo.Add(new GeoData
-            {
-                IndiSpell = "Indi-DEX",
-                GeoSpell = "Geo-DEX",
-                GeoPosition = geo_position,
-            });
-            geo_position++;
-
-            GeomancerInfo.Add(new GeoData
-            {
-                IndiSpell = "Indi-Acumen",
-                GeoSpell = "Geo-Acumen",
-                GeoPosition = geo_position,
-            });
-            geo_position++;
-
-            GeomancerInfo.Add(new GeoData
-            {
-                IndiSpell = "Indi-STR",
-                GeoSpell = "Geo-STR",
-                GeoPosition = geo_position,
-            });
-            geo_position++;
-
-            GeomancerInfo.Add(new GeoData
-            {
-                IndiSpell = "Indi-Poison",
-                GeoSpell = "Geo-Poison",
-                GeoPosition = geo_position,
-            });
-            geo_position++;
-
-            GeomancerInfo.Add(new GeoData
-            {
-                IndiSpell = "Indi-Slow",
-                GeoSpell = "Geo-Slow",
-                GeoPosition = geo_position,
-            });
-            geo_position++;
-
-            GeomancerInfo.Add(new GeoData
-            {
-                IndiSpell = "Indi-Torpor",
-                GeoSpell = "Geo-Torpor",
-                GeoPosition = geo_position,
-            });
-            geo_position++;
-
-            GeomancerInfo.Add(new GeoData
-            {
-                IndiSpell = "Indi-Slip",
-                GeoSpell = "Geo-Slip",
-                GeoPosition = geo_position,
-            });
-            geo_position++;
-
-            GeomancerInfo.Add(new GeoData
-            {
-                IndiSpell = "Indi-Languor",
-                GeoSpell = "Geo-Languor",
-                GeoPosition = geo_position,
-            });
-            geo_position++;
-
-            GeomancerInfo.Add(new GeoData
-            {
-                IndiSpell = "Indi-Paralysis",
-                GeoSpell = "Geo-Paralysis",
-                GeoPosition = geo_position,
-            });
-            geo_position++;
-
-            GeomancerInfo.Add(new GeoData
-            {
-                IndiSpell = "Indi-Vex",
-                GeoSpell = "Geo-Vex",
-                GeoPosition = geo_position,
-            });
-            geo_position++;
-
-            GeomancerInfo.Add(new GeoData
-            {
-                IndiSpell = "Indi-Frailty",
-                GeoSpell = "Geo-Frailty",
-                GeoPosition = geo_position,
-            });
-            geo_position++;
-
-            GeomancerInfo.Add(new GeoData
-            {
-                IndiSpell = "Indi-Wilt",
-                GeoSpell = "Geo-Wilt",
-                GeoPosition = geo_position,
-            });
-            geo_position++;
-
-            GeomancerInfo.Add(new GeoData
-            {
-                IndiSpell = "Indi-Malaise",
-                GeoSpell = "Geo-Malaise",
-                GeoPosition = geo_position,
-            });
-            geo_position++;
-
-            GeomancerInfo.Add(new GeoData
-            {
-                IndiSpell = "Indi-Gravity",
-                GeoSpell = "Geo-Gravity",
-                GeoPosition = geo_position,
-            });
-            geo_position++;
-
-            GeomancerInfo.Add(new GeoData
-            {
-                IndiSpell = "Indi-Fade",
-                GeoSpell = "Geo-Fade",
-                GeoPosition = geo_position,
-            });
-
-            #endregion
-        }
-
         private string ReturnGeoSpell(int GEOSpell_ID, int GeoSpell_Type)
         {
             // GRAB THE SPELL FROM THE CUSTOM LIST
-            GeoData GeoSpell = GeomancerInfo.Where(c => c.GeoPosition == GEOSpell_ID).FirstOrDefault();
+            GeomancerData GeoSpell = GeomancerData.GeomancerInfo.Where(c => c.GeoPosition == GEOSpell_ID).FirstOrDefault();
 
             if (GeoSpell_Type == 1)
             {
@@ -758,62 +462,6 @@ namespace CurePlease.Engine
 
                 return 0;
             }
-        }
-
-        private void FullCircle_Timer_Tick(object sender, EventArgs e)
-        {
-            if (_Self == null)
-            {
-                return;
-            }
-
-            if (_Self.Player.Pet.HealthPercent >= 1)
-            {
-                ushort PetsIndex = _Self.Player.PetIndex;
-
-                if (_Config.FullCircleGeoTarget && !string.IsNullOrEmpty(_Config.LuopanSpellTarget))
-                {
-                    XiEntity PetsEntity = _Self.Entity.GetEntity(PetsIndex);
-
-                    int FullCircle_CharID = 0;
-
-                    var targetId = _Self.GetEntityIdForPlayerByName(_Config.LuopanSpellTarget);
-                    var luopan = _Self.Entity.GetEntity(targetId);
-                    FullCircle_CharID = (int)luopan.TargetID;
-
-                    if (FullCircle_CharID != 0)
-                    {
-                        XiEntity FullCircleEntity = _Self.Entity.GetEntity(FullCircle_CharID);
-
-                        float fX = PetsEntity.X - FullCircleEntity.X;
-                        float fY = PetsEntity.Y - FullCircleEntity.Y;
-                        float fZ = PetsEntity.Z - FullCircleEntity.Z;
-
-                        float generatedDistance = (float)Math.Sqrt((fX * fX) + (fY * fY) + (fZ * fZ));
-
-                        if (generatedDistance >= 10)
-                        {
-                            _Self.ThirdParty.SendString("/ja \"Full Circle\" <me>");
-                        }
-                    }
-                }
-                else if (!_Config.FullCircleGeoTarget && _GeoTarget.Status == (int)EntityStatus.Engaged)
-                {
-                    string SpellCheckedResult = ReturnGeoSpell(_Config.GeoSpell, 2);
-
-                    if (!_Config.FullCircleDisableEnemy || (_Config.FullCircleDisableEnemy && _Self.Resources.GetSpell(SpellCheckedResult, 0).ValidTargets == 32))
-                    {
-                        XiEntity PetsEntity = _Self.Entity.GetEntity(PetsIndex);
-
-                        if (PetsEntity.Distance >= 10 && PetsEntity.Distance != 0 && _Self.AbilityAvailable(Ability.FullCircle))
-                        {
-                            _Self.ThirdParty.SendString("/ja \"Full Circle\" <me>");
-                        }
-                    }
-                }
-            }
-
-            FullCircleTimer.Enabled = false;
         }
 
         private void EclipticTimer_Tick(object sender, EventArgs e)

@@ -19,6 +19,7 @@
   </ItemGroup>
   
   <ItemGroup>
+    <ProjectReference Include="..\CurePlease.Infrastructure\CurePlease.Infrastructure.csproj" />
     <ProjectReference Include="..\CurePlease.Model\CurePlease.Model.csproj" />
     <ProjectReference Include="..\CurePlease.Utilities\CurePlease.Utilities.csproj" />
   </ItemGroup>
