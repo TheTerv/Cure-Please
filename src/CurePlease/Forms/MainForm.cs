@@ -1520,17 +1520,7 @@ namespace CurePlease
 
         private void AddOnStatus_Click(object sender, EventArgs e)
         {
-            if (PL != null)
-            {
-                if (WrapperMode == "Ashita")
-                {
-                    PL.ThirdParty.SendString(string.Format("/cpaddon verify"));
-                }
-                else if (WrapperMode == "Windower")
-                {
-                    PL.ThirdParty.SendString(string.Format("//cpaddon verify"));
-                }
-            }
+            LoadAddon();
         }
 
         // This will get cancelled if we get an interrupted/finished casting packet.
