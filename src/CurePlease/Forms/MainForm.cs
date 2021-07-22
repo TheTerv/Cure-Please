@@ -502,16 +502,12 @@ namespace CurePlease
 
             if (cureResult != null)
             {
-                // RUN DEBUFF REMOVAL - CONVERTED TO FUNCTION SO CAN BE RUN IN MULTIPLE AREAS
-                var debuffResult = _EngineManager.RunDebuffEngine(PL, Config.GetDebuffConfig());
-
                 if (!string.IsNullOrEmpty(cureResult.Spell))
                 {
                     bool lowPriority = Array.IndexOf(Data.CureTiers, cureResult.Spell) < 2;
 
-                    // Only cast the spell/JA if we don't need to skip debuffs based on
-                    // config and low priority.
-                    if (!lowPriority || !ConfigForm.Config.PrioritiseOverLowerTier || debuffResult == null)
+                    // Only cast the spell/JA if we don't need to skip debuffs based on config and low priority.
+                    if (!lowPriority || !ConfigForm.Config.PrioritiseOverLowerTier)
                     {
                         if (!string.IsNullOrEmpty(cureResult.JobAbility))
                         {
@@ -523,25 +519,23 @@ namespace CurePlease
                         return;
                     }
                 }
+            }
 
-                if (debuffResult != null)
+            // RUN DEBUFF REMOVAL - CONVERTED TO FUNCTION SO CAN BE RUN IN MULTIPLE AREAS
+            var debuffResult = _EngineManager.RunDebuffEngine(PL, Config.GetDebuffConfig());
+            if (debuffResult != null)
+            {
+                if (!string.IsNullOrEmpty(debuffResult.Spell))
                 {
+                    if (!string.IsNullOrEmpty(debuffResult.JobAbility))
+                    {
+                        JobAbility_Wait(debuffResult.Message, debuffResult.JobAbility);
+                    }
+
                     CastSpell(debuffResult.Target, debuffResult.Spell);
                     this.actionTimer.Start();
                     return;
                 }
-
-                // TODO: Need to run cure AND debuff engine then decide which to execute.
-                // I consider cure/cure II to be low tier once cure III gets above 700 HP.
-                //if (Array.IndexOf(Data.CureTiers, cureSpell) < 2 && ConfigForm.config.PrioritiseOverLowerTier == true)
-                //{
-                //    var debuffResult = DebuffEngine.Run();
-                //    if (debuffResult != null && debuffResult.Spell != null)
-                //    {
-                //        CastSpell(debuffResult.Target, debuffResult.Spell);
-                //        return;
-                //    }
-                //}
             }
 
             // PL AUTO BUFFS
