@@ -232,7 +232,7 @@ namespace CurePlease.Engine
             }
             else if (_Self.GetActivePartyMembers().Any())
             {
-                targetId = (int)_Self.GetActivePartyMembers().FirstOrDefault().TargetIndex;
+                targetId = (int)_Self.GetActivePartyMembers().FirstOrDefault()?.TargetIndex;
             }
 
             if (targetId > 0)

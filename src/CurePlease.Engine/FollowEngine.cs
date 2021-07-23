@@ -225,7 +225,7 @@ namespace CurePlease.Engine
 
                 _Self.AutoFollow.SetAutoFollowCoords(dX, dY, dZ);
 
-                _LastPLCoordinates.UpdateCoordinates(_Self.Player.X, _Self.Player.Y, _Self.Player.Z);
+                _LastPLCoordinates?.UpdateCoordinates(_Self.Player.X, _Self.Player.Y, _Self.Player.Z);
 
                 System.Threading.Thread.Sleep(TimeSpan.FromSeconds(0.25));
 
