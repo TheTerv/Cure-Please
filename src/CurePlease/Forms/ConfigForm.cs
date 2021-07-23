@@ -22,6 +22,9 @@ namespace CurePlease
         
         public int runOnce = 0;
 
+        // we're going to store this statically so classes outside of config can update the config
+        private static string _FileName = CreateFileName();
+
         public ConfigForm ( )
         {
             StartPosition = FormStartPosition.CenterScreen;
@@ -245,8 +248,8 @@ namespace CurePlease
         private static MySettings ReadConfigurationFromFile()
         {
             string fileName = CreateFileName();
-            string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Settings", fileName);
-            return ReadSettings(path);
+            _FileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Settings", fileName);
+            return ReadSettings();
         }
 
         private static MySettings LoadDefaultConfig()
@@ -668,26 +671,6 @@ namespace CurePlease
             Config.trackCastingPackets = false;
 
             return Config;
-        }
-
-        private static MySettings ReadSettings(string filePath)
-        {
-            TextReader reader = null;
-            try
-            {
-                var serializer = new XmlSerializer(typeof(MySettings));
-                reader = new StreamReader(filePath);
-                return (MySettings)serializer.Deserialize(reader);
-            }
-            catch(Exception)
-            {
-                return null;
-            }
-            finally
-            {
-                if (reader != null)
-                    reader.Close();
-            }
         }
 
         #endregion "== Form2"
@@ -1186,10 +1169,10 @@ namespace CurePlease
             // OTHERS
             var path = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "Settings");
             Directory.CreateDirectory(path);
-            
-            var fileName = CreateFileName();
 
-            WriteFileToXml(Path.Combine(path, fileName));
+            _FileName = Path.Combine(path, CreateFileName());
+
+            WriteFileToXml();
 
             Close();
         }
@@ -1704,23 +1687,45 @@ namespace CurePlease
 
             if ( savefile.ShowDialog ( ) == DialogResult.OK )
             {
-                WriteFileToXml(savefile.FileName);
+                _FileName = savefile.FileName;
+                WriteFileToXml();
             }
         }
 
-        private static void WriteFileToXml(string fileName)
+        public static void WriteFileToXml()
         {
             TextWriter writer = null;
             try
             {
                 XmlSerializer mySerializer = new(typeof(MySettings));
-                writer = new StreamWriter(fileName);
+                writer = new StreamWriter(_FileName);
                 mySerializer.Serialize(writer, Config);
             }
             finally
             {
                 if (writer != null)
                     writer.Close();
+            }
+        }
+
+
+        private static MySettings ReadSettings()
+        {
+            TextReader reader = null;
+            try
+            {
+                var serializer = new XmlSerializer(typeof(MySettings));
+                reader = new StreamReader(_FileName);
+                return (MySettings)serializer.Deserialize(reader);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+            finally
+            {
+                if (reader != null)
+                    reader.Close();
             }
         }
 
@@ -1735,7 +1740,8 @@ namespace CurePlease
 
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
-                Config = ReadSettings(openFileDialog1.FileName);
+                _FileName = openFileDialog1.FileName;
+                Config = ReadSettings();
                 UpdateForm(Config);
             }
         }

@@ -242,15 +242,25 @@ namespace CurePlease
             lastCommand = Monitored.ThirdParty.ConsoleIsNewCommand();
         }
 
+        private delegate void SafeCallDelegate(string text);
+
         public void AddCurrentAction(string message)
         {
             if (!string.IsNullOrWhiteSpace(message))
             {
-                var timestamp = DateTime.Now.ToString("[HH:mm:ss] ");
-                message = timestamp + message;
+                if (currentAction.InvokeRequired)
+                {
+                    var d = new SafeCallDelegate(AddCurrentAction);
+                    currentAction.Invoke(d, new object[] { message });
+                }
+                else
+                {
+                    var timestamp = DateTime.Now.ToString("[HH:mm:ss] ");
+                    message = timestamp + message + Environment.NewLine;
 
-                currentAction.Text = message;
-                actionlog_box.AppendText(message + Environment.NewLine);
+                    currentAction.Text = message;
+                    actionlog_box.AppendText(message);
+                }
             }
         }
 
@@ -1436,7 +1446,6 @@ namespace CurePlease
                                 castingLockLabel.Text = "PACKET: Casting is soon to be AVAILABLE!";
                                 await Task.Delay(TimeSpan.FromSeconds(3));
                                 castingLockLabel.Text = "Casting is UNLOCKED";
-                                AddCurrentAction(string.Empty);
                                 castingSpell = string.Empty;
                                 CastingBackground_Check = false;
                             }));
@@ -1499,8 +1508,36 @@ namespace CurePlease
                             _EngineManager.UpdateDebuffs(memberName, debuffs);
                         }                             
                     }
-
-                }                    
+                }
+                else if (commands[1] == "follow")
+                {
+                    if ((new[] { "off", "end", "false", "pause", "stop", "exit", "disable" }).Contains(commands[2]))
+                    {
+                        _EngineManager.StopFollowing();
+                        AddCurrentAction("Received command to stop following");
+                        PL.ThirdParty.SendString("//cp msg Confirming we've stopped following.");
+                    }
+                    else if ((new[] { "on", "begin", "true", "enable", "start" }).Contains(commands[2]))
+                    {
+                        _EngineManager.StartFollowing();
+                        AddCurrentAction("Received command to start following");
+                        PL.ThirdParty.SendString("//cp msg Confirming we've started following.");
+                    }
+                    else if ((new[] { "d", "dist", "distance" }).Contains(commands[2]))
+                    {
+                        ConfigForm.Config.autoFollowDistance = int.Parse(commands[3]);
+                        ConfigForm.WriteFileToXml();
+                        AddCurrentAction($"Received command to update follow distance to {commands[3]}");
+                        PL.ThirdParty.SendString($"//cp msg Confirming follow distance set to {commands[3]}.");
+                    }
+                    else
+                    {
+                        ConfigForm.Config.autoFollowName = commands[2];
+                        ConfigForm.WriteFileToXml();
+                        AddCurrentAction($"Received command to update follow player to {commands[2]}");
+                        PL.ThirdParty.SendString($"//cp msg Confirming that we are now following {commands[2]}.");
+                    }
+                }
             }
             catch (Exception error1)
             {
