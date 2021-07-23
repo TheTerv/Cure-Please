@@ -11,7 +11,7 @@ namespace CurePlease.Infrastructure
         public const string WRAPPER_WINDOWER = "Windower";
         public const string WRAPPER_ASHITA = "Ashita";
 
-        private IProcessUtilities _ProcessUtilities;
+        private readonly IProcessUtilities _ProcessUtilities;
 
         public ProcessManager(IProcessUtilities processFinder)
         {

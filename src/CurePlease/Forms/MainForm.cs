@@ -459,7 +459,7 @@ namespace CurePlease
             var doomedMembers = activeMembers.Count(pm => PL.CanCastOn(pm) && ActiveBuffs.ContainsKey(pm.Name) && ActiveBuffs[pm.Name].Contains((short)StatusEffect.Doom));
             if (doomedMembers > 0)
             {
-                var doomCheckResult = _EngineManager.RunDebuffEngine(PL, Config.GetDebuffConfig());
+                var doomCheckResult = _EngineManager.RunDebuffEngine(PL, ConfigForm.GetDebuffConfig());
                 if (doomCheckResult != null && doomCheckResult.Spell != null)
                 {
                     CastSpell(doomCheckResult.Target, doomCheckResult.Spell);
@@ -510,7 +510,7 @@ namespace CurePlease
             }
 
             // RUN DEBUFF REMOVAL - CONVERTED TO FUNCTION SO CAN BE RUN IN MULTIPLE AREAS
-            var debuffResult = _EngineManager.RunDebuffEngine(PL, Config.GetDebuffConfig());
+            var debuffResult = _EngineManager.RunDebuffEngine(PL, ConfigForm.GetDebuffConfig());
             if (debuffResult != null)
             {
                 if (!string.IsNullOrEmpty(debuffResult.Spell))
@@ -1219,7 +1219,7 @@ namespace CurePlease
 
         private void ChatLogToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ChatlogForm form4 = new(this);
+            ChatlogForm form4 = new();
             form4.Show();
         }
 
@@ -1358,7 +1358,7 @@ namespace CurePlease
 
         private void ChatLogButton_Click(object sender, EventArgs e)
         {
-            ChatlogForm form4 = new(this);
+            ChatlogForm form4 = new();
 
             if (PL != null)
             {
@@ -1581,17 +1581,4 @@ namespace CurePlease
     }
 
     // END OF THE FORM SCRIPT
-
-    public static class RichTextBoxExtensions
-    {
-        public static void AppendText(this RichTextBox box, string text, Color color)
-        {
-            box.SelectionStart = box.TextLength;
-            box.SelectionLength = 0;
-
-            box.SelectionColor = color;
-            box.AppendText(text);
-            box.SelectionColor = box.ForeColor;
-        }
-    }
 }

@@ -7,7 +7,7 @@
 
     public partial class ChatlogForm : Form
     {
-        public ChatlogForm(MainForm mainForm)
+        public ChatlogForm()
         {
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
 
@@ -48,12 +48,12 @@
             }
         }
 
-        private void chatlogscan_timer_Tick(object sender, EventArgs e)
+        private void Chatlogscan_timer_Tick(object sender, EventArgs e)
         {
             UpdateLines();
         }
 
-        private void chatlog_box_TextChanged(object sender, EventArgs e)
+        private void Chatlog_box_TextChanged(object sender, EventArgs e)
         {
             chatlog_box.SelectionStart = chatlog_box.Text.Length;
             chatlog_box.ScrollToCaret();

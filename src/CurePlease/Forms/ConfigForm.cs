@@ -99,7 +99,7 @@ namespace CurePlease
             };
         }
 
-        public DebuffConfig GetDebuffConfig()
+        public static DebuffConfig GetDebuffConfig()
         {
             return new DebuffConfig()
             {
@@ -2698,7 +2698,7 @@ namespace CurePlease
             }
         }
 
-        private Dictionary<StatusEffect, bool> DebuffEnabled => new()
+        private static Dictionary<StatusEffect, bool> DebuffEnabled => new()
         {
             { StatusEffect.Doom, true},
             { StatusEffect.Sleep, true },

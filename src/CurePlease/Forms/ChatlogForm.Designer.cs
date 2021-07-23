@@ -52,7 +52,7 @@
             this.chatlog_box.Size = new System.Drawing.Size(863, 367);
             this.chatlog_box.TabIndex = 0;
             this.chatlog_box.Text = "";
-            this.chatlog_box.TextChanged += new System.EventHandler(this.chatlog_box_TextChanged);
+            this.chatlog_box.TextChanged += new System.EventHandler(this.Chatlog_box_TextChanged);
             // 
             // ChatLogMessage_textfield
             // 
@@ -107,7 +107,7 @@
             // chatlogscan_timer
             // 
             this.chatlogscan_timer.Enabled = true;
-            this.chatlogscan_timer.Tick += new System.EventHandler(this.chatlogscan_timer_Tick);
+            this.chatlogscan_timer.Tick += new System.EventHandler(this.Chatlogscan_timer_Tick);
             // 
             // Form4
             // 
