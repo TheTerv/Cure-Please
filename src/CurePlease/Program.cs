@@ -59,6 +59,7 @@
                             services.AddScoped<IDebuffEngine, DebuffEngine>();
                             services.AddScoped<IPLEngine, PLEngine>();
                             services.AddScoped<ISongEngine, SongEngine>();
+                            services.AddScoped<IAddonEngine, AddonEngine>();
                         })
                         .UseSerilog()
                         .Build();

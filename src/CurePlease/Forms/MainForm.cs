@@ -39,8 +39,6 @@ namespace CurePlease
 
         public static EliteAPI Monitored;
 
-        public UdpClient AddonClient;
-
         // TODO: Initialize these configs explicitly after we've hooked into the game
         // and/or loaded/saved our config form.
         public SongEngine SongEngine;
@@ -59,8 +57,11 @@ namespace CurePlease
 
         private bool pauseActions;
 
+        private static MainForm _Form;
+
         public MainForm(IProcessManager processManager, IEngineManager engineManager)
         {
+            _Form = this;
             _ProcessManager = processManager;
             _EngineManager = engineManager;            
 
@@ -160,31 +161,7 @@ namespace CurePlease
 
             if (PL != null && ConfigForm.Config.EnableAddOn)
             {
-                if (AddonClient == null)
-                {
-                    InitializeSocket(Convert.ToInt32(ConfigForm.Config.listeningPort));
-                    AddonEngine.LoadAddonInClient(ConfigForm.Config.ipAddress, ConfigForm.Config.listeningPort, ConfigForm.Config.enableHotKeys, PL.ThirdParty, WrapperMode);
-                }
-
-                AddCurrentAction("LUA Addon loaded. ( " + ConfigForm.Config.ipAddress + " - " + ConfigForm.Config.listeningPort + " )");
-            }
-        }
-
-        // If the port is already in use, lets try another port
-        private void InitializeSocket(int port)
-        {
-            try
-            {
-                AddonClient = new UdpClient(port);
-                AddonClient.BeginReceive(new AsyncCallback(OnAddonDataReceived), AddonClient);
-            }
-            catch (SocketException se)
-            {
-                AddCurrentAction($"Socket port #{port} was already in use. Automatically bumping the port # up and trying again");
-                if (se.Message.Contains("Only one usage of each socket address"))
-                {
-                    InitializeSocket(port + 2);
-                }
+                _EngineManager.SetupAddon(PL.ThirdParty, ConfigForm.Config, OnAddonDataReceived, WrapperMode);
             }
         }
 
@@ -244,22 +221,22 @@ namespace CurePlease
 
         private delegate void SafeCallDelegate(string text);
 
-        public void AddCurrentAction(string message)
+        public static void AddCurrentAction(string message)
         {
             if (!string.IsNullOrWhiteSpace(message))
             {
-                if (currentAction.InvokeRequired)
+                if (_Form.currentAction.InvokeRequired)
                 {
                     var d = new SafeCallDelegate(AddCurrentAction);
-                    currentAction.Invoke(d, new object[] { message });
+                    _Form.currentAction.Invoke(d, new object[] { message });
                 }
                 else
                 {
                     var timestamp = DateTime.Now.ToString("[HH:mm:ss] ");
                     message = timestamp + message + Environment.NewLine;
 
-                    currentAction.Text = message;
-                    actionlog_box.AppendText(message);
+                    _Form.currentAction.Text = message;
+                    _Form.actionlog_box.AppendText(message);
                 }
             }
         }
@@ -1176,7 +1153,7 @@ namespace CurePlease
             CastSpell(PL.Party.GetPartyMembers()[playerOptionsSelected].Name, Spells.Shell_V);
         }
 
-        private void Button3_Click(object sender, EventArgs e)
+        private void PauseButton_Click(object sender, EventArgs e)
         {
 
             if (pauseActions == false)
@@ -1196,12 +1173,6 @@ namespace CurePlease
                 if (ConfigForm.Config.MinimiseonStart == true && WindowState != FormWindowState.Minimized)
                 {
                     WindowState = FormWindowState.Minimized;
-                }
-
-                if (PL != null && ConfigForm.Config.EnableAddOn)
-                {
-                    InitializeSocket(Convert.ToInt32(ConfigForm.Config.listeningPort));
-                    AddonEngine.LoadAddonInClient(ConfigForm.Config.ipAddress, ConfigForm.Config.listeningPort, ConfigForm.Config.enableHotKeys, PL.ThirdParty, WrapperMode);
                 }
 
                 AddOnStatus_Click(sender, e);
@@ -1244,11 +1215,7 @@ namespace CurePlease
             notifyIcon1.Icon = null;
             notifyIcon1.Dispose();
 
-            if (PL != null)
-            {
-                AddonEngine.UnloadAddonInClient(ConfigForm.Config.enableHotKeys, PL.ThirdParty, WrapperMode);
-            }
-
+            _EngineManager.UnloadAddon(WrapperMode);
         }
 
         private void ShowErrorMessage(string ErrorMessage)
@@ -1435,6 +1402,8 @@ namespace CurePlease
                                 await Task.Delay(TimeSpan.FromSeconds(2));
                                 castingLockLabel.Text = "Casting is UNLOCKED";
                                 CastingBackground_Check = false;
+                                pauseActions = false;
+                                _EngineManager.StartFollowing();
                             }));
                         }
                         else if (commands[2] == "finished")
@@ -1448,11 +1417,10 @@ namespace CurePlease
                                 castingLockLabel.Text = "Casting is UNLOCKED";
                                 castingSpell = string.Empty;
                                 CastingBackground_Check = false;
+                                pauseActions = false;
+                                _EngineManager.StartFollowing();
                             }));
-                        }
-
-                        pauseActions = false;
-                        _EngineManager.StartFollowing();
+                        }                        
                     }
                 }
                 else if (commands[1] == "confirmed")
@@ -1461,7 +1429,6 @@ namespace CurePlease
                 }
                 else if (commands[1] == "command")
                 {
-                    // MessageBox.Show(commands[2]);
                     if (commands[2] == "start" || commands[2] == "unpause")
                     {
                         Invoke((MethodInvoker)(() =>

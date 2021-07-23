@@ -1,6 +1,7 @@
 ﻿using CurePlease.Model;
 using CurePlease.Model.Config;
 using EliteMMO.API;
+using System;
 using System.Collections.Generic;
 
 namespace CurePlease.Engine
@@ -14,8 +15,9 @@ namespace CurePlease.Engine
         private readonly IDebuffEngine _DebuffEngine;
         private readonly IPLEngine _PLEngine;
         private readonly ISongEngine _SongEngine;
+        private readonly IAddonEngine _AddonEngine;
 
-        public EngineManager(IFollowEngine followEngine, IGeoEngine geoEngine, IBuffEngine buffEngine, ICureEngine cureEngine, IDebuffEngine debuffEngine, IPLEngine plEngine, ISongEngine songEngine)
+        public EngineManager(IFollowEngine followEngine, IGeoEngine geoEngine, IBuffEngine buffEngine, ICureEngine cureEngine, IDebuffEngine debuffEngine, IPLEngine plEngine, ISongEngine songEngine, IAddonEngine addonEngine)
         {
             _FollowEngine = followEngine;
             _GeoEngine = geoEngine;
@@ -24,6 +26,7 @@ namespace CurePlease.Engine
             _DebuffEngine = debuffEngine;
             _PLEngine = plEngine;
             _SongEngine = songEngine;
+            _AddonEngine = addonEngine;
         }
 
         public EngineAction RunGeoEngine(EliteAPI pl, GeoConfig config, string followName)
@@ -54,6 +57,16 @@ namespace CurePlease.Engine
         public bool IsMoving()
         {
             return _FollowEngine.IsMoving();
+        }
+
+        public void SetupAddon(ThirdPartyTools thirdParty, MySettings config, Action<IAsyncResult> callback, string clientMode)
+        {
+            _AddonEngine.Setup(thirdParty, config, callback, clientMode);
+        }
+
+        public void UnloadAddon(string clientMode)
+        {
+            _AddonEngine.UnloadAddon(clientMode);
         }
 
         public void ToggleAutoBuff(string memberName, string spellName)

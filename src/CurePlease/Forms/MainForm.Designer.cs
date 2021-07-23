@@ -1990,7 +1990,7 @@ namespace CurePlease
             this.pauseButton.Text = "Pause";
             this.toolTips.SetToolTip(this.pauseButton, "Pauses Bot");
             this.pauseButton.UseVisualStyleBackColor = false;
-            this.pauseButton.Click += new System.EventHandler(this.Button3_Click);
+            this.pauseButton.Click += new System.EventHandler(this.PauseButton_Click);
             this.pauseButton.Paint += new System.Windows.Forms.PaintEventHandler(this.PaintButton);
             // 
             // checkBox1

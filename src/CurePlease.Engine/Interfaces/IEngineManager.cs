@@ -1,6 +1,7 @@
 ﻿using CurePlease.Model;
 using CurePlease.Model.Config;
 using EliteMMO.API;
+using System;
 using System.Collections.Generic;
 
 namespace CurePlease.Engine
@@ -13,6 +14,9 @@ namespace CurePlease.Engine
         void StartFollowing();
         void StopFollowing();
         bool IsMoving();
+
+        void SetupAddon(ThirdPartyTools thirdParty, MySettings config, Action<IAsyncResult> callback, string clientMode);
+        void UnloadAddon(string clientMode);
 
         EngineAction RunBuffEngine(EliteAPI pl);
         void ToggleAutoBuff(string memberName, string spellName);
