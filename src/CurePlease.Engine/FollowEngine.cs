@@ -51,6 +51,7 @@ namespace CurePlease.Engine
         public void Start()
         {
             _Running = true;
+            _Self.AutoFollow.IsAutoFollowing = false;
 
             try
             {
@@ -150,8 +151,13 @@ namespace CurePlease.Engine
             {
                 _Logger.LogError("Unexpected error occurred while running following engine", ex);
             }
+            finally
+            {
+                if (_Self != null)
+                    _Self.AutoFollow.IsAutoFollowing = false;
 
-            _FollowEngineTimer.Start();
+                _FollowEngineTimer.Start();
+            }            
         }
 
         private void FollowingUsingFFXICommand(int whoToFollowId)
@@ -257,11 +263,6 @@ namespace CurePlease.Engine
 
         private void Reset()
         {
-            if (_Config != null && !_Config.FFXIDefaultAutoFollow)
-            {
-                _Self.AutoFollow.IsAutoFollowing = false;
-            }
-
             _FollowerId = null;
             _StuckWarning = false;
             _StuckCount = 0;

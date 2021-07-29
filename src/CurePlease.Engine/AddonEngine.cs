@@ -58,7 +58,7 @@ namespace CurePlease.Engine
                 Thread.Sleep(1500);
 
                 _ThirdParty.SendString($"{preChar}cpaddon settings {_IPAddress} {_Port}");
-                Thread.Sleep(100);
+                Thread.Sleep(300);
 
                 _ThirdParty.SendString($"{preChar}cpaddon verify");
 

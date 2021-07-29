@@ -1215,6 +1215,7 @@ namespace CurePlease
             notifyIcon1.Icon = null;
             notifyIcon1.Dispose();
 
+            _EngineManager.StopFollowing();
             _EngineManager.UnloadAddon(WrapperMode);
         }
 

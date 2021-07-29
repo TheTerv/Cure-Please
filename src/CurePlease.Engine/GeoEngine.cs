@@ -397,7 +397,7 @@ namespace CurePlease.Engine
             // Grab GEO spell name
             string SpellCheckedResult = ReturnGeoSpell(_Config.GeoSpell, 2);
 
-            if (SpellCheckedResult == "SpellError_Cancel" || SpellCheckedResult == "SpellRecast" || SpellCheckedResult == "SpellUnknown")
+            if (SpellCheckedResult == "SpellError_Cancel" || SpellCheckedResult == "SpellRecast" || SpellCheckedResult == "SpellUnknown" || SpellCheckedResult == "SpellNA")
             {
                 // Do nothing and continue on with the program
                 return true;
